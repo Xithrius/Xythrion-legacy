@@ -26,7 +26,7 @@ Operating on applications in a demon-like manner
 - [ ] 2FA - Quick Response codes through phone with website
 
 
-# Links with information
+# Links for information
 * [Repository for Demonically](https://github.com/Xithrius/Demonically)
 * [Discord.py rewrite with cogs](https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be)
 * [Markdown for .md](https://guides.github.com/features/mastering-markdown/)
@@ -34,7 +34,6 @@ Operating on applications in a demon-like manner
 * [PEP 328 -- Imports: Multi-Line and Absolute/Relative](https://www.python.org/dev/peps/pep-0328/)
 * [system arguments in console](https://stackoverflow.com/questions/4117530/sys-argv1-meaning-in-script)
 * [What is __future__ in Python?](https://stackoverflow.com/questions/7075082/what-is-future-in-python-used-for-and-how-when-to-use-it-and-how-it-works)
-
 
 
 # Changelog
