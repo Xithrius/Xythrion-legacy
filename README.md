@@ -8,6 +8,10 @@ v0.00.0001
 * Moved chrome web driver into folder
 * Created README.md for all the changelog needs
 
+v0.00.0002
+* Added TODO to this README
+* Added other files from old bot, removing old bot from existence
+
 # TODO
 
 NOW:
