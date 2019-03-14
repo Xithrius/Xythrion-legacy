@@ -1,0 +1,30 @@
+QUESTIONS:
+[y/n] = [ ]: Remove DocumentationBot and just have DynamicDemon take care of the documentations
+
+
+NOW:
+[ ]: Make the bot very user friendly
+[x]: Optimize pathing()
+[ ]: Quality Of Life command creations
+[ ]: Github repository check (protection of tokens.json)
+
+
+CURRENTLY:
+[ ]: Start using doc-strings for descriptions of commands, to help the help command
+[ ]: Modify README.md for github use
+[ ]: Figure out how to use Google Cloud Sheets API with Numpy
+[ ]: Open Weather Maps API with embed messages (Learn more of json decoding/encoding)
+[ ]: League Of Legends API with embed messages (Learn JavaScript)
+[ ]: Google Cloud Search, Drive, Calendar
+[ ]: HTML scraping for Osu! and Enter The Gungeon
+
+
+FUTURE:
+[ ]: Customized commands through discord messages, will be put into separate folder
+[ ]: Get ping to discord server when starting the bot
+[ ]: Add permissions to the bot, so multiple people can have access (NOT TTS)
+
+
+POSSIBILITIES FOR THE FUTURE:
+[ ]: Using PySide2 or GUI alternative for Google Cloud TTS API
+[ ]: 2FA - Quick Response codes through website authentication through phone(s?) with failsafe, reset timer, and backup codes
