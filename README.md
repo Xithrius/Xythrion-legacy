@@ -26,6 +26,17 @@ Operating on applications in a demon-like manner
 - [ ] 2FA - Quick Response codes through phone with website
 
 
+# Links for information
+* [Repository for Demonically](https://github.com/Xithrius/Demonically)
+* [Discord.py rewrite with cogs](https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be)
+* [Markdown for .md](https://guides.github.com/features/mastering-markdown/)
+* [Example for organization of files](https://github.com/atom/atom)
+* [PEP 328 -- Imports: Multi-Line and Absolute/Relative](https://www.python.org/dev/peps/pep-0328/)
+* [system arguments in console](https://stackoverflow.com/questions/4117530/sys-argv1-meaning-in-script)
+* [What is __future__ in Python?](https://stackoverflow.com/questions/7075082/what-is-future-in-python-used-for-and-how-when-to-use-it-and-how-it-works)
+
+
+
 # Changelog
 
 ## v0.00.0003
@@ -35,7 +46,7 @@ Operating on applications in a demon-like manner
 * Shell file now starts entire program
 * Really modifying the bot for own use, added own command for testing
 * Added credentials in JavaScript Object Notation in credentials folder
-* Really smashing multiple files of bots together to see what happens with my own flair from [discord.py rewrite with cogs](!https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be)
+* Really smashing multiple files of bots together to see what happens with my own flair from [discord.py rewrite with cogs](https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be)
 * Added bot_test.py to test the bot on specific bugs before adding to bot.py
 * Renamed folders and files
 * Changed TODO
