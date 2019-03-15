@@ -13,7 +13,7 @@ Operating on applications in a demon-like manner
 
 ## FUTURE:
 - [ ] Quality Of Life command creations
-- [ ] Open Weather Maps API
+- [ ] Open Weather Maps API for weather
 - [ ] Google Cloud Search, Drive, Calendar
 - [ ] Notify user when there's changes to specific things
 - [ ] Use shell file for optimization of starting bot during startup
@@ -38,6 +38,16 @@ Operating on applications in a demon-like manner
 
 # Changelog
 
+## v0.00.0004
+### Changes:
+* Changed bot startup, removed bot client class, put on ready event into the main cog
+* Modified README for upcoming changes and updates
+* Removed all legacy files
+* Removed test bot, since main bot file works
+* Changed JavaScript Object Notation file for owner ID and token to a text file just for the token
+* Removed python "test" file
+* Bot almost works
+
 ## v0.00.0003
 ### Changes:
 * Removed currently testing folder
@@ -45,12 +55,10 @@ Operating on applications in a demon-like manner
 * Shell file now starts entire program
 * Really modifying the bot for own use, added own command for testing
 * Added credentials in JavaScript Object Notation in credentials folder
-* Really smashing multiple files of bots together to see what happens with my own flair from [discord.py rewrite with cogs](https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be)
+* Really smashing multiple files of bots together to see what happens with my own flair from the discord.py rewrite with cogs
 * Added bot_test.py to test the bot on specific bugs before adding to bot.py
 * Renamed folders and files
 * Changed TODO
-### Bugs:
-* bot_test.py is a test bot, when ran nothing works.
 
 ## v0.00.0002
 ### Changes:
