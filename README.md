@@ -38,7 +38,13 @@ Operating on applications in a demon-like manner
 
 # Changelog
 
-## v0.01.0004
+## v0.00.0006
+* Previous version was not v0.01.0004, not big enough of a change
+* 
+## Bugfixes
+* On ready event used to never activate, now it happens when bot starts up
+
+## v0.00.0005
 ### Changes:
 * First release for the working bot with
 * Markdown in ".\_\_doc\_\_()" and "\_\_future\_\_" in the TODO README of section \#\#NOW are no longer bold
