@@ -7,13 +7,8 @@ Operating on applications in a demon-like manner
 ## NOW:
 - [x] Use [discord.py rewrite with cogs](!https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be) to understand how discord.py rewrite update works
 - [x] Learn what other changes happened to discord.py rewrite
-<<<<<<< HEAD
 - [ ] Start using doc-strings for descriptions of anything with .\_\_doc\_\_()
 - [ ] Use dot importing with \_\_future\_\_
-=======
-- [ ] Start using doc-strings for descriptions of anything with .\__doc__()
-- [ ] Use dot importing with \__future__
->>>>>>> 1e367ddf886b18f038819d34937b3632fe1788fb
 
 
 ## FUTURE:
