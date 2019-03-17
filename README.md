@@ -7,8 +7,8 @@ Operating on applications in a demon-like manner
 ## NOW:
 - [x] Use [discord.py rewrite with cogs](!https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be) to understand how discord.py rewrite update works
 - [x] Learn what other changes happened to discord.py rewrite
-- [ ] Start using doc-strings for descriptions of anything with .__doc__()
-- [ ] Use dot importing with __future__
+- [ ] Start using doc-strings for descriptions of anything with .\__doc__()
+- [ ] Use dot importing with \__future__
 
 
 ## FUTURE:
@@ -33,10 +33,25 @@ Operating on applications in a demon-like manner
 * [Example for organization of files](https://github.com/atom/atom)
 * [PEP 328 -- Imports: Multi-Line and Absolute/Relative](https://www.python.org/dev/peps/pep-0328/)
 * [system arguments in console](https://stackoverflow.com/questions/4117530/sys-argv1-meaning-in-script)
-* [What is __future__ in Python?](https://stackoverflow.com/questions/7075082/what-is-future-in-python-used-for-and-how-when-to-use-it-and-how-it-works)
+* [What is \_\_future\_\_ in Python?](https://stackoverflow.com/questions/7075082/what-is-future-in-python-used-for-and-how-when-to-use-it-and-how-it-works)
 
 
 # Changelog
+
+## v0.01.0004
+### Changes:
+* First release for the working bot with
+* Markdown in ".\_\_doc\_\_()" and "\_\_future\_\_" in the TODO README of section \#\#NOW are no longer bold
+* Path in separate functions python file no longer has random print statement
+* Renamed separate functions file to be understandable
+* Removed bot example in examples directory since all needed information was consumed
+* Credentials directory got the files README and git ignore
+* Bot's main cog now has decorators for renaming how, where, and who can call the command
+* Modified main in bot to take 2 arguments then run the bot
+* "if \_\_name\_\_ == '\_\_main\_\_'" within main bot file now takes token from console or credentials directory, and then adds the main cog, along with the directives and examples cog
+### Bugfixes:
+* Bot is able to come online
+* cogs are now able to be automatically detected and dot imported from the cogs directory
 
 ## v0.00.0004
 ### Changes:
