@@ -31,12 +31,12 @@ class MainCog(comms.Cog):
     async def exit(self, ctx):
         print("Exiting...")
         await self.bot.logout()
-        
+
 # Events
     async def on_ready(self):
         """ """
-        print(f"Logging in as {self.bot.user}")
-        print(f"{self.bot.user} ID: {self.bot.user.id}")
+        print(f"Logging in as {bot.user}")
+        print(f"{bot.user} ID: {bot.user.id}")
         print("Awaiting...")
         await bot.change_presence(activity=discord.Game(f"discord.py {discord.__version__}"))
         print(f"Presence changed to 'discord.py {discord.__version__}'")
@@ -44,30 +44,21 @@ class MainCog(comms.Cog):
 
 # Starting the bot
 def main(bot, login):
-    bot.run(login, bot=True, reconnect=True)
-
-
-if __name__ == '__main__':
-    # If using code on different bot(s)
-    if len(sys.argv) == 3:
-        login = sys.argv[1]
-    # If using code on own bot(s)
-    elif len(sys.argv) == 1:
-        with open(path("credentials", "DStoken.txt"), "r") as f:
-            login = f.read().strip()
-    bot = comms.Bot(command_prefix="$", description='A demonic bot')
     # Adding the main cog to the bot
     bot.add_cog(MainCog(bot))
+
     # Searching for cogs within the cogs directory
     fileCogs = []
     for (dirpath, dirnames, filenames) in os.walk(path("cogs")):
         fileCogs.extend(filenames)
         break
+
     # Making the names of cogs start with cogs.
     cogs = []
     for file in fileCogs:
         if file[-3:] == ".py":
              cogs.append(f"cogs.{file[:len(file) - 3]}")
+
     # Loading all cogs in as extensions of the main cog
     for i in cogs:
         try:
@@ -75,5 +66,22 @@ if __name__ == '__main__':
         except Exception as e:
             print(f'Failed to load extension {i}.', file=sys.stderr)
             traceback.print_exc()
+
+    # Running the bot
+    bot.run(login, bot=True, reconnect=True)
+
+
+if __name__ == '__main__':
+    # If using code on different bot(s)
+    if len(sys.argv) == 3:
+        login = sys.argv[1]
+
+    # If using code on own bot(s)
+    elif len(sys.argv) == 1:
+        with open(path("credentials", "DStoken.txt"), "r") as f:
+            login = f.read().strip()
+
+    bot = comms.Bot(command_prefix="$", description='A demonic bot')
+
     # Calling main to run the bot
     main(bot, login)

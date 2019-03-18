@@ -12,8 +12,8 @@ class DirectivesCog(comms.Cog):
 
 # Commands
     @comms.command()
-    async def random_password(self, ctx, length=10, personal="false"):
-        """ """
+    async def random_password(self, ctx, length=10, personal='true'):
+        """ Random password of default length 10. '$random_password <length>'"""
         if length > 0:
             password = ''.join(str(y) for y in [random.choice(string.ascii_letters + string.digits) for i in range(length)])
             embed = (discord.Embed(title="[ Random Password Generator ]", timestamp=datetime.datetime.now() + datetime.timedelta(hours=8)))

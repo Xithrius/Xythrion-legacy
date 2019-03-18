@@ -1,17 +1,16 @@
 # Demonically
 Operating on applications in a demon-like manner
-
+[Link for repository](https://github.com/Xithrius/Demonically)
 
 # TODO
 
-## NOW:
+## Now:
 - [x] Use [discord.py rewrite with cogs](!https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be) to understand how discord.py rewrite update works
 - [x] Learn what other changes happened to discord.py rewrite
 - [ ] Start using doc-strings for descriptions of anything with .\_\_doc\_\_()
-- [ ] Use dot importing with \_\_future\_\_
 
 
-## FUTURE:
+## For the future:
 - [ ] Quality Of Life command creations
 - [ ] Open Weather Maps API for weather
 - [ ] Google Cloud Search, Drive, Calendar
@@ -22,31 +21,29 @@ Operating on applications in a demon-like manner
 - [ ] Add permissions to the bot, so multiple people can have access (NOT TTS)
 - [ ] Multithreading and using different programs for the same application running in unison
 
-## POSSIBILITIES FOR THE FUTURE:
+## Possibilities for the future:
 - [ ] 2FA - Quick Response codes through phone with website
 
 
-# Links for information
-* [Repository for Demonically](https://github.com/Xithrius/Demonically)
+# Links for information:
 * [Discord.py rewrite with cogs](https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be)
-* [Markdown for .md](https://guides.github.com/features/mastering-markdown/)
-* [Example for organization of files](https://github.com/atom/atom)
-* [PEP 328 -- Imports: Multi-Line and Absolute/Relative](https://www.python.org/dev/peps/pep-0328/)
+* [Markdown](https://guides.github.com/features/mastering-markdown/)
 * [system arguments in console](https://stackoverflow.com/questions/4117530/sys-argv1-meaning-in-script)
-* [What is \_\_future\_\_ in Python?](https://stackoverflow.com/questions/7075082/what-is-future-in-python-used-for-and-how-when-to-use-it-and-how-it-works)
 
 
 # Changelog
 
 ## v0.00.0006
-* Previous version was not v0.01.0004, not big enough of a change
-* 
-## Bugfixes
-* On ready event used to never activate, now it happens when bot starts up
+* Previous version shouldn't have been named v0.01.0004, changed it to v0.00.0005
+* Examples cog in the cogs directory now has examples for testing, all credit to [Discord.py rewrite with cogs](https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be)
+* Examples from said repository have been removed and put into the examples python file in the cogs directory
+* Removed unhelpful links from links for information
+* Changed TODO to fit removed links in links for information
+* Added essentials directory to act as a package for upcoming separated files
 
 ## v0.00.0005
 ### Changes:
-* First release for the working bot with
+* First version with the bot coming online
 * Markdown in ".\_\_doc\_\_()" and "\_\_future\_\_" in the TODO README of section \#\#NOW are no longer bold
 * Path in separate functions python file no longer has random print statement
 * Renamed separate functions file to be understandable
@@ -84,10 +81,10 @@ Operating on applications in a demon-like manner
 ## v0.00.0002
 ### Changes:
 * Added TODO to this README
-* Added other files from old bot, removing old bot from existence
+* Added other files from old bots
 
 ## v0.00.0001
 ### Changes:
-* Changed name from operator to Demonically
+* Changed name from Operator to Demonically
 * Moved chrome web driver into folder
-* Created README.md for all the changelog needs
+* Created README for updated information on bot
