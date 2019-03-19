@@ -1,7 +1,6 @@
 # Demonically
 Operating on applications in a demon-like manner
-[Link for repository](https://github.com/Xithrius/Demonically)
-
+https://github.com/Xithrius/Demonically
 # TODO
 
 ## Now:
@@ -30,12 +29,22 @@ Operating on applications in a demon-like manner
 * [Markdown](https://guides.github.com/features/mastering-markdown/)
 * [system arguments in console](https://stackoverflow.com/questions/4117530/sys-argv1-meaning-in-script)
 
+# Main packages:
+* Discord.py rewrite with voice
+```
+pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[voice]
+```
 
 # Changelog
 
-## v0.00.0007
+## v0.00.0007, pushed 03/18/2019 9:48pm PDT
 ### Changes:
-* 
+* The essentials directory is now a custom package full of error checking and path giving
+* Removed description from bot, it doesn't do anything useful at the moment
+* Path module within the essentials package has been minimized and now can be used in relative to the caller path
+* Pushes will now have exact times of when I clicked the "Commit to master" button
+### Bugfixes:
+* Bot doesn't change presence when coming online and doesn't print ready message to console
 
 ## v0.00.0006
 ### Changes:

@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     import aiohttp
 
-    bot = comms.Bot(connector=aiohttp.TCPConnector(verify_ssl=False), command_prefix="$", description='A demonic bot')
+    bot = comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_prefix="$")
 
     # Calling main to run the bot
     main(bot, login)
