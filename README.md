@@ -33,7 +33,12 @@ Operating on applications in a demon-like manner
 
 # Changelog
 
+## v0.00.0007
+### Changes:
+* 
+
 ## v0.00.0006
+### Changes:
 * Previous version shouldn't have been named v0.01.0004, changed it to v0.00.0005
 * Examples cog in the cogs directory now has examples for testing, all credit to [Discord.py rewrite with cogs](https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be)
 * Examples from said repository have been removed and put into the examples python file in the cogs directory

@@ -1,11 +1,12 @@
 import discord
 from discord.ext import commands as comms
 import sys
-import json
 import traceback
 import os
 
-from separateFunctions import path
+from essentials.pathing import path
+# from essentials.errors import error_prompt, input_loop
+# from essentials.welcome import welcome_prompt
 
 
 # Main cog
@@ -18,6 +19,7 @@ class MainCog(comms.Cog):
     @comms.command(name='reload', hidden=True)
     @comms.is_owner()
     async def cog_reload(self, ctx, *, cog: str):
+        """ Reload a specific cog """
         try:
             self.bot.unload_extension(cog)
             self.bot.load_extension(cog)
@@ -29,14 +31,15 @@ class MainCog(comms.Cog):
     @comms.command()
     @comms.is_owner()
     async def exit(self, ctx):
+        """ Make the bot logout """
         print("Exiting...")
         await self.bot.logout()
 
 # Events
+    @comms.Cog.listener()
     async def on_ready(self):
-        """ """
-        print(f"Logging in as {bot.user}")
-        print(f"{bot.user} ID: {bot.user.id}")
+        print(f"Logging in as {self.bot.user}")
+        print(f"{self.bot.user} ID: {self.bot.user.id}")
         print("Awaiting...")
         await bot.change_presence(activity=discord.Game(f"discord.py {discord.__version__}"))
         print(f"Presence changed to 'discord.py {discord.__version__}'")
@@ -57,13 +60,14 @@ def main(bot, login):
     cogs = []
     for file in fileCogs:
         if file[-3:] == ".py":
-             cogs.append(f"cogs.{file[:len(file) - 3]}")
+            cogs.append(f"cogs.{file[:len(file) - 3]}")
 
     # Loading all cogs in as extensions of the main cog
     for i in cogs:
         try:
             bot.load_extension(i)
         except Exception as e:
+            print(e)
             print(f'Failed to load extension {i}.', file=sys.stderr)
             traceback.print_exc()
 
@@ -72,16 +76,12 @@ def main(bot, login):
 
 
 if __name__ == '__main__':
-    # If using code on different bot(s)
-    if len(sys.argv) == 3:
-        login = sys.argv[1]
+    with open(path("credentials", "DStoken.txt"), "r") as f:
+        login = f.read().strip()
 
-    # If using code on own bot(s)
-    elif len(sys.argv) == 1:
-        with open(path("credentials", "DStoken.txt"), "r") as f:
-            login = f.read().strip()
+    import aiohttp
 
-    bot = comms.Bot(command_prefix="$", description='A demonic bot')
+    bot = comms.Bot(connector=aiohttp.TCPConnector(verify_ssl=False), command_prefix="$", description='A demonic bot')
 
     # Calling main to run the bot
     main(bot, login)
