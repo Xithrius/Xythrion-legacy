@@ -4,8 +4,6 @@ import random
 import string
 import datetime
 
-from essentials.pathing import path
-
 
 class DirectivesCog(comms.Cog):
 
@@ -18,7 +16,7 @@ class DirectivesCog(comms.Cog):
         """ Random password of default length 10. '$random_password <length>'"""
         if length > 0:
             password = ''.join(str(y) for y in [random.choice(string.ascii_letters + string.digits) for i in range(length)])
-            embed = (discord.Embed(title="[ Random Password Generator ]", timestamp=datetime.datetime.now() + datetime.timedelta(hours=8)))
+            embed = discord.Embed(title="[ Random Password Generator ]", timestamp=datetime.datetime.now() + datetime.timedelta(hours=8), colour=0xc27c0e)
             embed.add_field(name=f"Password of length {length}:", value=password, inline=False)
             if personal == "true":
                 await ctx.author.send(embed=embed, delete_after=30)
