@@ -3,6 +3,7 @@ from discord.ext import commands as comms
 import sys
 import traceback
 import os
+import aiohttp
 
 from essentials.pathing import path
 # from essentials.errors import error_prompt, input_loop
@@ -19,7 +20,7 @@ class MainCog(comms.Cog):
     @comms.command(name='reload', hidden=True)
     @comms.is_owner()
     async def cog_reload(self, ctx, *, cog: str):
-        """ Reload a specific cog """
+        """ Reload specific cog(s) """
         try:
             self.bot.unload_extension(cog)
             self.bot.load_extension(cog)
@@ -41,7 +42,7 @@ class MainCog(comms.Cog):
         print(f"Logging in as {self.bot.user}")
         print(f"{self.bot.user} ID: {self.bot.user.id}")
         print("Awaiting...")
-        await bot.change_presence(activity=discord.Game(f"discord.py {discord.__version__}"))
+        await bot.change_presence(activity=discord.Game(f"discord.py rewrite {discord.__version__}"))
         print(f"Presence changed to 'discord.py {discord.__version__}'")
 
 
@@ -78,8 +79,6 @@ def main(bot, login):
 if __name__ == '__main__':
     with open(path("credentials", "DStoken.txt"), "r") as f:
         login = f.read().strip()
-
-    import aiohttp
 
     bot = comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_prefix="$")
 

@@ -37,6 +37,14 @@ pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[v
 
 # Changelog
 
+## v0.00.0008, pushed 03/19/2019
+### Changes:
+* Command added to see creator of bot
+* SSL added to bot object initiation so it won't give error when attempting to come online
+### Bugfixes:
+* Anaconda navigator will screw up everything, so the fix for this is to not install it
+ * If installed, go to roaming, app data, then delete the anaconda folder
+
 ## v0.00.0007, pushed 03/18/2019 9:48pm PDT
 ### Changes:
 * The essentials directory is now a custom package full of error checking and path giving
@@ -44,7 +52,7 @@ pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[v
 * Path module within the essentials package has been minimized and now can be used in relative to the caller path
 * Pushes will now have exact times of when I clicked the "Commit to master" button
 ### Bugfixes:
-* Bot doesn't change presence when coming online and doesn't print ready message to console
+* Bot comes online properly and activates on ready event
 
 ## v0.00.0006
 ### Changes:
