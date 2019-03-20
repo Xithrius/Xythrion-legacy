@@ -42,7 +42,7 @@ class ExampleCog(comms.Cog):
 
     @comms.command(name='top_role', aliases=['toprole'])
     @comms.guild_only()
-    async def show_toprole(self, ctx, *, member: discord.Member=None):
+    async def show_toprole(self, ctx, *, member: discord.Member = None):
         """Simple command which shows the members Top Role."""
         if member is None:
             member = ctx.author
@@ -50,7 +50,7 @@ class ExampleCog(comms.Cog):
 
     @comms.command(name='perms', aliases=['perms_for', 'permissions'])
     @comms.guild_only()
-    async def check_permissions(self, ctx, *, member: discord.Member=None):
+    async def check_permissions(self, ctx, *, member: discord.Member = None):
         """A simple command which checks a members Guild Permissions.
         If member is not provided, the author will be checked."""
         if not member:
@@ -84,16 +84,16 @@ class ExampleCog(comms.Cog):
         """A simple command which only responds to the owner of the bot."""
         await ctx.send(f'Hello {ctx.author.mention}. This command can only be used by you!!')
 
-# Events
-async def on_member_ban(self, guild, user):
-    """Event Listener which is called when a user is banned from the guild.
-    For this example I will keep things simple and just print some info.
-    Notice how because we are in a cog class we do not need to use @bot.event
-    For more information:
-    http://discordpy.readthedocs.io/en/rewrite/api.html#discord.on_member_ban
-    Check above for a list of events.
-    """
-    print(f'{user.name}-{user.id} was banned from {guild.name}-{guild.id}')
+    # Events
+    async def on_member_ban(self, guild, user):
+        """Event Listener which is called when a user is banned from the guild.
+        For this example I will keep things simple and just print some info.
+        Notice how because we are in a cog class we do not need to use @bot.event
+        For more information:
+        http://discordpy.readthedocs.io/en/rewrite/api.html#discord.on_member_ban
+        Check above for a list of events.
+        """
+        print(f'{user.name}-{user.id} was banned from {guild.name}-{guild.id}')
 
 
 def setup(bot):

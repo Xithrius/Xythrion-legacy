@@ -27,22 +27,44 @@ class MainCog(comms.Cog):
         except Exception as e:
             await ctx.send(f'Reload error: {type(e).__name__} - {e}')
         else:
-            await ctx.send('Reload Complete')
+            await ctx.send(f'Reload complete for {cog}')
+
+    @comms.command(name='load', hidden=True)
+    @comms.is_owner()
+    async def cog_load(self, ctx, *, cog: str):
+        """ Load in a specific cog(s) """
+        try:
+            self.bot.load_extension(cog)
+        except Exception as e:
+            await ctx.send(f'Reload error: {type(e).__name__} - {e}')
+        else:
+            await ctx.send(f'Load complete for {cog}')
+
+    @comms.command(name='unload', hidden=True)
+    @comms.is_owner()
+    async def cog_unload(self, ctx, *, cog: str):
+        """ Unload a specific cog(s) """
+        try:
+            self.bot.unload_extension(cog)
+        except Exception as e:
+            await ctx.send(f'Reload error: {type(e).__name__} - {e}')
+        else:
+            await ctx.send(f'Unload complete for {cog}')
 
     @comms.command()
     @comms.is_owner()
     async def exit(self, ctx):
         """ Make the bot logout """
-        print("Exiting...")
+        print('Exiting...')
         await self.bot.logout()
 
 # Events
     @comms.Cog.listener()
     async def on_ready(self):
-        print(f"Logging in as {self.bot.user}")
-        print(f"{self.bot.user} ID: {self.bot.user.id}")
-        print("Awaiting...")
-        await bot.change_presence(activity=discord.Game(f"discord.py rewrite {discord.__version__}"))
+        print(f'Logging in as {self.bot.user}')
+        print(f'{self.bot.user} ID: {self.bot.user.id}')
+        print('Awaiting...')
+        await bot.change_presence(activity=discord.Game(f'discord.py rewrite {discord.__version__}'))
         print(f"Presence changed to 'discord.py {discord.__version__}'")
 
 
@@ -53,15 +75,15 @@ def main(bot, login):
 
     # Searching for cogs within the cogs directory
     fileCogs = []
-    for (dirpath, dirnames, filenames) in os.walk(path("cogs")):
+    for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
         fileCogs.extend(filenames)
         break
 
     # Making the names of cogs start with cogs.
     cogs = []
     for file in fileCogs:
-        if file[-3:] == ".py":
-            cogs.append(f"cogs.{file[:len(file) - 3]}")
+        if file[-3:] == '.py':
+            cogs.append(f'cogs.{file[:len(file) - 3]}')
 
     # Loading all cogs in as extensions of the main cog
     for i in cogs:
@@ -77,10 +99,10 @@ def main(bot, login):
 
 
 if __name__ == '__main__':
-    with open(path("credentials", "DStoken.txt"), "r") as f:
+    with open(path('credentials', 'DStoken.txt'), 'r') as f:
         login = f.read().strip()
 
-    bot = comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_prefix="$")
+    bot = comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_prefix='$')
 
     # Calling main to run the bot
     main(bot, login)
