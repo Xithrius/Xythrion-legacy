@@ -10,12 +10,14 @@ from essentials.pathing import path
 # from essentials.errors import error_prompt, input_loop
 # from essentials.welcome import welcome_prompt
 
-# Logging stuff
-logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(filename=path('logs', 'discord.log'), encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
+
+def discord_logger(default=False):
+    if default:
+        logger = logging.getLogger('discord')
+        logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(filename=path('logs', 'discord.log'), encoding='utf-8', mode='w')
+        handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+        logger.addHandler(handler)
 
 
 # Main cog
@@ -129,6 +131,7 @@ def main(bot):
                 login = f.read().strip()
                 # Running the bot
                 bot.run(login, bot=True, reconnect=True)
+                discord_logger()
                 checkToken = False
         except FileNotFoundError or discord.errors.LoginFailure:
             with open(path('credentials', 'discord_token.txt'), 'w') as f:

@@ -22,7 +22,7 @@ class WeatherCog(comms.Cog):
     async def test(self, ctx, *, args):
         await ctx.send(args)
 
-# http://api.openweathermap.org/data/2.5/weather?zip=95129,us&APPID=e3663f401c7ce95a3616991b64f6f2b4
+# http://api.openweathermap.org/data/2.5/weather?zip=&APPID=
 
 
 def setup(bot):
