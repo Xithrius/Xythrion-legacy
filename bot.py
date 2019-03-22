@@ -5,6 +5,7 @@ import traceback
 import os
 import aiohttp
 import logging
+import configparser
 
 from essentials.pathing import path
 # from essentials.errors import error_prompt, input_loop
@@ -127,16 +128,19 @@ def main(bot):
     checkToken = True
     while checkToken:
         try:
-            with open(path('credentials', 'discord_token.txt'), 'r') as f:
-                login = f.read().strip()
-                # Running the bot
-                bot.run(login, bot=True, reconnect=True)
-                discord_logger()
-                checkToken = False
+            config = configparser.ConfigParser()
+            config.read(path('credentials', 'config.ini'))
+            token = config['discord']['token']
+            # Running the bot
+            bot.run(token, bot=True, reconnect=True)
+            discord_logger()
+            checkToken = False
         except FileNotFoundError or discord.errors.LoginFailure:
-            with open(path('credentials', 'discord_token.txt'), 'w') as f:
-                login = input('Input Discord bot token: ')
-                f.write(login)
+            token = input('Input discord bot token: ')
+            config = configparser.ConfigParser()
+            config['discord'] = {'token': token}
+            with open(path('credentials', 'config.ini'), 'w') as f:
+                config.write(f)
 
 
 if __name__ == '__main__':

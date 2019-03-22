@@ -33,10 +33,6 @@ https://github.com/Xithrius/Demonically
 pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[voice]
 ```
 
-# Files that need to exist:
-* In the credentials directory:
- * discord_token.txt, weather_token.txt
-
 # Changelog
 
 ## v0.00.0008, pushed 03/19/2019
@@ -45,10 +41,13 @@ pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[v
 * SSL added to bot object initiation so it won't give error when attempting to come online
 * Moved things around in the TODO
 * Removed all Python cache files from GitHub, but they're still stored locally
-* In README, added section "Files that need to exist"
 * Preparing for bot to become public repository
-* Preparing for encrypted password storage, weather, and google text to speech
-* Discord help command removed, replaced with in develop custom help commands
+* Preparing for encrypted password storage
+* Discord help command removed, replaced with currently-developing custom help commands
+* Removed credentials directory files, moved information to config file within same directory
+* Google text-to-speech has been added, still testing, only available for bot owner
+* Open Weather Maps added, returns embed of user location when called
+*
 ### Bugfixes:
 * Anaconda navigator will screw up everything, so the fix for this is to not install it
  * If installed, go to roaming, app data, then delete the anaconda folder
