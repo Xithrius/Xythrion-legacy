@@ -1,24 +1,19 @@
 # Demonically
 Operating on applications in a demon-like manner
 https://github.com/Xithrius/Demonically
-# TODO
 
-## Now:
+
+# TODO
 - [x] Use [discord.py rewrite with cogs](!https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be) to understand how discord.py rewrite update works
 - [x] Learn what other changes happened to discord.py rewrite
+- [x] Open Weather Maps API for weather
 - [ ] Recreate the help command
 - [ ] Quality Of Life command creations
+- [ ] Get ping to discord server when starting the bot
 - [ ] Customized commands through discord messages, will be put into separate folder
 - [ ] Add permissions to the bot, so multiple people can have access to high-level commands
-
-
-## For the future:
-- [ ] Open Weather Maps API for weather
 - [ ] Google Cloud Search, Drive, Calendar
-- [ ] Get ping to discord server when starting the bot
 - [ ] Multithreading and using different programs for the same application running in unison
-
-## Possibilities for the future:
 - [ ] 2FA - Quick Response codes through phone with website
 
 
@@ -27,11 +22,13 @@ https://github.com/Xithrius/Demonically
 * [Markdown](https://guides.github.com/features/mastering-markdown/)
 * [system arguments in console](https://stackoverflow.com/questions/4117530/sys-argv1-meaning-in-script)
 
+
 # Main packages:
 * Discord.py rewrite with voice
 ```
 pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[voice]
 ```
+
 
 # Changelog
 
@@ -39,7 +36,7 @@ pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[v
 ### Changes:
 * Command added to see creator of bot
 * SSL added to bot object initiation so it won't give error when attempting to come online
-* Moved things around in the TODO
+* Modified the TODO
 * Removed all Python cache files from GitHub, but they're still stored locally
 * Preparing for bot to become public repository
 * Preparing for encrypted password storage
