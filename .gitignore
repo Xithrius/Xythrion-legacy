@@ -1,4 +1,0 @@
-__pycache__/
-credentials/*.ini
-logs/*.log
-data_dump/*.json
