@@ -1,29 +1,17 @@
 from discord.ext import commands as comms
 from google.cloud import texttospeech  # ssml must be well-formed according to: https://www.w3.org/TR/speech-synthesis/
 import discord
-import platform
 import os
-import json
 
-from essentials.path import path
+from essentials.pathing import path
+from essentials.errors import error_prompt
 
 
 # Error handling for GOOGLE_APPLICATION_CREDENTIALS
 try:
-    with open(path('credentials', 'serviceTokenPath.json'), 'r') as f:
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = (json.load(f))[platform.system()]
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('credentials', 'google_service_token.json')
 except FileNotFoundError:
-    with open(path('credentials', 'serviceTokenPath.json'), 'w') as f:
-        token_path = input(f"set path for {platform.system()} to GOOGLE_APPLICATION_CREDENTIALS: ")
-        json.dump({f"{platform.system()}": token_path}, f)
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = token_path
-except IndexError:
-    with open(path('credentials', 'serviceTokenPath.json'), 'a+') as f:
-        old_token_path = json.load(f)
-        new_token_path = input(f"set path for {platform.system()} to GOOGLE_APPLICATION_CREDENTIALS: ")
-        old_token_path.append({f"{platform.system()}": new_token_path})
-        json.dump(old_token_path, f)
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = new_token_path
+    error_prompt('Google service token is not found. Read the README "Help" section to find solutions.')
 
 
 def googleTTS(string):

@@ -1,6 +1,7 @@
 from discord.ext import commands as comms
 import discord
 import datetime
+import time
 
 
 class DirectivesCog(comms.Cog):
@@ -17,6 +18,15 @@ class DirectivesCog(comms.Cog):
         embed.add_field(name='Command caller:', value=ctx.author.mention)
         embed.set_footer(text=f'discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
         await ctx.send(embed=embed)
+
+    @comms.command(name='ping')
+    async def get_latency(self, ctx):
+        timeStart = time.time()
+        await ctx.trigger_typing()
+        timeEnd = time.time()
+        timeTaken = timeEnd - timeStart
+        await ctx.send(f'Took {timeTaken} seconds to complete')
+
 
 # Events
     @comms.Cog.listener()
