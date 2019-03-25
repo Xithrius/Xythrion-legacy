@@ -32,7 +32,7 @@ pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[v
 
 # Changelog
 
-## v0.00.0008, pushed 03/19/2019
+## v0.00.0008, pushed 03/25/2019, 2:27pm PDT
 ### Changes:
 * Command added to see creator of bot
 * SSL added to bot object initiation so it won't give error when attempting to come online
@@ -43,8 +43,13 @@ pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[v
 * Discord help command removed, replaced with currently-developing custom help commands
 * Removed credentials directory files, moved information to config file within same directory
 * Google text-to-speech has been added, still testing, only available for bot owner
-* Open Weather Maps added, returns embed of user location when called
-*
+* Open Weather Maps added, returns embed of weather for user input location
+* Added another example to examples
+* Added logger, off by default
+* Discord bot token can be inputted as first argument in console
+* Added logging option as the second system argument in console, so it's enabled from there if need be
+* Renamed text to speech cog
+* Help cog is named "guidance"
 ### Bugfixes:
 * Anaconda navigator will screw up everything, so the fix for this is to not install it
  * If installed, go to roaming, app data, then delete the anaconda folder

@@ -113,7 +113,7 @@ def main(bot):
     cogs = []
     for file in fileCogs:
         if file[-3:] == '.py':
-            cogs.append(f'cogs.{file[:len(file) - 3]}')
+            cogs.append(f'cogs.{file[:-3]}')
 
     # Loading all cogs in as extensions of the main cog
     for i in cogs:
@@ -128,12 +128,18 @@ def main(bot):
     checkToken = True
     while checkToken:
         try:
-            config = configparser.ConfigParser()
-            config.read(path('credentials', 'config.ini'))
-            token = config['discord']['token']
-            # Running the bot
+            if len(sys.argv) > 1:
+                if 'log' == sys.argv[2]:
+                    discord_logger(True)
+                else:
+                    discord_logger()
+                token = sys.argv[1]
+            else:
+                config = configparser.ConfigParser()
+                config.read(path('credentials', 'config.ini'))
+                token = config['discord']['token']
+                discord_logger()
             bot.run(token, bot=True, reconnect=True)
-            discord_logger()
             checkToken = False
         except FileNotFoundError or discord.errors.LoginFailure:
             token = input('Input discord bot token: ')
