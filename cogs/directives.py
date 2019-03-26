@@ -10,6 +10,23 @@ class DirectivesCog(comms.Cog):
         self.bot = bot
 
 # Commands
+    @comms.command()
+    async def poke(self, ctx, member: discord.User = None):
+        if member is None:
+            await ctx.author.send('Hi')
+        else:
+            possibleMembers = []
+            _members = ctx.message.guild.members
+            for i in range(len(_members)):
+                if _members[i].startswith(member):
+                    possibleMembers.append(_members[i])
+            await ctx.send(ctx.message.discord.User)
+            if len(possibleMembers) > 1:
+                await ctx.send(f"Searched member {member} has multiple possibilities: {', '.join(str(x) for x in possibleMembers)}")
+            if len(possibleMembers) == 1:
+                member = discord.User(possibleMembers)
+                await ctx.member.send("Testing stuff")
+
     @comms.command(name='owner')
     async def show_creator(self, ctx):
         embed = discord.Embed(colour=0xc27c0e)
@@ -27,17 +44,27 @@ class DirectivesCog(comms.Cog):
         timeTaken = timeEnd - timeStart
         await ctx.send(f'Took {timeTaken} seconds to complete')
 
+    @comms.command(name='users')
+    @comms.guild_only()
+    async def get_members(self, ctx):
+        await ctx.send(f"Members on this server: {', '.join(str(x) for x in ctx.message.guild.members)}")
 
 # Events
     @comms.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        await ctx.send(error)
+
+    @comms.Cog.listener()
+    async def on_command(self, ctx):
+        await ctx.trigger_typing()
+
+    @comms.Cog.listener()
     async def on_member_ban(self, guild, user):
-        """ """
         print(f'{user.name} was banned from {guild.name}')
         await user.channel.send(f'{user.name} was banned from {guild.name}')
 
     @comms.Cog.listener()
     async def on_message(self, message):
-        """ """
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
         print(f'[{now}]  {message.author}: {message.content}')
 

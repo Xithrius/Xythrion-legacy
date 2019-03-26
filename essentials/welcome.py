@@ -14,11 +14,11 @@ class Color:
 
 def welcome_prompt():
     title = '''
-    █ █ █
-    █    █
-    █    █
-    █    █
-    █ █ █
+    █ █ █    █   █   █  █ █     █ █ █   █   █ █   █
+    █    █   █ █ █   █ █   █   █    █   █ █  █  █ █
+    █    █       █   █     █   █   █    █    █    █
+    █    █   █   █   █     █   █   █    █    █    █
+    █ █ █    █ █ █   █     █   █ █  █   █    █    █
     '''
     print(title)
     print('{0}[{1}-{2}]{3}--> {4}'.format(Color.PURPLE, Color.RED, Color.PURPLE, Color.RED, Color.GREEN),

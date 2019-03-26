@@ -27,24 +27,6 @@ class MainCog(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-# Commands
-    @comms.command()
-    async def poke(self, ctx, member: discord.User = None):
-        if member is None:
-            await ctx.author.send('Hi')
-        else:
-            possibleMembers = []
-            _members = ctx.message.guild.members
-            for i in range(len(_members)):
-                if _members[i].startswith(member):
-                    possibleMembers.append(_members[i])
-            await ctx.send(ctx.message.discord.User)
-            if len(possibleMembers) > 1:
-                await ctx.send(f"Searched member {member} has multiple possibilities: {', '.join(str(x) for x in possibleMembers)}")
-            if len(possibleMembers) == 1:
-                member = discord.User(possibleMembers)
-                await ctx.member.send("Testing stuff")
-
 # Commands for realoading, unloading, and loading cogs
     @comms.command(name='reload', hidden=True)
     @comms.is_owner()
