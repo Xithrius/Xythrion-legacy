@@ -55,10 +55,6 @@ class DirectivesCog(comms.Cog):
         await ctx.send(error)
 
     @comms.Cog.listener()
-    async def on_command(self, ctx):
-        await ctx.trigger_typing()
-
-    @comms.Cog.listener()
     async def on_member_ban(self, guild, user):
         print(f'{user.name} was banned from {guild.name}')
         await user.channel.send(f'{user.name} was banned from {guild.name}')
@@ -67,6 +63,12 @@ class DirectivesCog(comms.Cog):
     async def on_message(self, message):
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
         print(f'[{now}]  {message.author}: {message.content}')
+
+    '''
+    @comms.Cog.listener()
+    async def on_command(self, ctx):
+        await ctx.trigger_typing()
+    '''
 
 
 def setup(bot):

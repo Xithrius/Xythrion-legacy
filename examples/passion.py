@@ -1,8 +1,6 @@
 import discord
 import discord.ext.commands as comms
 
-import asyncio
-
 import sqlite3
 
 import os
