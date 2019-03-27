@@ -61,9 +61,10 @@ class DirectivesCog(comms.Cog):
 
     @comms.Cog.listener()
     async def on_message(self, message):
+        # previous_message = await message.channel.history(limit=2).flatten()
+        # print(previous_message[0].guild.id)
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
-        print(list(message.content))
-        print(f'[{now}]  {message.author}: {message.content}')
+        print(f"guild: '{message.guild}', channel: '{message.channel}', user: '{message.author}' sends:\n\t[{now}]  '{message.content}'")
         pic_extensions = ['.jpg', '.png', '.jpeg']
         for extension in pic_extensions:
             try:

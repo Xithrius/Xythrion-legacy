@@ -74,15 +74,16 @@ class MainCog(comms.Cog):
     @comms.Cog.listener()
     async def on_ready(self):
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
-        print(f'+---[{now}]---------------------------+')
-        print('|                                                          |')
-        print(f'|  Logging in as {self.bot.user}                          |')
-        print(f'|  {self.bot.user} ID: {self.bot.user.id}                 |')
-        print('|  Awaiting...                                             |')
+        print()
+        print(f'  +---[{now}]---------------------------+')
+        print('  |                                                          |')
+        print(f'  |  Logging in as {self.bot.user}                          |')
+        print(f'  |  {self.bot.user} ID: {self.bot.user.id}                 |')
+        print('  |  Awaiting...                                             |')
         await bot.change_presence(activity=discord.Game(f'discord.py rewrite {discord.__version__}'))
-        print(f"|  Presence changed to 'discord.py {discord.__version__}'                 |")
-        print('|                                                          |')
-        print(f'+----------------------------------------------------------+')
+        print(f"  |  Presence changed to 'discord.py {discord.__version__}'                 |")
+        print('  |                                                          |')
+        print(f'+----------------------------------------------------------+\n')
 
 
 # Starting the bot

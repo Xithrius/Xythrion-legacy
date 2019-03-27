@@ -1,11 +1,34 @@
 from discord.ext import commands as comms
 import discord
+import youtube_dl
+
+from essentials.pathing import path, mkdir
 
 
 class PlaybackCog(comms.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    def my_hook(d):
+        if d['status'] == 'finished':
+            print('Done downloading, now converting ...')
+
+    @comms.command()
+    @comms.is_owner()
+    async def download(self, ctx, url):
+        mkdir('audio', 'music')
+        ydl_opts = {
+            'outtmpl': f'{path()}/audio/music/%(title)s.%(ext)s',
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '192',
+            }],
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
 
     @comms.command()
     @comms.is_owner()

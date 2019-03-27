@@ -20,8 +20,8 @@ https://github.com/Xithrius/Demonically
 # Links for information:
 * [Discord.py rewrite with cogs](https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be)
 * [Markdown](https://guides.github.com/features/mastering-markdown/)
-* [system arguments in console](https://stackoverflow.com/questions/4117530/sys-argv1-meaning-in-script)
-
+* [System arguments in console](https://stackoverflow.com/questions/4117530/sys-argv1-meaning-in-script)
+* [Install FFmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg)
 
 # Main packages:
 * Discord.py rewrite with voice
@@ -38,7 +38,9 @@ pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[v
 * Wrote out the logo-type-thing for the bot for welcome in essentials, and started using it on startup
 * Added events to directives cog that returns and catches exceptions
 * On ready event now prints out in something a quite quaint message
-* Playback cog added for more bot interaction with the voice channel
+* Playback cog added for more bot interaction with the voice channel, and has You Tube to mp3, but it downloads to a local computer so the playback could lag
+* Started the HELP file, where people can go to if there are errors when launching the bot
+* 
 
 ## v0.00.0008, pushed 03/25/2019, 2:27pm PDT
 ### Changes:
