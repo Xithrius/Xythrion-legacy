@@ -37,8 +37,8 @@ pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[v
 * All commands now trigger typing until message is sent, or after 10 seconds
 * Wrote out the logo-type-thing for the bot for welcome in essentials, and started using it on startup
 * Added events to directives cog that returns and catches exceptions
-### Bugfixes:
-*
+* On ready event now prints out in something a quite quaint message
+* Playback cog added for more bot interaction with the voice channel
 
 ## v0.00.0008, pushed 03/25/2019, 2:27pm PDT
 ### Changes:

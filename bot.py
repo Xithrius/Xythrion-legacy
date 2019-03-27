@@ -6,6 +6,7 @@ import os
 import aiohttp
 import logging
 import configparser
+import datetime
 
 from essentials.pathing import path
 # from essentials.errors import error_prompt, input_loop
@@ -28,7 +29,7 @@ class MainCog(comms.Cog):
         self.bot = bot
 
 # Commands for realoading, unloading, and loading cogs
-    @comms.command(name='reload', hidden=True)
+    @comms.command(name='r', hidden=True)
     @comms.is_owner()
     async def cog_reload(self, ctx, *, cog: str):
         """ Reload specific cog(s) """
@@ -72,11 +73,16 @@ class MainCog(comms.Cog):
 # Events
     @comms.Cog.listener()
     async def on_ready(self):
-        print(f'Logging in as {self.bot.user}')
-        print(f'{self.bot.user} ID: {self.bot.user.id}')
-        print('Awaiting...')
+        now = datetime.datetime.now() + datetime.timedelta(hours=8)
+        print(f'+---[{now}]---------------------------+')
+        print('|                                                          |')
+        print(f'|  Logging in as {self.bot.user}                          |')
+        print(f'|  {self.bot.user} ID: {self.bot.user.id}                 |')
+        print('|  Awaiting...                                             |')
         await bot.change_presence(activity=discord.Game(f'discord.py rewrite {discord.__version__}'))
-        print(f"Presence changed to 'discord.py {discord.__version__}'")
+        print(f"|  Presence changed to 'discord.py {discord.__version__}'                 |")
+        print('|                                                          |')
+        print(f'+----------------------------------------------------------+')
 
 
 # Starting the bot

@@ -62,13 +62,16 @@ class DirectivesCog(comms.Cog):
     @comms.Cog.listener()
     async def on_message(self, message):
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
+        print(list(message.content))
         print(f'[{now}]  {message.author}: {message.content}')
-
-    '''
-    @comms.Cog.listener()
-    async def on_command(self, ctx):
-        await ctx.trigger_typing()
-    '''
+        pic_extensions = ['.jpg', '.png', '.jpeg']
+        for extension in pic_extensions:
+            try:
+                if message.attachments[0].filename.endswith(extension) and message.channel.topic == 'No pictures':
+                    await message.delete()
+                    await message.author.send(f'No pictures in channel {message.channel} of the server {message.guild}!')
+            except IndexError:
+                pass
 
 
 def setup(bot):
