@@ -1,5 +1,6 @@
 from discord.ext import commands as comms
 import discord
+import asyncio
 
 
 class HelpCog(comms.Cog):
@@ -7,24 +8,31 @@ class HelpCog(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-# General help command
-    @comms.group()
-    async def help(self, ctx):
-        embed = discord.Embed(colour=0xc27c0e)
-        embed.set_author(name='Xithrius', icon_url='https://i.imgur.com/TtcOXxx.jpg')
-        embed.add_field(name='Command caller:', value=ctx.author.mention)
-        embed.set_footer(text=f'discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-        await ctx.send(embed=embed)
+    @comms.command()
+    async def help(self, ctx, option):
+        options = []
+        for i in self.bot.commands:
+            print(i)
+            if str(i).startswith(option):
+                options.append(i)
+        if len(options) == 1:
+            pass
+        elif len(options) > 1 and len(options) < 4:
+            pass
+        else:
+            msg = await ctx.send('Command not found. List all commands?')
+            await msg.add_reaction('👍')
+            await msg.add_reaction('👎')
 
-# Directives cog
-    @help.command(name='owner')
-    async def show_creator(self, ctx):
-        pass
+            def check(reaction, user):
+                return user == ctx.message.author and str(reaction.emoji) == '👍'
 
-# Passwords cog
-    @help.command()
-    async def random_password(self, ctx):
-        pass
+            try:
+                reaction, user = await ctx.bot.wait_for('reaction_add', timeout=20.0, check=check)
+            except asyncio.TimeoutError:
+                await ctx.send('👎')
+            else:
+                await ctx.send('👍')
 
 
 def setup(bot):

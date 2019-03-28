@@ -4,8 +4,8 @@ import discord
 import os
 import asyncio
 
+from essentials.pathing import path
 from essentials.errors import error_prompt
-from essentails.pathing import path
 
 
 # Error handling for GOOGLE_APPLICATION_CREDENTIALS

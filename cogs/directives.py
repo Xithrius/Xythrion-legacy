@@ -10,23 +10,6 @@ class DirectivesCog(comms.Cog):
         self.bot = bot
 
 # Commands
-    @comms.command()
-    async def poke(self, ctx, member: discord.User = None):
-        if member is None:
-            await ctx.author.send('Hi')
-        else:
-            possibleMembers = []
-            _members = ctx.message.guild.members
-            for i in range(len(_members)):
-                if _members[i].startswith(member):
-                    possibleMembers.append(_members[i])
-            await ctx.send(ctx.message.discord.User)
-            if len(possibleMembers) > 1:
-                await ctx.send(f"Searched member {member} has multiple possibilities: {', '.join(str(x) for x in possibleMembers)}")
-            if len(possibleMembers) == 1:
-                member = discord.User(possibleMembers)
-                await ctx.member.send("Testing stuff")
-
     @comms.command(name='owner')
     async def show_creator(self, ctx):
         embed = discord.Embed(colour=0xc27c0e)
@@ -51,6 +34,11 @@ class DirectivesCog(comms.Cog):
 
 # Events
     @comms.Cog.listener()
+    async def on_member_join(self, member):
+        embed = discord.Embed(name=f'Welcome to {member.guild}!', value=f'Owner: {member.guild.owner}')
+        member.send(embed=embed)
+
+    @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
         await ctx.send(error)
 
@@ -61,8 +49,6 @@ class DirectivesCog(comms.Cog):
 
     @comms.Cog.listener()
     async def on_message(self, message):
-        # previous_message = await message.channel.history(limit=2).flatten()
-        # print(previous_message[0].guild.id)
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
         print(f"guild: '{message.guild}', channel: '{message.channel}', user: '{message.author}' sends:\n\t[{now}]  '{message.content}'")
         pic_extensions = ['.jpg', '.png', '.jpeg']
@@ -73,6 +59,8 @@ class DirectivesCog(comms.Cog):
                     await message.author.send(f'No pictures in channel {message.channel} of the server {message.guild}!')
             except IndexError:
                 pass
+            except discord.errors.Forbidden:
+                await message.guild.owner.send(f'I should be able to remove pictures from a channel that does not want any. Please give me the permissions to do so.')
 
 
 def setup(bot):

@@ -83,7 +83,7 @@ class MainCog(comms.Cog):
         await bot.change_presence(activity=discord.Game(f'discord.py rewrite {discord.__version__}'))
         print(f"  |  Presence changed to 'discord.py {discord.__version__}'                 |")
         print('  |                                                          |')
-        print(f'+----------------------------------------------------------+\n')
+        print(f'  +----------------------------------------------------------+\n')
 
 
 # Starting the bot

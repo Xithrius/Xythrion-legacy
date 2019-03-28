@@ -40,8 +40,8 @@ pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[v
 * Added events to directives cog that returns and catches exceptions
 * On ready event now prints out in something a quite quaint message
 * Playback cog added for more bot interaction with the voice channel, and has You Tube to mp3, but it downloads to a local computer so the playback could lag
-* Started the HELP file, where people can go to if there are errors when launching the bot
-*
+* The wiki for the bot on the GitHub page is being worked on
+* Passwords are stored by using hashes
 
 ## v0.00.0008, pushed 03/25/2019, 2:27pm PDT
 ### Changes:
