@@ -1,5 +1,6 @@
 # Demonically
 Operating on applications in a demon-like manner
+Oriented toward application and specific group interaction
 https://github.com/Xithrius/Demonically
 
 
@@ -40,7 +41,7 @@ pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[v
 * On ready event now prints out in something a quite quaint message
 * Playback cog added for more bot interaction with the voice channel, and has You Tube to mp3, but it downloads to a local computer so the playback could lag
 * Started the HELP file, where people can go to if there are errors when launching the bot
-* 
+*
 
 ## v0.00.0008, pushed 03/25/2019, 2:27pm PDT
 ### Changes:
