@@ -95,9 +95,12 @@ class MainCog(comms.Cog):
         for (dirpath, dirnames, filenames) in os.walk(path('audio', 'music')):
             music.extend(filenames)
             break
-        for i in music:
-            os.remove(path('audio', 'music', i))
-        os.remove(path('audio', 'output.mp3'))
+        try:
+            for i in music:
+                os.remove(path('audio', 'music', i))
+            os.remove(path('audio', 'output.mp3'))
+        except FileNotFoundError:
+            pass
         print('Exiting...')
         await self.bot.logout()
 
