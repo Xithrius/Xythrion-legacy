@@ -1,3 +1,11 @@
+# ///////////////////////////////////////////////////////// #
+# Libraries
+# ////////////////////////
+# Uses the virtual environment
+# The package 'essentials' is customly-made
+# ///////////////////////////////////////////////////////// #
+
+
 from discord.ext import commands as comms
 import discord
 import random
@@ -5,6 +13,18 @@ import string
 import datetime
 import uuid
 import hashlib
+
+# from essentials.pathing import path, mkdir
+# from essentials.errors import error_prompt, input_loop
+# from essentials.welcome import welcome_prompt
+
+
+# ///////////////////////////////////////////////////////// #
+#
+# ////////////////////////
+#
+#
+# ///////////////////////////////////////////////////////// #
 
 
 class PasswordCog(comms.Cog):

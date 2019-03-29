@@ -1,9 +1,27 @@
+# ///////////////////////////////////////////////////////// #
+# Libraries
+# ////////////////////////
+# Uses the virtual environment
+# The package 'essentials' is customly-made
+# ///////////////////////////////////////////////////////// #
+
+
 from discord.ext import commands as comms
 import discord
 import youtube_dl
 import asyncio
 
 from essentials.pathing import path, mkdir
+# from essentials.errors import error_prompt, input_loop
+# from essentials.welcome import welcome_prompt
+
+
+# ///////////////////////////////////////////////////////// #
+#
+# ////////////////////////
+#
+#
+# ///////////////////////////////////////////////////////// #
 
 
 class PlaybackCog(comms.Cog):
@@ -37,11 +55,12 @@ class PlaybackCog(comms.Cog):
                 video_title = info_dict.get('title', None)
         finally:
             lock.release()
-        vc = ctx.guild.voice_client
-        if not vc:
-            vc = await ctx.author.voice.channel.connect()
-        await ctx.send(f"playing '{video_title}'")
-        vc.play(discord.FFmpegPCMAudio(f'{path()}/audio/music/{video_title}.mp3'))
+            vc = ctx.guild.voice_client
+            if not vc:
+                vc = await ctx.author.voice.channel.connect()
+            await ctx.send(f"playing '{video_title}'")
+            vc.play(discord.FFmpegPCMAudio(f'{path()}/audio/music/{video_title}.mp3'))
+        # os.remove(path('audio', 'music', f'{video_title}.mp3'))
 
     @comms.command()
     @comms.is_owner()

@@ -1,3 +1,11 @@
+# ///////////////////////////////////////////////////////// #
+# Libraries
+# ////////////////////////
+# Uses the virtual environment
+# The package 'essentials' is customly-made
+# ///////////////////////////////////////////////////////// #
+
+
 from discord.ext import commands as comms
 import discord
 import sys
@@ -8,9 +16,17 @@ import logging
 import configparser
 import datetime
 
-from essentials.pathing import path
+from essentials.pathing import path  # , mkdir
 # from essentials.errors import error_prompt, input_loop
 # from essentials.welcome import welcome_prompt
+
+
+# ///////////////////////////////////////////////////////// #
+# Logging
+# ////////////////////////
+# All errors are recorded in a .log file within the logs folder
+# The file is .gitignore'd
+# ///////////////////////////////////////////////////////// #
 
 
 def discord_logger(default=False):
@@ -22,7 +38,14 @@ def discord_logger(default=False):
         logger.addHandler(handler)
 
 
-# Main cog
+# ///////////////////////////////////////////////////////// #
+# The Main Cog
+# ////////////////////////
+# Where all extensions automatically detected and loaded into
+# Only the essential commands and event are here
+# ///////////////////////////////////////////////////////// #
+
+
 class MainCog(comms.Cog):
 
     def __init__(self, bot):
@@ -62,11 +85,19 @@ class MainCog(comms.Cog):
             await ctx.send(f'Reload error: {type(e).__name__} - {e}')
         else:
             await ctx.send(f'Unload complete for {cog}')
+
 # Logging out the bot
     @comms.command()
     @comms.is_owner()
     async def exit(self, ctx):
-        """ Make the bot logout """
+        """ Make the bot logout, while cleaning up files """
+        music = []
+        for (dirpath, dirnames, filenames) in os.walk(path('audio', 'music')):
+            music.extend(filenames)
+            break
+        for i in music:
+            os.remove(path('audio', 'music', i))
+        os.remove(path('audio', 'output.mp3'))
         print('Exiting...')
         await self.bot.logout()
 
@@ -86,7 +117,14 @@ class MainCog(comms.Cog):
         print(f'  +----------------------------------------------------------+\n')
 
 
+# ///////////////////////////////////////////////////////// #
 # Starting the bot
+# ////////////////////////
+# All extensions automatically detected and loaded
+# A config file is used for the bot token
+# ///////////////////////////////////////////////////////// #
+
+
 def main(bot):
     # Adding the main cog to the bot
     bot.add_cog(MainCog(bot))
