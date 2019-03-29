@@ -67,8 +67,7 @@ class PlaybackCog(comms.Cog):
     async def volume(self, ctx, amount):
         vc = ctx.guild.voice_client
         vc.source = discord.PCMVolumeTransformer(vc.source)
-        vc.source.volume = int(amount)
-        print(f"{ctx.message.author} has changed the volume to {int(amount)}")
+        vc.source.volume = float(amount)
 
     @comms.command()
     @comms.is_owner()
