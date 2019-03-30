@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+
 '''
 
 MIT License
@@ -24,11 +27,13 @@ SOFTWARE.
 
 '''
 
+
 # ///////////////////////////////////////////////////////// #
 # Libraries
 # ////////////////////////
-# Uses the virtual environment
-# The package 'essentials' is customly-made
+# Built-in modules
+# Third-party modules
+# Custom modules
 # ///////////////////////////////////////////////////////// #
 
 

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+
 '''
 
 MIT License
@@ -24,19 +27,22 @@ SOFTWARE.
 
 '''
 
+
 # ///////////////////////////////////////////////////////// #
 # Libraries
 # ////////////////////////
-# Uses the virtual environment
-# The package 'essentials' is customly-made
+# Built-in modules
+# Third-party modules
+# Custom modules
 # ///////////////////////////////////////////////////////// #
 
 
-from discord.ext import commands as comms
-from google.cloud import texttospeech  # ssml must be well-formed according to: https://www.w3.org/TR/speech-synthesis/
-import discord
 import os
 import asyncio
+
+import discord
+from discord.ext import commands as comms
+from google.cloud import texttospeech  # ssml must be well-formed according to: https://www.w3.org/TR/speech-synthesis/
 
 from essentials.pathing import path  # , mkdir
 from essentials.errors import error_prompt  # , input_loop

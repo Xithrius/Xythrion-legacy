@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+
 '''
 
 MIT License
@@ -24,23 +27,26 @@ SOFTWARE.
 
 '''
 
+
 # ///////////////////////////////////////////////////////// #
 # Libraries
 # ////////////////////////
-# Uses the virtual environment
-# The package 'essentials' is customly-made
+# Built-in modules
+# Third-party modules
+# Custom modules
 # ///////////////////////////////////////////////////////// #
 
 
-from discord.ext import commands as comms
-import discord
 import datetime
+import configparser
 import urllib.request
 import json
-import configparser
-import pytemperature
 import time
 import platform
+
+import discord
+from discord.ext import commands as comms
+import pytemperature
 
 from essentials.pathing import path  # , mkdir
 # from essentials.errors import error_prompt, input_loop
