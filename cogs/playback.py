@@ -43,7 +43,7 @@ import discord
 from discord.ext import commands as comms
 import youtube_dl
 
-from essentials.pathing import path  # , mkdir
+from essentials.pathing import path, mkdir
 # from essentials.errors import error_prompt, input_loop
 # from essentials.welcome import welcome_prompt
 
