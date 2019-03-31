@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-
-
 '''
 
 MIT License
@@ -26,6 +23,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 '''
+
+
+# ///////////////////////////////////////////////////////// #
+# authorship information
+# ////////////////////////
+# Description of the author(s) information
+# ///////////////////////////////////////////////////////// #
+
+
+__author__ = 'Xithrius'
+
+__copyright__ = 'MIT License, Copyright (c) 2019 Xithrius'
+
+__credits__ = ["Xithrius", "Rapptz"]
+# Xithrius : Project owner
+# Rapptz   : Discord.py API wrapper creator
+
+__license__ = "MIT"
+
+__version__ = "0.00.0009"
+
+__maintainer__ = "Xithrius"
+
+__status__ = "Development"
 
 
 # ///////////////////////////////////////////////////////// #
