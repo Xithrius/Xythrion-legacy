@@ -103,7 +103,7 @@ class DirectivesCog(comms.Cog):
     async def on_message(self, message):
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
         print(f"guild: '{message.guild}', channel: '{message.channel}', user: '{message.author}' sends:\n\t[{now}]  '{message.content}'")
-        pic_extensions = ['.jpg', '.png', '.jpeg']
+        pic_extensions = ['.jpg', '.png', '.jpeg', '.gif']
         for extension in pic_extensions:
             try:
                 if message.attachments[0].filename.endswith(extension) and message.channel.topic == 'No pictures':

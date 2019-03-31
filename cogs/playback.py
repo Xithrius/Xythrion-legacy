@@ -92,7 +92,6 @@ class PlaybackCog(comms.Cog):
                 vc = await ctx.author.voice.channel.connect()
             await ctx.send(f"playing '{video_title}'")
             vc.play(discord.FFmpegPCMAudio(f'{path()}/audio/music/{video_title}.mp3'))
-        # os.remove(path('audio', 'music', f'{video_title}.mp3'))
 
     @comms.command()
     @comms.is_owner()
