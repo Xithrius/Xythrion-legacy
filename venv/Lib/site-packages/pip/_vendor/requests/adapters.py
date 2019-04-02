@@ -26,7 +26,6 @@ from pip._vendor.urllib3.exceptions import ProtocolError
 from pip._vendor.urllib3.exceptions import ReadTimeoutError
 from pip._vendor.urllib3.exceptions import SSLError as _SSLError
 from pip._vendor.urllib3.exceptions import ResponseError
-from pip._vendor.urllib3.exceptions import LocationValueError
 
 from .models import Response
 from .compat import urlparse, basestring
@@ -36,8 +35,7 @@ from .utils import (DEFAULT_CA_BUNDLE_PATH, extract_zipped_paths,
 from .structures import CaseInsensitiveDict
 from .cookies import extract_cookies_to_jar
 from .exceptions import (ConnectionError, ConnectTimeout, ReadTimeout, SSLError,
-                         ProxyError, RetryError, InvalidSchema, InvalidProxyURL,
-                         InvalidURL)
+                         ProxyError, RetryError, InvalidSchema, InvalidProxyURL)
 from .auth import _basic_auth_str
 
 try:
@@ -129,7 +127,8 @@ class HTTPAdapter(BaseAdapter):
         self.init_poolmanager(pool_connections, pool_maxsize, block=pool_block)
 
     def __getstate__(self):
-        return {attr: getattr(self, attr, None) for attr in self.__attrs__}
+        return dict((attr, getattr(self, attr, None)) for attr in
+                    self.__attrs__)
 
     def __setstate__(self, state):
         # Can't handle by adding 'proxy_manager' to self.__attrs__ because
@@ -225,7 +224,7 @@ class HTTPAdapter(BaseAdapter):
 
             if not cert_loc or not os.path.exists(cert_loc):
                 raise IOError("Could not find a suitable TLS CA certificate bundle, "
-                              "invalid path: {}".format(cert_loc))
+                              "invalid path: {0}".format(cert_loc))
 
             conn.cert_reqs = 'CERT_REQUIRED'
 
@@ -247,10 +246,10 @@ class HTTPAdapter(BaseAdapter):
                 conn.key_file = None
             if conn.cert_file and not os.path.exists(conn.cert_file):
                 raise IOError("Could not find the TLS certificate file, "
-                              "invalid path: {}".format(conn.cert_file))
+                              "invalid path: {0}".format(conn.cert_file))
             if conn.key_file and not os.path.exists(conn.key_file):
                 raise IOError("Could not find the TLS key file, "
-                              "invalid path: {}".format(conn.key_file))
+                              "invalid path: {0}".format(conn.key_file))
 
     def build_response(self, req, resp):
         """Builds a :class:`Response <requests.Response>` object from a urllib3
@@ -379,7 +378,7 @@ class HTTPAdapter(BaseAdapter):
         when subclassing the
         :class:`HTTPAdapter <requests.adapters.HTTPAdapter>`.
 
-        :param proxy: The url of the proxy being used for this request.
+        :param proxies: The url of the proxy being used for this request.
         :rtype: dict
         """
         headers = {}
@@ -408,10 +407,7 @@ class HTTPAdapter(BaseAdapter):
         :rtype: requests.Response
         """
 
-        try:
-            conn = self.get_connection(request.url, proxies)
-        except LocationValueError as e:
-            raise InvalidURL(e, request=request)
+        conn = self.get_connection(request.url, proxies)
 
         self.cert_verify(conn, request.url, verify, cert)
         url = self.request_url(request, proxies)
@@ -425,7 +421,7 @@ class HTTPAdapter(BaseAdapter):
                 timeout = TimeoutSauce(connect=connect, read=read)
             except ValueError as e:
                 # this may raise a string formatting error.
-                err = ("Invalid timeout {}. Pass a (connect, read) "
+                err = ("Invalid timeout {0}. Pass a (connect, read) "
                        "timeout tuple, or a single float to set "
                        "both timeouts to the same value".format(timeout))
                 raise ValueError(err)
@@ -475,10 +471,11 @@ class HTTPAdapter(BaseAdapter):
 
                     # Receive the response from the server
                     try:
-                        # For Python 2.7, use buffering of HTTP responses
+                        # For Python 2.7+ versions, use buffering of HTTP
+                        # responses
                         r = low_conn.getresponse(buffering=True)
                     except TypeError:
-                        # For compatibility with Python 3.3+
+                        # For compatibility with Python 2.6 versions and back
                         r = low_conn.getresponse()
 
                     resp = HTTPResponse.from_httplib(
