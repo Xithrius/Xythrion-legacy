@@ -43,10 +43,7 @@ class PlaybackCog(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    def my_hook(d):
-        if d['status'] == 'finished':
-            print('Done downloading, now converting ...')
-
+# Commands
     @comms.command()
     @comms.is_owner()
     async def play(self, ctx, url):
@@ -74,6 +71,11 @@ class PlaybackCog(comms.Cog):
                 vc = await ctx.author.voice.channel.connect()
             await ctx.send(f"playing '{video_title}'")
             vc.play(discord.FFmpegPCMAudio(f'{path()}/audio/music/{video_title}.mp3'))
+
+    @comms.command(name='s2y')
+    @comms.is_owner()
+    async def spotify_to_youtube(self, ctx):
+        pass
 
     @comms.command()
     @comms.is_owner()

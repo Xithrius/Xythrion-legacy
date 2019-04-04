@@ -177,11 +177,10 @@ def main(bot=False):
     while checkToken:
         try:
             if len(sys.argv) > 1:
-                if 'log' == sys.argv[2]:
+                if 'log' == sys.argv[1]:
                     discord_logger(True)
                 else:
                     discord_logger()
-                token = sys.argv[1]
             else:
                 config = configparser.ConfigParser()
                 config.read(path('credentials', 'config.ini'))

@@ -39,7 +39,7 @@ from essentials.errors import error_prompt  # , input_loop
 # ///////////////////////////////////////////////////////// #
 
 
-class GoogleCog(comms.Cog):
+class TextToSpeechCog(comms.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -73,4 +73,4 @@ class GoogleCog(comms.Cog):
 
 
 def setup(bot):
-    bot.add_cog(GoogleCog(bot))
+    bot.add_cog(TextToSpeechCog(bot))

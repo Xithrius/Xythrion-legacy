@@ -4,19 +4,6 @@ Oriented toward application and specific group interaction
 https://github.com/Xithrius/Demonically
 
 
-# TODO
-- [x] Use [discord.py rewrite with cogs](!https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be) to understand how discord.py rewrite update works
-- [x] Learn what other changes happened to discord.py rewrite
-- [x] Open Weather Maps API for weather
-- [ ] Recreate the help command
-- [ ] Quality Of Life command creations
-- [ ] Customized commands through discord messages, will be put into separate folder
-- [ ] Add permissions to the bot, so multiple people can have access to high-level commands
-- [ ] Google Cloud Search, Drive, Calendar
-- [ ] Multithreading and using different programs for the same application running in unison
-- [ ] 2FA - Quick Response codes through phone with website
-
-
 # Links for information:
 * [Discord.py rewrite with cogs](https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be)
 * [Markdown](https://guides.github.com/features/mastering-markdown/)
@@ -38,7 +25,7 @@ source venv/Scripts/activate
 
 # Changelog
 
-## v0.00.0009, pushed
+## v0.00.0009, pushed 04/04/2019, 2:11am PDT
 ### Main changes:
 * Added events to directives cog that returns and catches exceptions
 * Started learning machine learning to apply to this bot
@@ -48,6 +35,15 @@ source venv/Scripts/activate
 * Broke the virtual environment multiple times but finally fixed it, and it is now working
 * Added comments to nearly everything
 * Added meme cog for user generated meme input and output
+* Put TODO in its own file, since it's going to constantly change
+* Plans for the next version, v0.01.0000 (this section will be removed once it comes out):
+  * Playback cog will have Spotify to You Tube
+  * Reminder cog will remind people with stuff
+  * Meme cog will input and output memes from self and users
+  * Identity cog will contain more things about the bot and the creator
+  * Directives cog will contain more logging info, when the bot starts up with it
+  * Setup Python file will be used for people who first use the bot
+  * Ease of access to setting up the bot with clear instructions
 ### Modifications:
 * Moved things around again
 * On ready event now prints out in something a quite quaint message

@@ -19,7 +19,7 @@
 # ///////////////////////////////////////////////////////// #
 
 
-import json
+# import json
 
 from discord.ext import commands as comms
 
@@ -46,19 +46,15 @@ class MemeCog(comms.Cog):
         if not string:
             pass
         else:
-            with open(path('user_generated', 'poems'), 'w') as f:
+            check = True
+            i = 0
+            while check:
                 try:
-                    check = True
-                    i = 0
-                    while check:
-                        try:
-                            with open(path('SaveGames', f'poem{i}.txt'), 'w+') as f:
-                                f.write(f'{ctx.message.author}:\nstring')
-                                check = False
-                        except FileExistsError:
-                            i += 1
+                    with open(path('generated', 'user_generated', ctx.message.author, f'poem{i}.txt'), 'w+') as f:
+                        f.write(string)
+                        check = False
                 except FileExistsError:
-                    pass
+                    i += 1
 
 
 def setup(bot):

@@ -21,6 +21,7 @@
 
 import datetime
 import time
+import sys
 
 import discord
 from discord.ext import commands as comms
@@ -31,10 +32,9 @@ from discord.ext import commands as comms
 
 
 # ///////////////////////////////////////////////////////// #
-#
+# Directives cog
 # ////////////////////////
-#
-#
+# General commands, that is all
 # ///////////////////////////////////////////////////////// #
 
 
@@ -44,15 +44,6 @@ class DirectivesCog(comms.Cog):
         self.bot = bot
 
 # Commands
-    @comms.command(name='owner')
-    async def show_creator(self, ctx):
-        embed = discord.Embed(colour=0xc27c0e)
-        embed.set_author(name='Xithrius', icon_url='https://i.imgur.com/TtcOXxx.jpg')
-        embed.add_field(name='Private Github:', value='[Right here](https://github.com/Xithrius/Demonically)')
-        embed.add_field(name='Command caller:', value=ctx.author.mention)
-        embed.set_footer(text=f'discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-        await ctx.send(embed=embed)
-
     @comms.command(name='ping')
     async def get_latency(self, ctx):
         timeStart = time.time()
@@ -84,7 +75,11 @@ class DirectivesCog(comms.Cog):
     @comms.Cog.listener()
     async def on_message(self, message):
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
-        print(f"guild: '{message.guild}', channel: '{message.channel}', user: '{message.author}' sends:\n\t[{now}]  '{message.content}'")
+        try:
+            if 'log' == sys.argv[1]:
+                print(f"guild: '{message.guild}', channel: '{message.channel}', user: '{message.author}' sends:\n\t[{now}]  '{message.content}'")
+        except IndexError:
+            pass
         pic_extensions = ['.jpg', '.png', '.jpeg', '.gif']
         for extension in pic_extensions:
             try:
@@ -95,6 +90,15 @@ class DirectivesCog(comms.Cog):
                 pass
             except discord.errors.Forbidden:
                 await message.guild.owner.send(f'I should be able to remove pictures from a channel that does not want any. Please give me the permissions to do so.')
+
+    @comms.Cog.listener()
+    async def on_member_update(self, before, after):
+        now = datetime.datetime.now() + datetime.timedelta(hours=8)
+        try:
+            if 'log' == sys.argv[1]:
+                print()
+        except IndexError:
+            pass
 
 
 def setup(bot):
