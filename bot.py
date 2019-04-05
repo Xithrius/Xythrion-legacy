@@ -26,6 +26,7 @@ import aiohttp
 import logging
 import datetime
 import configparser
+import asyncio
 
 import discord
 from discord.ext import commands as comms
@@ -64,6 +65,9 @@ class MainCog(comms.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+        # create the background task and run it in the background
+        self.bg_task = self.loop.create_task(self.my_background_task())
 
 # Commands for realoading, unloading, and loading cogs
     @comms.command(name='r', hidden=True)
@@ -117,6 +121,15 @@ class MainCog(comms.Cog):
             pass
         print('Exiting...')
         await self.bot.logout()
+
+# Background tasks
+    async def my_background_task(self):
+        await self.wait_until_ready()
+        counter = 0
+        while counter < 6:
+            counter += 1
+            print(counter)
+            await asyncio.sleep(10)
 
 # Events
     @comms.Cog.listener()

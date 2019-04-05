@@ -65,9 +65,12 @@ class IdentityCog(comms.Cog):
                 artist = row[1]
                 song_dict[song] = artist
                 songs.append(f"{song} - {artist}")
-                if ctx.author.activities[0].title == song:
-                    if ctx.author.activities[0].artist == artist:
-                        embed.add_field(name='A favorite song appears!', value=f"your Spotify is currently playing '{song}' by {artist}, which is one of my favorites!", inline=False)
+                try:
+                    if ctx.author.activities[0].title == song:
+                        if ctx.author.activities[0].artist == artist:
+                            embed.add_field(name='A favorite song appears!', value=f"your Spotify is currently playing '{song}' by {artist}, which is one of my favorites!", inline=False)
+                except IndexError:
+                    pass
         embed.add_field(name='All favorite songs:', value='\n'.join(str(y) for y in songs))
         embed.set_author(name='Xithrius', icon_url='https://i.imgur.com/wzl5IHi.png')
         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')

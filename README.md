@@ -25,8 +25,19 @@ source venv/Scripts/activate
 
 # Changelog
 
-## v0.00.0009, pushed 04/04/2019, 2:11am PDT
-### Main changes:
+## At the end of version numbers, there will be a 'd' or a 'r'. 'd' is for development and 'r' is for release.
+
+### v0.01.0000d, pushed
+#### Main changes:
+* Yahoo finance stock summary requesting
+* 
+#### Modifications:
+*
+#### Bugfixes:
+*
+
+### v0.00.0009r, pushed 04/04/2019, 2:11am PDT
+#### Main changes:
 * Added events to directives cog that returns and catches exceptions
 * Started learning machine learning to apply to this bot
 * Created the MIT license so people don't go running off with what I created
@@ -44,7 +55,7 @@ source venv/Scripts/activate
   * Directives cog will contain more logging info, when the bot starts up with it
   * Setup Python file will be used for people who first use the bot
   * Ease of access to setting up the bot with clear instructions
-### Modifications:
+#### Modifications:
 * Moved things around again
 * On ready event now prints out in something a quite quaint message
 * Playback cog downloads YouTube to mp3 and then plays it through it's own mic
@@ -54,15 +65,15 @@ source venv/Scripts/activate
   * In git bash, activate the virtual environment by doing `source .\venv\Scripts\activate`
   * The bot can now be ran with the virtual environment in the same console, run with `py -3 .\bot.py`
 
-## v0.00.0008, pushed 03/25/2019, 2:27pm PDT
-### Main changes:
+### v0.00.0008r, pushed 03/25/2019, 2:27pm PDT
+#### Main changes:
 * Command added to see creator of bot
 * Added logging option as the second system argument in console, so it's enabled from there if need be
 * Preparing for bot to become public repository
 * Discord help command removed, replaced with currently-developing custom help commands
 * Google text-to-speech has been added, still testing, only available for bot owner
 * Open Weather Maps added, returns embed of weather for user input location
-### Modifications:
+#### Modifications:
 * Modified the TODO
 * Removed all Python cache files from GitHub, but they're still stored locally
 * Preparing for encrypted password storage
@@ -70,63 +81,63 @@ source venv/Scripts/activate
 * Added another example to examples
 * Renamed text to speech cog
 * Help cog is named "guidance"
-### Bugfixes:
+#### Bugfixes:
 * Anaconda navigator will screw up everything, so the fix for this is to not install it
  * If installed, go to roaming, app data, then delete the anaconda folder
 
-## v0.00.0007, pushed 03/18/2019 9:48pm PDT
-### Main changes:
+### v0.00.0007r, pushed 03/18/2019 9:48pm PDT
+#### Main changes:
 * Pushes will now have exact times of when I clicked the "Commit to master" button
 * The essentials directory is now a custom package full of error checking and path giving
-### Modifications:
+#### Modifications:
 * Removed description from bot, it doesn't do anything useful at the moment
 * Path module within the essentials package has been minimized and now can be used in relative to the caller path
-### Bugfixes:
+#### Bugfixes:
 * Bot comes online properly and activates on ready event
 
-## v0.00.0006
-### Main changes:
+### v0.00.0006r
+#### Main changes:
 * Added essentials directory to act as a package for upcoming separated files
-### Modifications:
+#### Modifications:
 * Examples from said repository have been removed and put into the examples python file in the cogs directory
 * Removed unhelpful links from links for information
 * Changed TODO to fit removed links in links for information
 
-## v0.00.0005
-### Main changes:
+### v0.00.0005r
+#### Main changes:
 * First version with the bot coming online
 * Bot's main cog now has decorators for renaming how, where, and who can call the command
 * "if \_\_name\_\_ == '\_\_main\_\_'" within main bot file now takes token from console or credentials directory, and then adds the main cog, along with the directives and examples cog
-### Modifications:
+#### Modifications:
 * Markdown in ".\_\_doc\_\_()" and "\_\_future\_\_" in the TODO README of section \#\#NOW are no longer bold
 * Path in separate functions python file no longer has random print statement
 * Renamed separate functions file to be understandable
 * Removed bot example in examples directory since all needed information was consumed
 * Credentials directory got the files README and git ignore
 * Modified main in bot to take 2 arguments then run the bot
-### Bugfixes:
+#### Bugfixes:
 * Bot is able to come online
 * cogs are now able to be automatically detected and dot imported from the cogs directory
 
-## v0.00.0004
-### Main changes:
+### v0.00.0004r
+#### Main changes:
 * Removed all legacy files
 * Changed bot startup
 * Removed bot client class
 * The on ready event is now in the main cog
-### Modifications:
+#### Modifications:
 * Modified README for upcoming changes and updates
 * Removed test bot, since main bot file works
 * Changed JavaScript Object Notation file for owner ID and token to a text file just for the token
 * Removed python "test" file
 * Bot almost works
 
-## v0.00.0003
-### Main changes:
+### v0.00.0003r
+#### Main changes:
 * Really modifying the bot for own use
 * Added own commands for testing
 * Modified README changelog so people can read it easily
-### Modifications:
+#### Modifications:
 * Removed currently testing folder
 * Shell file now starts entire program
 * Added credentials in JavaScript Object Notation in credentials folder
@@ -135,15 +146,15 @@ source venv/Scripts/activate
 * Renamed folders and files
 * Changed TODO
 
-## v0.00.0002
-### Main changes:
+### v0.00.0002r
+#### Main changes:
 * Added other files from old bots
-### Modifications:
+#### Modifications:
 * Added TODO to this README
 
-## v0.00.0001
-### Main changes:
+### v0.00.0001r
+#### Main changes:
 * Created README for updated information on bot
-### Modifications:
+#### Modifications:
 * Changed name from Operator to Demonically
 * Moved chrome web driver into folder

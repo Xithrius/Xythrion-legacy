@@ -78,8 +78,6 @@ class WeatherCog(comms.Cog):
         embed.add_field(name='Sunrise:', value=time.ctime(data['sys']['sunrise']), inline=False)
         embed.add_field(name='Sunset:', value=time.ctime(data['sys']['sunset']), inline=False)
 
-        embed.set_author(name='Xithrius', icon_url='https://i.imgur.com/TtcOXxx.jpg')
-        embed.add_field(name='Command caller:', value=ctx.author.mention)
         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
         await ctx.author.send(embed=embed)
 

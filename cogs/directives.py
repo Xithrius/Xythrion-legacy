@@ -64,10 +64,6 @@ class DirectivesCog(comms.Cog):
         member.send(embed=embed)
 
     @comms.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        await ctx.send(error)
-
-    @comms.Cog.listener()
     async def on_member_ban(self, guild, user):
         print(f'{user.name} was banned from {guild.name}')
         await user.channel.send(f'{user.name} was banned from {guild.name}')
@@ -99,6 +95,12 @@ class DirectivesCog(comms.Cog):
                 print()
         except IndexError:
             pass
+
+    '''
+    @comms.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        await ctx.send(error)
+'''
 
 
 def setup(bot):
