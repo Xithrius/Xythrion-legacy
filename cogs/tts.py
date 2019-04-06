@@ -61,14 +61,14 @@ class TextToSpeechCog(comms.Cog):
             voice = texttospeech.types.VoiceSelectionParams(language_code='en-AU-Standard-D', ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
             audio_config = texttospeech.types.AudioConfig(audio_encoding=texttospeech.enums.AudioEncoding.MP3)
             response = client.synthesize_speech(synthesis_input, voice, audio_config)
-            with open(path('audio', 'output.mp3'), 'wb') as out:
+            with open(path('media', 'audio', 'output.mp3'), 'wb') as out:
                 out.write(response.audio_content)
         finally:
             lock.release()
         vc = ctx.guild.voice_client
         if not vc:
             vc = await ctx.author.voice.channel.connect()
-        vc.play(discord.FFmpegPCMAudio(path('audio', 'output.mp3')))
+        vc.play(discord.FFmpegPCMAudio(path('media', 'audio', 'output.mp3')))
         print(f"TTS: {ctx.message.author} said {(ctx.message.content)[5:]}")
 
 

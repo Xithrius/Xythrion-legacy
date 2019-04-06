@@ -58,7 +58,7 @@ class IdentityCog(comms.Cog):
         embed = discord.Embed(name=f"{self.bot.user}'s favorite songs'", colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
         songs = []
         song_dict = {}
-        with open(path('generated', 'self_generated', 'favorite_songs.csv'), 'r') as f:
+        with open(path('media', 'generated', 'self_generated', 'favorite_songs.csv'), 'r') as f:
             reader = csv.reader(f)
             for row in reader:
                 song = row[0]

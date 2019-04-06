@@ -23,7 +23,7 @@
 
 from discord.ext import commands as comms
 
-from essentials.pathing import path  # , mkdir
+# from essentials.pathing import path, mkdir
 # from essentials.errors import error_prompt, input_loop
 # from essentials.welcome import welcome_prompt
 
@@ -43,18 +43,7 @@ class MemeCog(comms.Cog):
 
     @comms.command(name='poem')
     async def poem(self, ctx, string):
-        if not string:
-            pass
-        else:
-            check = True
-            i = 0
-            while check:
-                try:
-                    with open(path('generated', 'user_generated', ctx.message.author, f'poem{i}.txt'), 'w+') as f:
-                        f.write(string)
-                        check = False
-                except FileExistsError:
-                    i += 1
+        pass
 
 
 def setup(bot):

@@ -52,7 +52,7 @@ class PlaybackCog(comms.Cog):
         try:
             mkdir('audio', 'music')
             ydl_opts = {
-                'outtmpl': f'{path()}/audio/music/%(title)s.%(ext)s',
+                'outtmpl': f'{path()}/media/audio/music/%(title)s.%(ext)s',
                 'format': 'bestaudio/best',
                 'postprocessors': [{
                     'key': 'FFmpegExtractAudio',
@@ -70,7 +70,7 @@ class PlaybackCog(comms.Cog):
             if not vc:
                 vc = await ctx.author.voice.channel.connect()
             await ctx.send(f"playing '{video_title}'")
-            vc.play(discord.FFmpegPCMAudio(f'{path()}/audio/music/{video_title}.mp3'))
+            vc.play(discord.FFmpegPCMAudio(f'{path()}/media/audio/music/{video_title}.mp3'))
 
     @comms.command(name='s2y')
     @comms.is_owner()

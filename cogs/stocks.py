@@ -28,6 +28,7 @@ import discord
 from discord.ext import commands as comms
 
 from scraping.yahoo_finance import get_stock_summary
+from scraping.converter import index_days
 from essentials.pathing import path, mkdir
 # from essentials.errors import error_prompt, input_loop
 # from essentials.welcome import welcome_prompt
@@ -80,14 +81,14 @@ class StockCog(comms.Cog):
             check = True
             while check:
                 try:
-                    with open(path('user_requests', 'reminders', 'stocks', ctx.message.author, f'{abbreviation}.txt'), 'w') as f:
+                    with open(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author, f'{abbreviation}.txt'), 'w') as f:
                         f.write(' '.join(str(y) for y in user_days))
                 except FileNotFoundError:
-                    mkdir(path('user_requests', 'reminders', 'stocks', ctx.message.author))
+                    mkdir(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author))
 
     @comms.command(name='stocks_cancel')
     async def stock_reminder_cancel(self, ctx, abbreviation):
-        os.remove(path('user_requests', 'reminders', 'stocks', ctx.message.author, f'{abbreviation}.txt'))
+        os.remove(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author, f'{abbreviation}.txt'))
 
 # Background tasks
     async def check_stock_reminders(self):
@@ -97,26 +98,28 @@ class StockCog(comms.Cog):
                 if datetime.datetime.now().hour == 16:
                     if datetime.datetime.now().minute >= 0:
                         user_request_folders = []
-                        for (dirpath, dirnames, filenames) in os.walk(path('user_requests', 'reminders', 'stocks')):
+                        for (dirpath, dirnames, filenames) in os.walk(path('media', 'user_requests', 'reminders', 'stocks')):
                             user_request_folders.extend(dirnames)
                             break
                         for user in user_request_folders:
                             user_request_abbreviations = []
-                            for (dirpath, dirnames, filenames) in os.walk(path('user_requests', 'reminders', 'stocks', user)):
+                            for (dirpath, dirnames, filenames) in os.walk(path('media', 'user_requests', 'reminders', 'stocks', user)):
                                 user_request_abbreviations.extend(filenames)
                                 break
                             for i in range(len(user_request_abbreviations)):
-                                stock_dict = get_stock_summary((list(user_request_abbreviations[i])[:-4]))
-                                for k, v in stock_dict.items():
-                                    if k == 'Title':
-                                        embed = discord.Embed(title=f'Summary for the stock of {v[0]}', colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
-                                    else:
-                                        try:
-                                            embed.add_field(name=k, value=v[0], inline=False)
-                                        except IndexError:
-                                            pass
-                                embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-                                await user.send(embed=embed)
+                                with open(path('media', 'user_requests', 'reminders', 'stocks', user, user_request_abbreviations[i])) as f:
+                                    if datetime.datetime.today().weekday() in index_days(f.read().split()):
+                                        stock_dict = get_stock_summary((list(user_request_abbreviations[i])[:-4]))
+                                        for k, v in stock_dict.items():
+                                            if k == 'Title':
+                                                embed = discord.Embed(title=f'Summary for the stock of {v[0]}', colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
+                                            else:
+                                                try:
+                                                    embed.add_field(name=k, value=v[0], inline=False)
+                                                except IndexError:
+                                                    pass
+                                        embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
+                                        await user.send(embed=embed)
             await asyncio.sleep(30)
 
 

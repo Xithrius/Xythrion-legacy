@@ -59,6 +59,10 @@ class DirectivesCog(comms.Cog):
 
 # Events
     @comms.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        await ctx.send(error)
+
+    @comms.Cog.listener()
     async def on_member_join(self, member):
         embed = discord.Embed(name=f'Welcome to {member.guild}!', value=f'Owner: {member.guild.owner}')
         member.send(embed=embed)
@@ -95,13 +99,6 @@ class DirectivesCog(comms.Cog):
                 print()
         except IndexError:
             pass
-
-
-'''
-    @comms.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        await ctx.send(error)
-'''
 
 
 def setup(bot):
