@@ -89,14 +89,15 @@ class DirectivesCog(comms.Cog):
 
     @comms.Cog.listener()
     async def on_member_update(self, before, after):
-        now = datetime.datetime.now() + datetime.timedelta(hours=8)
+        # now = datetime.datetime.now() + datetime.timedelta(hours=8)
         try:
             if 'log' == sys.argv[1]:
                 print()
         except IndexError:
             pass
 
-    '''
+
+'''
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
         await ctx.send(error)
