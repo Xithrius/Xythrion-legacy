@@ -2,7 +2,7 @@ from lxml import html
 import requests
 
 
-def get_stock_summary(abbreviation, option):
+def get_stock_summary(abbreviation, option='low'):
     page = requests.get(f'https://finance.yahoo.com/quote/{abbreviation}?p={abbreviation}&.tsrc=fin-srch')
     tree = html.fromstring(page.content)
 

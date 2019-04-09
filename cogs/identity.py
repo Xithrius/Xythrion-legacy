@@ -68,7 +68,7 @@ class IdentityCog(comms.Cog):
                 try:
                     if ctx.author.activities[0].title == song:
                         if ctx.author.activities[0].artist == artist:
-                            embed.add_field(name='A favorite song appears!', value=f"your Spotify is currently playing '{song}' by {artist}, which is one of my favorites!", inline=False)
+                            embed.add_field(name='A favorite song appears!', value=f"Your Spotify is currently playing '{song}' by {artist}, which is one of my favorites!", inline=False)
                 except IndexError:
                     pass
         embed.add_field(name='All favorite songs:', value='\n'.join(str(y) for y in songs))

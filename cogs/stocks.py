@@ -81,40 +81,36 @@ class StockCog(comms.Cog):
             check = True
             while check:
                 try:
-                    with open(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author, f'{abbreviation}.txt'), 'w') as f:
+                    with open(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author.id, f'{abbreviation}.txt'), 'w') as f:
                         f.write(' '.join(str(y) for y in user_days))
                         check = False
                 except FileNotFoundError:
-                    mkdir(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author))
+                    mkdir(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author.id))
 
     @comms.command(name='stocks_cancel')
     async def stock_reminder_cancel(self, ctx, abbreviation):
-        os.remove(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author, f'{abbreviation}.txt'))
+        os.remove(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author.id, f'{abbreviation}.txt'))
 
 # Background tasks
     async def check_stock_reminders(self):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             if datetime.datetime.today().weekday() >= 0 and datetime.datetime.today().weekday() <= 4:
-                if datetime.datetime.now().hour == 17:
-                    if datetime.datetime.now().minute >= 1 and datetime.datetime.now().second >= 0:
+                if datetime.datetime.now().hour == 13:
+                    if datetime.datetime.now().minute == 48 and datetime.datetime.now().second == 0:
                         users = []
                         for (dirpath, dirnames, filenames) in os.walk(path('media', 'user_requests', 'reminders', 'stocks')):
                             users.extend(dirnames)
                             break
-                        print(users)
                         for user in users:
                             user_request_abbreviations = []
                             for (dirpath, dirnames, filenames) in os.walk(path('media', 'user_requests', 'reminders', 'stocks', user)):
                                 user_request_abbreviations.extend(filenames)
                                 break
-                            print(user)
                             for i in range(len(user_request_abbreviations)):
-                                print(user, (user_request_abbreviations)[:-4])
                                 with open(path('media', 'user_requests', 'reminders', 'stocks', user, user_request_abbreviations[i])) as f:
-                                    print(f.read().split())
-                                    if datetime.datetime.today().weekday() in index_days(f.read().split()):
-                                        stock_dict = get_stock_summary((list(user_request_abbreviations[i])[:-4]))
+                                    if int(datetime.datetime.today().weekday()) in index_days(f.read().split()):
+                                        stock_dict = get_stock_summary((user_request_abbreviations[i])[:-4])
                                         for k, v in stock_dict.items():
                                             if k == 'Title':
                                                 embed = discord.Embed(title=f'Summary for the stock of {v[0]}', colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
@@ -124,10 +120,9 @@ class StockCog(comms.Cog):
                                                 except IndexError:
                                                     pass
                                         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-                                        await (user.id).send(embed=embed)
-            print(f"checked {datetime.datetime.now()}")
-
-            await asyncio.sleep(60)
+                                        member = self.bot.get_user(int(user))
+                                        await member.send(embed=embed)
+            await asyncio.sleep(1)
 
 
 def setup(bot):

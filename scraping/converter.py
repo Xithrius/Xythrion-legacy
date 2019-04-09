@@ -3,6 +3,5 @@ def index_days(lst):
     days = ['m', 't', 'w', 'th', 'f']
     for i in lst:
         if i in days:
-            days.index(i)
-            number_days.append()
+            number_days.append(days.index(i))
     return number_days
