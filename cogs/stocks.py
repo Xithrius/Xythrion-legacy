@@ -83,6 +83,7 @@ class StockCog(comms.Cog):
                 try:
                     with open(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author, f'{abbreviation}.txt'), 'w') as f:
                         f.write(' '.join(str(y) for y in user_days))
+                        check = False
                 except FileNotFoundError:
                     mkdir(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author))
 
@@ -95,19 +96,23 @@ class StockCog(comms.Cog):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             if datetime.datetime.today().weekday() >= 0 and datetime.datetime.today().weekday() <= 4:
-                if datetime.datetime.now().hour == 16:
-                    if datetime.datetime.now().minute >= 0:
-                        user_request_folders = []
+                if datetime.datetime.now().hour == 17:
+                    if datetime.datetime.now().minute >= 1 and datetime.datetime.now().second >= 0:
+                        users = []
                         for (dirpath, dirnames, filenames) in os.walk(path('media', 'user_requests', 'reminders', 'stocks')):
-                            user_request_folders.extend(dirnames)
+                            users.extend(dirnames)
                             break
-                        for user in user_request_folders:
+                        print(users)
+                        for user in users:
                             user_request_abbreviations = []
                             for (dirpath, dirnames, filenames) in os.walk(path('media', 'user_requests', 'reminders', 'stocks', user)):
                                 user_request_abbreviations.extend(filenames)
                                 break
+                            print(user)
                             for i in range(len(user_request_abbreviations)):
+                                print(user, (user_request_abbreviations)[:-4])
                                 with open(path('media', 'user_requests', 'reminders', 'stocks', user, user_request_abbreviations[i])) as f:
+                                    print(f.read().split())
                                     if datetime.datetime.today().weekday() in index_days(f.read().split()):
                                         stock_dict = get_stock_summary((list(user_request_abbreviations[i])[:-4]))
                                         for k, v in stock_dict.items():
@@ -119,8 +124,10 @@ class StockCog(comms.Cog):
                                                 except IndexError:
                                                     pass
                                         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-                                        await user.send(embed=embed)
-            await asyncio.sleep(30)
+                                        await (user.id).send(embed=embed)
+            print(f"checked {datetime.datetime.now()}")
+
+            await asyncio.sleep(60)
 
 
 def setup(bot):
