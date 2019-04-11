@@ -16,11 +16,6 @@ https://github.com/Xithrius/Demonically
 ```
 pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[voice]
 ```
-* Virtual environment
-```
-py -3 -m venv venv
-source venv/Scripts/activate
-```
 
 
 # Changelog
@@ -29,8 +24,14 @@ source venv/Scripts/activate
 
 ### v0.01.0000d, pushed
 #### Main changes:
-* Yahoo finance stock summary requesting
-* 
+* Yahoo finance stock summary requesting and reminding from Monday through Friday when the stock market closes at 4pm PDT
+* Playback cog have Spotify to You Tube
+* Reminder cog remind people with stuff
+* Meme cog input and output memes from self and users
+* Identity cog contain more things about the bot and the creator
+* Warnings cog tracks and logs errors and messages to their own files
+* Setup Python file be used for people who first use the bot
+* Ease of access to setting up the bot with clear instructions
 #### Modifications:
 *
 #### Bugfixes:
@@ -47,14 +48,6 @@ source venv/Scripts/activate
 * Added comments to nearly everything
 * Added meme cog for user generated meme input and output
 * Put TODO in its own file, since it's going to constantly change
-* Plans for the next version, v0.01.0000 (this section will be removed once it comes out):
-  * Playback cog will have Spotify to You Tube
-  * Reminder cog will remind people with stuff
-  * Meme cog will input and output memes from self and users
-  * Identity cog will contain more things about the bot and the creator
-  * Directives cog will contain more logging info, when the bot starts up with it
-  * Setup Python file will be used for people who first use the bot
-  * Ease of access to setting up the bot with clear instructions
 #### Modifications:
 * Moved things around again
 * On ready event now prints out in something a quite quaint message

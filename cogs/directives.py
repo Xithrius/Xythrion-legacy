@@ -59,10 +59,6 @@ class DirectivesCog(comms.Cog):
 
 # Events
     @comms.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        await ctx.send(error)
-
-    @comms.Cog.listener()
     async def on_member_join(self, member):
         embed = discord.Embed(name=f'Welcome to {member.guild}!', value=f'Owner: {member.guild.owner}')
         member.send(embed=embed)
@@ -71,34 +67,6 @@ class DirectivesCog(comms.Cog):
     async def on_member_ban(self, guild, user):
         print(f'{user.name} was banned from {guild.name}')
         await user.channel.send(f'{user.name} was banned from {guild.name}')
-
-    @comms.Cog.listener()
-    async def on_message(self, message):
-        now = datetime.datetime.now() + datetime.timedelta(hours=8)
-        try:
-            if 'log' == sys.argv[1]:
-                print(f"guild: '{message.guild}', channel: '{message.channel}', user: '{message.author}' sends:\n\t[{now}]  '{message.content}'")
-        except IndexError:
-            pass
-        pic_extensions = ['.jpg', '.png', '.jpeg', '.gif']
-        for extension in pic_extensions:
-            try:
-                if message.attachments[0].filename.endswith(extension) and message.channel.topic == 'No pictures':
-                    await message.delete()
-                    await message.author.send(f'No pictures in channel {message.channel} of the server {message.guild}!')
-            except IndexError:
-                pass
-            except discord.errors.Forbidden:
-                await message.guild.owner.send(f'I should be able to remove pictures from a channel that does not want any. Please give me the permissions to do so.')
-
-    @comms.Cog.listener()
-    async def on_member_update(self, before, after):
-        # now = datetime.datetime.now() + datetime.timedelta(hours=8)
-        try:
-            if 'log' == sys.argv[1]:
-                print()
-        except IndexError:
-            pass
 
 
 def setup(bot):

@@ -23,7 +23,6 @@ import os
 import sys
 import traceback
 import aiohttp
-import logging
 import datetime
 import configparser
 
@@ -35,29 +34,12 @@ from essentials.pathing import path  # , mkdir
 # from essentials.welcome import welcome_prompt
 
 
-# ///////////////////////////////////////////////////////// #
-# Logging
-# ////////////////////////
-# All errors are recorded in a .log file within the logs folder
-# The file is .gitignore'd
-# ///////////////////////////////////////////////////////// #
-
-
-def discord_logger(default=False):
-    if default:
-        logger = logging.getLogger('discord')
-        logger.setLevel(logging.DEBUG)
-        handler = logging.FileHandler(filename=path('logs', 'discord.log'), encoding='utf-8', mode='w')
-        handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-        logger.addHandler(handler)
-
-
-# ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 # The Main Cog
-# ////////////////////////
+# /////////////////////////////////////////////////////////
 # Where all extensions automatically detected and loaded into
 # Only the essential commands and event are here
-# ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 
 class MainCog(comms.Cog):
@@ -77,6 +59,8 @@ class MainCog(comms.Cog):
             await ctx.send(f'Reload error: {type(e).__name__} - {e}')
         else:
             await ctx.send(f'Reload complete for {cog}')
+
+# ////////////////////////
 
     @comms.command(name='load', hidden=True)
     @comms.is_owner()
@@ -121,16 +105,27 @@ class MainCog(comms.Cog):
     @comms.Cog.listener()
     async def on_ready(self):
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
-        print()
-        print(f'  +---[{now}]---------------------------+')
-        print('  |                                                          |')
-        print(f'  |  Logging in as {self.bot.user}                          |')
-        print(f'  |  {self.bot.user} ID: {self.bot.user.id}                 |')
-        print('  |  Awaiting...                                             |')
         await bot.change_presence(activity=discord.Game(f'discord.py rewrite {discord.__version__}'))
-        print(f"  |  Presence changed to 'discord.py {discord.__version__}'                 |")
-        print('  |                                                          |')
-        print(f'  +----------------------------------------------------------+\n')
+        print()
+        print(f"+---[{now}]---------------------------------------+")
+        print("|                                                                      |")
+        print("|    ______                           _           _ _                  |")
+        print("|    |  _  \\                         (_)         | | |                 |")
+        print("|    | | | |___ _ __ ___   ___  _ __  _  ___ __ _| | |_   _            |")
+        print("|    | | | / _ \\ '_ ` _ \\ / _ \\| '_ \\| |/ __/ _` | | | | | |           |")
+        print("|    | |/ /  __/ | | | | | (_) | | | | | (_| (_| | | | |_| |           |")
+        print("|    |___/ \\___|_| |_| |_|\\___/|_| |_|_|\\___\\__,_|_|_|\\__, |           |")
+        print("|                                                      __/ |           |")
+        print("|                                                      |___/           |")
+        print("|                                                                      |")
+        print(f"|    Booting --->   {self.bot.user}                                   |")
+        print(f"|    ID      --->   {self.bot.user.id}                                 |")
+        print("|                                                                      |")
+        print("|    Awaiting...                                                       |")
+        print("|                                                                      |")
+        print("+----------------------------------------------------------------------+")
+        print()
+        print(f"Presence changed to 'discord.py {discord.__version__}'")
 
 
 # ///////////////////////////////////////////////////////// #
@@ -162,8 +157,16 @@ def main(bot=False):
         if file[-3:] == '.py':
             cogs.append(f'cogs.{file[:-3]}')
 
+    # Removing cogs if they're in the unload list
+    finalCogs = []
+    with open(path('configuration', 'cog_unload.txt'), 'r') as f:
+        for i in cogs:
+            for x in f:
+                if i != f'cogs.{x}':
+                    finalCogs.append(i)
+
     # Loading all cogs in as extensions of the main cog
-    for i in cogs:
+    for i in finalCogs:
         try:
             bot.load_extension(i)
         except Exception as e:
@@ -175,23 +178,16 @@ def main(bot=False):
     checkToken = True
     while checkToken:
         try:
-            if len(sys.argv) > 1:
-                if 'log' == sys.argv[1]:
-                    discord_logger(True)
-                else:
-                    discord_logger()
-            else:
-                config = configparser.ConfigParser()
-                config.read(path('credentials', 'config.ini'))
-                token = config['discord']['token']
-                discord_logger()
+            config = configparser.ConfigParser()
+            config.read(path('configuration', 'config.ini'))
+            token = config['discord']['token']
             bot.run(token, bot=True, reconnect=True)
             checkToken = False
         except FileNotFoundError or discord.errors.LoginFailure:
             token = input('Input discord bot token: ')
             config = configparser.ConfigParser()
             config['discord'] = {'token': token}
-            with open(path('credentials', 'config.ini'), 'w') as f:
+            with open(path('configuration', 'config.ini'), 'w') as f:
                 config.write(f)
 
 

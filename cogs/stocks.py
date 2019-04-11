@@ -94,35 +94,40 @@ class StockCog(comms.Cog):
 # Background tasks
     async def check_stock_reminders(self):
         await self.bot.wait_until_ready()
-        while not self.bot.is_closed():
-            if datetime.datetime.today().weekday() >= 0 and datetime.datetime.today().weekday() <= 4:
-                if datetime.datetime.now().hour == 13:
-                    if datetime.datetime.now().minute == 48 and datetime.datetime.now().second == 0:
-                        users = []
-                        for (dirpath, dirnames, filenames) in os.walk(path('media', 'user_requests', 'reminders', 'stocks')):
-                            users.extend(dirnames)
-                            break
-                        for user in users:
-                            user_request_abbreviations = []
-                            for (dirpath, dirnames, filenames) in os.walk(path('media', 'user_requests', 'reminders', 'stocks', user)):
-                                user_request_abbreviations.extend(filenames)
-                                break
-                            for i in range(len(user_request_abbreviations)):
-                                with open(path('media', 'user_requests', 'reminders', 'stocks', user, user_request_abbreviations[i])) as f:
-                                    if int(datetime.datetime.today().weekday()) in index_days(f.read().split()):
-                                        stock_dict = get_stock_summary((user_request_abbreviations[i])[:-4])
-                                        for k, v in stock_dict.items():
-                                            if k == 'Title':
-                                                embed = discord.Embed(title=f'Summary for the stock of {v[0]}', colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
-                                            else:
-                                                try:
-                                                    embed.add_field(name=k, value=v[0], inline=False)
-                                                except IndexError:
-                                                    pass
-                                        embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-                                        member = self.bot.get_user(int(user))
-                                        await member.send(embed=embed)
-            await asyncio.sleep(1)
+        users = []
+        for (dirpath, dirnames, filenames) in os.walk(path('media', 'user_requests', 'reminders', 'stocks')):
+            users.extend(dirnames)
+            break
+        for user in users:
+            user_request_abbreviations = []
+            for (dirpath, dirnames, filenames) in os.walk(path('media', 'user_requests', 'reminders', 'stocks', user)):
+                user_request_abbreviations.extend(filenames)
+                break
+            for i in range(len(user_request_abbreviations)):
+                with open(path('media', 'user_requests', 'reminders', 'stocks', user, user_request_abbreviations[i])) as f:
+                    if index_days(f.read().split(), datetime.datetime.today().weekday()):
+                        stock_dict = get_stock_summary((user_request_abbreviations[i])[:-4])
+                        for k, v in stock_dict.items():
+                            if k == 'Title':
+                                embed = discord.Embed(title=f'Summary for the stock of {v[0]}', colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
+                            else:
+                                try:
+                                    embed.add_field(name=k, value=v[0], inline=False)
+                                except IndexError:
+                                    pass
+                        embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
+                        for guild in self.bot.guilds:
+                            for member in guild.members:
+                                if member.id == int(user):
+                                    user = member
+                        await user.send(embed=embed)
+                        print(f"{datetime.datetime.now()}: {user.name}{user.discriminator} was reminded for {user_request_abbreviations[i]}")
+        # while not self.bot.is_closed():
+        #    if datetime.datetime.today().weekday() >= 0 and datetime.datetime.today().weekday() <= 4:
+        #        if datetime.datetime.now().hour == 13:
+        #            if datetime.datetime.now().minute == 0 and datetime.datetime.now().second == 0:
+            # await asyncio.sleep(1)
+            # print(f"{datetime.datetime.now()}: No events", end='\r')
 
 
 def setup(bot):

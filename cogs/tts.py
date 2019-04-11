@@ -46,7 +46,7 @@ class TextToSpeechCog(comms.Cog):
 
     # Error handling for GOOGLE_APPLICATION_CREDENTIALS
     try:
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('credentials', 'google_service_token.json')
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('configuration', 'google_service_token.json')
     except FileNotFoundError:
         error_prompt('Google service token is not found. Read the HELP file section to find solutions.')
 
