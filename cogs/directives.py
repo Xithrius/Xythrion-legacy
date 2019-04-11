@@ -10,32 +10,24 @@
 '''
 
 
-# ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 # Libraries
-# ////////////////////////
-# Built-in modules
-# Third-party modules
-# Custom modules
-# ///////////////////////////////////////////////////////// #
+# /////////////////////////////////////////////////////////
+# Built-in modules, third-party modules, custom modules
+# //////////////////////////////////////////////////////////////////////////// #
 
 
-import datetime
 import time
-import sys
 
 import discord
 from discord.ext import commands as comms
 
-# from essentials.pathing import path, mkdir
-# from essentials.errors import error_prompt, input_loop
-# from essentials.welcome import welcome_prompt
 
-
-# ///////////////////////////////////////////////////////// #
-# Directives cog
-# ////////////////////////
-# General commands, that is all
-# ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+#
+# /////////////////////////////////////////////////////////
+#
+# //////////////////////////////////////////////////////////////////////////// #
 
 
 class DirectivesCog(comms.Cog):
@@ -43,7 +35,7 @@ class DirectivesCog(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-# Commands
+# //////////////////////// # Commands
     @comms.command(name='ping')
     async def get_latency(self, ctx):
         timeStart = time.time()
@@ -57,7 +49,7 @@ class DirectivesCog(comms.Cog):
     async def get_members(self, ctx):
         await ctx.send(f"Members on this server: {', '.join(str(x) for x in ctx.message.guild.members)}")
 
-# Events
+# //////////////////////// # Events
     @comms.Cog.listener()
     async def on_member_join(self, member):
         embed = discord.Embed(name=f'Welcome to {member.guild}!', value=f'Owner: {member.guild.owner}')

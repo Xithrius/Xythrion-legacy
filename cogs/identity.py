@@ -10,32 +10,30 @@
 '''
 
 
-# ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 # Libraries
-# ////////////////////////
-# Built-in modules
-# Third-party modules
-# Custom modules
-# ///////////////////////////////////////////////////////// #
+# /////////////////////////////////////////////////////////
+# Built-in modules, third-party modules, custom modules
+# //////////////////////////////////////////////////////////////////////////// #
 
 
 import csv
-import datetime
 import platform
+import datetime
 
 import discord
 from discord.ext import commands as comms
 
-from essentials.pathing import path  # , mkdir
-# from essentials.errors import error_prompt, input_loop
-# from essentials.welcome import welcome_prompt
+# from scraping.yahoo_finance import get_stock_summary
+# from scraping.converter import index_days
+from essentials.pathing import path
 
 
-# ///////////////////////////////////////////////////////// #
-# Identity cog
-# ////////////////////////
-# The bot's personal attributes in a cog
-# ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+#
+# /////////////////////////////////////////////////////////
+#
+# //////////////////////////////////////////////////////////////////////////// #
 
 
 class IdentityCog(comms.Cog):
@@ -43,7 +41,7 @@ class IdentityCog(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-# Commands
+# //////////////////////// # Commands
     @comms.command(name='owner')
     async def show_creator(self, ctx):
         embed = discord.Embed(colour=0xc27c0e)
@@ -79,6 +77,10 @@ class IdentityCog(comms.Cog):
     @comms.command(name='videos')
     async def favorite_videos(self, ctx):
         pass
+
+    @comms.command(name='icon')
+    async def get_own_avatar(self, ctx):
+        await ctx.send(self.bot.user.avatar_url)
 
 
 def setup(bot):

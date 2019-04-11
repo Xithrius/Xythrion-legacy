@@ -18,7 +18,7 @@
 # ///////////////////////////////////////////////////////// #
 
 
-def error_prompt(string, option=None):
+def error_prompt(string: str, option=None):
     if option is not None:
         x = f"#{'/' * len(string)}#"
         print(f"{x}\n{option}:\n{string}\n{x}")
@@ -35,7 +35,7 @@ def error_prompt(string, option=None):
 # ///////////////////////////////////////////////////////// #
 
 
-def input_loop(string):
+def input_loop(string: str):
     check = True
     while check:
         for i in range(len(string)):

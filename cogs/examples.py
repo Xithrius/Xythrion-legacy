@@ -10,29 +10,28 @@
 '''
 
 
-# ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 # Libraries
-# ////////////////////////
-# Built-in modules
-# Third-party modules
-# Custom modules
-# ///////////////////////////////////////////////////////// #
+# /////////////////////////////////////////////////////////
+# Built-in modules, third-party modules, custom modules
+# //////////////////////////////////////////////////////////////////////////// #
 
 
 import discord
 from discord.ext import commands as comms
 
+# from scraping.yahoo_finance import get_stock_summary
+# from scraping.converter import index_days
 # from essentials.pathing import path, mkdir
 # from essentials.errors import error_prompt, input_loop
 # from essentials.welcome import welcome_prompt
 
 
-# ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 #
-# ////////////////////////
+# /////////////////////////////////////////////////////////
 #
-#
-# ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 
 class ExampleCog(comms.Cog):
@@ -40,7 +39,7 @@ class ExampleCog(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-# Commands
+# //////////////////////// # Commands
     @comms.command(name='embeds')
     @comms.guild_only()
     async def example_embed(self, ctx):
@@ -117,7 +116,7 @@ class ExampleCog(comms.Cog):
         """A simple command which only responds to the owner of the bot."""
         await ctx.send(f'Hello {ctx.author.mention}. This command can only be used by you!!')
 
-    # Events
+# //////////////////////// # Events
     async def on_member_ban(self, guild, user):
         """Event Listener which is called when a user is banned from the guild.
         For this example I will keep things simple and just print some info.

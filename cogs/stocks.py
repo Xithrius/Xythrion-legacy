@@ -10,35 +10,30 @@
 '''
 
 
-# ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 # Libraries
-# ////////////////////////
-# Built-in modules
-# Third-party modules
-# Custom modules
-# ///////////////////////////////////////////////////////// #
+# /////////////////////////////////////////////////////////
+# Built-in modules, third-party modules, custom modules
+# //////////////////////////////////////////////////////////////////////////// #
 
 
-import platform
-import datetime
-import asyncio
 import os
+import datetime
+import platform
 
 import discord
 from discord.ext import commands as comms
 
 from scraping.yahoo_finance import get_stock_summary
-from scraping.converter import index_days
+from essentials.converter import index_days
 from essentials.pathing import path, mkdir
-# from essentials.errors import error_prompt, input_loop
-# from essentials.welcome import welcome_prompt
 
 
-# ///////////////////////////////////////////////////////// #
-# Stock cog
-# ////////////////////////
-# Getting stocks from yahoo finance at the close time
-# ///////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+#
+# /////////////////////////////////////////////////////////
+#
+# //////////////////////////////////////////////////////////////////////////// #
 
 
 class StockCog(comms.Cog):
@@ -50,7 +45,7 @@ class StockCog(comms.Cog):
     def cog_unload(self):
         self.bg_task.cancel()
 
-# Commands
+# //////////////////////// # Commands
     @comms.command(name='stocks')
     async def get_current_stocks(self, ctx, abbreviation, option='low'):
         stock_dict = get_stock_summary(abbreviation, option)
@@ -91,7 +86,7 @@ class StockCog(comms.Cog):
     async def stock_reminder_cancel(self, ctx, abbreviation):
         os.remove(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author.id, f'{abbreviation}.txt'))
 
-# Background tasks
+# //////////////////////// # Background tasks
     async def check_stock_reminders(self):
         await self.bot.wait_until_ready()
         users = []
