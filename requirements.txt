@@ -1,0 +1,10 @@
+platform
+datetime
+imageio
+uuid
+hashlib
+youtube_dl
+google.cloud
+configparser
+pytemperature
+aiohttp

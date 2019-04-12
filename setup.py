@@ -1,27 +1,21 @@
-from setuptools import setup
-import re
+from setuptools import setup, find_packages
 
-packages = []
-with open('packages.txt') as f:
-    packages = f.read().splitlines()
-
-version = ''
-with open('bot/__init__.py') as f:
-    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)
+from essentials.pathing import path
 
 
-setup(name='Demonically',
-      author='Xithrius',
-      url='https://github.com/Xithrius/Demonically',
-      project_urls={
-        "Documentation": "https://github.com/Xithrius/Demonically#demonically",
-        "Issue tracker": "https://github.com/Xithrius/Demonically/issues",
-        "Wiki": "https://github.com/Xithrius/Demonically/wiki"
-      },
-      version=version,
-      packages=['bot', 'bot.essentials'],
-      license='MIT',
-      description='A demonic bot',
-      include_package_data=True,
-      install_requires=packages,
-      python_requires='>=3.7.2')
+def read_requirements():
+    with open(path('requirements.txt'), 'r') as f:
+        return f.read().split()
+
+
+if __name__ == "__main__":
+    setup(
+        name="Demonically",
+        version="1.1.1",
+        author="Xithrius",
+        description="A demonic bot",
+        license="MIT",
+        url="https://github.com/Xithrius/Demonically",
+        packages=find_packages(),
+        install_requires=read_requirements()
+    )
