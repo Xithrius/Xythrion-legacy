@@ -38,14 +38,18 @@ from essentials.pathing import path, mkdir
 
 class StockCog(comms.Cog):
 
+    # //////////////////////////////////////////////// # Attribute creation
+    # //////////////////////// # Objects: bot and background task
     def __init__(self, bot):
         self.bot = bot
         self.bg_task = self.bot.loop.create_task(self.check_stock_reminders())
 
+    # //////////////////////// # Cancel background task when cog is unloaded
     def cog_unload(self):
         self.bg_task.cancel()
 
-# //////////////////////// # Commands
+# //////////////////////////////////////////////// # Commands
+# //////////////////////// # Get the current stock of something
     @comms.command(name='stocks')
     async def get_current_stocks(self, ctx, abbreviation, option='low'):
         stock_dict = get_stock_summary(abbreviation, option)
@@ -60,6 +64,7 @@ class StockCog(comms.Cog):
         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
         await ctx.send(embed=embed)
 
+# //////////////////////// # Create a reminder for a stock
     @comms.command(name='stocks_remind')
     async def stock_reminder_init(self, ctx, abbreviation, *user_days):
         error_list = []
@@ -82,11 +87,13 @@ class StockCog(comms.Cog):
                 except FileNotFoundError:
                     mkdir(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author.id))
 
+# //////////////////////// # Remove the reminder for the stock
     @comms.command(name='stocks_cancel')
     async def stock_reminder_cancel(self, ctx, abbreviation):
         os.remove(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author.id, f'{abbreviation}.txt'))
 
-# //////////////////////// # Background tasks
+# //////////////////////////////////////////////// # Background tasks
+# //////////////////////// # Checking folders for reminders then sending stock updates out
     async def check_stock_reminders(self):
         await self.bot.wait_until_ready()
         users = []
