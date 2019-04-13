@@ -4,7 +4,7 @@ from essentials.pathing import path
 
 
 def read_requirements():
-    with open(path('requirements.txt'), 'r') as f:
+    with open(path('configuration', 'requirements.txt'), 'r') as f:
         return f.read().split()
 
 

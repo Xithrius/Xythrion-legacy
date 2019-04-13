@@ -45,7 +45,7 @@ class MainCog(comms.Cog):
 # //////////////////////// # Commands
     @comms.command(name='r', hidden=True)
     @comms.is_owner()
-    async def cog_reload(self, ctx, *, cog: str):
+    async def reload_cog(self, ctx, *, cog: str):
         """ Reload specific cog(s) """
         try:
             self.bot.unload_extension(cog)
@@ -57,7 +57,7 @@ class MainCog(comms.Cog):
 
     @comms.command(name='load', hidden=True)
     @comms.is_owner()
-    async def cog_load(self, ctx, *, cog: str):
+    async def load_cog(self, ctx, *, cog: str):
         """ Load in a specific cog(s) """
         try:
             self.bot.load_extension(cog)
@@ -68,7 +68,7 @@ class MainCog(comms.Cog):
 
     @comms.command(name='unload', hidden=True)
     @comms.is_owner()
-    async def cog_unload(self, ctx, *, cog: str):
+    async def unload_cog(self, ctx, *, cog: str):
         """ Unload a specific cog(s) """
         try:
             self.bot.unload_extension(cog)
@@ -150,16 +150,8 @@ def main(bot=False):
         if file[-3:] == '.py':
             cogs.append(f'cogs.{file[:-3]}')
 
-    # Removing cogs if they're in the unload list
-    finalCogs = []
-    with open(path('configuration', 'cog_unload.txt'), 'r') as f:
-        for i in cogs:
-            for x in f:
-                if i != f'cogs.{x}':
-                    finalCogs.append(i)
-
     # Loading all cogs in as extensions of the main cog
-    for i in finalCogs:
+    for i in cogs:
         try:
             bot.load_extension(i)
         except Exception as e:

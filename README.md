@@ -11,25 +11,25 @@ https://github.com/Xithrius/Demonically
 * [Install FFmpeg](https://github.com/adaptlearning/adapt_authoring/wiki/Installing-FFmpeg)
 
 
-# Main objects to install:
-* Discord.py rewrite with voice
-```
-pip install -U git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[voice]
-```
+# Running the bot
+* Open git bash within the Demonically directory where the Python bot file resides
+* To activate the virtual environment, which is recommended, run `source venv/Scripts/activate`
+* To start the bot, run `py -3 -u bot.py`
+ * `-u` is used to prevent possible text buffering issues
 
 
 # Changelog
 
-## At the end of version numbers, there will be a 'd' or a 'r'. 'd' is for development and 'r' is for release.
+## At the end of version numbers, there will be a 'd' for development and 'r' for release
 
 ### v0.01.0000d, pushed
 #### Main changes:
+* The directory venv is the virtual environment with pre-loaded packages, so bot.py can run with no package not being found after using setup.py
 * Yahoo finance stock summary requesting and reminding from Monday through Friday when the stock market closes at 4pm PDT
-* Playback cog have Spotify to You Tube
-* Reminder cog remind people with stuff
+* Memos cog remind people with stuff
 * Meme cog input and output memes from self and users
 * Identity cog contain more things about the bot and the creator
-* Warnings cog tracks and logs errors and messages to their own files
+* Warnings cog tracks and logs errors and messages to their own files within the registry folder
 * Setup Python file be used for people who first use the bot
 * Ease of access to setting up the bot with clear instructions
 #### Modifications:

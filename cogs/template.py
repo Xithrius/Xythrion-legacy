@@ -37,7 +37,7 @@ class TemplateCog(comms.Cog):
     # //////////////////////// # Object(s): bot and background task(s)
     def __init__(self, bot):
         self.bot = bot
-        self.bg_task = self.bot.loop.create_task(self.check_stock_reminders())
+        self.bg_task = self.bot.loop.create_task(self.foo_reminder())
 
     # //////////////////////// # Cancel background task(s) when cog is unloaded
     def cog_unload(self):
@@ -45,7 +45,9 @@ class TemplateCog(comms.Cog):
 
 # //////////////////////////////////////////////// # Commands
     # //////////////////////// # Description
-    @comms.command()
+    @comms.command(hidden=True)
+    @comms.guild_only()
+    @comms.is_owner()
     async def foo(self, ctx):
         pass
 

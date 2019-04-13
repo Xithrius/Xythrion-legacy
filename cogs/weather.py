@@ -40,12 +40,12 @@ from essentials.pathing import path
 
 class WeatherCog(comms.Cog):
 
-    # //////////////////////// # Object(s): bot and background task(s)
+    # //////////////////////// # Object(s): bot
     def __init__(self, bot):
         self.bot = bot
 
 # //////////////////////////////////////////////// # Commands
-# //////////////////////// # Get weather for an input location
+    # //////////////////////// # Get weather for an input location
     @comms.command(name='weather')
     async def get_weather(self, ctx, *args):
         checkToken = True
