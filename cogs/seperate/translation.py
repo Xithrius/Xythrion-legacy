@@ -17,6 +17,8 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
+# import binascii
+
 from discord.ext import commands as comms
 
 
@@ -38,7 +40,7 @@ class TranslationCog(comms.Cog):
     # //////////////////////// # English to binary
     @comms.command(name='binary')
     async def to_binary(self, ctx):
-        ctx.send(f'')
+        pass
 
 
 def setup(bot):

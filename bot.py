@@ -27,13 +27,13 @@ import configparser
 import discord
 from discord.ext import commands as comms
 
-from essentials.pathing import path
+from containers.essentials.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-#
+# Main cog
 # /////////////////////////////////////////////////////////
-#
+# Items that are essential to running the bot properly
 # //////////////////////////////////////////////////////////////////////////// #
 
 
@@ -42,8 +42,19 @@ class MainCog(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-# //////////////////////// # Commands
-    @comms.command(name='r', hidden=True)
+# //////////////////////////////////////////////// # Commands
+    # //////////////////////// #
+    @comms.command(name='r_b', hidden=True)
+    async def reload_background_task(self, ctx):
+        pass
+    # //////////////////////// #
+
+    @comms.command(name='ra_b', hidden=True)
+    async def reload_all_background_tasks(self, ctx):
+        pass
+
+    # //////////////////////// # Reloading cog
+    @comms.command(name='r_c', hidden=True)
     @comms.is_owner()
     async def reload_cog(self, ctx, *, cog: str):
         """ Reload specific cog(s) """
@@ -55,6 +66,36 @@ class MainCog(comms.Cog):
         else:
             await ctx.send(f'Reload complete for {cog}')
 
+    # //////////////////////// # Reloading all cogs that exist
+    @comms.command(name='ra_c', hidden=True)
+    @comms.is_owner()
+    async def reload_all_custom_cogs(self, ctx, option=None):
+        cogs = []
+        if option == 'all':
+            for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
+                cogs.extend(filenames)
+                break
+            main_cogs = []
+            for file in essential_cogs:
+                if file[-3:] == '.py':
+                    cogs.append(f'cogs.{file[:-3]}')
+        seperate_cogs = []
+        for (dirpath, dirnames, filenames) in os.walk(path('cogs', 'seperate')):
+            seperate_cogs.extend(filenames)
+            break
+        for file in seperate_cogs:
+            if file[-3:] == '.py':
+                cogs.append(f'cogs.seperate.{file[:-3]}')
+        for cog in cogs:
+            try:
+                self.bot.unload_extension(cog)
+                self.bot.load_extension(cog)
+            except Exception as e:
+                await ctx.send(f'Reload error: {type(e).__name__} - {e}')
+            else:
+                await ctx.send(f'Reload complete for {cog}')
+
+    # //////////////////////// # Loading cog(s)
     @comms.command(name='load', hidden=True)
     @comms.is_owner()
     async def load_cog(self, ctx, *, cog: str):
@@ -66,6 +107,7 @@ class MainCog(comms.Cog):
         else:
             await ctx.send(f'Load complete for {cog}')
 
+    # //////////////////////// # Unloading cog(s)
     @comms.command(name='unload', hidden=True)
     @comms.is_owner()
     async def unload_cog(self, ctx, *, cog: str):
@@ -77,6 +119,7 @@ class MainCog(comms.Cog):
         else:
             await ctx.send(f'Unload complete for {cog}')
 
+    # //////////////////////// # Making the bot log out, and remove all big files
     @comms.command()
     @comms.is_owner()
     async def exit(self, ctx):
@@ -94,7 +137,8 @@ class MainCog(comms.Cog):
         print('Exiting...')
         await self.bot.logout()
 
-# //////////////////////// # Events
+# //////////////////////////////////////////////// # Events
+    # //////////////////////// # When the bot is ready, this message will be printed
     @comms.Cog.listener()
     async def on_ready(self):
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
@@ -113,7 +157,7 @@ class MainCog(comms.Cog):
     |
     +----------------------------------------------------------------------+
     |
-    |    Presence changed to 'discord.py {discord.__version__}'
+    |    playing discord.py {discord.__version__}...
     |    Awaiting...
     |
     +----------------------------------------------------------------------+
@@ -123,9 +167,9 @@ class MainCog(comms.Cog):
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-#
+# Main
 # /////////////////////////////////////////////////////////
-#
+# Sets up the bot with auto-detection of cogs that will be used, and configuration
 # //////////////////////////////////////////////////////////////////////////// #
 
 
@@ -139,25 +183,40 @@ def main(bot=False):
     bot.remove_command('help')
 
     # Searching for cogs within the cogs directory
-    fileCogs = []
+    essential_cogs = []
     for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
-        fileCogs.extend(filenames)
+        essential_cogs.extend(filenames)
         break
 
-    # Making the names of cogs start with cogs.
+    custom_cogs = []
+    for (dirpath, dirnames, filenames) in os.walk(path('cogs', 'seperate')):
+        custom_cogs.extend(filenames)
+        break
+
+    # Creating the list of extensions
     cogs = []
-    for file in fileCogs:
+    for file in essential_cogs:
         if file[-3:] == '.py':
             cogs.append(f'cogs.{file[:-3]}')
+    for file in custom_cogs:
+        if file[-3:] == '.py':
+            cogs.append(f'cogs.seperate.{file[:-3]}')
+
+    # Making a list of all blocked cogs
+    blocked_cogs = []
+    with open(path('configuration', 'blocked_cogs.txt'), 'r') as f:
+        for x in f:
+            blocked_cogs.append(f'cogs.{x}')
 
     # Loading all cogs in as extensions of the main cog
     for i in cogs:
-        try:
-            bot.load_extension(i)
-        except Exception as e:
-            print(e)
-            print(f'Failed to load extension {i}.', file=sys.stderr)
-            traceback.print_exc()
+        if i not in blocked_cogs:
+            try:
+                bot.load_extension(i)
+            except Exception as e:
+                print(e)
+                print(f'Failed to load extension {i}.', file=sys.stderr)
+                traceback.print_exc()
 
     # Looping the input until token is correct
     checkToken = True

@@ -22,6 +22,7 @@ import __main__
 
 from distutils import dir_util
 
+
 # ///////////////////////////////////////////////////////// #
 #
 # ////////////////////////
@@ -35,6 +36,7 @@ def path(*objects):
     for i in objects:
         newPath.append(i)
     return '\\'.join(str(y) for y in newPath)
+
 
 # ///////////////////////////////////////////////////////// #
 #

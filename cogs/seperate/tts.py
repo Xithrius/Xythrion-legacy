@@ -24,8 +24,8 @@ from discord.ext import commands as comms
 from google.cloud import texttospeech  # ssml must be well-formed according to: https://www.w3.org/TR/speech-synthesis/
 import discord
 
-from essentials.errors import error_prompt
-from essentials.pathing import path
+from containers.essentials.errors import error_prompt
+from containers.essentials.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #

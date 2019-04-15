@@ -24,9 +24,9 @@ import platform
 from discord.ext import commands as comms
 import discord
 
-from scraping.yahoo_finance import get_stock_summary
-from essentials.converter import index_days
-from essentials.pathing import path, mkdir
+from containers.scraping.yahoo_finance import get_stock_summary
+from containers.essentials.converter import index_days
+from containers.essentials.pathing import path, mkdir
 
 
 # //////////////////////////////////////////////////////////////////////////// #

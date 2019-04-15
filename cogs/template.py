@@ -22,7 +22,7 @@ import asyncio
 from discord.ext import commands as comms
 # import discord
 
-# from essentials. import
+# from containers. import
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -49,7 +49,7 @@ class TemplateCog(comms.Cog):
     @comms.guild_only()
     @comms.is_owner()
     async def foo(self, ctx):
-        pass
+        await ctx.send('Test sent')
 
 # //////////////////////////////////////////////// # Events
     # //////////////////////// # Description

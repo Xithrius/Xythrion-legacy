@@ -28,7 +28,7 @@ from discord.ext import commands as comms
 import discord
 import pytemperature
 
-from essentials.pathing import path
+from containers.essentials.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #

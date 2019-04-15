@@ -15,7 +15,7 @@ https://github.com/Xithrius/Demonically
 * Open git bash within the Demonically directory where the Python bot file resides
 * To activate the virtual environment, which is recommended, run `source venv/Scripts/activate`
 * To start the bot, run `py -3 -u bot.py`
- * `-u` is used to prevent possible text buffering issues
+ * `-u` is used to prevent possible text buffering issues that occur within some consoles
 
 
 # Changelog
@@ -33,8 +33,6 @@ https://github.com/Xithrius/Demonically
 * Setup Python file be used for people who first use the bot
 * Ease of access to setting up the bot with clear instructions
 #### Modifications:
-*
-#### Bugfixes:
 *
 
 ### v0.00.0009r, pushed 04/04/2019, 2:11am PDT

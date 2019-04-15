@@ -23,7 +23,7 @@ import datetime
 from discord.ext import commands as comms
 import discord
 
-from essentials.pathing import path, mkdir
+from containers.essentials.pathing import path, mkdir
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -39,12 +39,6 @@ class WarningsCog(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-# //////////////////////////////////////////////// # Commands
-    # //////////////////////// #
-    @comms.command(hidden=True)
-    async def cleanup(self, ctx):
-        pass
-
 # //////////////////////////////////////////////// # Events
     # //////////////////////// # Sends error to the user
     @comms.Cog.listener()
@@ -56,7 +50,7 @@ class WarningsCog(comms.Cog):
     async def on_disconnect(self):
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
         print(f'[{now}]: WARNING: BOT HAS DISCONNECTED FROM NETWORK')
-    
+
     # //////////////////////// # Sends warning when the bot connects to the network
     @comms.Cog.listener()
     async def on_connect(self):
@@ -73,16 +67,19 @@ class WarningsCog(comms.Cog):
     async def on_message(self, message):
 
         # Logging the message into the console and saving in it's own file, but only if console inputs 'log'
-        if sys.argv[1] == 'log':
-            now = datetime.datetime.now() + datetime.timedelta(hours=8)
-            check = True
-            while check:
-                try:
-                    with open(path('registry', message.guild, message.channel, f'{message.author}.txt'), 'a') as f:
-                        f.write(f"[{now}]: 'message.content'")
-                        check = False
-                except FileNotFoundError:
-                    mkdir('registry', message.guild, message.channel)
+        try:
+            if sys.argv[1] == 'log':
+                now = datetime.datetime.now() + datetime.timedelta(hours=8)
+                check = True
+                while check:
+                    try:
+                        with open(path('registry', message.guild, message.channel, f'{message.author}.txt'), 'a') as f:
+                            f.write(f"[{now}]: '{message.content}'\n")
+                            check = False
+                    except FileNotFoundError:
+                        mkdir('registry', message.guild, message.channel)
+        except IndexError:
+            pass
 
         # Blocking pictures if the description doesn't want them
         pic_extensions = ['.jpg', '.png', '.jpeg', '.gif']

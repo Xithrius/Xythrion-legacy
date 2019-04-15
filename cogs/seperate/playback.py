@@ -23,7 +23,7 @@ from discord.ext import commands as comms
 import discord
 import youtube_dl
 
-from essentials.pathing import path, mkdir
+from containers.essentials.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -44,6 +44,10 @@ class PlaybackCog(comms.Cog):
     @comms.command()
     @comms.is_owner()
     async def play(self, ctx, url):
+        for i in range(len(url)):
+            if url[i] == '&':
+                url = url[0:i - 1]
+                break
         lock = asyncio.Lock()
         await lock.acquire()
         try:
