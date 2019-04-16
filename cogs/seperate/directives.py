@@ -72,6 +72,36 @@ class DirectivesCog(comms.Cog):
         print(f'{user.name} was banned from {guild.name}')
         await user.channel.send(f'{user.name} was banned from {guild.name}')
 
+    # //////////////////////// # Welcomes back a user
+    @comms.Cog.listener()
+    async def on_member_unban(guild, user):
+        pass
+    
+    # //////////////////////// # Announces when the client joins a guild
+    @comms.Cog.listener()
+    async def on_guild_join(self, guild):
+        pass
+
+    # //////////////////////// # Messages the owner when removed from a guild
+    @comms.Cog.listener()
+    async def on_guild_remove(self, guild):
+        pass
+
+    @comms.Cog.listener()
+    async def on_message(self, message):
+        # Blocking pictures if the description doesn't want them
+        pic_extensions = ['.jpg', '.png', '.jpeg', '.gif']
+        for extension in pic_extensions:
+            try:
+                if message.attachments[0].filename.endswith(extension) and message.channel.topic == 'No pictures':
+                    await message.delete()
+                    await message.author.send(f'No pictures in channel {message.channel} of the server {message.guild}!')
+            except IndexError:
+                pass
+            except discord.errors.Forbidden:
+                await message.guild.owner.send(f'I should be able to remove pictures from a channel that does not want any. Please give me the permissions to do so.')
+
+
 
 def setup(bot):
     bot.add_cog(DirectivesCog(bot))

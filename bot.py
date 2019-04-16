@@ -23,6 +23,7 @@ import traceback
 import aiohttp
 import datetime
 import configparser
+import traceback
 
 import discord
 from discord.ext import commands as comms
@@ -55,13 +56,14 @@ class MainCog(comms.Cog):
     async def load_cogs_in(self):
         loaded_cogs = []
         broken_cogs = []
-        await self.bot.wait_until_ready():
+        await self.bot.wait_until_ready()
         if not self.bot.is_closed():
             for cog in self.cogs:
                 try:
                     self.bot.load_extension(cog)
                 except Exception as e:
                     broken_cogs.append(f'{cog}: {type(e).__name__} - {e}')
+                    traceback.print_exc()
                 else:
                     loaded_cogs.append(cog)
             if len(broken_cogs) > 0:
@@ -76,7 +78,7 @@ class MainCog(comms.Cog):
     @comms.Cog.listener()
     async def on_ready(self):
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
-        await bot.change_presence(activity=discord.Game(f'discord.py rewrite {discord.__version__}'))
+        await self.bot.change_presence(activity=discord.Game(f'discord.py rewrite {discord.__version__}'))
         start = f"""
 
     +----[ Demonically ]---------------------------------------------------+
@@ -118,21 +120,19 @@ class MainCog(comms.Cog):
     async def reload_cog(self, ctx, cog):
         loaded_cogs = []
         broken_cogs = []
-        await self.bot.wait_until_ready():
-        if not self.bot.is_closed():
-            for cog in self.cogs:
-                try:
-                    self.bot.load_extension(cog)
-                except Exception as e:
-                    broken_cogs.append(f'{cog}: {type(e).__name__} - {e}')
-                else:
-                    loaded_cogs.append(cog)
-            if len(broken_cogs) > 0:
-                print(f"Cog(s) could not be loaded:\n{', '.join(str(y) for y in broken_cogs)}")
-            if len(loaded_cogs) > 0:
-                print(f"Cog(s) loaded:\n{', '.join(str(y) for y in loaded_cogs)}")
+        for cog in self.cogs:
+            try:
+                self.bot.load_extension(cog)
+            except Exception as e:
+                broken_cogs.append(f'{cog}: {type(e).__name__} - {e}')
             else:
-                print(f"No cogs were loaded")
+                loaded_cogs.append(cog)
+        if len(broken_cogs) > 0:
+            print(f"Cog(s) could not be loaded:\n{', '.join(str(y) for y in broken_cogs)}")
+        if len(loaded_cogs) > 0:
+            print(f"Cog(s) loaded:\n{', '.join(str(y) for y in loaded_cogs)}")
+        else:
+            print(f"No cogs were loaded")
 
     # //////////////////////// # Reload all cogs
     @comms.command(name='ra_c', hidden=True)
@@ -151,13 +151,13 @@ class MainCog(comms.Cog):
     @comms.command(name='exit', hidden=True)
     @comms.is_owner()
     async def logout(self, ctx):
-        pass
+        await self.bot.logout()
 
     # //////////////////////// # Reload the bot itself
     @comms.command(name='r', hidden=True)
     @comms.is_owner()
     async def reload(self, ctx):
-        pass
+        pass # I'll do this at some point
 
 # //////////////////////////////////////////////// # Passing objects into the MainCog
 def main(bot=comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_prefix='$')):
@@ -186,7 +186,7 @@ def main(bot=comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_prefix
     with open(path('configuration', 'blocked_cogs.txt'), 'r') as f:
         for x in f:
             for i in cogs:
-                if i != f'cogs.{x[:-1]}' or f'cogs.seperate.{x[:-1]}'
+                if i != f'cogs.{x[:-1]}' or f'cogs.seperate.{x[:-1]}':
                    unblocked_cogs.append(i)
     
     bot.add_cog(MainCog(bot, unblocked_cogs))
@@ -210,7 +210,7 @@ def main(bot=comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_prefix
 
 
 if __name__ == '__main__':
-    main()
     print('Booting without setup...')
+    main()
 else:
     print('Booting from another location...')
