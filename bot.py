@@ -33,109 +33,43 @@ from containers.essentials.pathing import path
 # //////////////////////////////////////////////////////////////////////////// #
 # Main cog
 # /////////////////////////////////////////////////////////
-# Items that are essential to running the bot properly
+# Items that are included are essential to running the bot
 # //////////////////////////////////////////////////////////////////////////// #
 
 
 class MainCog(comms.Cog):
 
-    def __init__(self, bot):
+    # //////////////////////// # Object(s): 
+    # bot, list of cogs to be loaded, background task(s)
+    def __init__(self, bot, cogs):
         self.bot = bot
+        self.cogs = cogs
+        self.load_cog_task = self.bot.loop.create_task(self.load_cogs_in())
 
-# //////////////////////////////////////////////// # Commands
-    # //////////////////////// #
-    @comms.command(name='r_b', hidden=True)
-    async def reload_background_task(self, ctx):
-        pass
-    # //////////////////////// #
-
-    @comms.command(name='ra_b', hidden=True)
-    async def reload_all_background_tasks(self, ctx):
+    def cog_unload(self):
+        # self.bg_task.cancel()
         pass
 
-    # //////////////////////// # Reloading cog
-    @comms.command(name='r_c', hidden=True)
-    @comms.is_owner()
-    async def reload_cog(self, ctx, *, cog: str):
-        """ Reload specific cog(s) """
-        try:
-            self.bot.unload_extension(cog)
-            self.bot.load_extension(cog)
-        except Exception as e:
-            await ctx.send(f'Reload error: {type(e).__name__} - {e}')
-        else:
-            await ctx.send(f'Reload complete for {cog}')
-
-    # //////////////////////// # Reloading all cogs that exist
-    @comms.command(name='ra_c', hidden=True)
-    @comms.is_owner()
-    async def reload_all_custom_cogs(self, ctx, option=None):
-        cogs = []
-        if option == 'all':
-            for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
-                cogs.extend(filenames)
-                break
-            main_cogs = []
-            for file in essential_cogs:
-                if file[-3:] == '.py':
-                    cogs.append(f'cogs.{file[:-3]}')
-        seperate_cogs = []
-        for (dirpath, dirnames, filenames) in os.walk(path('cogs', 'seperate')):
-            seperate_cogs.extend(filenames)
-            break
-        for file in seperate_cogs:
-            if file[-3:] == '.py':
-                cogs.append(f'cogs.seperate.{file[:-3]}')
-        for cog in cogs:
-            try:
-                self.bot.unload_extension(cog)
-                self.bot.load_extension(cog)
-            except Exception as e:
-                await ctx.send(f'Reload error: {type(e).__name__} - {e}')
+# //////////////////////////////////////////////// # Background tasks
+    # //////////////////////// # Load the cogs in after the bot is ready
+    async def load_cogs_in(self):
+        loaded_cogs = []
+        broken_cogs = []
+        await self.bot.wait_until_ready():
+        if not self.bot.is_closed():
+            for cog in self.cogs:
+                try:
+                    self.bot.load_extension(cog)
+                except Exception as e:
+                    broken_cogs.append(f'{cog}: {type(e).__name__} - {e}')
+                else:
+                    loaded_cogs.append(cog)
+            if len(broken_cogs) > 0:
+                print(f"Cog(s) could not be loaded:\n{', '.join(str(y) for y in broken_cogs)}")
+            if len(loaded_cogs) > 0:
+                print(f"Cog(s) loaded:\n{', '.join(str(y) for y in loaded_cogs)}")
             else:
-                await ctx.send(f'Reload complete for {cog}')
-
-    # //////////////////////// # Loading cog(s)
-    @comms.command(name='load', hidden=True)
-    @comms.is_owner()
-    async def load_cog(self, ctx, *, cog: str):
-        """ Load in a specific cog(s) """
-        try:
-            self.bot.load_extension(cog)
-        except Exception as e:
-            await ctx.send(f'Reload error: {type(e).__name__} - {e}')
-        else:
-            await ctx.send(f'Load complete for {cog}')
-
-    # //////////////////////// # Unloading cog(s)
-    @comms.command(name='unload', hidden=True)
-    @comms.is_owner()
-    async def unload_cog(self, ctx, *, cog: str):
-        """ Unload a specific cog(s) """
-        try:
-            self.bot.unload_extension(cog)
-        except Exception as e:
-            await ctx.send(f'Reload error: {type(e).__name__} - {e}')
-        else:
-            await ctx.send(f'Unload complete for {cog}')
-
-    # //////////////////////// # Making the bot log out, and remove all big files
-    @comms.command()
-    @comms.is_owner()
-    async def exit(self, ctx):
-        """ Make the bot logout, while cleaning up files """
-        music = []
-        for (dirpath, dirnames, filenames) in os.walk(path('audio', 'music')):
-            music.extend(filenames)
-            break
-        try:
-            for i in music:
-                os.remove(path('audio', 'music', i))
-            os.remove(path('audio', 'output.mp3'))
-        except FileNotFoundError:
-            pass
-        print('Exiting...')
-        await self.bot.logout()
+                print(f"No cogs were loaded")
 
 # //////////////////////////////////////////////// # Events
     # //////////////////////// # When the bot is ready, this message will be printed
@@ -165,29 +99,73 @@ class MainCog(comms.Cog):
         """
         print(start)
 
+# //////////////////////////////////////////////// # Commands
+    # //////////////////////// # Reload a background task
+    @comms.command(name='r_b', hidden=True)
+    @comms.is_owner()
+    async def reload_background_task(self, ctx):
+        pass
 
-# //////////////////////////////////////////////////////////////////////////// #
-# Main
-# /////////////////////////////////////////////////////////
-# Sets up the bot with auto-detection of cogs that will be used, and configuration
-# //////////////////////////////////////////////////////////////////////////// #
+    # //////////////////////// # Reload all background tasks
+    @comms.command(name='ra_b', hidden=True)
+    @comms.is_owner()
+    async def reload_all_background_tasks(self, ctx):
+        pass
 
+    # //////////////////////// # Reload a cog
+    @comms.command(name='r_c', hidden=True)
+    @comms.is_owner()
+    async def reload_cog(self, ctx, cog):
+        loaded_cogs = []
+        broken_cogs = []
+        await self.bot.wait_until_ready():
+        if not self.bot.is_closed():
+            for cog in self.cogs:
+                try:
+                    self.bot.load_extension(cog)
+                except Exception as e:
+                    broken_cogs.append(f'{cog}: {type(e).__name__} - {e}')
+                else:
+                    loaded_cogs.append(cog)
+            if len(broken_cogs) > 0:
+                print(f"Cog(s) could not be loaded:\n{', '.join(str(y) for y in broken_cogs)}")
+            if len(loaded_cogs) > 0:
+                print(f"Cog(s) loaded:\n{', '.join(str(y) for y in loaded_cogs)}")
+            else:
+                print(f"No cogs were loaded")
 
-def main(bot=False):
-    if not bot:
-        bot = comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_prefix='$')
-        print('Booting with setup...')
+    # //////////////////////// # Reload all cogs
+    @comms.command(name='ra_c', hidden=True)
+    @comms.is_owner()
+    async def reload_all_cogs(self, ctx):
+        for cog in self.cogs:
+            try:
+                self.bot.unload_extension(cog)
+                self.bot.load_extension(cog)
+            except Exception as e:
+                print(f'Reload error: {type(e).__name__} - {e}')
+            else:
+                print(f'Reload complete for {cog}')
 
-    # Adding the main cog to the bot
-    bot.add_cog(MainCog(bot))
-    bot.remove_command('help')
+    # //////////////////////// # Logout the bot
+    @comms.command(name='exit', hidden=True)
+    @comms.is_owner()
+    async def logout(self, ctx):
+        pass
 
+    # //////////////////////// # Reload the bot itself
+    @comms.command(name='r', hidden=True)
+    @comms.is_owner()
+    async def reload(self, ctx):
+        pass
+
+# //////////////////////////////////////////////// # Passing objects into the MainCog
+def main(bot=comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_prefix='$')):
     # Searching for cogs within the cogs directory
     essential_cogs = []
     for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
         essential_cogs.extend(filenames)
         break
-
     custom_cogs = []
     for (dirpath, dirnames, filenames) in os.walk(path('cogs', 'seperate')):
         custom_cogs.extend(filenames)
@@ -202,21 +180,17 @@ def main(bot=False):
         if file[-3:] == '.py':
             cogs.append(f'cogs.seperate.{file[:-3]}')
 
-    # Making a list of all blocked cogs
+    # Blocking cogs, if any at all
     blocked_cogs = []
+    unblocked_cogs = []
     with open(path('configuration', 'blocked_cogs.txt'), 'r') as f:
         for x in f:
-            blocked_cogs.append(f'cogs.{x}')
-
-    # Loading all cogs in as extensions of the main cog
-    for i in cogs:
-        if i not in blocked_cogs:
-            try:
-                bot.load_extension(i)
-            except Exception as e:
-                print(e)
-                print(f'Failed to load extension {i}.', file=sys.stderr)
-                traceback.print_exc()
+            for i in cogs:
+                if i != f'cogs.{x[:-1]}' or f'cogs.seperate.{x[:-1]}'
+                   unblocked_cogs.append(i)
+    
+    bot.add_cog(MainCog(bot, unblocked_cogs))
+    bot.remove_command('help')
 
     # Looping the input until token is correct
     checkToken = True
@@ -236,6 +210,7 @@ def main(bot=False):
 
 
 if __name__ == '__main__':
-    bot = comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_prefix='$')
+    main()
     print('Booting without setup...')
-    main(bot)
+else:
+    print('Booting from another location...')
