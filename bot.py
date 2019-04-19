@@ -54,6 +54,7 @@ class MainCog(comms.Cog):
 # //////////////////////////////////////////////// # Background tasks
     # //////////////////////// # Load the cogs in after the bot is ready
     async def load_cogs_in(self):
+        print("---> Booting cogs...")
         loaded_cogs = []
         broken_cogs = []
         await self.bot.wait_until_ready()
@@ -210,7 +211,6 @@ def main(bot=comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_prefix
 
 
 if __name__ == '__main__':
-    print('Booting without setup...')
     main()
 else:
     print('Booting from another location...')

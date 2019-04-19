@@ -24,7 +24,7 @@ import discord
 import youtube_dl
 
 from containers.essentials.pathing import path
-
+from containers.playback.youtube_2_mp3 import process_video
 
 # //////////////////////////////////////////////////////////////////////////// #
 # Playback cog
@@ -48,24 +48,7 @@ class PlaybackCog(comms.Cog):
             if url[i] == '&':
                 url = url[0:i - 1]
                 break
-        lock = asyncio.Lock()
-        await lock.acquire()
-        try:
-            ydl_opts = {
-                'outtmpl': f'{path()}\\media\\audio\\music\\%(title)s.%(ext)s',
-                'format': 'bestaudio/best',
-                'postprocessors': [{
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': 'mp3',
-                    'preferredquality': '200',
-                }],
-            }
-            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                ydl.download([url])
-                info_dict = ydl.extract_info(url, download=False)
-                video_title = info_dict.get('title', None)
-        finally:
-            lock.release()
+        process_video(url, path())
         vc = ctx.guild.voice_client
         if not vc:
             vc = await ctx.author.voice.channel.connect()
