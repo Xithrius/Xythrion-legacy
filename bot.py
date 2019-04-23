@@ -20,7 +20,6 @@
 import os
 import sys
 import traceback
-import aiohttp
 import datetime
 import configparser
 import traceback
