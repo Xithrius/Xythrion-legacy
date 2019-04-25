@@ -1,6 +1,6 @@
 '''
 
-+----[ Demonically ]----------------------------+
++----[ Relay.py ]-------------------------------+
 |                                               |
 |  Copyright (c) 2019 Xithrius                  |
 |  MIT license, Refer to LICENSE for more info  |
@@ -11,9 +11,9 @@
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# Libraries
-# /////////////////////////////////////////////////////////
-# Built-in modules, third-party modules, custom modules
+# Libraries                                                                    #
+# //////////////////////////////////////////////////////////////////////////// #
+# Built-in modules, third-party modules, custom modules                        #
 # //////////////////////////////////////////////////////////////////////////// #
 
 
@@ -35,44 +35,44 @@ from containers.essentials.pathing import path, mkdir
 
 class WarningsCog(comms.Cog):
 
-    # //////////////////////// # Object(s): bot
     def __init__(self, bot):
+        """ Objects: Bot, background task(s), startup time """
         self.bot = bot
+        self.startup_time = datetime.datetime.utcnow()
 
 # //////////////////////////////////////////////// # Events
-    # //////////////////////// # Sends error to the user
+
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
+        """ Sends error to the user """
         await ctx.send(error)
 
-    # //////////////////////// # Sends warning when the client disconnects from the network
     @comms.Cog.listener()
     async def on_disconnect(self):
+        """ Sends warning when the client disconnects from the network """
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
         print(f'[{now}]: WARNING: CLIENT HAS DISCONNECTED FROM NETWORK')
 
-    # //////////////////////// # Sends warning when the client connects to the network
     @comms.Cog.listener()
     async def on_connect(self):
+        """ Sends warning when the client connects to the network """
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
         print(f'[{now}]: WARNING: CLIENT HAS CONNECTED TO NETWORK')
 
-    # //////////////////////// #
     @comms.Cog.listener()
     async def on_resumed(self):
+        """ Sends warning when the client resumes a session """
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
         print(f'[{now}]: WARNING: CLIENT HAS RESUMED CURRENT SESSION')
 
-    # //////////////////////// # Sends warning when there's an update in the status of a member
     @comms.Cog.listener()
     async def on_member_update(self, before, after):
+        """ Sends warning when there's an update in the status of a member """
         pass
 
-    # //////////////////////// # Tracking, blocking, and removing files
     @comms.Cog.listener()
     async def on_message(self, message):
-
-        # Logging the message into the console and saving in it's own file, but only if console inputs 'log'
+        """ Tracking, blocking, and removing files """
         try:
             if sys.argv[1] == 'log':
                 now = datetime.datetime.now() + datetime.timedelta(hours=8)
@@ -87,6 +87,8 @@ class WarningsCog(comms.Cog):
         except IndexError:
             pass
 
+# //////////////////////////////////////////////// # Background tasks
+    # async def 
 
 def setup(bot):
     bot.add_cog(WarningsCog(bot))

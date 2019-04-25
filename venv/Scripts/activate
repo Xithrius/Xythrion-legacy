@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\Xithr\Documents\GitHubRepositories\Demonically\venv"
+VIRTUAL_ENV="C:\Users\Xithr\Documents\GitHubRepositories\Relay.py\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
