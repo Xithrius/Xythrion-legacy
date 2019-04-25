@@ -78,11 +78,11 @@ class WarningsCog(comms.Cog):
                 check = True
                 while check:
                     try:
-                        with open(path('registry', message.guild, message.channel, f'{message.author}.txt'), 'a') as f:
+                        with open(path('logs', message.guild, message.channel, f'{message.author}.txt'), 'a') as f:
                             f.write(f"[{now}]: '{message.content}'\n")
                             check = False
                     except FileNotFoundError:
-                        mkdir('registry', message.guild, message.channel)
+                        mkdir('logs', message.guild, message.channel)
         except IndexError:
             pass
 

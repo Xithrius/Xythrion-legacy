@@ -118,7 +118,7 @@ class MainCog(comms.Cog):
 
     @comms.command(name='l', hidden=True)
     @comms.is_owner()
-    async def load_cog(self, ctx):
+    async def load_cog(self, ctx, cog):
         """ Load a specific cog """
         if cog in self.cogs:
             try:

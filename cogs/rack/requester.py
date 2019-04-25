@@ -17,16 +17,97 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import os
+import requests
+import requests.auth
+import json
+import urllib
+import configparser
+import pytemperature
+import time
 import datetime
 import platform
+import os
 
 from discord.ext import commands as comms
 import discord
 
-from containers.scraping.yahoo_finance import get_stock_summary
-from containers.essentials.converter import index_days
 from containers.essentials.pathing import path, mkdir
+from containers.essentials.converter import index_days
+from containers.scraping.yahoo_finance import get_stock_summary
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# Reddit.com request cog
+# //////////////////////////////////////////////////////////////////////////// #
+# Getting information from reddit
+# //////////////////////////////////////////////////////////////////////////// #
+
+
+class Reddit_Requester(comms.Cog):
+
+    def __init__(self, bot):
+        """ Object(s): bot """
+        self.bot = bot
+
+# //////////////////////////////////////////////// # Commands
+
+    @comms.command(name='reddit', hidden=True)
+    @comms.is_owner()
+    async def request_reddit(self, ctx, user=False):
+        """  """
+        f = json.load(open(path('relay', 'configuration', 'reddit_config.json')))
+        client_auth = requests.auth.HTTPBasicAuth(f['client_ID'], f['client_secret'])
+        post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
+        # headers = {"User-Agent": "Relay.py/0.0.01 by Xithrius"}
+        headers = {"User-Agent": "ChangeMeClient/0.1 by YourUsername"}
+        response = requests.post("https://www.reddit.com/api/v1/access_token", auth=client_auth, data=post_data, headers=headers)
+        await ctx.send(response.json())
+        print(response.json())
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# OpenWeatherMap.org request cog
+# //////////////////////////////////////////////////////////////////////////// #
+# Get information from OpenWeatherMap
+# //////////////////////////////////////////////////////////////////////////// #
+
+
+class Weather_Requester(comms.Cog):
+
+    def __init__(self, bot):
+        """ Object(s): bot """
+        self.bot = bot
+
+# //////////////////////////////////////////////// # Commands
+
+    @comms.command(name='weather')
+    async def get_weather(self, ctx, *args):
+        """ Get weather for an input location """
+        checkToken = True
+        while checkToken:
+            try:
+                config = configparser.ConfigParser()
+                config.read(path('credentials', 'config.ini'))
+                token = config['weather']['token']
+                checkToken = False
+            except FileNotFoundError:
+                token = input('Input weather API token: ')
+                config = configparser.ConfigParser()
+                config['weather'] = {'token': token}
+                with open(path('credentials', 'config.ini'), 'w') as f:
+                    config.write(f)
+        with urllib.request.urlopen(f'http://api.openweathermap.org/data/2.5/weather?{args[0]}={args[1]},{args[2]}&APPID={token}') as url:
+            data = json.loads(url.read().decode())
+        embed = discord.Embed(title='Weather', colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
+        embed.add_field(name='Location:', value=f"{data['name']}, {args[1]}, {data['sys']['country']}", inline=False)
+        embed.add_field(name='Weather Type:', value=data['weather'][0]['description'], inline=False)
+        embed.add_field(name='Temperature:', value=f"Now: {pytemperature.k2f(data['main']['temp'])} °F\nLow: {pytemperature.k2f(data['main']['temp_min'])} °F\nHigh: {pytemperature.k2f(data['main']['temp_max'])} °F", inline=False)
+        embed.add_field(name='Humidity:', value=f"{data['main']['humidity']}%", inline=False)
+        embed.add_field(name='Visibility', value=f"{data['visibility']} meters", inline=False)
+        embed.add_field(name='Sunrise:', value=time.ctime(data['sys']['sunrise']), inline=False)
+        embed.add_field(name='Sunset:', value=time.ctime(data['sys']['sunset']), inline=False)
+        embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
+        await ctx.author.send(embed=embed)
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -36,7 +117,7 @@ from containers.essentials.pathing import path, mkdir
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-class StockCog(comms.Cog):
+class Stock_Requester(comms.Cog):
 
     def __init__(self, bot):
         """ Object(s): bot and background task"""
@@ -134,4 +215,6 @@ class StockCog(comms.Cog):
 
 
 def setup(bot):
-    bot.add_cog(StockCog(bot))
+    bot.add_cog(Reddit_Requester(bot))
+    bot.add_cog(Weather_Requester(bot))
+    bot.add_cog(Stock_Requester(bot))

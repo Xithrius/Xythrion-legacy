@@ -59,7 +59,7 @@ class IdentityCog(comms.Cog):
         embed = discord.Embed(name=f"{self.bot.user}'s favorite songs'", colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
         songs = []
         song_dict = {}
-        with open(path('media', 'generated', 'self_generated', 'favorite_songs.csv'), 'r') as f:
+        with open(path('relay', 'tracking', 'media', 'generated', 'self_generated', 'favorite_songs.csv'), 'r') as f:
             reader = csv.reader(f)
             for row in reader:
                 song = row[0]
@@ -67,7 +67,7 @@ class IdentityCog(comms.Cog):
                 song_dict[song] = artist
                 songs.append(f"{song} - {artist}")
                 try:
-                    if ctx.author.activities[0].title == song:
+                    if ctx.author.activities[0].song == song:
                         if ctx.author.activities[0].artist == artist:
                             embed.add_field(name='A favorite song appears!', value=f"Your Spotify is currently playing '{song}' by {artist}, which is one of my favorites!", inline=False)
                 except IndexError:
