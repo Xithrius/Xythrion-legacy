@@ -10,7 +10,7 @@ Operating to transfer information
 * [Markdown](https://guides.github.com/features/mastering-markdown/)
 
 
-# Version features
+# Current version features
 * I've made all my bots consolidate into one 
 
 
@@ -18,6 +18,6 @@ Operating to transfer information
 
 ## v0.0.01, pushed
 ### Main changes:
-*
+* Bot is able to run now. Updates coming soon!
 ### Modifications:
-*
+* Everything

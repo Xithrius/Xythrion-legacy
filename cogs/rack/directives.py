@@ -28,9 +28,9 @@ from containers.essentials.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# Directives cog                                                               #
+# Directives cog
 # //////////////////////////////////////////////////////////////////////////// #
-# General commands for the general public                                      #
+# A place for all general but simple commands to go
 # //////////////////////////////////////////////////////////////////////////// #
 
 
@@ -65,45 +65,47 @@ class DirectivesCog(comms.Cog):
         timeTaken = timeEnd - timeStart
         await ctx.send(f'Took {timeTaken} seconds to complete')
 
-    # //////////////////////// # Get all users that exist within the guild
     @comms.command(name='members')
     @comms.guild_only()
     async def get_members(self, ctx):
+        """ Get all users that exist within the guild """
         await ctx.send(f"Members on this server: {', '.join(str(x) for x in ctx.message.guild.members)}")
 
 # //////////////////////////////////////////////// # Events
-    # //////////////////////// # Welcome the new member to the guild
+
     @comms.Cog.listener()
     async def on_member_join(self, member):
+        """ Welcome the new member to the guild """
         embed = discord.Embed(name=f'Welcome to {member.guild}!', value=f'Owner: {member.guild.owner}', colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=8))
         embed.add_field(name=f'Greetings, {member.name}!', value='', inline=False)
         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
         await member.send(file=discord.File(path('misc', 'images', 'join.jpg')))
         await member.send(embed=embed)
 
-    # //////////////////////// # Laugh at the one who got banned
     @comms.Cog.listener()
     async def on_member_ban(self, guild, user):
+        """ Laugh at the one who got banned """
         print(f'{user.name} was banned from {guild.name}')
         await user.channel.send(f'{user.name} was banned from {guild.name}')
 
-    # //////////////////////// # Welcomes back a user
     @comms.Cog.listener()
     async def on_member_unban(guild, user):
-        pass
-    
-    # //////////////////////// # Announces when the client joins a guild
-    @comms.Cog.listener()
-    async def on_guild_join(self, guild):
+        """ Welcomes back a user """
         pass
 
-    # //////////////////////// # Messages the owner when removed from a guild
+    @comms.Cog.listener()
+    async def on_guild_join(self, guild):
+        """ Announces when the client joins a guild """
+        pass
+
     @comms.Cog.listener()
     async def on_guild_remove(self, guild):
+        """ Messages the owner when removed from a guild """
         pass
 
     @comms.Cog.listener()
     async def on_message(self, message):
+        """ Blocking and logging whatever happens on servers that client is present on """
         # Blocking pictures if the description doesn't want them
         pic_extensions = ['.jpg', '.png', '.jpeg', '.gif']
         for extension in pic_extensions:
@@ -115,7 +117,6 @@ class DirectivesCog(comms.Cog):
                 pass
             except discord.errors.Forbidden:
                 await message.guild.owner.send(f'I should be able to remove pictures from a channel that does not want any. Please give me the permissions to do so.')
-
 
 
 def setup(bot):

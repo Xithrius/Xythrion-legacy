@@ -21,15 +21,14 @@ import sys
 import datetime
 
 from discord.ext import commands as comms
-import discord
 
 from containers.essentials.pathing import path, mkdir
 
 
 # //////////////////////////////////////////////////////////////////////////// #
 # Warnings cog
-# /////////////////////////////////////////////////////////
-# All the warnings, logged and sent to the owner
+# //////////////////////////////////////////////////////////////////////////// #
+# Warn the owner about everything bad that occurs
 # //////////////////////////////////////////////////////////////////////////// #
 
 
@@ -87,8 +86,6 @@ class WarningsCog(comms.Cog):
         except IndexError:
             pass
 
-# //////////////////////////////////////////////// # Background tasks
-    # async def 
 
 def setup(bot):
     bot.add_cog(WarningsCog(bot))

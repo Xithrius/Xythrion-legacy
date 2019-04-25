@@ -29,30 +29,33 @@ from containers.essentials.pathing import path
 
 # //////////////////////////////////////////////////////////////////////////// #
 # Identity cog
-# /////////////////////////////////////////////////////////
-# The bot's traits
+# //////////////////////////////////////////////////////////////////////////// #
+# Commands with a little bit of personality
 # //////////////////////////////////////////////////////////////////////////// #
 
 
 class IdentityCog(comms.Cog):
 
     def __init__(self, bot):
+        """ Object(s): bot """
         self.bot = bot
 
 # //////////////////////////////////////////////// # Commands
-    # //////////////////////// # Shows the person who created the bot
-    @comms.command(name='owner')
+
+    @comms.command(name='owner', hidden=True)
+    @comms.is_owner()
     async def show_creator(self, ctx):
+        """ Shows the person who created the bot """
         embed = discord.Embed(colour=0xc27c0e)
         embed.set_author(name='Xithrius', icon_url='https://i.imgur.com/TtcOXxx.jpg')
-        embed.add_field(name='Private Github:', value='[Right here](https://github.com/Xithrius/Demonically)')
+        embed.add_field(name='Private Github:', value='[Right here](https://github.com/Xithrius/Relay.py)')
         embed.add_field(name='Command caller:', value=ctx.author.mention)
         embed.set_footer(text=f'discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
         await ctx.send(embed=embed)
 
-    # //////////////////////// # The bot's favorite songs
     @comms.command(name='songs')
     async def favorite_songs(self, ctx):
+        """ The bot's favorite songs """
         embed = discord.Embed(name=f"{self.bot.user}'s favorite songs'", colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
         songs = []
         song_dict = {}
@@ -74,14 +77,14 @@ class IdentityCog(comms.Cog):
         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
         await ctx.send(embed=embed)
 
-    # //////////////////////// # The bot's favorite videos
     @comms.command(name='videos')
     async def favorite_videos(self, ctx):
+        """ The bot's favorite videos """
         pass
 
-    # //////////////////////// # The avatar of the bot
     @comms.command(name='icon')
     async def get_own_avatar(self, ctx):
+        """ The avatar of the bot """
         await ctx.send(self.bot.user.avatar_url)
 
 

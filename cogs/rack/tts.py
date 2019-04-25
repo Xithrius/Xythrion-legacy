@@ -24,34 +24,34 @@ from discord.ext import commands as comms
 from google.cloud import texttospeech  # ssml must be well-formed according to: https://www.w3.org/TR/speech-synthesis/
 import discord
 
-from containers.essentials.errors import error_prompt
 from containers.essentials.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #
 # Text to speech cog
-# /////////////////////////////////////////////////////////
-# A cog dedicated to text to speech
+# //////////////////////////////////////////////////////////////////////////// #
+# Using Google Cloud TTS to speak through the bot's mic
 # //////////////////////////////////////////////////////////////////////////// #
 
 
 class TextToSpeechCog(comms.Cog):
 
-    # //////////////////////// # Object(s): bot
     def __init__(self, bot):
+        """ Object(s): bot """
         self.bot = bot
 
-    # Error handling for GOOGLE_APPLICATION_CREDENTIALS
+    """ Error handling for GOOGLE_APPLICATION_CREDENTIALS """
     try:
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('configuration', 'google_service_token.json')
     except FileNotFoundError:
-        error_prompt('Google service token is not found. Read the HELP file section to find solutions.')
+        print('WARNING: GOOGLE SERVICE TOKEN COULD NOT BE FOUND')
 
 # //////////////////////////////////////////////// # Commands
-# //////////////////////// # Text to speech through the bot's mic
+
     @comms.command(name='tts')
     @comms.is_owner()
     async def google_text_to_speech(self, ctx):
+        """ Text to speech through the bot's mic """
         lock = asyncio.Lock()
         await lock.acquire()
         try:
@@ -64,7 +64,6 @@ class TextToSpeechCog(comms.Cog):
                 out.write(response.audio_content)
         finally:
             lock.release()
-
         vc = ctx.guild.voice_client
         if not vc:
             vc = await ctx.author.voice.channel.connect()

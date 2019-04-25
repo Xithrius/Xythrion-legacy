@@ -30,27 +30,28 @@ from containers.essentials.pathing import path, mkdir
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-#
-# /////////////////////////////////////////////////////////
-#
+# Stock cog
+# //////////////////////////////////////////////////////////////////////////// #
+# Web scraping the internet for stock information
 # //////////////////////////////////////////////////////////////////////////// #
 
 
 class StockCog(comms.Cog):
 
-    # //////////////////////// # Object(s): bot and background task(s)
     def __init__(self, bot):
+        """ Object(s): bot and background task"""
         self.bot = bot
         self.bg_task = self.bot.loop.create_task(self.check_stock_reminders())
 
-    # //////////////////////// # Cancel background task(s) when cog is unloaded
     def cog_unload(self):
+        """ Cancel background task(s) when cog is unloaded """
         self.bg_task.cancel()
 
 # //////////////////////////////////////////////// # Commands
-    # //////////////////////// # Get information about inputted stock
+
     @comms.command(name='stocks')
     async def get_current_stocks(self, ctx, abbreviation, option='low'):
+        """ Get information about inputted stock """
         stock_dict = get_stock_summary(abbreviation, option)
         for k, v in stock_dict.items():
             if k == 'Title':
@@ -63,9 +64,9 @@ class StockCog(comms.Cog):
         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
         await ctx.send(embed=embed)
 
-    # //////////////////////// # Create a reminder for a stock
     @comms.command(name='stocks_remind')
     async def stock_reminder_init(self, ctx, abbreviation, *user_days):
+        """ Create a reminder for a stock """
         error_list = []
         days = ['m', 't', 'w', 'th', 'f']
         for i in user_days:
@@ -86,14 +87,15 @@ class StockCog(comms.Cog):
                 except FileNotFoundError:
                     mkdir(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author.id))
 
-    # //////////////////////// # Remove the reminder for the stock
     @comms.command(name='stocks_cancel')
     async def stock_reminder_cancel(self, ctx, abbreviation):
+        """ Remove the reminder for the stock """
         os.remove(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author.id, f'{abbreviation}.txt'))
 
 # //////////////////////////////////////////////// # Background tasks
-    # //////////////////////// # Checking folders for reminders then sending stock updates out
+
     async def check_stock_reminders(self):
+        """ Checking folders for reminders then sending stock updates out """
         await self.bot.wait_until_ready()
         users = []
         for (dirpath, dirnames, filenames) in os.walk(path('media', 'user_requests', 'reminders', 'stocks')):

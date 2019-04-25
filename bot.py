@@ -17,26 +17,22 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import os
-import sys
-import traceback
 import datetime
-import aiohttp
-import configparser
 import traceback
+import configparser
+import os
 
 import discord
 from discord.ext import commands as comms
 
+import relay
 from containers.essentials.pathing import path
-from containers.essentials.errors import error_prompt
-import demon
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# Main cog                                                                     #
+# Main cog
 # //////////////////////////////////////////////////////////////////////////// #
-# Items that are included are essential to running the bot                     #
+# Items that are included are essential to running the bot
 # //////////////////////////////////////////////////////////////////////////// #
 
 
@@ -77,9 +73,9 @@ class MainCog(comms.Cog):
     async def on_ready(self):
         """ Event activates when bot is ready for use """
         now = datetime.datetime.now() + datetime.timedelta(hours=8)
-        await self.bot.change_presence(activity=discord.Game(f'version {demon.__version__}'))
+        await self.bot.change_presence(activity=discord.Game(f'with pixels'))
         start = f"""
-        
+
          [{now}]
     +----[ Relay.py ]------------------------------------------------------+
     |    Copyright (c) 2019 Xithrius
@@ -89,7 +85,8 @@ class MainCog(comms.Cog):
     |    Booting --->   {self.bot.user}
     +----------------------------------------------------------------------+
     |    Using discord.py {discord.__version__}
-    |    Changed status to 'Playing version {demon.__version__}'
+    |    Using relay.py {relay.__version__}
+    |    Changed status to 'Playing with pixels'
     |    Awaiting...
     +----------------------------------------------------------------------+
 
@@ -100,7 +97,7 @@ class MainCog(comms.Cog):
 
     @comms.command(name='r', hidden=True)
     @comms.is_owner()
-    async def reload_cog(self, ctx):
+    async def reload_cogs(self, ctx):
         """ Reload all cog """
         loaded_cogs = []
         broken_cogs = []
@@ -117,7 +114,31 @@ class MainCog(comms.Cog):
         if len(loaded_cogs) > 0:
             print(f"Cog(s) reloaded:\n{', '.join(str(y) for y in loaded_cogs)}")
         else:
-            print(f"No cogs were reloaded")
+            print(f"No cogs were reloaded.")
+
+    @comms.command(name='l', hidden=True)
+    @comms.is_owner()
+    async def load_cog(self, ctx):
+        """ Load a specific cog """
+        if cog in self.cogs:
+            try:
+                self.bot.load_extension(cog)
+            except Exception as e:
+                print(f'{cog}: {type(e).__name__} - {e}\n')
+        else:
+            print(f'Cog {cog} is blocked or does not exist.')
+
+    @comms.command(name='u', hidden=True)
+    @comms.is_owner()
+    async def unload_cog(self, ctx, cog):
+        """ Unload a specific cog """
+        if cog in self.cogs:
+            try:
+                self.bot.unload_extension(cog)
+            except Exception as e:
+                print(f'{cog}: {type(e).__name__} - {e}\n')
+        else:
+            print(f'Cog {cog} is blocked or does not exist.')
 
     @comms.command(name='exit', hidden=True)
     @comms.is_owner()
@@ -139,7 +160,7 @@ class MainCog(comms.Cog):
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-def setup_bot(bot=comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_prefix='%')):
+def setup_bot(bot=comms.Bot(command_prefix='$')):
     """ Passing objects into the MainCog, then running the bot """
     # Searching for cogs within the cogs directory
     essential_cogs = []
@@ -150,7 +171,6 @@ def setup_bot(bot=comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_p
     for (dirpath, dirnames, filenames) in os.walk(path('cogs', 'rack')):
         custom_cogs.extend(filenames)
         break
-
     # Creating the list of extensions
     cogs = []
     for file in essential_cogs:
@@ -159,22 +179,19 @@ def setup_bot(bot=comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_p
     for file in custom_cogs:
         if file[-3:] == '.py':
             cogs.append(f'cogs.rack.{file[:-3]}')
-
     # Blocking cogs, if any at all
-    for i in [x[:-1] for x in open(path('demon', 'configuration', 'blocked_cogs.txt'), 'r')]:
+    for i in [x[:-1] for x in open(path('relay', 'configuration', 'blocked_cogs.txt'), 'r')]:
         for j in cogs:
             if j in [f'cogs.{i}', f'cogs.rack.{i}']:
                 cogs.pop(cogs.index(j))
-
     bot.add_cog(MainCog(bot, cogs))
     bot.remove_command('help')
-
     # Looping the input until token is correct
     checkToken = True
     while checkToken:
         try:
             config = configparser.ConfigParser()
-            config.read(path('demon', 'configuration', 'config.ini'))
+            config.read(path('relay', 'configuration', 'config.ini'))
             token = config['discord']['token']
             bot.run(token, bot=True, reconnect=True)
             checkToken = False
@@ -182,11 +199,11 @@ def setup_bot(bot=comms.Bot(connector=aiohttp.TCPConnector(ssl=False), command_p
             token = input('Input discord bot token: ')
             config = configparser.ConfigParser()
             config['discord'] = {'token': token}
-            with open(path('demon', 'configuration', 'config.ini'), 'w') as f:
+            with open(path('relay', 'configuration', 'config.ini'), 'w') as f:
                 config.write(f)
 
 
 if __name__ == '__main__':
     setup_bot()
 else:
-    error_prompt('Bot cannot be booted from another location.')
+    print('Bot cannot be booted from another location.')

@@ -1,6 +1,6 @@
 '''
 
-+----[ Demoness ]-------------------------------+
++----[ Relay.py ]-------------------------------+
 |                                               |
 |  Copyright (c) 2019 Xithrius                  |
 |  MIT license, Refer to LICENSE for more info  |
@@ -17,8 +17,6 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import asyncio
-import aiohttp
 from lxml import html
 import requests
 
@@ -26,9 +24,9 @@ from discord.ext import commands as comms
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# Website requester
-# /////////////////////////////////////////////////////////
-# Gets information from different websites
+# Reddit requester cog
+# //////////////////////////////////////////////////////////////////////////// #
+# Getting information from reddit
 # //////////////////////////////////////////////////////////////////////////// #
 
 
@@ -49,6 +47,7 @@ class Reddit_Requester(comms.Cog):
             await ctx.send(f'User {user} has {karma} karma')
         except IndexError:
             await ctx.send(f'User {user} could not be found')
+
 
 def setup(bot):
     bot.add_cog(Reddit_Requester(bot))

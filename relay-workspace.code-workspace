@@ -4,10 +4,6 @@
 			"name": "Relay.py",
 			"path": "."
 		},
-		{
-			"name": ".vscode",
-			"path": "C:\\Users\\Xithr\\Documents\\GitHubRepositories\\Demoness\\.vscode"
-		}
 	],
 	"settings": {
 		"python.pythonPath": "venv\\Scripts\\python.exe",
