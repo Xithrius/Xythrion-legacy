@@ -160,7 +160,7 @@ class MainCog(comms.Cog):
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-def setup_bot(bot=comms.Bot(command_prefix='$')):
+def setup_bot(bot=comms.Bot(command_prefix='$', case_insensitive=True)):
     """ Passing objects into the MainCog, then running the bot """
     # Searching for cogs within the cogs directory
     essential_cogs = []

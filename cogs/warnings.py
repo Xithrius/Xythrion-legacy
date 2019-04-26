@@ -37,14 +37,15 @@ class WarningsCog(comms.Cog):
     def __init__(self, bot):
         """ Objects: Bot, background task(s), startup time """
         self.bot = bot
-        self.startup_time = datetime.datetime.utcnow()
 
 # //////////////////////////////////////////////// # Events
 
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
         """ Sends error to the user """
+        now = datetime.datetime.now() + datetime.timedelta(hours=8)
         await ctx.send(error)
+        print(f'[{now}]: WARNING: {ctx.message.author} HAS CAUSED ERROR:\n\t{error}')
 
     @comms.Cog.listener()
     async def on_disconnect(self):
