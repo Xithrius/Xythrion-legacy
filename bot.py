@@ -25,8 +25,8 @@ import os
 import discord
 from discord.ext import commands as comms
 
-import relay
 from containers.essentials.pathing import path
+import relay
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -39,9 +39,10 @@ from containers.essentials.pathing import path
 class MainCog(comms.Cog):
 
     def __init__(self, bot, cogs):
-        """ Objects: Bot, list of cogs to be loaded, background task(s) """
+        """ Objects: Bot, list of cogs to be loaded, permernant list of cogs, background task """
         self.bot = bot
         self.cogs = cogs
+        self.all_cogs = self.cogs
         self.load_cog_task = self.bot.loop.create_task(self.load_cogs_in())
 
 # //////////////////////////////////////////////// # Background tasks
@@ -105,6 +106,8 @@ class MainCog(comms.Cog):
             try:
                 self.bot.unload_extension(cog)
                 self.bot.load_extension(cog)
+            except (comms.ExtensionNotLoaded) as e:
+                self.bot.load_extension(cog)
             except Exception as e:
                 broken_cogs.append(f'{cog}: {type(e).__name__} - {e}\n')
             else:
@@ -121,10 +124,13 @@ class MainCog(comms.Cog):
     async def load_cog(self, ctx, cog):
         """ Load a specific cog """
         if cog in self.cogs:
+
             try:
                 self.bot.load_extension(cog)
+                print(f'Cog {cog} has been loaded')
             except Exception as e:
                 print(f'{cog}: {type(e).__name__} - {e}\n')
+            
         else:
             print(f'Cog {cog} is blocked or does not exist.')
 
@@ -135,6 +141,7 @@ class MainCog(comms.Cog):
         if cog in self.cogs:
             try:
                 self.bot.unload_extension(cog)
+                print(f'Cog {cog} has been unloaded')
             except Exception as e:
                 print(f'{cog}: {type(e).__name__} - {e}\n')
         else:
@@ -185,7 +192,6 @@ def setup_bot(bot=comms.Bot(command_prefix='$', case_insensitive=True)):
             if j in [f'cogs.{i}', f'cogs.rack.{i}']:
                 cogs.pop(cogs.index(j))
     bot.add_cog(MainCog(bot, cogs))
-    bot.remove_command('help')
     # Looping the input until token is correct
     checkToken = True
     while checkToken:

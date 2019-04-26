@@ -27,14 +27,9 @@ from containers.essentials.pathing import path
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-class Tracing_Permissions():
-
-    def __init__(self, user):
-        self.user = user
-
-    async def is_allowed(self):
-        def wrapper():
-            pass
+async def is_allowed(self):
+    def wrapper():
+        pass
 
 
 
