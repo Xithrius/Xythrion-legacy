@@ -26,6 +26,7 @@ import discord
 from discord.ext import commands as comms
 
 from containers.essentials.pathing import path
+from containers.output.printer import duplicate, printc
 import relay
 
 
@@ -39,16 +40,28 @@ import relay
 class MainCog(comms.Cog):
 
     def __init__(self, bot, cogs):
-        """ Objects: Bot, list of cogs to be loaded, permernant list of cogs, background task """
+        """ Objects:
+        Bot
+        List of cogs to be loaded
+        Permernant list of cogs
+        Background task
+        """
         self.bot = bot
         self.cogs = cogs
         self.all_cogs = self.cogs
         self.load_cog_task = self.bot.loop.create_task(self.load_cogs_in())
 
-# //////////////////////////////////////////////// # Background tasks
 
+    """
+    
+    Background tasks
+    
+    """
     async def load_cogs_in(self):
-        """ Load the cogs in after the bot is ready """
+        """
+        Load the cogs in after the bot is ready
+        """
+        printc('[...]: LOADING COGS')
         loaded_cogs = []
         broken_cogs = []
         await self.bot.wait_until_ready()
@@ -62,18 +75,23 @@ class MainCog(comms.Cog):
                 else:
                     loaded_cogs.append(cog)
             if len(broken_cogs) > 0:
-                print(f"Cog(s) could not be loaded:\n{', '.join(str(y) for y in broken_cogs)}")
+                printc(f"WARNING: COG(S) COULD NOT BE LOADED:\n\t{', '.join(str(y) for y in broken_cogs)}")
             if len(loaded_cogs) > 0:
-                print(f"Cog(s) loaded:\n{', '.join(str(y) for y in loaded_cogs)}")
+                printc(f"[ ✓ ]: COG(S) LOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
             else:
-                print(f"No cogs were loaded")
+                printc(f"WARNING: NO COG(S) HAVE BEEN LOADED")
 
-# //////////////////////////////////////////////// # Events
+    """
+    
+    Events
 
+    """
     @comms.Cog.listener()
     async def on_ready(self):
-        """ Event activates when bot is ready for use """
-        now = datetime.datetime.now() + datetime.timedelta(hours=8)
+        """
+        Event activates when bot is ready for use
+        """
+        now = datetime.datetime.now()
         await self.bot.change_presence(activity=discord.Game(f'with pixels'))
         start = f"""
 
@@ -92,14 +110,20 @@ class MainCog(comms.Cog):
     +----------------------------------------------------------------------+
 
         """
-        print(start)
+        printc(start)
 
-# //////////////////////////////////////////////// # Commands
+    """
 
+    Commands
+    
+    """
     @comms.command(name='r', hidden=True)
     @comms.is_owner()
     async def reload_cogs(self, ctx):
-        """ Reload all cog """
+        """
+        Reload all cog
+        """
+        printc('[...]: RELOADING COGS')
         loaded_cogs = []
         broken_cogs = []
         for cog in self.cogs:
@@ -113,62 +137,67 @@ class MainCog(comms.Cog):
             else:
                 loaded_cogs.append(cog)
         if len(broken_cogs) > 0:
-            print(f"Cog(s) could not be reloaded:\n{', '.join(str(y) for y in broken_cogs)}")
+            await ctx.send(duplicate(f"WARNING: COG(S) COULD NOT BE RELOADED:\n\t{', '.join(str(y) for y in broken_cogs)}"))
         if len(loaded_cogs) > 0:
-            print(f"Cog(s) reloaded:\n{', '.join(str(y) for y in loaded_cogs)}")
+            printc(f"[ ✓ ]: COG(S) RELOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
+            await ctx.send('Cogs have been reloaded successfully')
         else:
-            print(f"No cogs were reloaded.")
+            printc(f"WARNING: NO COG(S) HAVE BEEN RELOADED")
 
     @comms.command(name='l', hidden=True)
     @comms.is_owner()
     async def load_cog(self, ctx, cog):
-        """ Load a specific cog """
-        if cog in self.cogs:
-
+        """
+        Load a specific cog
+        """
+        printc('[...]: LOADING COGS')
+        if cog in self.all_cogs:
             try:
                 self.bot.load_extension(cog)
-                print(f'Cog {cog} has been loaded')
+                self.cogs.append(cog)
+                await ctx.send(duplicate(f'[ ✓ ]: COG {cog} HAS BEEN LOADED SUCCESSFULLY'))
+            except comms.ExtensionAlreadyLoaded:
+                await ctx.send(f'Cog {cog} has already been loaded')
             except Exception as e:
-                print(f'{cog}: {type(e).__name__} - {e}\n')
-            
+                printc(f'{cog}: {type(e).__name__} - {e}\n')
         else:
-            print(f'Cog {cog} is blocked or does not exist.')
+            printc(f'WARNING: COG {cog} IS BLOCKED OR DOES NOT EXIST')
 
     @comms.command(name='u', hidden=True)
     @comms.is_owner()
     async def unload_cog(self, ctx, cog):
-        """ Unload a specific cog """
-        if cog in self.cogs:
+        """
+        Unload a specific cog
+        """
+        if cog in self.all_cogs:
             try:
                 self.bot.unload_extension(cog)
-                print(f'Cog {cog} has been unloaded')
+                self.cogs.pop(cog)
+                await ctx.send(duplicate(f'[ ✓ ]: COG {cog} UNLOADED SUCCESSFULLY'))
             except Exception as e:
-                print(f'{cog}: {type(e).__name__} - {e}\n')
+                printc(f'{cog}: {type(e).__name__} - {e}\n')
         else:
-            print(f'Cog {cog} is blocked or does not exist.')
+            await ctx.send(duplicate(f'WARNING: COG {cog} IS BLOCKED OR DOES NOT EXIST'))
 
     @comms.command(name='exit', hidden=True)
     @comms.is_owner()
     async def logout(self, ctx):
-        """ Make the bot logout """
+        """
+        Make the bot logout
+        """
+        now = datetime.datetime.now()
+        printc(f'WARNING: LOGGING OUT...')
         await self.bot.logout()
 
-    @comms.command(name='reload', hidden=True)
-    @comms.is_owner()
-    async def reload(self, ctx):
-        """ Reload the entire bot """
-        await ctx.send('Nothing here yet')
+"""
 
+Function to pass objects into the main cog to run the bot
 
-# //////////////////////////////////////////////////////////////////////////// #
-# Setup bot function                                                           #
-# //////////////////////////////////////////////////////////////////////////// #
-# Used for passing objects into the main cog to run the bot                    #
-# //////////////////////////////////////////////////////////////////////////// #
-
-
+"""
 def setup_bot(bot=comms.Bot(command_prefix='$', case_insensitive=True)):
-    """ Passing objects into the MainCog, then running the bot """
+    """
+    Passing objects into the MainCog, then running the bot
+    """
     # Searching for cogs within the cogs directory
     essential_cogs = []
     for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
@@ -212,4 +241,4 @@ def setup_bot(bot=comms.Bot(command_prefix='$', case_insensitive=True)):
 if __name__ == '__main__':
     setup_bot()
 else:
-    print('Bot cannot be booted from another location.')
+    printc('WARNING: BOT CANNOT BE BOOTED FROM ANOTHER LOCATION')

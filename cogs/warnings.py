@@ -36,45 +36,61 @@ from containers.essentials.pathing import path, mkdir
 class WarningsCog(comms.Cog):
 
     def __init__(self, bot):
-        """ Objects: Bot, background task(s), startup time """
+        """ Objects: 
+        Bot
+        """
         self.bot = bot
 
-# //////////////////////////////////////////////// # Events
+    """
 
+    Events
+    
+    """
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
-        """ Sends error to the user """
+        """
+        Sends error to the user
+        """
         now = datetime.datetime.now()
         await ctx.send(error)
         print(f'[{now}]: WARNING: {ctx.message.author} HAS CAUSED ERROR:\n\t{ctx.message.content}\n\t{error}')
 
-
     @comms.Cog.listener()
     async def on_disconnect(self):
-        """ Sends warning when the client disconnects from the network """
+        """
+        Sends warning when the client disconnects from the network
+        """
         now = datetime.datetime.now()
         print(f'[{now}]: WARNING: CLIENT HAS DISCONNECTED FROM NETWORK')
 
     @comms.Cog.listener()
     async def on_connect(self):
-        """ Sends warning when the client connects to the network """
+        """
+        Sends warning when the client connects to the network
+        """
         now = datetime.datetime.now()
         print(f'[{now}]: WARNING: CLIENT HAS CONNECTED TO NETWORK')
 
     @comms.Cog.listener()
     async def on_resumed(self):
-        """ Sends warning when the client resumes a session """
+        """
+        Sends warning when the client resumes a session
+        """
         now = datetime.datetime.now()
         print(f'[{now}]: WARNING: CLIENT HAS RESUMED CURRENT SESSION')
 
     @comms.Cog.listener()
     async def on_member_update(self, before, after):
-        """ Sends warning when there's an update in the status of a member """
+        """
+        Sends warning when there's an update in the status of a member
+        """
         pass
 
     @comms.Cog.listener()
     async def on_message(self, message):
-        """ Tracking, blocking, and removing files """
+        """
+        Tracking, blocking, and removing files
+        """
         try:
             if sys.argv[1] == 'log':
                 now = datetime.datetime.now()

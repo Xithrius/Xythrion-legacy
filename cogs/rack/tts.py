@@ -37,21 +37,30 @@ from containers.essentials.pathing import path
 class TextToSpeechCog(comms.Cog):
 
     def __init__(self, bot):
-        """ Object(s): bot """
+        """ Object(s):
+        Bot
+        """
         self.bot = bot
 
-    """ Error handling for GOOGLE_APPLICATION_CREDENTIALS """
+    """ 
+    Error handling for GOOGLE_APPLICATION_CREDENTIALS
+    """
     try:
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('configuration', 'google_service_token.json')
     except FileNotFoundError:
         print('WARNING: GOOGLE SERVICE TOKEN COULD NOT BE FOUND')
 
-# //////////////////////////////////////////////// # Commands
+    """
 
+    Commands
+
+    """
     @comms.command(name='tts')
     @comms.is_owner()
     async def google_text_to_speech(self, ctx):
-        """ Text to speech through the bot's mic """
+        """
+        Text to speech through the bot's mic
+        """
         lock = asyncio.Lock()
         await lock.acquire()
         try:

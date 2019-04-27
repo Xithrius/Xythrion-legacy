@@ -34,15 +34,22 @@ from containers.playback.youtube_2_mp3 import process_video
 class PlaybackCog(comms.Cog):
 
     def __init__(self, bot):
-        """ Object(s): bot """
+        """ Object(s):
+        Bot
+        """
         self.bot = bot
 
-# //////////////////////////////////////////////// # Commands
-
+    """
+    
+    Commands
+    
+    """
     @comms.command()
     @comms.is_owner()
     async def play(self, ctx, url):
-        """ Playing audio """
+        """
+        Playing audio
+        """
         for i in range(len(url)):
             if url[i] == '&':
                 url = url[0:i - 1]
@@ -57,7 +64,9 @@ class PlaybackCog(comms.Cog):
     @comms.command()
     @comms.is_owner()
     async def volume(self, ctx, amount):
-        """ Adjusts the volume of the audio """
+        """
+        Adjusts the volume of the audio
+        """
         vc = ctx.guild.voice_client
         vc.source = discord.PCMVolumeTransformer(vc.source)
         vc.source.volume = float(amount)
@@ -65,42 +74,53 @@ class PlaybackCog(comms.Cog):
     @comms.command()
     @comms.is_owner()
     async def pause(self, ctx):
-        """ Pauses the audio """
+        """
+        Pauses the audio
+        """
         vc = ctx.guild.voice_client
         vc.pause()
 
     @comms.command()
     @comms.is_owner()
     async def resume(self, ctx):
-        """ Resumes the audio """
+        """
+        Resumes the audio
+        """
         vc = ctx.guild.voice_client
         vc.resume()
 
     @comms.command()
-    @comms.is_owner()
     async def is_playing(self, ctx):
-        """ Tells the user what audio is currently playing """
+        """
+        Tells the user what audio is currently playing
+        """
         vc = ctx.guild.voice_client
         vc.is_playing()
 
     @comms.command()
     @comms.is_owner()
     async def stop(self, ctx):
-        """ Stops the audio that is playing, if any """
+        """
+        Stops the audio that is playing, if any
+        """
         vc = ctx.guild.voice_client
         vc.stop()
 
     @comms.command()
     @comms.is_owner()
     async def leave(self, ctx):
-        """ Leave the voice channel, if the bot's in one """
+        """
+        Leave the voice channel, if the bot's in one
+        """
         vc = ctx.guild.voice_client
         await vc.disconnect()
 
     @comms.command()
     @comms.is_owner()
     async def join(self, ctx):
-        """ Join the channel the user is in """
+        """
+        Join the channel the user is in
+        """
         await ctx.author.voice.channel.connect()
 
 

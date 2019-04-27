@@ -10,11 +10,26 @@
 '''
 
 
+# //////////////////////////////////////////////////////////////////////////// #
+# Libraries                                                                    #
+# //////////////////////////////////////////////////////////////////////////// #
+# Built-in modules, third-party modules, custom modules                        #
+# //////////////////////////////////////////////////////////////////////////// #
+
+
 from lxml import html
 import requests
 
 
+"""
+
+Returning stock information from different websites
+
+"""
 def get_stock_summary(abbreviation, option='low'):
+    """
+    Scraping Yahoo finance for stock information
+    """
     page = requests.get(f'https://finance.yahoo.com/quote/{abbreviation}?p={abbreviation}&.tsrc=fin-srch')
     tree = html.fromstring(page.content)
 

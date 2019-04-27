@@ -32,34 +32,54 @@ from discord.ext import commands as comms
 class TemplateCog(comms.Cog):
 
     def __init__(self, bot):
-        """ Object(s): bot and background task(s) """
+        """ Object(s):
+        Bot
+        Background task
+        """
         self.bot = bot
         self.bg_task = self.bot.loop.create_task(self.foo_reminder())
 
     def cog_unload(self):
-        """ Cancel background task(s) when cog is unloaded """
+        """
+        Cancel background task(s) when cog is unloaded
+        """
         self.bg_task.cancel()
 
-# //////////////////////////////////////////////// # Commands
-
+    """
+    
+    Commands
+    
+    """
     @comms.command(hidden=True)
     @comms.guild_only()
     @comms.is_owner()
     async def foo(self, ctx):
-        """ Description """
+        """
+        Description
+        """
         await ctx.send('Test sent')
 
-# //////////////////////////////////////////////// # Events
-
+    """
+    
+    Events
+    
+    """
     @comms.Cog.listener()
     async def on_foo_event(self, ctx):
-        """ Description """
+        """
+        Description
+        """
         pass
 
-# //////////////////////////////////////////////// # Background tasks
-
+    """
+    
+    Background tasks
+    
+    """
     async def foo_reminder(self):
-        """ Description """
+        """
+        Description
+        """
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             await asyncio.sleep(1)

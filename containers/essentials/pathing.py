@@ -11,9 +11,9 @@
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# Libraries
-# /////////////////////////////////////////////////////////
-# Built-in modules, third-party modules, custom modules
+# Libraries                                                                    #
+# //////////////////////////////////////////////////////////////////////////// #
+# Built-in modules, third-party modules, custom modules                        #
 # //////////////////////////////////////////////////////////////////////////// #
 
 
@@ -22,8 +22,15 @@ import __main__
 from distutils import dir_util
 
 
+"""
+
+Relative creation of objects
+
+"""
 def path(*objects):
-    """  """
+    """
+    Returns path relative to caller with additional objects, if any
+    """
     newPath = ((__main__.__file__).split("\\"))[:-1]
     for i in objects:
         newPath.append(i)
@@ -31,5 +38,7 @@ def path(*objects):
 
 
 def mkdir(*objects):
-    """  """
+    """
+    Creats a new folder at a given location
+    """
     dir_util.mkpath(path(*objects))

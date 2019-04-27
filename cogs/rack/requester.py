@@ -18,7 +18,6 @@
 
 
 import requests
-import requests.auth
 import json
 import urllib
 import configparser
@@ -27,6 +26,7 @@ import time
 import datetime
 import platform
 import os
+import asyncio
 
 from discord.ext import commands as comms
 import discord
@@ -34,6 +34,7 @@ import discord
 from containers.essentials.pathing import path, mkdir
 from containers.essentials.converter import index_days
 from containers.scraping.yahoo_finance import get_stock_summary
+from containers.output.printer import duplicate
 import relay
 
 
@@ -47,22 +48,62 @@ import relay
 class Reddit_Requester(comms.Cog):
 
     def __init__(self, bot):
-        """ Object(s): bot """
+        """ Object(s):
+        Bot
+        Background task
+        """
         self.bot = bot
+        self.load_script = self.bot.loop.create_task(self.load_reddit_script())
 
-# //////////////////////////////////////////////// # Commands
+    def cog_unload(self):
+        """
+        Cancel background task(s) when cog is unloaded
+        """
+        self.load_script.cancel()
 
-    @comms.command(name='reddit', hidden=True)
+    """
+
+    Background tasks
+
+    """
+    async def load_reddit_script(self):
+        """
+        Checks if reddit is accessable
+        """
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            self.reddit_script_active = False
+            print('[...]: CHECKING REDDIT SCRIPT CREDENTIALS')
+            f = json.load(open(path('relay', 'configuration', 'reddit_config.json')))
+            client_auth = requests.auth.HTTPBasicAuth(f['client_ID'], f['client_secret'])
+            post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
+            headers = {"User-Agent": f"Relay.py/{relay.__version__} by {f['username']}"}
+            response = (requests.post("https://www.reddit.com/api/v1/access_token", auth=client_auth, data=post_data, headers=headers)).json()
+            reset_time = response['expires_in']
+            self.headers = {"Authorization": f"{response['token_type']} {response['access_token']}", "User-Agent": f"Relay.py/{relay.__version__} by {f['username']}"}
+            response = requests.get('https://oauth.reddit.com/api/v1/me', headers=self.headers)
+            if response.json() in [{'message': 'Unauthorized', 'error': 401}, {'error': 'invalid_grant'}]:
+                print('WARNING: REDDIT ACCOUNT CANNOT BE ACTIVATED')
+                await asyncio.sleep(60)
+            else:
+                self.reddit_script_active = True
+                print('[ ✓ ]: REDDIT SCRIPT CREDENTIALS ACTIVATED')
+                await asyncio.sleep(reset_time + 1)
+
+    """
+
+    Commands
+
+    """
+    @comms.command(name='reddit_user', hidden=True)
     @comms.is_owner()
-    async def request_reddit(self, ctx):
-        """  """
-        f = json.load(open(path('relay', 'configuration', 'reddit_config.json')))
-        client_auth = requests.auth.HTTPBasicAuth(f['client_ID'], f['client_secret'])
-        post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
-        # headers = {"User-Agent": f"Relay.py/{relay.__version__} by Xithrius"}
-        response = requests.post("https://www.reddit.com/api/v1/access_token", auth=client_auth, data=post_data)
-        await ctx.send(response.json())
-        print(response.json())
+    async def request_reddit_user(self, ctx, user):
+        """
+        Requesting information for a reddit user
+        """
+        if self.reddit_script_active:
+            response = (requests.get(f'https://oauth.reddit.com/user/{user}/about', headers=self.headers)).json()
+            await ctx.send(response)
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -75,14 +116,21 @@ class Reddit_Requester(comms.Cog):
 class Weather_Requester(comms.Cog):
 
     def __init__(self, bot):
-        """ Object(s): bot """
+        """ Object(s):
+        Bot
+        """
         self.bot = bot
 
-# //////////////////////////////////////////////// # Commands
+    """
 
+    Commands
+
+    """
     @comms.command(name='weather')
     async def get_weather(self, ctx, *args):
-        """ Get weather for an input location """
+        """
+        Get weather for an input location
+        """
         checkToken = True
         while checkToken:
             try:
@@ -120,16 +168,24 @@ class Weather_Requester(comms.Cog):
 class Stock_Requester(comms.Cog):
 
     def __init__(self, bot):
-        """ Object(s): bot and background task"""
+        """ Object(s):
+        Bot
+        Background task
+        """
         self.bot = bot
         self.bg_task = self.bot.loop.create_task(self.check_stock_reminders())
 
     def cog_unload(self):
-        """ Cancel background task(s) when cog is unloaded """
+        """
+        Cancel background task(s) when cog is unloaded
+        """
         self.bg_task.cancel()
 
-# //////////////////////////////////////////////// # Commands
+    """
 
+    Commands
+
+    """
     @comms.command(name='stocks')
     async def get_current_stocks(self, ctx, abbreviation, option='low'):
         """ Get information about inputted stock """
@@ -173,10 +229,15 @@ class Stock_Requester(comms.Cog):
         """ Remove the reminder for the stock """
         os.remove(path('media', 'user_requests', 'reminders', 'stocks', ctx.message.author.id, f'{abbreviation}.txt'))
 
-# //////////////////////////////////////////////// # Background tasks
+    """
 
+    Background tasks
+
+    """
     async def check_stock_reminders(self):
-        """ Checking folders for reminders then sending stock updates out """
+        """
+        Checking folders for reminders then sending stock updates out
+        """
         await self.bot.wait_until_ready()
         users = []
         for (dirpath, dirnames, filenames) in os.walk(path('media', 'user_requests', 'reminders', 'stocks')):

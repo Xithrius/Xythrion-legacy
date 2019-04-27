@@ -37,15 +37,23 @@ from containers.essentials.pathing import path
 class IdentityCog(comms.Cog):
 
     def __init__(self, bot):
-        """ Object(s): bot """
+        """ Object(s):
+        Bot
+        """
         self.bot = bot
 
-# //////////////////////////////////////////////// # Commands
 
+    """
+
+    Commands
+
+    """
     @comms.command(name='owner', hidden=True)
     @comms.is_owner()
     async def show_creator(self, ctx):
-        """ Shows the person who created the bot """
+        """
+        Shows the person who created the bot
+        """
         embed = discord.Embed(colour=0xc27c0e)
         embed.set_author(name='Xithrius', icon_url='https://i.imgur.com/TtcOXxx.jpg')
         embed.add_field(name='Private Github:', value='[Right here](https://github.com/Xithrius/Relay.py)')
@@ -55,7 +63,9 @@ class IdentityCog(comms.Cog):
 
     @comms.command(name='songs')
     async def favorite_songs(self, ctx):
-        """ The bot's favorite songs """
+        """
+        The bot's favorite songs
+        """
         embed = discord.Embed(name=f"{self.bot.user}'s favorite songs'", colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
         songs = []
         song_dict = {}
@@ -79,12 +89,16 @@ class IdentityCog(comms.Cog):
 
     @comms.command(name='videos')
     async def favorite_videos(self, ctx):
-        """ The bot's favorite videos """
+        """
+        The bot's favorite videos
+        """
         pass
 
     @comms.command(name='icon')
     async def get_own_avatar(self, ctx):
-        """ The avatar of the bot """
+        """
+        The avatar of the bot
+        """
         await ctx.send(self.bot.user.avatar_url)
 
 
