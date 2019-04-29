@@ -94,8 +94,6 @@ class MainCog(comms.Cog):
         now = datetime.datetime.now()
         await self.bot.change_presence(activity=discord.Game(f'with pixels'))
         start = f"""
-
-         [{now}]
     +----[ Relay.py ]------------------------------------------------------+
     |    Copyright (c) 2019 Xithrius
     |    MIT license, Refer to LICENSE for more info
@@ -108,7 +106,6 @@ class MainCog(comms.Cog):
     |    Changed status to 'Playing with pixels'
     |    Awaiting...
     +----------------------------------------------------------------------+
-
         """
         printc(start)
 
@@ -137,10 +134,10 @@ class MainCog(comms.Cog):
             else:
                 loaded_cogs.append(cog)
         if len(broken_cogs) > 0:
-            await ctx.send(duplicate(f"WARNING: COG(S) COULD NOT BE RELOADED:\n\t{', '.join(str(y) for y in broken_cogs)}"))
+            await ctx.send(duplicate(f"WARNING: COG(S) COULD NOT BE RELOADED:\n\t{', '.join(str(y) for y in broken_cogs)}"), delete_after=10)
         if len(loaded_cogs) > 0:
             printc(f"[ ✓ ]: COG(S) RELOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
-            await ctx.send('Cogs have been reloaded successfully')
+            await ctx.send('Cogs have been reloaded successfully', delete_after=10)
         else:
             printc(f"WARNING: NO COG(S) HAVE BEEN RELOADED")
 
@@ -155,9 +152,9 @@ class MainCog(comms.Cog):
             try:
                 self.bot.load_extension(cog)
                 self.cogs.append(cog)
-                await ctx.send(duplicate(f'[ ✓ ]: COG {cog} HAS BEEN LOADED SUCCESSFULLY'))
+                await ctx.send(duplicate(f'[ ✓ ]: COG {cog} HAS BEEN LOADED SUCCESSFULLY'), delete_after=10)
             except comms.ExtensionAlreadyLoaded:
-                await ctx.send(f'Cog {cog} has already been loaded')
+                await ctx.send(f'Cog {cog} has already been loaded', delete_after=10)
             except Exception as e:
                 printc(f'{cog}: {type(e).__name__} - {e}\n')
         else:
@@ -173,11 +170,11 @@ class MainCog(comms.Cog):
             try:
                 self.bot.unload_extension(cog)
                 self.cogs.pop(cog)
-                await ctx.send(duplicate(f'[ ✓ ]: COG {cog} UNLOADED SUCCESSFULLY'))
+                await ctx.send(duplicate(f'[ ✓ ]: COG {cog} UNLOADED SUCCESSFULLY'), delete_after=10)
             except Exception as e:
                 printc(f'{cog}: {type(e).__name__} - {e}\n')
         else:
-            await ctx.send(duplicate(f'WARNING: COG {cog} IS BLOCKED OR DOES NOT EXIST'))
+            await ctx.send(duplicate(f'WARNING: COG {cog} IS BLOCKED OR DOES NOT EXIST'), delete_after=10)
 
     @comms.command(name='exit', hidden=True)
     @comms.is_owner()

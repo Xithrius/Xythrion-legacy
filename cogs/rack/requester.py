@@ -34,7 +34,8 @@ import discord
 from containers.essentials.pathing import path, mkdir
 from containers.essentials.converter import index_days
 from containers.scraping.yahoo_finance import get_stock_summary
-from containers.output.printer import duplicate
+from containers.output.printer import printc
+from containers.QOL.shortened import now
 import relay
 
 
@@ -73,7 +74,7 @@ class Reddit_Requester(comms.Cog):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             self.reddit_script_active = False
-            print('[...]: CHECKING REDDIT SCRIPT CREDENTIALS')
+            printc('[...]: CHECKING REDDIT SCRIPT CREDENTIALS')
             f = json.load(open(path('relay', 'configuration', 'reddit_config.json')))
             client_auth = requests.auth.HTTPBasicAuth(f['client_ID'], f['client_secret'])
             post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
@@ -83,11 +84,11 @@ class Reddit_Requester(comms.Cog):
             self.headers = {"Authorization": f"{response['token_type']} {response['access_token']}", "User-Agent": f"Relay.py/{relay.__version__} by {f['username']}"}
             response = requests.get('https://oauth.reddit.com/api/v1/me', headers=self.headers)
             if response.json() in [{'message': 'Unauthorized', 'error': 401}, {'error': 'invalid_grant'}]:
-                print('WARNING: REDDIT ACCOUNT CANNOT BE ACTIVATED')
+                printc('WARNING: REDDIT ACCOUNT CANNOT BE ACTIVATED')
                 await asyncio.sleep(60)
             else:
                 self.reddit_script_active = True
-                print('[ ✓ ]: REDDIT SCRIPT CREDENTIALS ACTIVATED')
+                printc('[ ✓ ]: REDDIT SCRIPT CREDENTIALS ACTIVATED')
                 await asyncio.sleep(reset_time + 1)
 
     """
@@ -95,15 +96,32 @@ class Reddit_Requester(comms.Cog):
     Commands
 
     """
+    @comms.command(name='subreddit_top', hidden=True)
+    @comms.is_owner()
+    async def request_subreddit_top_posts(self, ctx, subreddit):
+        """
+        Requesting information for a subreddit user
+        """
+        if self.reddit_script_active:
+            response = (requests.get(f'https://oauth.reddit.com/r/{subreddit}/top/', {"limit": 1}, headers=self.headers)).json()
+            # await ctx.send(response)
+            print(response)
+
     @comms.command(name='reddit_user', hidden=True)
     @comms.is_owner()
-    async def request_reddit_user(self, ctx, user):
+    async def request_user_information(self, ctx, user):
         """
         Requesting information for a reddit user
         """
         if self.reddit_script_active:
-            response = (requests.get(f'https://oauth.reddit.com/user/{user}/about', headers=self.headers)).json()
-            await ctx.send(response)
+            response = (requests.get(f'https://oauth.reddit.com/user/{user}/about/', headers=self.headers)).json()
+            data = response['data']
+            embed = discord.Embed(title=f'About reddit user {user}:', colour=0xc27c0e, timestamp=now())
+            embed.add_field(name='Link to user profile', value=f'[/u/{user}](https://www.reddit.com/u/{user})')
+            embed.set_thumbnail(url=data['icon_img'])
+            embed.add_field(name='Karma', value=f"Link Karma: {data['link_karma']}, Comment Karma: {data['comment_karma']}")
+            embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
+            await ctx.send(embed=embed)
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -146,7 +164,7 @@ class Weather_Requester(comms.Cog):
                     config.write(f)
         with urllib.request.urlopen(f'http://api.openweathermap.org/data/2.5/weather?{args[0]}={args[1]},{args[2]}&APPID={token}') as url:
             data = json.loads(url.read().decode())
-        embed = discord.Embed(title='Weather', colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
+        embed = discord.Embed(title='Weather', colour=0xc27c0e, timestamp=now())
         embed.add_field(name='Location:', value=f"{data['name']}, {args[1]}, {data['sys']['country']}", inline=False)
         embed.add_field(name='Weather Type:', value=data['weather'][0]['description'], inline=False)
         embed.add_field(name='Temperature:', value=f"Now: {pytemperature.k2f(data['main']['temp'])} °F\nLow: {pytemperature.k2f(data['main']['temp_min'])} °F\nHigh: {pytemperature.k2f(data['main']['temp_max'])} °F", inline=False)
@@ -192,7 +210,7 @@ class Stock_Requester(comms.Cog):
         stock_dict = get_stock_summary(abbreviation, option)
         for k, v in stock_dict.items():
             if k == 'Title':
-                embed = discord.Embed(title=f'Summary for the stock of {v[0]}', colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
+                embed = discord.Embed(title=f'Summary for the stock of {v[0]}', colour=0xc27c0e, timestamp=now())
             else:
                 try:
                     embed.add_field(name=k, value=v[0], inline=False)
@@ -212,7 +230,7 @@ class Stock_Requester(comms.Cog):
         if len(error_list) > 0:
             ctx.send(f"Entered options of {', '.join(str(y) for y in error_list)} are not within weekdays abbreviated by {', '.join(str(y) for y in days)}")
         else:
-            embed = discord.Embed(title='Reminder for stocks', colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
+            embed = discord.Embed(title='Reminder for stocks', colour=0xc27c0e, timestamp=now())
             embed.add_field(name=f"Reminder set for {abbreviation}", value=f"You will be messaged on {', '.join(str(y) for y in user_days)} at 4:00pm PDT", inline=False)
             await ctx.send(embed=embed)
             check = True
@@ -254,7 +272,7 @@ class Stock_Requester(comms.Cog):
                         stock_dict = get_stock_summary((user_request_abbreviations[i])[:-4])
                         for k, v in stock_dict.items():
                             if k == 'Title':
-                                embed = discord.Embed(title=f'Summary for the stock of {v[0]}', colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
+                                embed = discord.Embed(title=f'Summary for the stock of {v[0]}', colour=0xc27c0e, timestamp=now())
                             else:
                                 try:
                                     embed.add_field(name=k, value=v[0], inline=False)
@@ -266,7 +284,7 @@ class Stock_Requester(comms.Cog):
                                 if member.id == int(user):
                                     user = member
                         await user.send(embed=embed)
-                        print(f"{datetime.datetime.now()}: {user.name}{user.discriminator} was reminded for {user_request_abbreviations[i]}")
+                        printc(f"{now()}: {user.name}{user.discriminator} was reminded for {user_request_abbreviations[i]}")
         # while not self.bot.is_closed():
         #    if datetime.datetime.today().weekday() >= 0 and datetime.datetime.today().weekday() <= 4:
         #        if datetime.datetime.now().hour == 13:

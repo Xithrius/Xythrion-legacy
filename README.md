@@ -11,7 +11,22 @@ Operating to transfer information
 
 
 # Current version features
-* I've made all my bots consolidate into one 
+- [ ] Requesting information: 
+    - [x] Reddit (kind of)
+    - [ ] Reddit (everything)
+    - [x] League of Legends
+    - [x] Weather
+    - [ ] Yahoo Finance stocks
+    - [ ] Osu!
+    - [ ] Google Search results
+- [x] Text to speech through bot
+- [x] Warns user of errors through discord messages and console timestamps
+- [x] Playback Youtube videos as mp3
+- [ ] Customized commands created through discord messages that are put into separate folder
+- [ ] Add permissions to the bot, so multiple people can have access to high-level commands
+- [ ] 2FA - Quick Response codes with phone through website
+- [ ] Recreate the help command for all commands including hidden ones
+- [ ] Quality Of Life command creations
 
 
 # Changelog
@@ -21,13 +36,3 @@ Operating to transfer information
 * Bot is able to run now. Updates coming soon!
 ### Modifications:
 * Everything
-
-
-# TODO
-- [ ] Recreate the help command
-- [ ] Quality Of Life command creations
-- [ ] Customized commands through discord messages, will be put into separate folder
-- [ ] Add permissions to the bot, so multiple people can have access to high-level commands
-- [ ] Google Cloud Search, Drive, Calendar
-- [ ] Multithreading and using different programs for the same application running in unison
-- [ ] 2FA - Quick Response codes through phone with website

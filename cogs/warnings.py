@@ -19,11 +19,11 @@
 
 import sys
 import datetime
-import traceback
 
 from discord.ext import commands as comms
 
 from containers.essentials.pathing import path, mkdir
+from containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -36,7 +36,7 @@ from containers.essentials.pathing import path, mkdir
 class WarningsCog(comms.Cog):
 
     def __init__(self, bot):
-        """ Objects: 
+        """ Objects:
         Bot
         """
         self.bot = bot
@@ -44,40 +44,36 @@ class WarningsCog(comms.Cog):
     """
 
     Events
-    
+
     """
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
         """
         Sends error to the user
         """
-        now = datetime.datetime.now()
         await ctx.send(error)
-        print(f'[{now}]: WARNING: {ctx.message.author} HAS CAUSED ERROR:\n\t{ctx.message.content}\n\t{error}')
+        printc(f'WARNING: {ctx.message.author} HAS CAUSED ERROR:\n\t{ctx.message.content}\n\t{error}')
 
     @comms.Cog.listener()
     async def on_disconnect(self):
         """
         Sends warning when the client disconnects from the network
         """
-        now = datetime.datetime.now()
-        print(f'[{now}]: WARNING: CLIENT HAS DISCONNECTED FROM NETWORK')
+        printc(f'WARNING: CLIENT HAS DISCONNECTED FROM NETWORK')
 
     @comms.Cog.listener()
     async def on_connect(self):
         """
         Sends warning when the client connects to the network
         """
-        now = datetime.datetime.now()
-        print(f'[{now}]: WARNING: CLIENT HAS CONNECTED TO NETWORK')
+        printc(f'WARNING: CLIENT HAS CONNECTED TO NETWORK')
 
     @comms.Cog.listener()
     async def on_resumed(self):
         """
         Sends warning when the client resumes a session
         """
-        now = datetime.datetime.now()
-        print(f'[{now}]: WARNING: CLIENT HAS RESUMED CURRENT SESSION')
+        printc(f'WARNING: CLIENT HAS RESUMED CURRENT SESSION')
 
     @comms.Cog.listener()
     async def on_member_update(self, before, after):
