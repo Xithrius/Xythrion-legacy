@@ -49,6 +49,7 @@ class MainCog(comms.Cog):
         self.bot = bot
         self.cogs = cogs
         self.all_cogs = self.cogs
+        self.presence = 'with pixels'
         self.load_cog_task = self.bot.loop.create_task(self.load_cogs_in())
 
 
@@ -91,8 +92,7 @@ class MainCog(comms.Cog):
         """
         Event activates when bot is ready for use
         """
-        now = datetime.datetime.now()
-        await self.bot.change_presence(activity=discord.Game(f'with pixels'))
+        await self.bot.change_presence(activity=discord.Game(self.presence))
         start = f"""
     +----[ Relay.py ]------------------------------------------------------+
     |    Copyright (c) 2019 Xithrius
@@ -103,7 +103,7 @@ class MainCog(comms.Cog):
     +----------------------------------------------------------------------+
     |    Using discord.py {discord.__version__}
     |    Using relay.py {relay.__version__}
-    |    Changed status to 'Playing with pixels'
+    |    Changed status to 'Playing {self.presence}'
     |    Awaiting...
     +----------------------------------------------------------------------+
         """

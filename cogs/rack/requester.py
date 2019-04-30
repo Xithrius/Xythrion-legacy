@@ -96,22 +96,36 @@ class Reddit_Requester(comms.Cog):
     Commands
 
     """
-    @comms.command(name='subreddit_top', hidden=True)
-    @comms.is_owner()
-    async def request_subreddit_top_posts(self, ctx, subreddit):
+    @group.command(name='r/')
+    async def subreddit_requests(self, ctx):
         """
-        Requesting information for a subreddit user
+        Subreddit group command
+        """
+        pass
+
+    @subreddit.command(name='info')
+    async def subreddit_top(self, ctx, subreddit):
+        """
+        Request subreddit information
         """
         if self.reddit_script_active:
             response = (requests.get(f'https://oauth.reddit.com/r/{subreddit}/top/', {"limit": 1}, headers=self.headers)).json()
             # await ctx.send(response)
             print(response)
 
-    @comms.command(name='reddit_user', hidden=True)
-    @comms.is_owner()
-    async def request_user_information(self, ctx, user):
+    @subreddit.command(name='')
+
+    @group.command(name='u/')
+    async def reddit_user_requests(self, ctx):
         """
-        Requesting information for a reddit user
+        Reddit user group command
+        """
+        pass
+        
+    @reddit.command(name='info')
+    async def reddit_user_info(self, ctx, user):
+        """
+        Request reddit user information
         """
         if self.reddit_script_active:
             response = (requests.get(f'https://oauth.reddit.com/user/{user}/about/', headers=self.headers)).json()
@@ -153,7 +167,7 @@ class Weather_Requester(comms.Cog):
         while checkToken:
             try:
                 config = configparser.ConfigParser()
-                config.read(path('relay', 'configuration', 'credentials', 'config.ini'))
+                config.read(path('relay', 'configuration', 'config.ini'))
                 token = config['weather']['token']
                 checkToken = False
             except FileNotFoundError:
@@ -162,8 +176,7 @@ class Weather_Requester(comms.Cog):
                 config['weather'] = {'token': token}
                 with open(path('relay', 'configuration', 'credentials', 'config.ini'), 'w') as f:
                     config.write(f)
-        with urllib.request.urlopen(f'http://api.openweathermap.org/data/2.5/weather?{args[0]}={args[1]},{args[2]}&APPID={token}') as url:
-            data = json.loads(url.read().decode())
+        data = requests.get(f'http://api.openweathermap.org/data/2.5/weather?{args[0]}={args[1]},{args[2]}&APPID={token}').json()
         embed = discord.Embed(title='Weather', colour=0xc27c0e, timestamp=now())
         embed.add_field(name='Location:', value=f"{data['name']}, {args[1]}, {data['sys']['country']}", inline=False)
         embed.add_field(name='Weather Type:', value=data['weather'][0]['description'], inline=False)

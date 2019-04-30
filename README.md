@@ -14,9 +14,9 @@ Operating to transfer information
 - [ ] Requesting information: 
     - [x] Reddit (kind of)
     - [ ] Reddit (everything)
-    - [x] League of Legends
+    - [ ] League of Legends
     - [x] Weather
-    - [ ] Yahoo Finance stocks
+    - [x] Yahoo Finance stocks
     - [ ] Osu!
     - [ ] Google Search results
 - [x] Text to speech through bot
@@ -27,6 +27,7 @@ Operating to transfer information
 - [ ] 2FA - Quick Response codes with phone through website
 - [ ] Recreate the help command for all commands including hidden ones
 - [ ] Quality Of Life command creations
+- [ ] Checklist
 
 
 # Changelog
