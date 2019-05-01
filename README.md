@@ -1,8 +1,8 @@
+<img align="right" src="relay/misc/images/icon.png">
 # Relay.py
 Operating to transfer information
 
-`Copyright (c) 2019 Xithrius`
-`MIT license, Refer to LICENSE for more info`
+[![License](https://img.shields.io/apm/l/vim-mode.svg)](https://img.shields.io/apm/l/vim-mode.svg) [![Python Version](https://img.shields.io/pypi/pyversions/Django.svg)](https://img.shields.io/pypi/pyversions/Django.svg) [![Update rate](https://img.shields.io/eclipse-marketplace/last-update/notepad4e.svg)](https://img.shields.io/eclipse-marketplace/last-update/notepad4e.svg) ![discord](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)
 
 
 # Links for information:
@@ -27,7 +27,7 @@ Operating to transfer information
 - [ ] 2FA - Quick Response codes with phone through website
 - [ ] Recreate the help command for all commands including hidden ones
 - [ ] Quality Of Life command creations
-- [ ] Checklist
+- [ ] Creates, saves, and edits checklists requested by users
 
 
 # Changelog

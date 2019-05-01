@@ -17,7 +17,6 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import datetime
 import traceback
 import configparser
 import os
@@ -52,11 +51,10 @@ class MainCog(comms.Cog):
         self.presence = 'with pixels'
         self.load_cog_task = self.bot.loop.create_task(self.load_cogs_in())
 
-
     """
-    
+
     Background tasks
-    
+
     """
     async def load_cogs_in(self):
         """
@@ -83,7 +81,7 @@ class MainCog(comms.Cog):
                 printc(f"WARNING: NO COG(S) HAVE BEEN LOADED")
 
     """
-    
+
     Events
 
     """
@@ -112,7 +110,7 @@ class MainCog(comms.Cog):
     """
 
     Commands
-    
+
     """
     @comms.command(name='r', hidden=True)
     @comms.is_owner()
@@ -127,7 +125,7 @@ class MainCog(comms.Cog):
             try:
                 self.bot.unload_extension(cog)
                 self.bot.load_extension(cog)
-            except (comms.ExtensionNotLoaded) as e:
+            except comms.ExtensionNotLoaded:
                 self.bot.load_extension(cog)
             except Exception as e:
                 broken_cogs.append(f'{cog}: {type(e).__name__} - {e}\n')
@@ -182,15 +180,17 @@ class MainCog(comms.Cog):
         """
         Make the bot logout
         """
-        now = datetime.datetime.now()
         printc(f'WARNING: LOGGING OUT...')
         await self.bot.logout()
+
 
 """
 
 Function to pass objects into the main cog to run the bot
 
 """
+
+
 def setup_bot(bot=comms.Bot(command_prefix='$', case_insensitive=True)):
     """
     Passing objects into the MainCog, then running the bot

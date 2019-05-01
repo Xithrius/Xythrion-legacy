@@ -46,9 +46,9 @@ class TemplateCog(comms.Cog):
         self.bg_task.cancel()
 
     """
-    
+
     Commands
-    
+
     """
     @comms.command(hidden=True)
     @comms.guild_only()
@@ -60,9 +60,9 @@ class TemplateCog(comms.Cog):
         await ctx.send('Test sent')
 
     """
-    
+
     Events
-    
+
     """
     @comms.Cog.listener()
     async def on_foo_event(self, ctx):
@@ -72,9 +72,9 @@ class TemplateCog(comms.Cog):
         pass
 
     """
-    
+
     Background tasks
-    
+
     """
     async def foo_reminder(self):
         """
