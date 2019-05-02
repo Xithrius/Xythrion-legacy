@@ -1,8 +1,9 @@
-# Relay.py
 <img align="right" src="relay/misc/images/icon.png">
+# Relay.py
+---
 Operating to transfer information
-
-[![License](https://img.shields.io/apm/l/vim-mode.svg)](https://img.shields.io/apm/l/vim-mode.svg) [![Python Version](https://img.shields.io/pypi/pyversions/Django.svg)](https://img.shields.io/pypi/pyversions/Django.svg) [![Update rate](https://img.shields.io/eclipse-marketplace/last-update/notepad4e.svg)](https://img.shields.io/eclipse-marketplace/last-update/notepad4e.svg) ![discord](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)
+---
+[![License](https://img.shields.io/apm/l/vim-mode.svg)](https://img.shields.io/apm/l/vim-mode.svg) [![Python Version](https://img.shields.io/badge/python-3.7.3-green.svg)](https://www.python.org/downloads/release/python-373/) [![Update rate](https://img.shields.io/eclipse-marketplace/last-update/notepad4e.svg)](https://img.shields.io/eclipse-marketplace/last-update/notepad4e.svg) ![discord](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)
 
 
 # Links for information:

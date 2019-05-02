@@ -196,27 +196,11 @@ def setup_bot(bot=comms.Bot(command_prefix='$', case_insensitive=True)):
     Passing objects into the MainCog, then running the bot
     """
     # Searching for cogs within the cogs directory
-    essential_cogs = []
-    for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
-        essential_cogs.extend(filenames)
-        break
-    custom_cogs = []
-    for (dirpath, dirnames, filenames) in os.walk(path('cogs', 'rack')):
-        custom_cogs.extend(filenames)
-        break
-    # Creating the list of extensions
     cogs = []
-    for file in essential_cogs:
-        if file[-3:] == '.py':
-            cogs.append(f'cogs.{file[:-3]}')
-    for file in custom_cogs:
-        if file[-3:] == '.py':
-            cogs.append(f'cogs.rack.{file[:-3]}')
-    # Blocking cogs, if any at all
-    for i in [x[:-1] for x in open(path('relay', 'configuration', 'blocked_cogs.txt'), 'r')]:
-        for j in cogs:
-            if j in [f'cogs.{i}', f'cogs.rack.{i}']:
-                cogs.pop(cogs.index(j))
+    for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
+        cog = '.'.join(str(y) for y in dirpath[len(path()) + 1:].split('\\'))
+        if '__pycache__' not in cog:
+            cogs.extend([f'{cog}.{i[:-3]}' for i in filenames if i[:-3] not in [x[:-1] for x in open(path('relay', 'configuration', 'blocked_cogs.txt'), 'r').readlines()]])
     bot.add_cog(MainCog(bot, cogs))
     # Looping the input until token is correct
     checkToken = True

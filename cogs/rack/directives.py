@@ -128,7 +128,9 @@ class DirectivesCog(comms.Cog):
                 if message.attachments[0].filename.endswith(extension) and message.channel.topic == 'No pictures':
                     await message.delete()
                     await message.author.send(f'No pictures in channel {message.channel} of the server {message.guild}!')
-            except IndexError or AttributeError:
+            except IndexError:
+                pass
+            except AttributeError:
                 pass
             except discord.errors.Forbidden:
                 await message.guild.owner.send(f'I should be able to remove pictures from a channel that does not want any. Please give me the permissions to do so.')
