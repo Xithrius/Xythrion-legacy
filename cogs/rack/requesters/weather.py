@@ -53,7 +53,7 @@ class Weather_Requester(comms.Cog):
     @comms.command(name='weather')
     async def get_weather(self, ctx, *args):
         """
-        Get weather for an input location
+        Using the OpenWeatherMap API to complete requests for weather in a location
         """
         checkToken = True
         while checkToken:

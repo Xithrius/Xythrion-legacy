@@ -25,6 +25,8 @@ import youtube_dl
 Processing for youtube to mp3 playback
 
 """
+
+
 def process_video(url, path):
     """
     Downloading youtube video in a specific quality of mp3
@@ -41,4 +43,4 @@ def process_video(url, path):
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
         info_dict = ydl.extract_info(url, download=False)
-        video_title = info_dict.get('title', None)
+        return info_dict.get('title', None)

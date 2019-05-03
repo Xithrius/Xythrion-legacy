@@ -87,19 +87,7 @@ class WarningsCog(comms.Cog):
         """
         Tracking, blocking, and removing files
         """
-        try:
-            if sys.argv[1] == 'log':
-                now = datetime.datetime.now()
-                check = True
-                while check:
-                    try:
-                        with open(path('logs', message.guild, message.channel, f'{message.author}.txt'), 'a') as f:
-                            f.write(f"[{now}]: '{message.content}'\n")
-                            check = False
-                    except FileNotFoundError:
-                        mkdir('logs', message.guild, message.channel)
-        except IndexError:
-            pass
+        pass
 
 
 def setup(bot):
