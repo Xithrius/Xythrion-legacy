@@ -1,4 +1,4 @@
-<img align="right" src="relay/misc/images/icon.png">
+<img align="right" src="relay/icon.png">
 
 # Relay.py
 Operating to transfer information
@@ -13,9 +13,8 @@ Operating to transfer information
 
 
 # Current version features
-- [ ] Requesting information: 
-    - [x] Reddit (kind of)
-    - [ ] Reddit (everything)
+- [ ] Requesting information:
+    - [ ] Reddit (kind of)
     - [ ] League of Legends
     - [x] Weather
     - [x] Yahoo Finance stocks
@@ -23,7 +22,7 @@ Operating to transfer information
     - [ ] Google Search results
 - [x] Text to speech through bot
 - [x] Warns user of errors through discord messages and console timestamps
-- [x] Playback Youtube videos as mp3
+- [ ] Playback Youtube videos as mp3
 - [ ] Customized commands created through discord messages that are put into separate folder
 - [ ] Add permissions to the bot, so multiple people can have access to high-level commands
 - [ ] 2FA - Quick Response codes with phone through website
