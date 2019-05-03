@@ -24,11 +24,12 @@ import os
 from discord.ext import commands as comms
 import discord
 
-from containers.essentials.pathing import path, mkdir
-from containers.output.printer import printc
+from containers.QOL.pathing import path, mkdir
 from containers.QOL.shortened import now
+from containers.QOL.shortened import index_days
+from containers.output.printer import printc
 from containers.scraping.yahoo_finance import get_stock_summary
-from containers.essentials.converter import index_days
+
 
 # //////////////////////////////////////////////////////////////////////////// #
 # Stock cog

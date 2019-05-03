@@ -5,4 +5,3 @@
 *.ini
 *.vscode
 *.code-workspace
-venv/

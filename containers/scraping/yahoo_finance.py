@@ -26,6 +26,8 @@ import requests
 Returning stock information from different websites
 
 """
+
+
 def get_stock_summary(abbreviation, option='low'):
     """
     Scraping Yahoo finance for stock information

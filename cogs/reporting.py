@@ -17,8 +17,6 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import asyncio
-
 from discord.ext import commands as comms
 
 
@@ -38,9 +36,9 @@ class BugCog(comms.Cog):
         self.bot = bot
 
     """
-    
+
     Commands
-    
+
     """
     async def bug(self, ctx):
         """

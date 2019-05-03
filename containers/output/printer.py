@@ -25,6 +25,8 @@ import datetime
 Functions for printing to locations with customized uniting
 
 """
+
+
 def printc(string: str):
     """
     Customized printing to the console with timestamps
@@ -37,5 +39,5 @@ def duplicate(string: str):
     """
     Prints to console and wherever else
     """
-    printc(string)
-    return upper(string[string.index(':') + 2]) + lower(string[string.index(':') + 3])
+    printc()
+    return (string[string.index(':') + 2]).upper() + (string[string.index(':') + 3]).lower()

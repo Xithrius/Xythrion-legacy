@@ -25,8 +25,8 @@ import asyncio
 from discord.ext import commands as comms
 import discord
 
-from containers.essentials.pathing import path
 from containers.output.printer import printc
+from containers.QOL.pathing import path
 from containers.QOL.shortened import now
 import relay
 

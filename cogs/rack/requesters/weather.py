@@ -27,7 +27,7 @@ from discord.ext import commands as comms
 import discord
 
 from containers.QOL.shortened import now
-from containers.essentials.pathing import path
+from containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #

@@ -25,6 +25,8 @@ import datetime
 Functions for returning shortened versions of longer functions
 
 """
+
+
 def now():
     """
     Returns the time depending on time zone (will look at file soon)

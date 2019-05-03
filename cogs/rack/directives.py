@@ -24,7 +24,7 @@ import datetime
 from discord.ext import commands as comms
 import discord
 
-from containers.essentials.pathing import path
+from containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #

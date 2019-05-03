@@ -24,7 +24,7 @@ import os
 import discord
 from discord.ext import commands as comms
 
-from containers.essentials.pathing import path
+from containers.QOL.pathing import path
 from containers.output.printer import duplicate, printc
 import relay
 

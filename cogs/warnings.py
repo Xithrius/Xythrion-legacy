@@ -17,12 +17,8 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import sys
-import datetime
-
 from discord.ext import commands as comms
 
-from containers.essentials.pathing import path, mkdir
 from containers.output.printer import printc
 
 
