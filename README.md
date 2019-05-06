@@ -12,6 +12,9 @@ Operating to transfer information
 * [Markdown](https://guides.github.com/features/mastering-markdown/)
 
 
+<iframe align='right' src="https://discordapp.com/widget?id=574728538695925763&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0"></iframe>
+
+
 # Current version features
 - [ ] Requesting information:
     - [ ] Reddit (kind of)

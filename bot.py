@@ -18,7 +18,7 @@
 
 
 import traceback
-import configparser
+import json
 import os
 
 import discord
@@ -76,9 +76,9 @@ class MainCog(comms.Cog):
             if len(broken_cogs) > 0:
                 printc(f"WARNING: COG(S) COULD NOT BE LOADED:\n\t{', '.join(str(y) for y in broken_cogs)}")
             if len(loaded_cogs) > 0:
-                printc(f"[ ✓ ]: COG(S) LOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
+                printc(f"[ ! ]: COG(S) LOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
             else:
-                printc(f"WARNING: NO COG(S) HAVE BEEN LOADED")
+                printc("WARNING: NO COG(S) HAVE BEEN LOADED")
 
     """
 
@@ -134,7 +134,7 @@ class MainCog(comms.Cog):
         if len(broken_cogs) > 0:
             await ctx.send(duplicate(f"WARNING: COG(S) COULD NOT BE RELOADED:\n\t{', '.join(str(y) for y in broken_cogs)}"), delete_after=10)
         if len(loaded_cogs) > 0:
-            printc(f"[ ✓ ]: COG(S) RELOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
+            printc(f"[ ! ]: COG(S) RELOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
             await ctx.send('Cogs have been reloaded successfully', delete_after=10)
         else:
             printc(f"WARNING: NO COG(S) HAVE BEEN RELOADED")
@@ -150,7 +150,7 @@ class MainCog(comms.Cog):
             try:
                 self.bot.load_extension(cog)
                 self.cogs.append(cog)
-                await ctx.send(duplicate(f'[ ✓ ]: COG {cog} HAS BEEN LOADED SUCCESSFULLY'), delete_after=10)
+                await ctx.send(duplicate(f'[ ! ]: COG {cog} HAS BEEN LOADED SUCCESSFULLY'), delete_after=10)
             except comms.ExtensionAlreadyLoaded:
                 await ctx.send(f'Cog {cog} has already been loaded', delete_after=10)
             except Exception as e:
@@ -168,7 +168,7 @@ class MainCog(comms.Cog):
             try:
                 self.bot.unload_extension(cog)
                 self.cogs.pop(cog)
-                await ctx.send(duplicate(f'[ ✓ ]: COG {cog} UNLOADED SUCCESSFULLY'), delete_after=10)
+                await ctx.send(duplicate(f'[ ! ]: COG {cog} UNLOADED SUCCESSFULLY'), delete_after=10)
             except Exception as e:
                 printc(f'{cog}: {type(e).__name__} - {e}\n')
         else:
@@ -206,17 +206,13 @@ def setup_bot(bot=comms.Bot(command_prefix='$', case_insensitive=True)):
     checkToken = True
     while checkToken:
         try:
-            config = configparser.ConfigParser()
-            config.read(path('relay', 'configuration', 'config.ini'))
-            token = config['discord']['token']
+            token = json.load(open(path('relay', 'configuration', 'config.json')))['discord']
             bot.run(token, bot=True, reconnect=True)
             checkToken = False
-        except FileNotFoundError or discord.errors.LoginFailure:
-            token = input('Input discord bot token: ')
-            config = configparser.ConfigParser()
-            config['discord'] = {'token': token}
-            with open(path('relay', 'configuration', 'config.ini'), 'w') as f:
-                config.write(f)
+        except FileNotFoundError:
+            print('WARNING: TOKEN FILE NOT FOUND')
+        except discord.errors.LoginFailure:
+            print('WARNING: INCORRECT DISCORD TOKEN')
 
 
 if __name__ == '__main__':

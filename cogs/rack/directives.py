@@ -17,14 +17,13 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import time
 import platform
-import datetime
 
 from discord.ext import commands as comms
 import discord
 
 from containers.QOL.pathing import path
+from containers.QOL.shortened import now
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -47,25 +46,16 @@ class DirectivesCog(comms.Cog):
     Commands
 
     """
-    @comms.command(name='ping')
-    async def get_latency(self, ctx):
-        """
-        Get ping for the bot to the nearest discord server
-        """
-        timeStart = time.time()
-        await ctx.trigger_typing()
-        timeEnd = time.time()
-        timeTaken = timeEnd - timeStart
-        await ctx.send(f'Took {timeTaken} seconds to complete')
-
     @comms.command(name='members')
     @comms.guild_only()
     async def get_members(self, ctx):
         """
         Get all users that exist within the guild
         """
-        await ctx.send(f"Members on this server: {', '.join(str(x) for x in ctx.message.guild.members)}")
-    
+        embed = discord.Embed(name=f'Members on the server', value=f'{ctx.message.guild}', colour=0xc27c0e, timestamp=now())
+        embed.add_field(name='Members:', value=', '.join(str(x) for x in ctx.message.guild.members))
+        await ctx.send(embed=embed)
+
     """
 
     Events
@@ -76,10 +66,12 @@ class DirectivesCog(comms.Cog):
         """
         Welcome the new member to the guild
         """
-        embed = discord.Embed(name=f'Welcome to {member.guild}!', value=f'Owner: {member.guild.owner}', colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=8))
+        embed = discord.Embed(name=f'Welcome to {member.guild}!', value=f'Owner: {member.guild.owner}', colour=0xc27c0e, timestamp=now())
         embed.add_field(name=f'Greetings, {member.name}!', value='Like, prepare to do things and stuff man', inline=False)
         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-        await member.send(embed=embed, file=discord.File(path('relay', 'misc', 'images', 'join.jpg')))
+        await member.send(embed=embed, file=discord.File(path('media', 'images', 'join.jpg')))
+        role = discord.utils.get(member.guild.roles, name='Human')
+        await member.add_roles(role)
 
     @comms.Cog.listener()
     async def on_member_ban(self, guild, user):
@@ -134,6 +126,8 @@ class DirectivesCog(comms.Cog):
                 pass
             except discord.errors.Forbidden:
                 await message.guild.owner.send(f'I should be able to remove pictures from a channel that does not want any. Please give me the permissions to do so.')
+        # if len(message.embeds) >= 1 and message.channel.topic == 'No embeds':
+        #    await message.delete()
 
 
 def setup(bot):

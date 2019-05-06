@@ -32,7 +32,7 @@ def process_video(url, path):
     Downloading youtube video in a specific quality of mp3
     """
     ydl_opts = {
-        'outtmpl': f'{path}\\media\\audio\\music\\%(title)s.%(ext)s',
+        'outtmpl': f'{path}\\media\\music\\%(title)s.%(ext)s',
         'format': 'bestaudio/best',
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',

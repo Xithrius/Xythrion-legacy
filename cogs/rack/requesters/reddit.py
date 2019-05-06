@@ -67,7 +67,7 @@ class Reddit_Requester(comms.Cog):
         while not self.bot.is_closed():
             self.reddit_script_active = False
             printc('[...]: CHECKING REDDIT SCRIPT CREDENTIALS')
-            f = json.load(open(path('relay', 'configuration', 'reddit_config.json')))
+            f = json.load(open(path('relay', 'configuration', 'config.json')))['reddit']
             client_auth = requests.auth.HTTPBasicAuth(f['client_ID'], f['client_secret'])
             post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
             headers = {"User-Agent": f"Relay.py/{relay.__version__} by {f['username']}"}
@@ -80,7 +80,7 @@ class Reddit_Requester(comms.Cog):
                 await asyncio.sleep(60)
             else:
                 self.reddit_script_active = True
-                printc('[ ✓ ]: REDDIT SCRIPT CREDENTIALS ACTIVATED')
+                printc('[ ! ]: REDDIT SCRIPT CREDENTIALS ACTIVATED')
                 await asyncio.sleep(reset_time + 1)
 
     """

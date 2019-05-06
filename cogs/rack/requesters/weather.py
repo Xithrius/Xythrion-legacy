@@ -20,8 +20,8 @@
 import platform
 import time
 import pytemperature
-import configparser
 import requests
+import json
 
 from discord.ext import commands as comms
 import discord
@@ -58,16 +58,10 @@ class Weather_Requester(comms.Cog):
         checkToken = True
         while checkToken:
             try:
-                config = configparser.ConfigParser()
-                config.read(path('relay', 'configuration', 'config.ini'))
-                token = config['weather']['token']
+                token = json.load(open(path('relay', 'configuration', 'config.json')))['weather']
                 checkToken = False
             except FileNotFoundError:
-                token = input('Input weather API token: ')
-                config = configparser.ConfigParser()
-                config['weather'] = {'token': token}
-                with open(path('relay', 'configuration', 'credentials', 'config.ini'), 'w') as f:
-                    config.write(f)
+                print('WARNING: OPENWEATHERMAP TOKEN NOT FOUND')
         data = requests.get(f'http://api.openweathermap.org/data/2.5/weather?{args[0]}={args[1]},{args[2]}&APPID={token}').json()
         embed = discord.Embed(title='Weather', colour=0xc27c0e, timestamp=now())
         embed.add_field(name='Location:', value=f"{data['name']}, {args[1]}, {data['sys']['country']}", inline=False)

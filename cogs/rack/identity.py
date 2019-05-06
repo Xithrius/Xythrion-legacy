@@ -42,7 +42,6 @@ class IdentityCog(comms.Cog):
         """
         self.bot = bot
 
-
     """
 
     Commands

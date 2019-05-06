@@ -46,7 +46,7 @@ class TextToSpeechCog(comms.Cog):
     Error handling for GOOGLE_APPLICATION_CREDENTIALS
     """
     try:
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('configuration', 'google_service_token.json')
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('relay', 'configuration', 'gst.json')
     except FileNotFoundError:
         print('WARNING: GOOGLE SERVICE TOKEN COULD NOT BE FOUND')
 
@@ -55,6 +55,8 @@ class TextToSpeechCog(comms.Cog):
     Commands
 
     """
+    @comms.command(name='tts', hidden=True)
+    @comms.is_owner()
     async def google_text_to_speech(self, ctx):
         """
         Text to speech through the bot's mic
@@ -76,21 +78,6 @@ class TextToSpeechCog(comms.Cog):
             vc = await ctx.author.voice.channel.connect()
         vc.play(discord.FFmpegPCMAudio(path('media', 'audio', 'output.mp3')))
         print(f"TTS: {ctx.message.author} said {(ctx.message.content)[5:]}")
-
-        """
-
-        Events
-
-        """
-        @comms.Cog.listener()
-        async def on_voice_state_update(self, member, before, after):
-            print(member)
-            
-            # await after.channel.voice.channel.connect()
-            '''
-            vc = ctx.guild.voice_client
-            await vc.disconnect()
-            '''
 
 
 def setup(bot):
