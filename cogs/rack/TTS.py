@@ -24,7 +24,7 @@ from discord.ext import commands as comms
 from google.cloud import texttospeech  # <<< ssml must be well-formed according to: https://www.w3.org/TR/speech-synthesis/
 import discord
 
-from containers.QOL.pathing import path
+from relay.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #

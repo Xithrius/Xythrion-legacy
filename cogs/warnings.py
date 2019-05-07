@@ -19,7 +19,7 @@
 
 from discord.ext import commands as comms
 
-from containers.output.printer import printc
+from relay.containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -69,21 +69,7 @@ class WarningsCog(comms.Cog):
         """
         Sends warning when the client resumes a session
         """
-        printc(f'WARNING: CLIENT HAS RESUMED CURRENT SESSION')
-
-    @comms.Cog.listener()
-    async def on_member_update(self, before, after):
-        """
-        Sends warning when there's an update in the status of a member
-        """
-        pass
-
-    @comms.Cog.listener()
-    async def on_message(self, message):
-        """
-        Tracking, blocking, and removing files
-        """
-        pass
+        printc('WARNING: CLIENT HAS RESUMED CURRENT SESSION')
 
 
 def setup(bot):

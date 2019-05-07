@@ -17,20 +17,22 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import requests
-import json
 import asyncio
+import json
+import requests
 
 from discord.ext import commands as comms
+import discord
 
-from containers.output.printer import printc
-from containers.QOL.pathing import path
+from relay.containers.output.printer import printc
+from relay.containers.QOL.pathing import path
+from relay.containers.QOL.shortened import now
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# riot.com request cog
+# Riot request cog
 # //////////////////////////////////////////////////////////////////////////// #
-# Getting information from riot
+# Getting information from Riot
 # //////////////////////////////////////////////////////////////////////////// #
 
 
@@ -56,7 +58,6 @@ class Riot_Requester(comms.Cog):
 
     """
     async def load_riot_script(self):
-        pass
         """
         Checks if League of Legends is accessable
         """
@@ -72,7 +73,7 @@ class Riot_Requester(comms.Cog):
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36"
             }
             response = requests.get(f'https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/dinoderp31', headers=self.headers).json()
-            if response == {'status': {'message': 'Forbidden', 'status_code': 403}}:
+            if next(iter(response)) == 'status':
                 printc(f'WARNING: RIOT ACCOUNT CANNOT BE ACTIVATED\n{response["status"]["message"]}: {response["status"]["status_code"]}')
                 await asyncio.sleep(60)
             else:
@@ -84,15 +85,31 @@ class Riot_Requester(comms.Cog):
     Commands
 
     """
-    @comms.command()
-    @comms.is_owner()
-    async def user(self, ctx, user):
+    @comms.group()
+    async def lol(self, ctx):
+        """
+        League of Legends group command
+        """
+        if ctx.invoked_subcommand is None:
+            pass
+
+    @lol.command(name='user')
+    async def lol_summoner(self, ctx):
         """
         Gets information about a summoner
         """
+        user = ctx.message.content[9:]
+        print(user)
         userRequest = requests.get(f'https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{user}', headers=self.headers).json()
+        print(userRequest)
         userInfo = requests.get(f'https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/{userRequest["id"]}', headers=self.headers).json()
-        print(userInfo)
+        if len(userInfo) == 0:
+            await ctx.send('No ranked data found on this user')
+        else:
+            embed = discord.Embed(title=f'Current summoner info on {user}', colour=0xc27c0e, timestamp=now())
+            embed.set_thumbnail(url='https://imgur.com/oJsGQbQ')
+            embed.add_field(name='test', value='test')
+            await ctx.send(embed=embed)
 
 
 def setup(bot):

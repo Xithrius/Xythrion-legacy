@@ -26,8 +26,8 @@ import json
 from discord.ext import commands as comms
 import discord
 
-from containers.QOL.shortened import now
-from containers.QOL.pathing import path
+from relay.containers.QOL.shortened import now
+from relay.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #

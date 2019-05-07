@@ -24,11 +24,12 @@ import os
 from discord.ext import commands as comms
 import discord
 
-from containers.QOL.pathing import path, mkdir
-from containers.QOL.shortened import now
-from containers.QOL.shortened import index_days
-from containers.output.printer import printc
-from containers.scraping.yahoo_finance import get_stock_summary
+from relay.containers.QOL.pathing import path, mkdir
+from relay.containers.QOL.shortened import now
+from relay.containers.QOL.shortened import index_days
+from relay.containers.output.printer import printc
+from relay.containers.scraping.yahoo_finance import get_stock_summary
+from relay.containers.permissions import tracker
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -59,6 +60,7 @@ class Stock_Requester(comms.Cog):
     Commands
 
     """
+    @tracker.permitted()
     @comms.command(name='stocks')
     async def get_current_stocks(self, ctx, abbreviation, option='low'):
         """ Get information about inputted stock """

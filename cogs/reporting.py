@@ -18,6 +18,9 @@
 
 
 from discord.ext import commands as comms
+import discord
+
+from relay.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -40,11 +43,21 @@ class BugCog(comms.Cog):
     Commands
 
     """
+    @comms.group()
     async def bug(self, ctx):
         """
-        Description
+        Reports a bug that the bot has
         """
-        await ctx.send('Not ready')
+        if ctx.invoked_subcommand is None:
+            pass
+        
+    @bug.command()
+    async def report(self, ctx):
+        """
+
+        """
+        with open(path()) as f:
+            pass
 
 
 def setup(bot):

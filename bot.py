@@ -24,8 +24,8 @@ import os
 import discord
 from discord.ext import commands as comms
 
-from containers.QOL.pathing import path
-from containers.output.printer import duplicate, printc
+from relay.containers.QOL.pathing import path
+from relay.containers.output.printer import duplicate, printc
 import relay
 
 
@@ -211,8 +211,10 @@ def setup_bot(bot=comms.Bot(command_prefix='$', case_insensitive=True)):
             checkToken = False
         except FileNotFoundError:
             print('WARNING: TOKEN FILE NOT FOUND')
+            checkToken = False
         except discord.errors.LoginFailure:
             print('WARNING: INCORRECT DISCORD TOKEN')
+            checkToken = False
 
 
 if __name__ == '__main__':

@@ -17,22 +17,21 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import requests
-import json
-import platform
 import asyncio
+import json
+import requests
+import platform
 
 from discord.ext import commands as comms
 import discord
 
-from containers.output.printer import printc
-from containers.QOL.pathing import path
-from containers.QOL.shortened import now
-import relay
+from relay.containers.output.printer import printc
+from relay.containers.QOL.pathing import path
+from relay.containers.QOL.shortened import now
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# Reddit.com request cog
+# Reddit request cog
 # //////////////////////////////////////////////////////////////////////////// #
 # Getting information from reddit
 # //////////////////////////////////////////////////////////////////////////// #

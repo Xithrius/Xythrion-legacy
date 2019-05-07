@@ -17,45 +17,19 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import platform
+import sys
 
-from discord.ext import commands as comms
-import discord
-
-from relay.containers.QOL.pathing import path
-from relay.containers.QOL.shortened import now
+from relay.containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# Directives cog
+# Tracker for permissions
 # //////////////////////////////////////////////////////////////////////////// #
-# A place for all general but simple commands to go
+# Returns different booleans depending on the 
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-class DirectivesCog(comms.Cog):
-
-    def __init__(self, bot):
-        """ Object(s):
-        Bot
-        """
-        self.bot = bot
-
-    """
-
-    Commands
-
-    """
-    @comms.command(name='members')
-    @comms.guild_only()
-    async def get_members(self, ctx):
-        """
-        Get all users that exist within the guild
-        """
-        embed = discord.Embed(name=f'Members on the server', value=f'{ctx.message.guild}', colour=0xc27c0e, timestamp=now())
-        embed.add_field(name='Members:', value=', '.join(str(x) for x in ctx.message.guild.members))
-        await ctx.send(embed=embed)
-
-
-def setup(bot):
-    bot.add_cog(DirectivesCog(bot))
+def permitted():
+    def wrapper(*args, **kwargs):
+        print(*args, **kwargs)
+    return wrapper

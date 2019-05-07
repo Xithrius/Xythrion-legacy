@@ -16,7 +16,7 @@ class MainCog(comms.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.token = 'NTYwNjIyMTM0NTY5NzMwMDUx.XMFaMQ.G-MOf6Uqbtsjir8C8JT3t-WOd84'
+        self.token = 'token'
         self.bot.add_cog(MainCog(bot))
         self.bot.run(self.token, bot=True, reconnect=True)
 

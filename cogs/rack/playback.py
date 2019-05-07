@@ -20,8 +20,8 @@
 from discord.ext import commands as comms
 import discord
 
-from containers.playback.youtube_2_mp3 import process_video
-from containers.QOL.pathing import path
+from relay.containers.playback.youtube_2_mp3 import process_video
+from relay.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #
