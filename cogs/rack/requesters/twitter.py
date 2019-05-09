@@ -53,7 +53,7 @@ class Twitter_Requester(comms.Cog):
         """
         Getting information about a twitter user
         """
-        pass
+        await ctx.send('not set up yet')
 
 
 def setup(bot):

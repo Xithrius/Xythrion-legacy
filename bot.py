@@ -39,12 +39,6 @@ import relay
 class MainCog(comms.Cog):
 
     def __init__(self, bot, cogs):
-        """ Objects:
-        Bot
-        List of cogs to be loaded
-        Permernant list of cogs
-        Background task
-        """
         self.bot = bot
         self.cogs = cogs
         self.all_cogs = self.cogs
@@ -52,9 +46,9 @@ class MainCog(comms.Cog):
         self.load_cog_task = self.bot.loop.create_task(self.load_cogs_in())
 
     """
-
+-------------------------------------------------------------------------------
     Background tasks
-
+-------------------------------------------------------------------------------
     """
     async def load_cogs_in(self):
         """
