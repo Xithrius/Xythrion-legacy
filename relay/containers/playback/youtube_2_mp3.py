@@ -18,6 +18,8 @@
 
 
 import youtube_dl
+import requests
+from lxml import html
 
 
 """

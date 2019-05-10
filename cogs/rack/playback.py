@@ -47,6 +47,9 @@ class PlaybackCog(comms.Cog):
     @comms.command()
     @comms.is_owner()
     async def play(self, ctx, url):
+        """
+        Plays audio from youtube
+        """
         for i in range(len(url)):
             if url[i] == '&':
                 url = url[0:i]
@@ -55,7 +58,7 @@ class PlaybackCog(comms.Cog):
         vc = ctx.guild.voice_client
         if not vc:
             vc = await ctx.author.voice.channel.connect()
-        await ctx.send(f"playing '{video_title}'")
+        await ctx.send(f"`Now playing` **'{video_title}'**")
         vc.play(discord.FFmpegPCMAudio(path('media', 'music', f'{video_title}.mp3')))
 
     @comms.command()

@@ -74,7 +74,7 @@ class Riot_Requester(comms.Cog):
             }
             response = requests.get(f'https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/dinoderp31', headers=self.headers).json()
             if next(iter(response)) == 'status':
-                printc(f'WARNING: RIOT ACCOUNT CANNOT BE ACTIVATED\n{response["status"]["message"]}: {response["status"]["status_code"]}')
+                printc(f'WARNING: RIOT ACCOUNT CANNOT BE ACTIVATED: {upper(response["status"]["message"])}: {response["status"]["status_code"]}')
                 await asyncio.sleep(60)
             else:
                 self.riot_script_active = True
