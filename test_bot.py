@@ -1,15 +1,47 @@
 '''
+
++----[ Relay.py ]-------------------------------+
+|                                               |
+|  Copyright (c) 2019 Xithrius                  |
+|  MIT license, Refer to LICENSE for more info  |
+|                                               |
++-----------------------------------------------+
+
+'''
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# Libraries                                                                    #
+# //////////////////////////////////////////////////////////////////////////// #
+# Built-in modules, third-party modules, custom modules                        #
+# //////////////////////////////////////////////////////////////////////////// #
+
+
+import tkinter as tk
+import traceback
+import json
+import os
+
+import discord
+from discord.ext import commands as comms
+
+from relay.containers.QOL.pathing import path
+from relay.containers.output.printer import duplicate, printc
+import relay
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# Main cog
+# //////////////////////////////////////////////////////////////////////////// #
+# Items that are included are essential to running the bot
+# //////////////////////////////////////////////////////////////////////////// #
+
+'''
 class Navbar(tk.Frame): ...
 class Toolbar(tk.Frame): ...
 class Statusbar(tk.Frame): ...
 class Main(tk.Frame): ...
 '''
-
-
-import tkinter as tk
-from discord.ext import commands as comms
-
-from containers.output.printer import printc
 
 
 class MainCog(comms.Cog):

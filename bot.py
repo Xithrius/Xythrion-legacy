@@ -46,9 +46,9 @@ class MainCog(comms.Cog):
         self.load_cog_task = self.bot.loop.create_task(self.load_cogs_in())
 
     """
--------------------------------------------------------------------------------
+
     Background tasks
--------------------------------------------------------------------------------
+
     """
     async def load_cogs_in(self):
         """
@@ -131,7 +131,7 @@ class MainCog(comms.Cog):
             printc(f"[ ! ]: COG(S) RELOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
             await ctx.send('Cogs have been reloaded successfully', delete_after=10)
         else:
-            printc(f"WARNING: NO COG(S) HAVE BEEN RELOADED")
+            printc("WARNING: NO COG(S) HAVE BEEN RELOADED")
 
     @comms.command(name='l', hidden=True)
     @comms.is_owner()
@@ -214,4 +214,5 @@ def setup_bot(bot=comms.Bot(command_prefix='$', case_insensitive=True)):
 if __name__ == '__main__':
     setup_bot()
 else:
-    printc('WARNING: BOT CANNOT BE BOOTED FROM ANOTHER LOCATION')
+    printc('WARNING: STARTING UP DISCORD BOT INDIRECTLY')
+    setup_bot()
