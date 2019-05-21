@@ -1,4 +1,4 @@
-<img align="right" src="snipped/icon.png">
+<img align="right" src="snipped/dark_icon.png">
 
 # Snipped.py
 Snipping information from the internet
