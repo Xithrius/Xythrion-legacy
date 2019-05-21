@@ -180,7 +180,8 @@ class JAiRU_Bot(comms.Bot):
         """
         Event activates when bot is ready for use
         """
-        lines = [f'Logged in as: {self.user}',
+        lines = [f'Snipped.py v{snipped.__version__}',
+                 f'Logged in as: {self.user}',
                  f'Client ID: {self.user.id}',
                  f'Status: {self.status}',
                  f'Activity: {self.presence}']
