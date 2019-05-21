@@ -1,12 +1,9 @@
 '''
-
-+----[ Relay.py ]-------------------------------+
-|                                               |
-|  Copyright (c) 2019 Xithrius                  |
-|  MIT license, Refer to LICENSE for more info  |
-|                                               |
-+-----------------------------------------------+
-
++
+|  > Snipped.py
+|  > Copyright (c) 2019 Xithrius
+|  > MIT license, Refer to LICENSE for more info
++
 '''
 
 
@@ -19,7 +16,7 @@
 
 from discord.ext import commands as comms
 
-from relay.containers.output.printer import printc
+from snipped.containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #

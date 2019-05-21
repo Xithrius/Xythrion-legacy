@@ -1,12 +1,9 @@
 '''
-
-+----[ Relay.py ]-------------------------------+
-|                                               |
-|  Copyright (c) 2019 Xithrius                  |
-|  MIT license, Refer to LICENSE for more info  |
-|                                               |
-+-----------------------------------------------+
-
++
+|  > Snipped.py
+|  > Copyright (c) 2019 Xithrius
+|  > MIT license, Refer to LICENSE for more info
++
 '''
 
 
@@ -24,7 +21,7 @@ from discord.ext import commands as comms
 from google.cloud import texttospeech  # <<< ssml must be well-formed according to: https://www.w3.org/TR/speech-synthesis/
 import discord
 
-from relay.containers.QOL.pathing import path
+from snipped.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #

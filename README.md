@@ -1,20 +1,15 @@
-<img align="right" src="relay/icon.png">
+<img align="right" src="snipped/icon.png">
 
-# Relay.py
-Operating to transfer information
+# Snipped.py
+Snipping information from the internet
 
 
 [![License](https://img.shields.io/apm/l/vim-mode.svg)](https://img.shields.io/apm/l/vim-mode.svg) [![Python Version](https://img.shields.io/badge/python-3.7.3-green.svg)](https://www.python.org/downloads/release/python-373/) [![Update rate](https://img.shields.io/eclipse-marketplace/last-update/notepad4e.svg)](https://img.shields.io/eclipse-marketplace/last-update/notepad4e.svg) [![discord](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)
 
 
-# Links for information:
-* [Discord.py rewrite with cogs](https://gist.github.com/EvieePy/d78c061a4798ae81be9825468fe146be)
-* [Markdown](https://guides.github.com/features/mastering-markdown/)
-
-
-# Current version features
+# Currently being worked on version features
 - [ ] Requesting information:
-    - [ ] Reddit (kind of)
+    - [ ] Reddit
     - [ ] League of Legends
     - [x] Weather
     - [x] Yahoo Finance stocks
@@ -35,6 +30,15 @@ Operating to transfer information
 
 ## v0.0.01, pushed
 ### Main changes:
-* Bot is able to run now. Updates coming soon!
+* Bot has been renamed to "Snipped"
 ### Modifications:
-* Everything
+* Everything, literally.
+
+
+# VScode configuration
+* Material theme: ocean high contrast
+* Atom keymap
+* Discord precense
+* Markdown preview enhanced
+* Python
+* VScode icons

@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+	],
+	"settings": {
+		"python.linting.pylintEnabled": true,
+		"python.formatting.provider": "autopep8",
+		"editor.autoClosingBrackets": "always",
+		"editor.autoClosingQuotes": "always",
+		"python.linting.pep8Args": [
+			"--ignore=E501"
+		]
+	}
+}

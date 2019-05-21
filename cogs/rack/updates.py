@@ -1,12 +1,9 @@
 '''
-
-+----[ Relay.py ]-------------------------------+
-|                                               |
-|  Copyright (c) 2019 Xithrius                  |
-|  MIT license, Refer to LICENSE for more info  |
-|                                               |
-+-----------------------------------------------+
-
++
+|  > Snipped.py
+|  > Copyright (c) 2019 Xithrius
+|  > MIT license, Refer to LICENSE for more info
++
 '''
 
 
@@ -17,10 +14,13 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import asyncio
+import platform
 
 from discord.ext import commands as comms
+import discord
 
+from snipped.containers.QOL.pathing import path
+from snipped.containers.QOL.shortened import now, printc
 
 # //////////////////////////////////////////////////////////////////////////// #
 # Update cog
@@ -36,7 +36,6 @@ class UpdatesCog(comms.Cog):
         Bot
         """
         self.bot = bot
-
 
     """
 
@@ -97,14 +96,14 @@ class UpdatesCog(comms.Cog):
         Sends warning when there's an update in the status of a member
         """
         pass
-    
+
     @comms.Cog.listener()
     async def on_message(self, message):
         """
         Blocking and logging whatever happens on servers that client is present on
         """
         try:
-            if message.attachments[0].filename.endswith(extension) in ['.jpg', '.png', '.jpeg', '.gif'] and message.channel.topic == 'No pictures':
+            if message.attachments[0].filename in ['.jpg', '.png', '.jpeg', '.gif'] and message.channel.topic == 'No pictures':
                 await message.delete()
                 await message.author.send(f'No pictures in channel {message.channel} of the server {message.guild}!')
         except IndexError or AttributeError:

@@ -14,73 +14,44 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import asyncio
-
 from discord.ext import commands as comms
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# Template cog
+# Twitter request cog
 # //////////////////////////////////////////////////////////////////////////// #
-# Nothing to see here
+# Getting information from Twitter
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-class TemplateCog(comms.Cog):
+class Twitter_Requester(comms.Cog):
 
     def __init__(self, bot):
         """ Object(s):
         Bot
-        Background task
         """
         self.bot = bot
-        self.bg_task = self.bot.loop.create_task(self.foo_reminder())
-
-    def cog_unload(self):
-        """
-        Cancel background task(s) when cog is unloaded
-        """
-        self.bg_task.cancel()
 
     """
 
     Commands
 
     """
-    @comms.command(hidden=True)
-    @comms.guild_only()
-    @comms.is_owner()
-    async def foo(self, ctx):
+    @comms.group()
+    async def twitter(self, ctx):
         """
-        Description
+        Twitter group command
         """
-        await ctx.send('Test sent')
+        if ctx.invoked_subcommand is None:
+            pass
 
-    """
-
-    Events
-
-    """
-    @comms.Cog.listener()
-    async def on_foo_event(self, ctx):
+    @twitter.command()
+    async def user(self, ctx):
         """
-        Description
+        Getting information about a twitter user
         """
-        pass
-
-    """
-
-    Background tasks
-
-    """
-    async def foo_reminder(self):
-        """
-        Description
-        """
-        await self.bot.wait_until_ready()
-        while not self.bot.is_closed():
-            await asyncio.sleep(1)
+        await ctx.send('not set up yet')
 
 
 def setup(bot):
-    bot.add_cog(TemplateCog(bot))
+    bot.add_cog(Twitter_Requester(bot))

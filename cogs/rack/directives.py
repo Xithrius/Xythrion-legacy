@@ -1,12 +1,9 @@
 '''
-
-+----[ Relay.py ]-------------------------------+
-|                                               |
-|  Copyright (c) 2019 Xithrius                  |
-|  MIT license, Refer to LICENSE for more info  |
-|                                               |
-+-----------------------------------------------+
-
++
+|  > Snipped.py
+|  > Copyright (c) 2019 Xithrius
+|  > MIT license, Refer to LICENSE for more info
++
 '''
 
 
@@ -17,13 +14,10 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import platform
-
 from discord.ext import commands as comms
 import discord
 
-from relay.containers.QOL.pathing import path
-from relay.containers.QOL.shortened import now
+from snipped.containers.QOL.shortened import now
 
 
 # //////////////////////////////////////////////////////////////////////////// #

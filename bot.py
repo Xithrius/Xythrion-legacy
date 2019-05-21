@@ -1,12 +1,9 @@
 '''
-
-+----[ Relay.py ]-------------------------------+
-|                                               |
-|  Copyright (c) 2019 Xithrius                  |
-|  MIT license, Refer to LICENSE for more info  |
-|                                               |
-+-----------------------------------------------+
-
++
+|  > Snipped.py
+|  > Copyright (c) 2019 Xithrius
+|  > MIT license, Refer to LICENSE for more info
++
 '''
 
 
@@ -17,22 +14,24 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
+import tkinter as tk
 import traceback
 import json
 import os
+import sys
 
 import discord
 from discord.ext import commands as comms
 
-from relay.containers.QOL.pathing import path
-from relay.containers.output.printer import duplicate, printc
-import relay
+from snipped.containers.QOL.pathing import path
+from snipped.containers.output.printer import duplicate, printc
+import snipped
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# Main cog
+# Main cog                                                                     #
 # //////////////////////////////////////////////////////////////////////////// #
-# Items that are included are essential to running the bot
+# Essential parts for the working bot                                          #
 # //////////////////////////////////////////////////////////////////////////// #
 
 
@@ -41,9 +40,7 @@ class MainCog(comms.Cog):
     def __init__(self, bot, cogs):
         self.bot = bot
         self.cogs = cogs
-        self.all_cogs = self.cogs
-        self.presence = 'with pixels'
-        self.load_cog_task = self.bot.loop.create_task(self.load_cogs_in())
+        self.all_cogs = cogs
 
     """
 
@@ -76,33 +73,6 @@ class MainCog(comms.Cog):
 
     """
 
-    Events
-
-    """
-    @comms.Cog.listener()
-    async def on_ready(self):
-        """
-        Event activates when bot is ready for use
-        """
-        await self.bot.change_presence(activity=discord.Game(self.presence))
-        start = f"""
-    +----[ Relay.py ]------------------------------------------------------+
-    |    Copyright (c) 2019 Xithrius
-    |    MIT license, Refer to LICENSE for more info
-    +----------------------------------------------------------------------+
-    |    ID      --->   {self.bot.user.id}
-    |    Booting --->   {self.bot.user}
-    +----------------------------------------------------------------------+
-    |    Using discord.py {discord.__version__}
-    |    Using relay.py {relay.__version__}
-    |    Changed status to 'Playing {self.presence}'
-    |    Awaiting...
-    +----------------------------------------------------------------------+
-        """
-        printc(start)
-
-    """
-
     Commands
 
     """
@@ -131,7 +101,7 @@ class MainCog(comms.Cog):
             printc(f"[ ! ]: COG(S) RELOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
             await ctx.send('Cogs have been reloaded successfully', delete_after=10)
         else:
-            printc("WARNING: NO COG(S) HAVE BEEN RELOADED")
+            printc(f"WARNING: NO COG(S) HAVE BEEN RELOADED")
 
     @comms.command(name='l', hidden=True)
     @comms.is_owner()
@@ -168,51 +138,64 @@ class MainCog(comms.Cog):
         else:
             await ctx.send(duplicate(f'WARNING: COG {cog} IS BLOCKED OR DOES NOT EXIST'), delete_after=10)
 
-    @comms.command(name='exit', hidden=True)
+
+# //////////////////////////////////////////////////////////////////////////// #
+# Client subclass                                                              #
+# //////////////////////////////////////////////////////////////////////////// #
+# Customizing how the bot starts                                               #
+# //////////////////////////////////////////////////////////////////////////// #
+
+
+class JAiRU_Bot(comms.Bot):
+
+    def __init__(self, *prefixes, presence='with reality'):
+        self.prefixes = prefixes
+        self.status = discord.Status.online
+        self.presence = presence
+        super().__init__(command_prefix=self.prefixes, help_command=None, status=self.status, activity=discord.Game(presence))
+
+        # Adding commands
+        # self.add_command(self.exit)
+        self.add_command(self.exit)
+
+        # Adding listeners
+        # self.add_listener(self.)
+
+    """
+
+    Commands
+
+    """
+    @comms.command()
     @comms.is_owner()
-    async def logout(self, ctx):
-        """
-        Make the bot logout
-        """
-        printc(f'WARNING: LOGGING OUT...')
-        await self.bot.logout()
+    async def exit(ctx):
+        await ctx.bot.logout()
 
-
-"""
-
-Function to pass objects into the main cog to run the bot
-
-"""
-
-
-def setup_bot(bot=comms.Bot(command_prefix='$', case_insensitive=True)):
     """
-    Passing objects into the MainCog, then running the bot
+
+    Listeners
+
     """
-    # Searching for cogs within the cogs directory
-    cogs = []
-    for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
-        cog = '.'.join(str(y) for y in dirpath[len(path()):].split('\\'))
-        if '__pycache__' not in cog:
-            cogs.extend([f'{cog}.{i[:-3]}' for i in filenames if i[:-3] not in [x[:-1] for x in open(path('relay', 'configuration', 'blocked_cogs.txt'), 'r').readlines()]])
-    bot.add_cog(MainCog(bot, cogs))
-    # Looping the input until token is correct
-    checkToken = True
-    while checkToken:
-        try:
-            token = json.load(open(path('relay', 'configuration', 'config.json')))['discord']
-            bot.run(token, bot=True, reconnect=True)
-            checkToken = False
-        except FileNotFoundError:
-            print('WARNING: TOKEN FILE NOT FOUND')
-            checkToken = False
-        except discord.errors.LoginFailure:
-            print('WARNING: INCORRECT DISCORD TOKEN')
-            checkToken = False
+    async def on_ready(self):
+        """
+        Event activates when bot is ready for use
+        """
+        lines = [f'Logged in as: {self.user}',
+                 f'Client ID: {self.user.id}',
+                 f'Status: {self.status}',
+                 f'Activity: {self.presence}']
+        print('\n'.join(str(y) for y in lines))
 
 
 if __name__ == '__main__':
-    setup_bot()
-else:
-    printc('WARNING: STARTING UP DISCORD BOT INDIRECTLY')
-    setup_bot()
+    try:
+        bot = JAiRU_Bot('$')
+        cogs = []
+        for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
+            cog = '.'.join(str(y) for y in dirpath[len(path()):].split('\\'))
+            if '__pycache__' not in cog:
+                cogs.extend([f'{cog}.{i[:-3]}' for i in filenames if i[:-3] not in [x[:-1] for x in open(path('JAiRU', 'configuration', 'blocked_cogs.txt'), 'r').readlines()]])
+        bot.add_cog(MainCog(bot, cogs))
+        bot.run(json.load(open(path('JAiRU', 'configuration', 'config.json')))['discord'])
+    except discord.errors.LoginFailure as e:
+        printc(f'WARNING: {e}')

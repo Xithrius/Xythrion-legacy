@@ -1,7 +1,6 @@
 *__pycache__/
 *.mp3
 *.webm
-*.json
+snipped/configuration/config.json
 *.ini
 *.vscode
-*.code-workspace

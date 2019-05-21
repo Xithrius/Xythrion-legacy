@@ -1,12 +1,9 @@
 '''
-
-+----[ Relay.py ]-------------------------------+
-|                                               |
-|  Copyright (c) 2019 Xithrius                  |
-|  MIT license, Refer to LICENSE for more info  |
-|                                               |
-+-----------------------------------------------+
-
++
+|  > Snipped.py
+|  > Copyright (c) 2019 Xithrius
+|  > MIT license, Refer to LICENSE for more info
++
 '''
 
 
@@ -18,9 +15,6 @@
 
 
 from discord.ext import commands as comms
-import discord
-
-from relay.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -50,14 +44,13 @@ class BugCog(comms.Cog):
         """
         if ctx.invoked_subcommand is None:
             pass
-        
+
     @bug.command()
     async def report(self, ctx):
         """
 
         """
-        with open(path()) as f:
-            pass
+        pass
 
 
 def setup(bot):

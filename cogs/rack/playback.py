@@ -1,12 +1,9 @@
 '''
-
-+----[ Relay.py ]-------------------------------+
-|                                               |
-|  Copyright (c) 2019 Xithrius                  |
-|  MIT license, Refer to LICENSE for more info  |
-|                                               |
-+-----------------------------------------------+
-
++
+|  > Snipped.py
+|  > Copyright (c) 2019 Xithrius
+|  > MIT license, Refer to LICENSE for more info
++
 '''
 
 
@@ -20,8 +17,8 @@
 from discord.ext import commands as comms
 import discord
 
-from relay.containers.playback.youtube_2_mp3 import process_video
-from relay.containers.QOL.pathing import path
+from snipped.containers.playback.youtube_2_mp3 import process_video
+from snipped.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #

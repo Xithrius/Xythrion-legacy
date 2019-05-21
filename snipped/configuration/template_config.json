@@ -1,0 +1,11 @@
+{
+    "reddit": {
+        "username": "reddit username",
+        "password": "reddit password",
+        "client_ID": "application ID",
+        "client_secret": "application secret"
+    },
+    "discord": "discord bot API token",
+    "weather": "openweathermap API token",
+    "riot": "Riot Developer API token"
+}
