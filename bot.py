@@ -168,7 +168,7 @@ class JAiRU_Bot(comms.Bot):
     """
     @comms.command()
     @comms.is_owner()
-    async def exit(ctx):
+    async def exit(self, ctx):
         await ctx.bot.logout()
 
     """
