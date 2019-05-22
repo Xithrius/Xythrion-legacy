@@ -1,9 +1,7 @@
 '''
-+
-|  > Snipped.py
-|  > Copyright (c) 2019 Xithrius
-|  > MIT license, Refer to LICENSE for more info
-+
+>> Rehasher.py
+> Copyright (c) 2019 Xithrius
+> MIT license, Refer to LICENSE for more info
 '''
 
 
@@ -23,9 +21,9 @@ import sys
 import discord
 from discord.ext import commands as comms
 
-from snipped.containers.QOL.pathing import path
-from snipped.containers.output.printer import duplicate, printc
-import snipped
+from rehasher.containers.QOL.pathing import path
+from rehasher.containers.output.printer import duplicate, printc
+import rehasher
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -146,7 +144,7 @@ class MainCog(comms.Cog):
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-class JAiRU_Bot(comms.Bot):
+class Rehasher_Bot(comms.Bot):
 
     def __init__(self, *prefixes, presence='with reality'):
         self.prefixes = prefixes
@@ -190,13 +188,13 @@ class JAiRU_Bot(comms.Bot):
 
 if __name__ == '__main__':
     try:
-        bot = JAiRU_Bot('$')
+        bot = Rehasher_Bot('$')
         cogs = []
         for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
             cog = '.'.join(str(y) for y in dirpath[len(path()):].split('\\'))
             if '__pycache__' not in cog:
-                cogs.extend([f'{cog}.{i[:-3]}' for i in filenames if i[:-3] not in [x[:-1] for x in open(path('JAiRU', 'configuration', 'blocked_cogs.txt'), 'r').readlines()]])
+                cogs.extend([f'{cog}.{i[:-3]}' for i in filenames if i[:-3] not in [x[:-1] for x in open(path('rehasher', 'configuration', 'blocked_cogs.txt'), 'r').readlines()]])
         bot.add_cog(MainCog(bot, cogs))
-        bot.run(json.load(open(path('JAiRU', 'configuration', 'config.json')))['discord'])
+        bot.run(json.load(open(path('rehasher', 'configuration', 'config.json')))['discord'])
     except discord.errors.LoginFailure as e:
         printc(f'WARNING: {e}')

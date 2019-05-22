@@ -1,9 +1,7 @@
 '''
-+
-|  > Snipped.py
-|  > Copyright (c) 2019 Xithrius
-|  > MIT license, Refer to LICENSE for more info
-+
+>> Rehasher.py
+> Copyright (c) 2019 Xithrius
+> MIT license, Refer to LICENSE for more info
 '''
 
 
@@ -19,8 +17,8 @@ import platform
 from discord.ext import commands as comms
 import discord
 
-from snipped.containers.QOL.pathing import path
-from snipped.containers.QOL.shortened import now, printc
+from rehasher.containers.QOL.pathing import path
+from rehasher.containers.QOL.shortened import now, printc
 
 # //////////////////////////////////////////////////////////////////////////// #
 # Update cog
@@ -55,7 +53,7 @@ class UpdatesCog(comms.Cog):
         Messages the owner when removed from a guild
         """
         try:
-            await guild.owner.send(content=f'Goodbye, human', file=discord.File(path('relay', 'misc', 'images', 'removed.jpg')))
+            await guild.owner.send(content=f'Goodbye, human', file=discord.File(path('rehasher', 'misc', 'images', 'removed.jpg')))
         except discord.errors.Forbidden:
             pass
         printc(f'WARNING: CLIENT HAS BEEN REMOVED FROM GUILD {guild}')
@@ -79,7 +77,7 @@ class UpdatesCog(comms.Cog):
         """
         print(f'WARNING: {user.name} WAS BANNED FROM {guild.name}')
         try:
-            await user.send(content=f'You have been banned from the server {guild.name}', file=discord.File(path('relay', 'misc', 'images', 'removed.jpg')))
+            await user.send(content=f'You have been banned from the server {guild.name}', file=discord.File(path('rehasher', 'misc', 'images', 'removed.jpg')))
         except discord.errors.Forbidden:
             pass
 

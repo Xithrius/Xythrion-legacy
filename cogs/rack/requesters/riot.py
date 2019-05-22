@@ -1,9 +1,7 @@
 '''
-+
-|  > Snipped.py
-|  > Copyright (c) 2019 Xithrius
-|  > MIT license, Refer to LICENSE for more info
-+
+>> Rehasher.py
+> Copyright (c) 2019 Xithrius
+> MIT license, Refer to LICENSE for more info
 '''
 
 
@@ -21,9 +19,9 @@ import requests
 from discord.ext import commands as comms
 import discord
 
-from snipped.containers.output.printer import printc
-from snipped.containers.QOL.pathing import path
-from snipped.containers.QOL.shortened import now
+from rehasher.containers.output.printer import printc
+from rehasher.containers.QOL.pathing import path
+from rehasher.containers.QOL.shortened import now
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -65,7 +63,7 @@ class Riot_Requester(comms.Cog):
             self.headers = {
                 "Origin": "https://developer.riotgames.com",
                 "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
-                "X-Riot-Token": json.load(open(path('relay', 'configuration', 'config.json')))['riot'],
+                "X-Riot-Token": json.load(open(path('rehasher', 'configuration', 'config.json')))['riot'],
                 "Accept-Language": "en-US,en;q=0.9",
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36"
             }

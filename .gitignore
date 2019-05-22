@@ -1,6 +1,6 @@
 *__pycache__/
 *.mp3
 *.webm
-snipped/configuration/config.json
+rehasher/configuration/config.json
 *.ini
 *.vscode

@@ -1,9 +1,7 @@
 '''
-+
-|  > Snipped.py
-|  > Copyright (c) 2019 Xithrius
-|  > MIT license, Refer to LICENSE for more info
-+
+>> Rehasher.py
+> Copyright (c) 2019 Xithrius
+> MIT license, Refer to LICENSE for more info
 '''
 
 
@@ -21,11 +19,11 @@ import os
 from discord.ext import commands as comms
 import discord
 
-from snipped.containers.QOL.pathing import path, mkdir
-from snipped.containers.QOL.shortened import now
-from snipped.containers.QOL.shortened import index_days
-from snipped.containers.output.printer import printc
-from snipped.containers.scraping.yahoo_finance import get_stock_summary
+from rehasher.containers.QOL.pathing import path, mkdir
+from rehasher.containers.QOL.shortened import now
+from rehasher.containers.QOL.shortened import index_days
+from rehasher.containers.output.printer import printc
+from rehasher.containers.scraping.yahoo_finance import get_stock_summary
 
 
 # //////////////////////////////////////////////////////////////////////////// #

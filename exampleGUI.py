@@ -1,9 +1,7 @@
 '''
-+
-|  > Snipped.py
-|  > Copyright (c) 2019 Xithrius
-|  > MIT license, Refer to LICENSE for more info
-+
+>> Rehasher.py
+> Copyright (c) 2019 Xithrius
+> MIT license, Refer to LICENSE for more info
 '''
 
 
@@ -16,9 +14,9 @@ import sys
 import discord
 from discord.ext import commands as comms
 
-from snipped.containers.QOL.pathing import path
-from snipped.containers.output.printer import duplicate, printc
-import snipped
+from rehasher.containers.QOL.pathing import path
+from rehasher.containers.output.printer import duplicate, printc
+import rehasher
 
 
 '''
@@ -27,7 +25,6 @@ class Toolbar(tk.Frame): ...
 class Statusbar(tk.Frame): ...
 class Main(tk.Frame): ...
 '''
-
 
 
 class MainApplication(tk.Frame, comms.Cog):
@@ -58,13 +55,13 @@ class MainApplication(tk.Frame, comms.Cog):
         for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
             cog = '.'.join(str(y) for y in dirpath[len(path()):].split('\\'))
             if '__pycache__' not in cog:
-                self.cogs.extend([f'{cog}.{i[:-3]}' for i in filenames if i[:-3] not in [x[:-1] for x in open(path('JAiRU', 'configuration', 'blocked_cogs.txt'), 'r').readlines()]])
+                self.cogs.extend([f'{cog}.{i[:-3]}' for i in filenames if i[:-3] not in [x[:-1] for x in open(path('rehasher', 'configuration', 'blocked_cogs.txt'), 'r').readlines()]])
         bot.add_cog(MainApplication(bot, cogs))
         # Looping the input until token is correct
         checkToken = True
         while checkToken:
             try:
-                token = json.load(open(path('JAiRU', 'configuration', 'config.json')))['discord']
+                token = json.load(open(path('rehasher', 'configuration', 'config.json')))['discord']
                 bot.run(token, bot=True, reconnect=True)
                 checkToken = False
             except FileNotFoundError:

@@ -1,9 +1,7 @@
 '''
-+
-|  > Snipped.py
-|  > Copyright (c) 2019 Xithrius
-|  > MIT license, Refer to LICENSE for more info
-+
+>> Rehasher.py
+> Copyright (c) 2019 Xithrius
+> MIT license, Refer to LICENSE for more info
 '''
 
 
@@ -16,7 +14,7 @@
 
 from discord.ext import commands as comms
 
-from snipped.containers.output.printer import printc
+from rehasher.containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #

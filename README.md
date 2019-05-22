@@ -1,15 +1,17 @@
-<img align="right" src="snipped/dark_icon.png">
-
-# Snipped.py
-Snipping information from the internet
+<img align="right" src="rehasher/icon.png">
 
 
-[![License](https://img.shields.io/apm/l/vim-mode.svg)](https://img.shields.io/apm/l/vim-mode.svg) [![Python Version](https://img.shields.io/badge/python-3.7.3-green.svg)](https://www.python.org/downloads/release/python-373/) [![Update rate](https://img.shields.io/eclipse-marketplace/last-update/notepad4e.svg)](https://img.shields.io/eclipse-marketplace/last-update/notepad4e.svg) [![discord](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)
+# Rehasher.py
+Requesting information from the internet
+
+
+[![License](https://img.shields.io/apm/l/vim-mode.svg)](https://img.shields.io/apm/l/vim-mode.svg) [![Python Version](https://img.shields.io/badge/python-3.7.3-green.svg)](https://www.python.org/downloads/release/python-373/) [![discord](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)
 
 
 # Currently being worked on version features
 - [ ] Requesting information:
-    - [ ] Reddit
+    - [ ] Reddit (all features)
+    - [x] Reddit (sort of)
     - [ ] League of Legends
     - [x] Weather
     - [x] Yahoo Finance stocks
@@ -30,7 +32,8 @@ Snipping information from the internet
 
 ## v0.0.01, pushed
 ### Main changes:
-* Bot has been renamed to "Snipped"
+* Bot has been renamed to "Rehasher", from whatever it was before
+* All other bots that I own have been either deleted completely from existance or parts have been removed from them and were put into this one.
 ### Modifications:
 * Everything, literally.
 

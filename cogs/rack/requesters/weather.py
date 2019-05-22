@@ -1,9 +1,7 @@
 '''
-+
-|  > Snipped.py
-|  > Copyright (c) 2019 Xithrius
-|  > MIT license, Refer to LICENSE for more info
-+
+>> Rehasher.py
+> Copyright (c) 2019 Xithrius
+> MIT license, Refer to LICENSE for more info
 '''
 
 
@@ -23,8 +21,8 @@ import json
 from discord.ext import commands as comms
 import discord
 
-from snipped.containers.QOL.shortened import now
-from snipped.containers.QOL.pathing import path
+from rehasher.containers.QOL.shortened import now
+from rehasher.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #

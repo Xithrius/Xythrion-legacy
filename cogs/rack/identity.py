@@ -1,9 +1,7 @@
 '''
-+
-|  > Snipped.py
-|  > Copyright (c) 2019 Xithrius
-|  > MIT license, Refer to LICENSE for more info
-+
+>> Rehasher.py
+> Copyright (c) 2019 Xithrius
+> MIT license, Refer to LICENSE for more info
 '''
 
 
@@ -21,7 +19,7 @@ import datetime
 from discord.ext import commands as comms
 import discord
 
-from snipped.containers.QOL.pathing import path
+from rehasher.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -65,7 +63,7 @@ class IdentityCog(comms.Cog):
         embed = discord.Embed(name=f"{self.bot.user}'s favorite songs'", colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
         songs = []
         song_dict = {}
-        with open(path('relay', 'tracking', 'media', 'generated', 'self_generated', 'favorite_songs.csv'), 'r') as f:
+        with open(path('rehasher', 'tracking', 'media', 'generated', 'self_generated', 'favorite_songs.csv'), 'r') as f:
             reader = csv.reader(f)
             for row in reader:
                 song = row[0]

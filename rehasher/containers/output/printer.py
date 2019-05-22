@@ -1,9 +1,7 @@
 '''
-+
-|  > Snipped.py
-|  > Copyright (c) 2019 Xithrius
-|  > MIT license, Refer to LICENSE for more info
-+
+>> Rehasher.py
+> Copyright (c) 2019 Xithrius
+> MIT license, Refer to LICENSE for more info
 '''
 
 
@@ -19,22 +17,22 @@ import datetime
 
 """
 
-Functions for returning shortened versions of longer functions
+Functions for printing to locations with customized uniting
 
 """
 
 
-def now():
+def printc(string: str):
     """
-    Returns the time depending on time zone (will look at file soon)
+    Customized printing to the console with timestamps
     """
-    return datetime.datetime.now() + datetime.timedelta(hours=7)
+    now = datetime.datetime.now()
+    print(f"~> [{now}] {string}")
 
 
-def index_days(lst: list, day: int):
+def duplicate(string: str):
     """
-    Converting days to numerical values
+    Prints to console and wherever else
     """
-    days = ['m', 't', 'w', 'th', 'f']
-    if days[day] in lst:
-        return True
+    printc()
+    return (string[string.index(':') + 2]).upper() + (string[string.index(':') + 3]).lower()
