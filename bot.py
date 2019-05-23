@@ -39,6 +39,7 @@ class MainCog(comms.Cog):
         self.bot = bot
         self.cogs = cogs
         self.all_cogs = cogs
+        self.bg_task = self.bot.loop.create_task(self.load_cogs_in())
 
     """
 
@@ -166,7 +167,7 @@ class Rehasher_Bot(comms.Bot):
     """
     @comms.command()
     @comms.is_owner()
-    async def exit(self, ctx):
+    async def exit(ctx):
         await ctx.bot.logout()
 
     """
@@ -178,7 +179,7 @@ class Rehasher_Bot(comms.Bot):
         """
         Event activates when bot is ready for use
         """
-        lines = [f'Snipped.py v{snipped.__version__}',
+        lines = [f'Rehasher.py v{rehasher.__version__}',
                  f'Logged in as: {self.user}',
                  f'Client ID: {self.user.id}',
                  f'Status: {self.status}',

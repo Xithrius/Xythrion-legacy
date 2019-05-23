@@ -45,7 +45,7 @@ class Weather_Requester(comms.Cog):
     Commands
 
     """
-    @comms.command(name='weather')
+    @comms.group(name='weather')
     async def get_weather(self, ctx, *args):
         """
         Using the OpenWeatherMap API to complete requests for weather in a location
@@ -68,6 +68,18 @@ class Weather_Requester(comms.Cog):
         embed.add_field(name='Sunset:', value=time.ctime(data['sys']['sunset']), inline=False)
         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
         await ctx.author.send(embed=embed)
+
+    @get_weather.command(name='help')
+    async def weather_help(self, ctx):
+        """
+        Helps the user with weather
+        """
+        embed = discord.Embed(title=':thunder_cloud_rain: `Usage of the weather command` :thunder_cloud_rain:', colour=0xc27c0e, timestamp=now())
+        help = '''`$weather zip <zip> <country abbreviation>`
+                  `<zip>`: `Zip code (postal address)`
+                  `<country abbreviation>`: `abbreviation used for the country which the zip code resides in`'''
+        embed.add_field(name='Usage:', value=help)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
