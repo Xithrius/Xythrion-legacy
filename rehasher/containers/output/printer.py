@@ -34,5 +34,5 @@ def duplicate(string: str):
     """
     Prints to console and wherever else
     """
-    printc()
+    printc(string)
     return (string[string.index(':') + 2]).upper() + (string[string.index(':') + 3]).lower()

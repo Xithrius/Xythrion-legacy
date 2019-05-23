@@ -18,7 +18,9 @@ from discord.ext import commands as comms
 import discord
 
 from rehasher.containers.QOL.pathing import path
-from rehasher.containers.QOL.shortened import now, printc
+from rehasher.containers.QOL.shortened import now
+from rehasher.containers.output.printer import printc
+
 
 # //////////////////////////////////////////////////////////////////////////// #
 # Update cog
@@ -104,7 +106,7 @@ class UpdatesCog(comms.Cog):
             if message.attachments[0].filename in ['.jpg', '.png', '.jpeg', '.gif'] and message.channel.topic == 'No pictures':
                 await message.delete()
                 await message.author.send(f'No pictures in channel {message.channel} of the server {message.guild}!')
-        except IndexError or AttributeError:
+        except (IndexError, AttributeError):
             pass
         except discord.errors.Forbidden:
             await message.guild.owner.send(f'I should be able to remove pictures from a channel that does not want any. Please give me the permissions to do so.')

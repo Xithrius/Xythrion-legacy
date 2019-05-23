@@ -17,12 +17,14 @@ import time
 import pytemperature
 import requests
 import json
+import asyncio
 
 from discord.ext import commands as comms
 import discord
 
 from rehasher.containers.QOL.shortened import now
 from rehasher.containers.QOL.pathing import path
+from rehasher.containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -39,6 +41,37 @@ class Weather_Requester(comms.Cog):
         Bot
         """
         self.bot = bot
+        self.load_credentials = self.bot.loop.create_task(self.load_weather())
+
+    def cog_unload(self):
+        """
+        Cancel background task(s) when cog is unloaded
+        """
+        self.load_credentials.cancel()
+
+    """
+
+    Background tasks
+
+    """
+    async def load_weather(self):
+        """
+        Checks if openweathermap is accessable
+        """
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            self.active_weather = False
+                if not self.active_weather:
+                printc('[...]: CHECKING WEATHER SCRIPT TOKEN')
+                f = json.load(open(path('rehasher', 'configuration', 'config.json')))['weather']
+                requests.get(f'http://api.openweathermap.org/data/2.5/weather?zip=12345,us&APPID={f['token']}').json()
+                if response in []:
+                    raise ValueError(f'WARNING: WEATHER REQUESTS CANNOT BE ACTIVATED {response}')
+                    self.active_weather = False
+                    asyncio.sleep(60)
+                else:
+                    self.active_weather = True
+                    printc('[ ! ]: WEATHER SCRIPT TOKEN ACTIVATED')
 
     """
 

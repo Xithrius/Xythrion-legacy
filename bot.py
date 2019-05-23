@@ -137,6 +137,28 @@ class MainCog(comms.Cog):
         else:
             await ctx.send(duplicate(f'WARNING: COG {cog} IS BLOCKED OR DOES NOT EXIST'), delete_after=10)
 
+    @comms.command(name='exit')
+    @comms.is_owner()
+    async def logout_command(self, ctx):
+        await self.bot.logout
+        printc('WARNING: CLIENT HAS LOGGED OUT')
+
+    """
+
+    Events
+
+    """
+    async def on_ready(self):
+        """
+        Event activates when bot is ready for use
+        """
+        lines = [f'Rehasher.py v{rehasher.__version__}',
+                 f'Logged in as: {self.bot.user}',
+                 f'Client ID: {self.bot.user.id}',
+                 f'Status: {self.bot.status}',
+                 f'Activity: {self.bot.presence}']
+        print('\n'.join(str(y) for y in lines))
+
 
 # //////////////////////////////////////////////////////////////////////////// #
 # Client subclass                                                              #
@@ -153,38 +175,6 @@ class Rehasher_Bot(comms.Bot):
         self.presence = presence
         super().__init__(command_prefix=self.prefixes, help_command=None, status=self.status, activity=discord.Game(presence))
 
-        # Adding commands
-        # self.add_command(self.exit)
-        self.add_command(self.exit)
-
-        # Adding listeners
-        # self.add_listener(self.)
-
-    """
-
-    Commands
-
-    """
-    @comms.command()
-    @comms.is_owner()
-    async def exit(ctx):
-        await ctx.bot.logout()
-
-    """
-
-    Listeners
-
-    """
-    async def on_ready(self):
-        """
-        Event activates when bot is ready for use
-        """
-        lines = [f'Rehasher.py v{rehasher.__version__}',
-                 f'Logged in as: {self.user}',
-                 f'Client ID: {self.user.id}',
-                 f'Status: {self.status}',
-                 f'Activity: {self.presence}']
-        print('\n'.join(str(y) for y in lines))
 
 
 if __name__ == '__main__':
