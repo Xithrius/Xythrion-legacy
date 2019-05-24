@@ -66,7 +66,10 @@ class MainCog(comms.Cog):
             if len(broken_cogs) > 0:
                 printc(f"WARNING: COG(S) COULD NOT BE LOADED:\n\t{', '.join(str(y) for y in broken_cogs)}")
             if len(loaded_cogs) > 0:
-                printc(f"[ ! ]: COG(S) LOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
+                printc(f"[ ! ]: COG(S) LOADED:")
+                cog_sections = []
+                cog_sections.extend([x.split('.')[:-1] for x in loaded_cogs if x.split('.')[:-1] not in cog_sections])
+                print('\n'.join(str(y) for y in cog_sections))
             else:
                 printc("WARNING: NO COG(S) HAVE BEEN LOADED")
 
@@ -137,10 +140,10 @@ class MainCog(comms.Cog):
         else:
             await ctx.send(duplicate(f'WARNING: COG {cog} IS BLOCKED OR DOES NOT EXIST'), delete_after=10)
 
-    @comms.command(name='exit')
+    @comms.command()
     @comms.is_owner()
-    async def logout_command(self, ctx):
-        await self.bot.logout
+    async def exit(self, ctx):
+        await ctx.bot.logout()
         printc('WARNING: CLIENT HAS LOGGED OUT')
 
     """
@@ -148,42 +151,24 @@ class MainCog(comms.Cog):
     Events
 
     """
+    @comms.Cog.listener()
     async def on_ready(self):
         """
         Event activates when bot is ready for use
         """
         lines = [f'Rehasher.py v{rehasher.__version__}',
                  f'Logged in as: {self.bot.user}',
-                 f'Client ID: {self.bot.user.id}',
-                 f'Status: {self.bot.status}',
-                 f'Activity: {self.bot.presence}']
+                 f'Client ID: {self.bot.user.id}']
         print('\n'.join(str(y) for y in lines))
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# Client subclass                                                              #
-# //////////////////////////////////////////////////////////////////////////// #
-# Customizing how the bot starts                                               #
-# //////////////////////////////////////////////////////////////////////////// #
-
-
-class Rehasher_Bot(comms.Bot):
-
-    def __init__(self, *prefixes, presence='with reality'):
-        self.prefixes = prefixes
-        self.status = discord.Status.online
-        self.presence = presence
-        super().__init__(command_prefix=self.prefixes, help_command=None, status=self.status, activity=discord.Game(presence))
-
 
 
 if __name__ == '__main__':
     try:
-        bot = Rehasher_Bot('$')
+        bot = comms.Bot('$')
         cogs = []
         for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
-            cog = '.'.join(str(y) for y in dirpath[len(path()):].split('\\'))
-            if '__pycache__' not in cog:
+            cog = '.'.join(str(y) for y in dirpath[len(path()):].split('\\'))[1:]
+            if '__pycache__' not in cog.split('.'):
                 cogs.extend([f'{cog}.{i[:-3]}' for i in filenames if i[:-3] not in [x[:-1] for x in open(path('rehasher', 'configuration', 'blocked_cogs.txt'), 'r').readlines()]])
         bot.add_cog(MainCog(bot, cogs))
         bot.run(json.load(open(path('rehasher', 'configuration', 'config.json')))['discord'])

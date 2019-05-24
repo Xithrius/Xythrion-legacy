@@ -61,10 +61,10 @@ class Weather_Requester(comms.Cog):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             self.active_weather = False
-                if not self.active_weather:
+            if not self.active_weather:
                 printc('[...]: CHECKING WEATHER SCRIPT TOKEN')
                 f = json.load(open(path('rehasher', 'configuration', 'config.json')))['weather']
-                requests.get(f'http://api.openweathermap.org/data/2.5/weather?zip=12345,us&APPID={f['token']}').json()
+                requests.get(f'http://api.openweathermap.org/data/2.5/weather?zip=12345,us&APPID={f["token"]}').json()
                 if response in []:
                     raise ValueError(f'WARNING: WEATHER REQUESTS CANNOT BE ACTIVATED {response}')
                     self.active_weather = False
