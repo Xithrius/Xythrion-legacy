@@ -17,6 +17,7 @@ Requesting information from the internet
     - [x] Yahoo Finance stocks
     - [ ] Osu!
     - [ ] Google Search results
+- [ ] Leveling system for amounts of messages
 - [x] Text to speech through bot
 - [x] Warns user of errors through discord messages and console timestamps
 - [ ] Playback Youtube videos as mp3

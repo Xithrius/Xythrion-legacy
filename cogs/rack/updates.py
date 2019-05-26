@@ -34,8 +34,19 @@ class UpdatesCog(comms.Cog):
     def __init__(self, bot):
         """ Object(s):
         Bot
+        Misc setup background task
         """
         self.bot = bot
+        self.bg_task = self.bot.loop.create_task(self.misc_setup())
+        self.presence = 'with info'
+
+    """
+
+    Background tasks
+
+    """
+    async def misc_setup(self):
+        await self.bot.change_presence(activity=discord.Game(name=self.presence))
 
     """
 
@@ -102,7 +113,6 @@ class UpdatesCog(comms.Cog):
         """
         Blocking and logging whatever happens on servers that client is present on
         """
-        print(message)
         try:
             if message.attachments[0].filename in ['.jpg', '.png', '.jpeg', '.gif'] and message.channel.topic == 'No pictures':
                 await message.delete()

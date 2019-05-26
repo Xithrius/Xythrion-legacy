@@ -15,9 +15,9 @@
 import platform
 import time
 import pytemperature
-import requests
 import json
 import asyncio
+import aiohttp
 
 from discord.ext import commands as comms
 import discord
@@ -63,15 +63,16 @@ class Weather_Requester(comms.Cog):
             self.active_weather = False
             if not self.active_weather:
                 printc('[...]: CHECKING WEATHER SCRIPT TOKEN')
-                self.token = json.load(open(path('rehasher', 'configuration', 'config.json')))['weather']['token']
-                response = requests.get(f'http://api.openweathermap.org/data/2.5/weather?zip=12345,us&APPID={self.token}').json()
-                if response in []:
-                    raise ValueError(f'WARNING: WEATHER REQUESTS CANNOT BE ACTIVATED {response}')
-                    self.active_weather = False
-                    asyncio.sleep(60)
-                else:
-                    self.active_weather = True
-                    printc('[ ! ]: WEATHER SCRIPT TOKEN ACTIVATED')
+                self.token = json.load(open(path('rehasher', 'configuration', 'config.json')))['weather']
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(f'http://api.openweathermap.org/data/2.5/weather?zip=12345,us&APPID={self.token}') as test_response:
+                        if test_response.status == 200:
+                            printc('[ ! ]: WEATHER SCRIPT TOKEN ACTIVATED')
+                            self.active_weather = True
+                            break
+                        else:
+                            raise ValueError(f'WARNING: WEATHER REQUESTS CANNOT BE ACTIVATED {test_response}')
+                            await asyncio.sleep(60)
 
     """
 
@@ -79,34 +80,40 @@ class Weather_Requester(comms.Cog):
 
     """
     @comms.group()
-    async def weather(self, ctx, *args):
+    async def weather(self, ctx):
+        """
+        Helps the user with weather
+        """
+        if ctx.invoked_subcommand is None:
+            embed = discord.Embed(title=':thunder_cloud_rain: `Usage of the weather command` :thunder_cloud_rain:', colour=0xc27c0e, timestamp=now())
+            help = '''`$weather zip <zip> <country abbreviation>`
+                    `<zip>`: `Zip code (postal address)`
+                    `<country abbreviation>`: `abbreviation used for the country which the zip code resides in`'''
+            embed.add_field(name='Usage:', value=help)
+            await ctx.send(embed=embed)
+
+    @weather.command(name='zip')
+    async def weather_by_zip(self, ctx, *args):
         """
         Using the OpenWeatherMap API to complete requests for weather in a location
         """
         if self.active_weather:
-            data = requests.get(f'http://api.openweathermap.org/data/2.5/weather?{args[0]}={args[1]},{args[2]}&APPID={self.token}').json()
-            embed = discord.Embed(title='Weather', colour=0xc27c0e, timestamp=now())
-            embed.add_field(name='Location:', value=f"{data['name']}, {args[1]}, {data['sys']['country']}", inline=False)
-            embed.add_field(name='Weather Type:', value=data['weather'][0]['description'], inline=False)
-            embed.add_field(name='Temperature:', value=f"Now: {pytemperature.k2f(data['main']['temp'])} °F\nLow: {pytemperature.k2f(data['main']['temp_min'])} °F\nHigh: {pytemperature.k2f(data['main']['temp_max'])} °F", inline=False)
-            embed.add_field(name='Humidity:', value=f"{data['main']['humidity']}%", inline=False)
-            embed.add_field(name='Visibility', value=f"{data['visibility']} meters", inline=False)
-            embed.add_field(name='Sunrise:', value=time.ctime(data['sys']['sunrise']), inline=False)
-            embed.add_field(name='Sunset:', value=time.ctime(data['sys']['sunset']), inline=False)
-            embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-            await ctx.author.send(embed=embed)
-
-    @weather.command(name='help')
-    async def weather_help(self, ctx):
-        """
-        Helps the user with weather
-        """
-        embed = discord.Embed(title=':thunder_cloud_rain: `Usage of the weather command` :thunder_cloud_rain:', colour=0xc27c0e, timestamp=now())
-        help = '''`$weather zip <zip> <country abbreviation>`
-                  `<zip>`: `Zip code (postal address)`
-                  `<country abbreviation>`: `abbreviation used for the country which the zip code resides in`'''
-        embed.add_field(name='Usage:', value=help)
-        await ctx.send(embed=embed)
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f'http://api.openweathermap.org/data/2.5/weather?zip={args[0]},{args[1]}&APPID={self.token}') as r:
+                    if r.status == 200:
+                        data = await r.json()
+                        embed = discord.Embed(title='Weather', colour=0xc27c0e, timestamp=now())
+                        embed.add_field(name='Location:', value=f"{data['name']}, {args[0]}, {data['sys']['country']}", inline=False)
+                        embed.add_field(name='Weather Type:', value=data['weather'][0]['description'], inline=False)
+                        embed.add_field(name='Temperature:', value=f"Now: {pytemperature.k2f(data['main']['temp'])} °F\nLow: {pytemperature.k2f(data['main']['temp_min'])} °F\nHigh: {pytemperature.k2f(data['main']['temp_max'])} °F", inline=False)
+                        embed.add_field(name='Humidity:', value=f"{data['main']['humidity']}%", inline=False)
+                        embed.add_field(name='Visibility', value=f"{data['visibility']} meters", inline=False)
+                        embed.add_field(name='Sunrise:', value=time.ctime(data['sys']['sunrise']), inline=False)
+                        embed.add_field(name='Sunset:', value=time.ctime(data['sys']['sunset']), inline=False)
+                        embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
+                        await ctx.author.send(embed=embed)
+                    else:
+                        await ctx.send(f'Weather: status code {r.status}')
 
 
 def setup(bot):

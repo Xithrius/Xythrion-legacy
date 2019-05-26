@@ -35,17 +35,23 @@ import rehasher
 class MainCog(comms.Cog):
 
     def __init__(self, bot, cogs):
+        """ Object(s):
+        Bot
+        Extensions of the bot (mutable)
+        Extensions of the bot (immutable)
+        Background task for loading extensions in
+        """
         self.bot = bot
         self.cogs = cogs
         self.all_cogs = cogs
-        self.bg_task = self.bot.loop.create_task(self.load_cogs_in())
+        self.bg_task = self.bot.loop.create_task(self.load_extensions())
 
     """
 
     Background tasks
 
     """
-    async def load_cogs_in(self):
+    async def load_extensions(self):
         """
         Load the cogs in after the bot is ready
         """

@@ -14,7 +14,7 @@
 
 import asyncio
 import json
-import requests
+import aiohttp
 import platform
 
 from discord.ext import commands as comms
@@ -61,23 +61,27 @@ class Reddit_Requester(comms.Cog):
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             self.active_reddit = False
-            printc('[...]: CHECKING REDDIT CREDENTIALS')
-            f = json.load(open(path('rehasher', 'configuration', 'config.json')))['reddit']
-            client_auth = requests.auth.HTTPBasicAuth(f['client_ID'], f['client_secret'])
-            post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
-            headers = {"User-Agent": f"Rehasher.py/{rehasher.__version__} by {f['username']}"}
-            response = (requests.post("https://www.reddit.com/api/v1/access_token", auth=client_auth, data=post_data, headers=headers)).json()
-            print(response)
-            reset_time = response['expires_in']
-            self.headers = {"Authorization": f"{response['token_type']} {response['access_token']}", "User-Agent": f"Rehasher.py/{rehasher.__version__} by {f['username']}"}
-            response = requests.get('https://oauth.reddit.com/api/v1/me', headers=self.headers).json()
-            if response in [{'message': 'Unauthorized', 'error': 401}, {'error': 'invalid_grant'}]:
-                printc('WARNING: REDDIT REQUESTS CANNOT BE ACTIVATED')
-                await asyncio.sleep(60)
-            else:
-                self.active_reddit = True
-                printc('[ ! ]: REDDIT REQUESTS ENABLED')
-                await asyncio.sleep(reset_time + 1)
+            if not self.active_reddit:
+                f = json.load(open(path('rehasher', 'configuration', 'config.json')))['reddit']
+                client_auth = aiohttp.BasicAuth(login=f['client_ID'], password=f['client_secret'])
+                post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
+                headers = {"User-Agent": f"Rehasher.py/{rehasher.__version__} by {f['username']}"}
+                async with aiohttp.ClientSession(auth=client_auth, headers=headers) as session:
+                    async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as test_response:
+                        if test_response.status == 200:
+                            js = await test_response.json()
+                            if js != {'error': 'invalid_grant'}:
+                                self.active_reddit = True
+                                await asyncio.sleep(js['expires_in'] + 1)
+                                # self.headers = {"Authorization": f"{response['token_type']} {response['access_token']}", "User-Agent": f"Rehasher.py/{rehasher.__version__} by {f['username']}"}
+                                # response = requests.get('https://oauth.reddit.com/api/v1/me', headers=self.headers).json()
+                                printc('[ ! ]: REDDIT REQUESTS ENABLED')
+                            else:
+                                printc(f'WARNING: BROKEN REDDIT REQUESTER. ERROR CODE: {js}')
+                                break
+                        else:
+                            printc(f'WARNING: REDDIT REQUESTS CANNOT BE ACTIVATED. ERROR CODE: {test_response.status}')
+                            await asyncio.sleep(60)
 
     """
 
@@ -98,9 +102,9 @@ class Reddit_Requester(comms.Cog):
         Request subreddit information
         """
         if self.active_reddit:
-            response = (requests.get(f'https://oauth.reddit.com/r/{subreddit}/top/', {"limit": 1}, headers=self.headers)).json()
-            # await ctx.send(response)
-            print(response)
+            pass
+        else:
+            await ctx.send('Requesting from reddit is currently unavalible')
 
     @comms.group(name='u/')
     async def reddit_user_requests(self, ctx):
@@ -116,14 +120,9 @@ class Reddit_Requester(comms.Cog):
         Request reddit user information
         """
         if self.active_reddit:
-            response = (requests.get(f'https://oauth.reddit.com/user/{user}/about/', headers=self.headers)).json()
-            data = response['data']
-            embed = discord.Embed(title=f'About reddit user {user}:', colour=0xc27c0e, timestamp=now())
-            embed.add_field(name='Link to user profile', value=f'[/u/{user}](https://www.reddit.com/u/{user})')
-            embed.set_thumbnail(url=data['icon_img'])
-            embed.add_field(name='Karma', value=f"Link Karma: {data['link_karma']}, Comment Karma: {data['comment_karma']}")
-            embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-            await ctx.send(embed=embed)
+            pass
+        else:
+            await ctx.send('Requesting from reddit is currently unavalible')
 
 
 def setup(bot):
