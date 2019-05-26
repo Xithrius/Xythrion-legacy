@@ -63,8 +63,8 @@ class Weather_Requester(comms.Cog):
             self.active_weather = False
             if not self.active_weather:
                 printc('[...]: CHECKING WEATHER SCRIPT TOKEN')
-                f = json.load(open(path('rehasher', 'configuration', 'config.json')))['weather']
-                requests.get(f'http://api.openweathermap.org/data/2.5/weather?zip=12345,us&APPID={f["token"]}').json()
+                self.token = json.load(open(path('rehasher', 'configuration', 'config.json')))['weather']['token']
+                response = requests.get(f'http://api.openweathermap.org/data/2.5/weather?zip=12345,us&APPID={self.token}').json()
                 if response in []:
                     raise ValueError(f'WARNING: WEATHER REQUESTS CANNOT BE ACTIVATED {response}')
                     self.active_weather = False
@@ -78,31 +78,25 @@ class Weather_Requester(comms.Cog):
     Commands
 
     """
-    @comms.group(name='weather')
-    async def get_weather(self, ctx, *args):
+    @comms.group()
+    async def weather(self, ctx, *args):
         """
         Using the OpenWeatherMap API to complete requests for weather in a location
         """
-        checkToken = True
-        while checkToken:
-            try:
-                token = json.load(open(path('JAiRU', 'configuration', 'config.json')))['weather']
-                checkToken = False
-            except FileNotFoundError:
-                print('WARNING: OPENWEATHERMAP TOKEN NOT FOUND')
-        data = requests.get(f'http://api.openweathermap.org/data/2.5/weather?{args[0]}={args[1]},{args[2]}&APPID={token}').json()
-        embed = discord.Embed(title='Weather', colour=0xc27c0e, timestamp=now())
-        embed.add_field(name='Location:', value=f"{data['name']}, {args[1]}, {data['sys']['country']}", inline=False)
-        embed.add_field(name='Weather Type:', value=data['weather'][0]['description'], inline=False)
-        embed.add_field(name='Temperature:', value=f"Now: {pytemperature.k2f(data['main']['temp'])} °F\nLow: {pytemperature.k2f(data['main']['temp_min'])} °F\nHigh: {pytemperature.k2f(data['main']['temp_max'])} °F", inline=False)
-        embed.add_field(name='Humidity:', value=f"{data['main']['humidity']}%", inline=False)
-        embed.add_field(name='Visibility', value=f"{data['visibility']} meters", inline=False)
-        embed.add_field(name='Sunrise:', value=time.ctime(data['sys']['sunrise']), inline=False)
-        embed.add_field(name='Sunset:', value=time.ctime(data['sys']['sunset']), inline=False)
-        embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-        await ctx.author.send(embed=embed)
+        if self.active_weather:
+            data = requests.get(f'http://api.openweathermap.org/data/2.5/weather?{args[0]}={args[1]},{args[2]}&APPID={self.token}').json()
+            embed = discord.Embed(title='Weather', colour=0xc27c0e, timestamp=now())
+            embed.add_field(name='Location:', value=f"{data['name']}, {args[1]}, {data['sys']['country']}", inline=False)
+            embed.add_field(name='Weather Type:', value=data['weather'][0]['description'], inline=False)
+            embed.add_field(name='Temperature:', value=f"Now: {pytemperature.k2f(data['main']['temp'])} °F\nLow: {pytemperature.k2f(data['main']['temp_min'])} °F\nHigh: {pytemperature.k2f(data['main']['temp_max'])} °F", inline=False)
+            embed.add_field(name='Humidity:', value=f"{data['main']['humidity']}%", inline=False)
+            embed.add_field(name='Visibility', value=f"{data['visibility']} meters", inline=False)
+            embed.add_field(name='Sunrise:', value=time.ctime(data['sys']['sunrise']), inline=False)
+            embed.add_field(name='Sunset:', value=time.ctime(data['sys']['sunset']), inline=False)
+            embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
+            await ctx.author.send(embed=embed)
 
-    @get_weather.command(name='help')
+    @weather.command(name='help')
     async def weather_help(self, ctx):
         """
         Helps the user with weather

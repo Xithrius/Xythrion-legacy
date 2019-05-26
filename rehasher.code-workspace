@@ -11,6 +11,7 @@
 		"editor.autoClosingQuotes": "always",
 		"python.linting.pep8Args": [
 			"--ignore=E501"
-		]
+		],
+		"python.globalModuleInstallation": true
 	}
 }

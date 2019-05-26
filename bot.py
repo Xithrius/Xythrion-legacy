@@ -12,7 +12,6 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import tkinter as tk
 import traceback
 import json
 import os
@@ -50,7 +49,7 @@ class MainCog(comms.Cog):
         """
         Load the cogs in after the bot is ready
         """
-        printc('[...]: LOADING COGS')
+        printc('[...]: LOADING EXTENSION(S)')
         loaded_cogs = []
         broken_cogs = []
         await self.bot.wait_until_ready()
@@ -64,14 +63,22 @@ class MainCog(comms.Cog):
                 else:
                     loaded_cogs.append(cog)
             if len(broken_cogs) > 0:
-                printc(f"WARNING: COG(S) COULD NOT BE LOADED:\n\t{', '.join(str(y) for y in broken_cogs)}")
+                printc(f"WARNING: EXTENSION(S) COULD NOT BE LOADED:\n\t{', '.join(str(y) for y in broken_cogs)}")
             if len(loaded_cogs) > 0:
-                printc(f"[ ! ]: COG(S) LOADED:")
-                cog_sections = []
-                cog_sections.extend([x.split('.')[:-1] for x in loaded_cogs if x.split('.')[:-1] not in cog_sections])
-                print('\n'.join(str(y) for y in cog_sections))
+                printc(f"[ ! ]: EXTENSION(S) LOADED:")
+                all_cogs, sectioned_cogs = [], []
+                l_cogs = [x.split('.')[-2:] for x in loaded_cogs]
+                for i in range(len(l_cogs) - 1):
+                    x = [j for j, v in enumerate([x[0] for x in l_cogs]) if v == l_cogs[i][0]]
+                    if x not in sectioned_cogs:
+                        sectioned_cogs.append(x)
+                for i in range(len(sectioned_cogs)):
+                    within_cogs = [l_cogs[sectioned_cogs[i][0]][0], [l_cogs[j][1] for j in sectioned_cogs[i]]]
+                    all_cogs.append(within_cogs)
+                for i in all_cogs:
+                    print(f'\t{i[0]}: {", ".join(str(y) for y in i[1])}')
             else:
-                printc("WARNING: NO COG(S) HAVE BEEN LOADED")
+                printc("WARNING: NO EXTENSIONS HAVE BEEN LOADED")
 
     """
 
@@ -84,7 +91,7 @@ class MainCog(comms.Cog):
         """
         Reload all cog
         """
-        printc('[...]: RELOADING COGS')
+        printc('[...]: RELOADING EXTENSION(S)')
         loaded_cogs = []
         broken_cogs = []
         for cog in self.cogs:
@@ -98,12 +105,12 @@ class MainCog(comms.Cog):
             else:
                 loaded_cogs.append(cog)
         if len(broken_cogs) > 0:
-            await ctx.send(duplicate(f"WARNING: COG(S) COULD NOT BE RELOADED:\n\t{', '.join(str(y) for y in broken_cogs)}"), delete_after=10)
+            await ctx.send(duplicate(f"WARNING: EXTENSION(S) COULD NOT BE RELOADED:\n\t{', '.join(str(y) for y in broken_cogs)}"), delete_after=10)
         if len(loaded_cogs) > 0:
-            printc(f"[ ! ]: COG(S) RELOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
+            printc(f"[ ! ]: EXTENSION(S) RELOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
             await ctx.send('Cogs have been reloaded successfully', delete_after=10)
         else:
-            printc(f"WARNING: NO COG(S) HAVE BEEN RELOADED")
+            printc(f"WARNING: NO EXTENSION(S) HAVE BEEN RELOADED")
 
     @comms.command(name='l', hidden=True)
     @comms.is_owner()
@@ -111,18 +118,18 @@ class MainCog(comms.Cog):
         """
         Load a specific cog
         """
-        printc('[...]: LOADING COGS')
+        printc('[...]: LOADING EXTENSION(S)')
         if cog in self.all_cogs:
             try:
                 self.bot.load_extension(cog)
                 self.cogs.append(cog)
-                await ctx.send(duplicate(f'[ ! ]: COG {cog} HAS BEEN LOADED SUCCESSFULLY'), delete_after=10)
+                await ctx.send(duplicate(f'[ ! ]: Extension {cog} HAS BEEN LOADED SUCCESSFULLY'), delete_after=10)
             except comms.ExtensionAlreadyLoaded:
-                await ctx.send(f'Cog {cog} has already been loaded', delete_after=10)
+                await ctx.send(f'EXTENSION {cog} HAS ALREADY BEEN LOADED', delete_after=10)
             except Exception as e:
                 printc(f'{cog}: {type(e).__name__} - {e}\n')
         else:
-            printc(f'WARNING: COG {cog} IS BLOCKED OR DOES NOT EXIST')
+            printc(f'WARNING: EXTENSION {cog} IS BLOCKED OR DOES NOT EXIST')
 
     @comms.command(name='u', hidden=True)
     @comms.is_owner()
@@ -134,17 +141,25 @@ class MainCog(comms.Cog):
             try:
                 self.bot.unload_extension(cog)
                 self.cogs.pop(cog)
-                await ctx.send(duplicate(f'[ ! ]: COG {cog} UNLOADED SUCCESSFULLY'), delete_after=10)
+                await ctx.send(duplicate(f'[ ! ]: EXTENSION {cog} UNLOADED SUCCESSFULLY'), delete_after=10)
             except Exception as e:
                 printc(f'{cog}: {type(e).__name__} - {e}\n')
         else:
-            await ctx.send(duplicate(f'WARNING: COG {cog} IS BLOCKED OR DOES NOT EXIST'), delete_after=10)
+            await ctx.send(duplicate(f'WARNING: EXTENSION {cog} IS BLOCKED OR DOES NOT EXIST'), delete_after=10)
 
     @comms.command()
     @comms.is_owner()
     async def exit(self, ctx):
+        """
+        Destroys everything when exiting
+        """
+        for cog in self.all_cogs:
+            try:
+                self.bot.unload_extension(cog)
+            except comms.ExtensionNotLoaded:
+                pass
+        printc('WARNING: CLIENT IS LOGGING OUT')
         await ctx.bot.logout()
-        printc('WARNING: CLIENT HAS LOGGED OUT')
 
     """
 
@@ -164,13 +179,13 @@ class MainCog(comms.Cog):
 
 if __name__ == '__main__':
     try:
-        bot = comms.Bot('$')
+        bot = comms.Bot(command_prefix='$', help_command=None, case_insensitive=True)
         cogs = []
         for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
-            cog = '.'.join(str(y) for y in dirpath[len(path()):].split('\\'))[1:]
+            cog = '.'.join(str(y) for y in dirpath[len(path()):].split('\\'))
             if '__pycache__' not in cog.split('.'):
                 cogs.extend([f'{cog}.{i[:-3]}' for i in filenames if i[:-3] not in [x[:-1] for x in open(path('rehasher', 'configuration', 'blocked_cogs.txt'), 'r').readlines()]])
         bot.add_cog(MainCog(bot, cogs))
-        bot.run(json.load(open(path('rehasher', 'configuration', 'config.json')))['discord'])
+        bot.run(json.load(open(path('rehasher', 'configuration', 'config.json')))['discord'], bot=True, reconnect=True)
     except discord.errors.LoginFailure as e:
         printc(f'WARNING: {e}')

@@ -102,6 +102,7 @@ class UpdatesCog(comms.Cog):
         """
         Blocking and logging whatever happens on servers that client is present on
         """
+        print(message)
         try:
             if message.attachments[0].filename in ['.jpg', '.png', '.jpeg', '.gif'] and message.channel.topic == 'No pictures':
                 await message.delete()
