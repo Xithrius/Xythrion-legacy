@@ -131,11 +131,11 @@ class UpdatesCog(comms.Cog):
                         embed.add_field(name='`Circles of hell`:', value=info)
                         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
                         await message.channel.send(embed=embed)
-                    elif length % 10 == 0:
+                    elif length % 75 == 0:
                         embed = discord.Embed(title=f'`User {message.author} has ascended!`', colour=0xc27c0e, timestamp=now())
                         info = f'''
                         {message.author.mention} `stats`:
-                        `Circle of hell reached`: `Level {length / 10}`
+                        `Circle of hell reached`: `Level {int(length / 75)}`
                         `Total messages sent:` `{length}`
                         '''
                         embed.add_field(name='`Circles of hell`:', value=info)
