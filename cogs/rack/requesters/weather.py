@@ -39,6 +39,7 @@ class Weather_Requester(comms.Cog):
     def __init__(self, bot):
         """ Object(s):
         Bot
+        Background task for checking token
         """
         self.bot = bot
         self.load_credentials = self.bot.loop.create_task(self.load_weather())
@@ -86,10 +87,13 @@ class Weather_Requester(comms.Cog):
         """
         if ctx.invoked_subcommand is None:
             embed = discord.Embed(title=':thunder_cloud_rain: `Usage of the weather command` :thunder_cloud_rain:', colour=0xc27c0e, timestamp=now())
-            help = '''`$weather zip <zip> <country abbreviation>`
-                    `<zip>`: `Zip code (postal address)`
-                    `<country abbreviation>`: `abbreviation used for the country which the zip code resides in`'''
+            help = '''
+            `$weather zip <zip> <country abbreviation>`
+            `<zip>`: `Zip code (postal address)`
+            `<country abbreviation>`: `abbreviation used for the country which the zip code resides in`
+            '''
             embed.add_field(name='Usage:', value=help)
+            embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
             await ctx.send(embed=embed)
 
     @weather.command(name='zip')
@@ -111,7 +115,7 @@ class Weather_Requester(comms.Cog):
                         embed.add_field(name='Sunrise:', value=time.ctime(data['sys']['sunrise']), inline=False)
                         embed.add_field(name='Sunset:', value=time.ctime(data['sys']['sunset']), inline=False)
                         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-                        await ctx.author.send(embed=embed)
+                        await ctx.author.send(embed=embed, delete_after=30)
                     else:
                         await ctx.send(f'Weather: status code {r.status}')
 

@@ -113,6 +113,39 @@ class UpdatesCog(comms.Cog):
         """
         Blocking and logging whatever happens on servers that client is present on
         """
+
+        # Logging messages for charts and the leveling system
+        if not message.author.bot:
+            try:
+                with open(path('rehasher', 'logs', f'{message.author}.txt'), 'a') as f:
+                    f.write(f'{message.created_at}:{message.guild}\n')
+                with open(path('rehasher', 'logs', f'{message.author}.txt'), 'r') as f:
+                    length = len(f.readlines())
+                    if length == 1:
+                        embed = discord.Embed(title=f'`Leveling system activated for user {message.author}!`', colour=0xc27c0e, timestamp=now())
+                        info = '''
+                        `You have been initiated to acend into the next circles of hell!`
+                        `You're currently starting at level 1, the first circle of hell.`
+                        `Good luck on acending to the next levels~`
+                        '''
+                        embed.add_field(name='`Circles of hell`:', value=info)
+                        embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
+                        await message.channel.send(embed=embed)
+                    elif length % 10 == 0:
+                        embed = discord.Embed(title=f'`User {message.author} has acended!`', colour=0xc27c0e, timestamp=now())
+                        info = f'''
+                        {message.author.mention} `stats`:
+                        `Circle of hell reached`: `Level {length / 10}`
+                        `Total messages sent:` `{length}`
+                        '''
+                        embed.add_field(name='`Circles of hell`:', value=info)
+                        embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
+                        await message.channel.send(embed=embed)
+            except FileNotFoundError:
+                with open(path('rehasher', 'logs', f'{message.author}.txt'), 'w') as f:
+                    f.write(f'{message.created_at}:{message.guild}\n')
+
+        # Blocking messages depending on rules from the description of channels, then alerting of people of their wrong doing
         try:
             if message.attachments[0].filename in ['.jpg', '.png', '.jpeg', '.gif'] and message.channel.topic == 'No pictures':
                 await message.delete()

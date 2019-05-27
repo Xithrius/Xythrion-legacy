@@ -14,16 +14,17 @@ Requesting information from the internet
     - [x] Reddit (sort of)
     - [ ] League of Legends
     - [x] Weather
-    - [x] Yahoo Finance stocks
+    - [ ] Stock and cryptocoin information
     - [ ] Osu!
     - [ ] Google Search results
-- [ ] Leveling system for amounts of messages
+    - [ ] Plotting information on graphs
+- [x] Leveling system for amounts of messages
 - [x] Text to speech through bot
 - [x] Warns user of errors through discord messages and console timestamps
 - [ ] Playback Youtube videos as mp3
 - [ ] Customized commands created through discord messages that are put into separate folder
 - [ ] Add permissions to the bot, so multiple people can have access to high-level commands
-- [ ] 2FA - Quick Response codes with phone through website
+- [ ] 2FA - Quick Response codes with phone through website (only for owner, duh)
 - [ ] Recreate the help command for all commands including hidden ones
 - [ ] Quality Of Life command creations
 - [ ] Creates, saves, and edits checklists requested by users

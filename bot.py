@@ -125,16 +125,21 @@ class MainCog(comms.Cog):
         Load a specific cog
         """
         printc('[...]: LOADING EXTENSION(S)')
-        if cog in self.all_cogs:
-            try:
-                self.bot.load_extension(cog)
-                self.cogs.append(cog)
-                await ctx.send(duplicate(f'[ ! ]: Extension {cog} HAS BEEN LOADED SUCCESSFULLY'), delete_after=10)
-            except comms.ExtensionAlreadyLoaded:
-                await ctx.send(f'EXTENSION {cog} HAS ALREADY BEEN LOADED', delete_after=10)
-            except Exception as e:
-                printc(f'{cog}: {type(e).__name__} - {e}\n')
-        else:
+        for i in self.all_cogs:
+            cog_exists = False
+            if cog in i:
+                try:
+                    self.bot.load_extension(cog)
+                    self.cogs.append(cog)
+                    await ctx.send(duplicate(f'[ ! ]: Extension {cog} HAS BEEN LOADED SUCCESSFULLY'), delete_after=10)
+                    cog_exists = True
+                except comms.ExtensionAlreadyLoaded:
+                    await ctx.send(f'EXTENSION {cog} HAS ALREADY BEEN LOADED', delete_after=10)
+                    cog_exists = True
+                except Exception as e:
+                    printc(f'{cog}: {type(e).__name__} - {e}\n')
+                    cog_exists = True
+        if not cog_exists:
             printc(f'WARNING: EXTENSION {cog} IS BLOCKED OR DOES NOT EXIST')
 
     @comms.command(name='u', hidden=True)
