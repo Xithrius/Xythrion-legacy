@@ -124,15 +124,15 @@ class UpdatesCog(comms.Cog):
                     if length == 1:
                         embed = discord.Embed(title=f'`Leveling system activated for user {message.author}!`', colour=0xc27c0e, timestamp=now())
                         info = '''
-                        `You have been initiated to acend into the next circles of hell!`
+                        `You have been initiated to ascend into the next circles of hell!`
                         `You're currently starting at level 1, the first circle of hell.`
-                        `Good luck on acending to the next levels~`
+                        `Good luck on ascending to the next levels~`
                         '''
                         embed.add_field(name='`Circles of hell`:', value=info)
                         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
                         await message.channel.send(embed=embed)
                     elif length % 10 == 0:
-                        embed = discord.Embed(title=f'`User {message.author} has acended!`', colour=0xc27c0e, timestamp=now())
+                        embed = discord.Embed(title=f'`User {message.author} has ascended!`', colour=0xc27c0e, timestamp=now())
                         info = f'''
                         {message.author.mention} `stats`:
                         `Circle of hell reached`: `Level {length / 10}`
