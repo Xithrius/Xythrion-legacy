@@ -10,7 +10,8 @@
 		"editor.autoClosingBrackets": "always",
 		"editor.autoClosingQuotes": "always",
 		"python.linting.pep8Args": [
-			"--ignore=E501"
+			"--ignore=E501",
+			"--max-line-length=500"
 		],
 		"python.globalModuleInstallation": true
 	}
