@@ -32,7 +32,7 @@ Requesting information from the internet
 
 # Changelog
 
-## v0.0.01, pushed
+## v0.00.001, pushed
 ### Main changes:
 * Bot has been renamed to "Rehasher", from whatever it was before
 * All other bots that I own have been either deleted completely from existance or parts have been removed from them and were put into this one.
