@@ -4,3 +4,4 @@
 rehasher/configuration/config.json
 *.ini
 *.vscode
+rehasher/logs/*.txt

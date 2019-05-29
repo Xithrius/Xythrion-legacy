@@ -118,7 +118,7 @@ class UpdatesCog(comms.Cog):
         if not message.author.bot:
             try:
                 with open(path('rehasher', 'logs', f'{message.author}.txt'), 'a') as f:
-                    f.write(f'{message.created_at}:{message.guild}\n')
+                    f.write(f'{message.created_at}~~~{message.guild}\n')
                 with open(path('rehasher', 'logs', f'{message.author}.txt'), 'r') as f:
                     length = len(f.readlines())
                     if length == 1:
@@ -143,7 +143,7 @@ class UpdatesCog(comms.Cog):
                         await message.channel.send(embed=embed)
             except FileNotFoundError:
                 with open(path('rehasher', 'logs', f'{message.author}.txt'), 'w') as f:
-                    f.write(f'{message.created_at}:{message.guild}\n')
+                    f.write(f'{message.created_at}~~~{message.guild}\n')
 
         # Blocking messages depending on rules from the description of channels, then alerting of people of their wrong doing
         try:
@@ -157,6 +157,24 @@ class UpdatesCog(comms.Cog):
         if message.author.id != self.bot.user.id:
             if len(message.embeds) >= 1 and message.channel.topic == 'No embeds':
                 await message.delete()
+
+    """
+
+    Commands
+
+    """
+    @comms.command(name='rank')
+    async def check_COH_rank(self, ctx):
+        levels = len((open(path('rehasher', 'logs', f'{ctx.message.author}.txt'), 'r')).readlines())
+        embed = discord.Embed(title=f'`Current circle of hell for user {ctx.message.author}`', colour=0xc27c0e, timestamp=now())
+        info = f'''
+        {ctx.message.author.mention} `stats`:
+        `Current circle of hell`: `Level {round((levels / 75), 4)}`
+        `Total messages sent:` `{levels}`
+        '''
+        embed.add_field(name='`Info`:', value=info)
+        embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
+        await ctx.send(embed=embed)-
 
 
 def setup(bot):
