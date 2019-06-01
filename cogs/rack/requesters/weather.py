@@ -60,7 +60,7 @@ class Weather_Requester(comms.Cog):
         Checks if openweathermap is accessable
         """
         await self.bot.wait_until_ready()
-        while not self.bot.is_closed():
+        if not self.bot.is_closed():
             self.active_weather = False
             if not self.active_weather:
                 printc('[...]: CHECKING WEATHER SERVICE AVAILABILITY')
@@ -70,10 +70,8 @@ class Weather_Requester(comms.Cog):
                         if test_response.status == 200:
                             printc('[ ! ]: WEATHER SERVICE AVAILABLE')
                             self.active_weather = True
-                            break
                         else:
                             raise ValueError(f'WARNING: WEATHER SERVICE NOT AVAILABLE {test_response}')
-                            await asyncio.sleep(60)
 
     """
 

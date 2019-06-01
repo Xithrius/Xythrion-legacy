@@ -174,7 +174,7 @@ class UpdatesCog(comms.Cog):
         '''
         embed.add_field(name='`Info`:', value=info)
         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-        await ctx.send(embed=embed)-
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
