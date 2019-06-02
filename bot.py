@@ -21,7 +21,7 @@ import discord
 from discord.ext import commands as comms
 
 from rehasher.containers.QOL.pathing import path
-from rehasher.containers.output.printer import duplicate, printc
+from rehasher.containers.output.printer import duplicate, printc, sectional_print
 import rehasher
 
 
@@ -72,17 +72,7 @@ class MainCog(comms.Cog):
                 printc(f"WARNING: EXTENSION(S) COULD NOT BE LOADED:\n\t{', '.join(str(y) for y in broken_cogs)}")
             if len(loaded_cogs) > 0:
                 printc(f"[ ! ]: EXTENSION(S) LOADED:")
-                all_cogs, sectioned_cogs = [], []
-                l_cogs = [x.split('.')[-2:] for x in loaded_cogs]
-                for i in range(len(l_cogs) - 1):
-                    x = [j for j, v in enumerate([x[0] for x in l_cogs]) if v == l_cogs[i][0]]
-                    if x not in sectioned_cogs:
-                        sectioned_cogs.append(x)
-                for i in range(len(sectioned_cogs)):
-                    within_cogs = [l_cogs[sectioned_cogs[i][0]][0], [l_cogs[j][1] for j in sectioned_cogs[i]]]
-                    all_cogs.append(within_cogs)
-                for i in all_cogs:
-                    print(f'\t{i[0]}: {", ".join(str(y) for y in i[1])}')
+                sectional_print(loaded_cogs)
             else:
                 printc("WARNING: NO EXTENSIONS HAVE BEEN LOADED")
 
@@ -97,6 +87,7 @@ class MainCog(comms.Cog):
         """
         Reload all cog
         """
+        print()
         printc('[...]: RELOADING EXTENSION(S)')
         loaded_cogs = []
         broken_cogs = []
@@ -113,7 +104,8 @@ class MainCog(comms.Cog):
         if len(broken_cogs) > 0:
             await ctx.send(duplicate(f"WARNING: EXTENSION(S) COULD NOT BE RELOADED:\n\t{', '.join(str(y) for y in broken_cogs)}"), delete_after=10)
         if len(loaded_cogs) > 0:
-            printc(f"[ ! ]: EXTENSION(S) RELOADED:\n\t{', '.join(str(y) for y in loaded_cogs)}")
+            printc(f"[ ! ]: EXTENSION(S) RELOADED:")
+            sectional_print(loaded_cogs)
             await ctx.send('Cogs have been reloaded successfully', delete_after=10)
         else:
             printc(f"WARNING: NO EXTENSION(S) HAVE BEEN RELOADED")

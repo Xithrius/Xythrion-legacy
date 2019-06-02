@@ -117,9 +117,9 @@ class UpdatesCog(comms.Cog):
         # Logging messages for charts and the leveling system
         if not message.author.bot:
             try:
-                with open(path('rehasher', 'logs', f'{message.author}.txt'), 'a') as f:
+                with open(path('logs', f'{message.author}.txt'), 'a') as f:
                     f.write(f'{message.created_at}~~~{message.guild}\n')
-                with open(path('rehasher', 'logs', f'{message.author}.txt'), 'r') as f:
+                with open(path('logs', f'{message.author}.txt'), 'r') as f:
                     length = len(f.readlines())
                     if length == 1:
                         embed = discord.Embed(title=f'`Leveling system activated for user {message.author}!`', colour=0xc27c0e, timestamp=now())
@@ -142,21 +142,8 @@ class UpdatesCog(comms.Cog):
                         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
                         await message.channel.send(embed=embed)
             except FileNotFoundError:
-                with open(path('rehasher', 'logs', f'{message.author}.txt'), 'w') as f:
+                with open(path('logs', f'{message.author}.txt'), 'w') as f:
                     f.write(f'{message.created_at}~~~{message.guild}\n')
-
-        # Blocking messages depending on rules from the description of channels, then alerting of people of their wrong doing
-        try:
-            if message.attachments[0].filename in ['.jpg', '.png', '.jpeg', '.gif'] and message.channel.topic == 'No pictures':
-                await message.delete()
-                await message.author.send(f'No pictures in channel {message.channel} of the server {message.guild}!')
-        except (IndexError, AttributeError):
-            pass
-        except discord.errors.Forbidden:
-            await message.guild.owner.send(f'I should be able to remove pictures from a channel that does not want any. Please give me the permissions to do so.')
-        if message.author.id != self.bot.user.id:
-            if len(message.embeds) >= 1 and message.channel.topic == 'No embeds':
-                await message.delete()
 
     """
 
@@ -165,7 +152,7 @@ class UpdatesCog(comms.Cog):
     """
     @comms.command(name='rank')
     async def check_COH_rank(self, ctx):
-        levels = len((open(path('rehasher', 'logs', f'{ctx.message.author}.txt'), 'r')).readlines())
+        levels = len((open(path('logs', f'{ctx.message.author}.txt'), 'r')).readlines())
         embed = discord.Embed(title=f'`Current circle of hell for user {ctx.message.author}`', colour=0xc27c0e, timestamp=now())
         info = f'''
         {ctx.message.author.mention} `stats`:
