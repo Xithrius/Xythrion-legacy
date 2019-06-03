@@ -6,3 +6,4 @@ rehasher/configuration/config.json
 *.vscode
 logs/*.txt
 /tmp/
+repository/memes/

@@ -17,12 +17,13 @@ import json
 import aiohttp
 import cv2
 import os
+import datetime
 
 from discord.ext import commands as comms
 import discord
 
 from rehasher.containers.QOL.shortened import now
-from rehasher.containers.QOL.pathing import path
+from rehasher.containers.QOL.pathing import path, mkdir
 from rehasher.containers.output.printer import printc
 
 
@@ -75,7 +76,17 @@ class IO_Requester(comms.Cog):
         try:
             if (any(i in message.attachments[0].filename for i in ['.jpg', '.png', '.jpeg'])) and (not message.guild):
                 for (dirpath, dirnames, filenames) in os.walk(path('repository', 'memes')):
-                    pass
+                    filename = (str(datetime.datetime.timestamp(datetime.datetime.now()))).replace('.', '-')
+                    mkdir('repository', 'memes', filename)
+                    with open(path('repository', 'memes', filename, 'info.json'), 'w') as f:
+                        info = {'user': str(message.author), 'upvotes': 0}
+                        json.dump(info, f)
+                    await message.attachments[0].save(path('repository', 'memes', filename, 'image.png'))
+                    '''
+                    # from timestamp
+                    dt_object = datetime.datetime.fromtimestamp(timestamp)
+                    print("dt_object =", dt_object)
+                    '''
         except (IndexError, AttributeError):
             pass
 
