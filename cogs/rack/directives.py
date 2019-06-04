@@ -12,6 +12,9 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
+import random
+import string
+
 from discord.ext import commands as comms
 import discord
 
@@ -47,6 +50,14 @@ class DirectivesCog(comms.Cog):
         embed = discord.Embed(name=f'Members on the server', value=f'{ctx.message.guild}', colour=0xc27c0e, timestamp=now())
         embed.add_field(name='Members:', value=', '.join(str(x) for x in ctx.message.guild.members))
         await ctx.send(embed=embed)
+
+    @comms.command(name='password')
+    async def random_password(self, ctx, userRange):
+        """
+        Give a random password to the user
+        """
+        lst = [random.choice([string.ascii_letters, string.ascii_lowercase, string.ascii_uppercase]) for i in range(userRange)]
+        await ctx.send(''.join(str(y) for y in lst))
 
 
 def setup(bot):
