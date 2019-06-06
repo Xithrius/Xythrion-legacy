@@ -7,3 +7,4 @@ rehasher/configuration/config.json
 logs/*.txt
 /tmp/
 repository/memes/
+passion.py

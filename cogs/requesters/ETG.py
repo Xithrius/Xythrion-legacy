@@ -77,12 +77,12 @@ class ETG_Requester(comms.Cog):
     Commands
 
     """
-    @comms.group()
-    async def etg(self, ctx):
+    @comms.command()
+    async def etg(self, ctx, item):
         """
         Helps the user with ETG commands
         """
-        if ctx.invoked_subcommand is None:
+        if item not in ['guns', 'items', 'gungeoneers', 'bosses']:
             embed = discord.Embed(title='`Usage of the Enter the Gungeon (ETG) commands`', colour=0xc27c0e, timestamp=now())
             help = '''
             `$etg <> <>`
@@ -92,20 +92,41 @@ class ETG_Requester(comms.Cog):
             embed.add_field(name='Usage:', value=help)
             embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
             await ctx.send(embed=embed)
+        else:
+            await self.ETG_check_object(ctx, item.title())
 
-    @etg.command(name='guns')
-    async def ETG_guns(self, ctx, gun):
+    async def ETG_check_object(self, ctx, item):
+        base_url = 'https://enterthegungeon.gamepedia.com/'
+        url = f'{base_url}{item}'
+        obj = ' '.join(ctx.message.content.split()[2:])
+        await ctx.send(f'Getting information for object {item}: {obj}')
         if self.active_ETG:
             async with aiohttp.ClientSession() as session:
-                async with session.get('https://enterthegungeon.gamepedia.com/Guns') as r:
+                async with session.get(url) as r:
                     if r.status == 200:
                         data = await r.read()
                         soup = BeautifulSoup(data, "lxml")
                         table = soup.find('table')
+                        found = False
                         for tag in table.find_all('tr'):
-                            if tag:
-                                pass
-                            break
+                            for nextTag in tag.find_all('a', class_='image'):
+                                testGun = nextTag.find_all('img')[0]['alt']
+                                if testGun[:testGun.index('.')] in [obj, obj.lower()]:
+                                    thumbnail = nextTag.find_all('img')[0]['src']
+                                    b_tags = [x.text.strip() for x in tag.find_all('b')]
+                                    td_tags = [x.text.strip() for x in tag.find_all('td')]
+                                    all_tags = list(zip(b_tags, td_tags))
+                                    print(all_tags)
+                                    embed = discord.Embed(title='Enter The Gungeon information', colour=0xc27c0e, timestamp=now())
+                                    embed.set_thumbnail(url=thumbnail)
+                                    embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
+                                    await ctx.send(embed=embed)
+                                    found = True
+                                    break
+                            if found:
+                                break
+                        if not found:
+                            await ctx.send(f'ETG: item {obj} of type {item} could not be found')
                     else:
                         await ctx.send(f'ETG: status code {r.status}')
 
@@ -113,15 +134,3 @@ class ETG_Requester(comms.Cog):
 def setup(bot):
     bot.add_cog(ETG_Requester(bot))
 
-'''
-soup = BeautifulSoup(page.content, "lxml")
-table = soup.find('table')
-mainTable = {}
-for i in [tag.contents[0]['href'] for tag in table.find_all('h4')]:
-    link = main_website[:main_website.index('/ooh')] + i
-    # If page isn't reached in time, exception will be raised
-    page = requests.get(link, timeout=5)
-    page.raise_for_status()
-    soup = BeautifulSoup(page.content, "lxml")
-    table = soup.find('table')
-'''
