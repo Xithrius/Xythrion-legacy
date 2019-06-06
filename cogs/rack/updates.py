@@ -29,7 +29,7 @@ from rehasher.containers.output.printer import printc
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-class UpdatesCog(comms.Cog):
+class Updates_Cog(comms.Cog):
 
     def __init__(self, bot):
         """ Object(s):
@@ -114,7 +114,7 @@ class UpdatesCog(comms.Cog):
         Blocking and logging whatever happens on servers that client is present on
         """
 
-        # Logging messages for charts and the leveling system
+        # Logging messages for charts and the COH leveling system
         if not message.author.bot:
             try:
                 with open(path('logs', f'{message.author}.txt'), 'a') as f:
@@ -165,4 +165,4 @@ class UpdatesCog(comms.Cog):
 
 
 def setup(bot):
-    bot.add_cog(UpdatesCog(bot))
+    bot.add_cog(Updates_Cog(bot))

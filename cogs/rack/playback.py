@@ -26,7 +26,7 @@ from rehasher.containers.QOL.pathing import path
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-class PlaybackCog(comms.Cog):
+class Playback_Cog(comms.Cog):
 
     def __init__(self, bot):
         """ Object(s):
@@ -129,4 +129,4 @@ class PlaybackCog(comms.Cog):
 
 
 def setup(bot):
-    bot.add_cog(PlaybackCog(bot))
+    bot.add_cog(Playback_Cog(bot))

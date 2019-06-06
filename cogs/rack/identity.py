@@ -29,7 +29,7 @@ from rehasher.containers.QOL.pathing import path
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-class IdentityCog(comms.Cog):
+class Identity_Cog(comms.Cog):
 
     def __init__(self, bot):
         """ Object(s):
@@ -97,4 +97,4 @@ class IdentityCog(comms.Cog):
 
 
 def setup(bot):
-    bot.add_cog(IdentityCog(bot))
+    bot.add_cog(Identity_Cog(bot))

@@ -12,8 +12,7 @@
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-import random
-import string
+import secrets
 
 from discord.ext import commands as comms
 import discord
@@ -28,7 +27,7 @@ from rehasher.containers.QOL.shortened import now
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-class DirectivesCog(comms.Cog):
+class Directives_Cog(comms.Cog):
 
     def __init__(self, bot):
         """ Object(s):
@@ -52,13 +51,12 @@ class DirectivesCog(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command(name='password')
-    async def random_password(self, ctx, userRange):
+    async def random_password(self, ctx, userRange=14):
         """
         Give a random password to the user
         """
-        lst = [random.choice([string.ascii_letters, string.ascii_lowercase, string.ascii_uppercase]) for i in range(userRange)]
-        await ctx.send(''.join(str(y) for y in lst))
+        await ctx.send(secrets.token_urlsafe(userRange))
 
 
 def setup(bot):
-    bot.add_cog(DirectivesCog(bot))
+    bot.add_cog(Directives_Cog(bot))
