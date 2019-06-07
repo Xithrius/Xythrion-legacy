@@ -15,6 +15,7 @@
 import __main__
 
 from distutils import dir_util
+import platform
 
 
 """
@@ -28,10 +29,16 @@ def path(*objects):
     """
     Returns path relative to caller file location with additional objects, if any
     """
-    newPath = ((__main__.__file__).split("\\"))[:-1]
-    for i in objects:
-        newPath.append(i)
-    return '\\'.join(str(y) for y in newPath)
+    if platform.system() == 'Windows':
+        newPath = ((__main__.__file__).split("\\"))[:-1]
+        for i in objects:
+            newPath.append(i)
+        return '\\'.join(str(y) for y in newPath)
+    else:
+        newPath = ((__main__.__file__).split("/"))[:-1]
+        for i in objects:
+            newPath.append(i)
+        return '/'.join(str(y) for y in newPath)
 
 
 def mkdir(*objects):
