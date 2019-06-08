@@ -87,10 +87,9 @@ class MainCog(comms.Cog):
         """
         Reload all cog
         """
-        print()
-        printc('[...]: RELOADING EXTENSION(S)')
-        loaded_cogs = []
-        broken_cogs = []
+        print(f'\n{"[" * 8} [ RELOADING ] {"]" * 8}\n')
+        # printc('[...]: RELOADING EXTENSION(S)')
+        loaded_cogs, broken_cogs = [], []
         for cog in self.cogs:
             try:
                 self.bot.unload_extension(cog)
