@@ -109,7 +109,6 @@ class Weather_Requester(comms.Cog):
                         embed.add_field(name='Weather Type:', value=data['weather'][0]['description'], inline=False)
                         embed.add_field(name='Temperature:', value=f"Now: {pytemperature.k2f(data['main']['temp'])} °F\nLow: {pytemperature.k2f(data['main']['temp_min'])} °F\nHigh: {pytemperature.k2f(data['main']['temp_max'])} °F", inline=False)
                         embed.add_field(name='Humidity:', value=f"{data['main']['humidity']}%", inline=False)
-                        embed.add_field(name='Visibility', value=f"{data['visibility']} meters", inline=False)
                         embed.add_field(name='Sunrise:', value=time.ctime(data['sys']['sunrise']), inline=False)
                         embed.add_field(name='Sunset:', value=time.ctime(data['sys']['sunset']), inline=False)
                         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')

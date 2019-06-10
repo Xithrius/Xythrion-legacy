@@ -53,12 +53,13 @@ class IO_Requester(comms.Cog):
         """
         chosen_user = random.choice(os.listdir(path('repository', 'memes')))
         chosen_meme = random.choice(os.listdir(path('repository', 'memes', chosen_user)))
-        embed = discord.Embed(title=f'`Uploader`: {chosen_user}', colour=0xc27c0e, timestamp=now())
         info = f'''
+        **Info**:
+        `Uploader`: {chosen_user}
         `Upload date`: {datetime.datetime.fromtimestamp(int(chosen_meme))}
         `Upvotes`: {json.load(open(path('repository', 'memes', chosen_user, chosen_meme, 'info.json')))['upvotes']}
         '''
-        embed.add_field(name='**Info**:', value=info)
+        embed = discord.Embed(title=info, colour=0xc27c0e, timestamp=now())
         await ctx.send(embed=embed, file=discord.File(path('repository', 'memes', chosen_user, chosen_meme, 'image.png')))
 
     @meme.command()
