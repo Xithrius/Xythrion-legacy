@@ -5,6 +5,7 @@ rehasher/configuration/config.json
 *.ini
 *.vscode
 logs/*.txt
-/tmp/
-repository/memes/
+repository/memes/*
+repository/tmp/*
+repository/logs/*
 passion.py

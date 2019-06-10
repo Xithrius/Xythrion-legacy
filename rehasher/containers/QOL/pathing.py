@@ -41,7 +41,7 @@ def path(*objects):
         return '/'.join(str(y) for y in newPath)
 
 
-def mkdir(*objects):
+def create_dir(*objects):
     """
     Creats a new folder at a given location
     """

@@ -115,11 +115,11 @@ class Updates_Cog(comms.Cog):
         """
 
         # Logging messages for charts and the COH leveling system
-        if not message.author.bot:
+        if str(message.author) != str(self.bot.user):
             try:
-                with open(path('logs', f'{message.author}.txt'), 'a') as f:
+                with open(path('repository', 'logs', f'{message.author}.txt'), 'a') as f:
                     f.write(f'{message.created_at}~~~{message.guild}\n')
-                with open(path('logs', f'{message.author}.txt'), 'r') as f:
+                with open(path('repository', 'logs', f'{message.author}.txt'), 'r') as f:
                     length = len(f.readlines())
                     if length == 1:
                         embed = discord.Embed(title=f'`Leveling system activated for user {message.author}!`', colour=0xc27c0e, timestamp=now())
@@ -142,7 +142,7 @@ class Updates_Cog(comms.Cog):
                         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
                         await message.channel.send(embed=embed)
             except FileNotFoundError:
-                with open(path('logs', f'{message.author}.txt'), 'w') as f:
+                with open(path('repository', 'logs', f'{message.author}.txt'), 'w') as f:
                     f.write(f'{message.created_at}~~~{message.guild}\n')
 
     """

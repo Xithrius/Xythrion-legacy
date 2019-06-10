@@ -14,16 +14,15 @@
 
 import platform
 import json
-import aiohttp
-import cv2
 import os
 import datetime
+import random
 
 from discord.ext import commands as comms
 import discord
 
 from rehasher.containers.QOL.shortened import now
-from rehasher.containers.QOL.pathing import path, mkdir
+from rehasher.containers.QOL.pathing import path, create_dir
 from rehasher.containers.output.printer import printc
 
 
@@ -49,7 +48,18 @@ class IO_Requester(comms.Cog):
     """
     @comms.group()
     async def meme(self, ctx):
-        await ctx.send(file=discord.File(path('tmp', 'plots', 'plot.png')))
+        """
+        Gives a random meme from the repository of memes
+        """
+        chosen_user = random.choice(os.listdir(path('repository', 'memes')))
+        chosen_meme = random.choice(os.listdir(path('repository', 'memes', chosen_user)))
+        embed = discord.Embed(title=f'`Uploader`: {chosen_user}', colour=0xc27c0e, timestamp=now())
+        info = f'''
+        `Upload date`: {datetime.datetime.fromtimestamp(int(chosen_meme))}
+        `Upvotes`: {json.load(open(path('repository', 'memes', chosen_user, chosen_meme, 'info.json')))['upvotes']}
+        '''
+        embed.add_field(name='**Info**:', value=info)
+        await ctx.send(embed=embed, file=discord.File(path('repository', 'memes', chosen_user, chosen_meme, 'image.png')))
 
     @meme.command()
     async def help(self, ctx):
@@ -73,22 +83,17 @@ class IO_Requester(comms.Cog):
     """
     @comms.Cog.listener()
     async def on_message(self, message):
-        try:
-            if (any(i in message.attachments[0].filename for i in ['.jpg', '.png', '.jpeg'])) and (not message.guild):
-                for (dirpath, dirnames, filenames) in os.walk(path('repository', 'memes')):
-                    filename = (str(datetime.datetime.timestamp(datetime.datetime.now()))).replace('.', '-')
-                    mkdir('repository', 'memes', filename)
-                    with open(path('repository', 'memes', filename, 'info.json'), 'w') as f:
+        if str(message.author) != str(self.bot.user):
+            try:
+                if (any(i in message.attachments[0].filename for i in ['.jpg', '.png', '.jpeg'])) and (not message.guild):
+                    date = (int(datetime.datetime.timestamp(datetime.datetime.now())))
+                    os.makedirs(path('repository', 'memes', message.author, date))
+                    with open(path('repository', 'memes', message.author, date, 'info.json'), 'w') as f:
                         info = {'user': str(message.author), 'upvotes': 0}
                         json.dump(info, f)
-                    await message.attachments[0].save(path('repository', 'memes', filename, 'image.png'))
-                    '''
-                    # from timestamp
-                    dt_object = datetime.datetime.fromtimestamp(timestamp)
-                    print("dt_object =", dt_object)
-                    '''
-        except (IndexError, AttributeError):
-            pass
+                    await message.attachments[0].save(path('repository', 'memes', message.author, date, 'image.png'))
+            except (IndexError, AttributeError):
+                pass
 
 
 def setup(bot):
