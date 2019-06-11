@@ -152,7 +152,7 @@ class Updates_Cog(comms.Cog):
     """
     @comms.command(name='rank')
     async def check_COH_rank(self, ctx):
-        levels = len((open(path('logs', f'{ctx.message.author}.txt'), 'r')).readlines())
+        levels = len((open(path('repository', 'logs', f'{ctx.message.author}.txt'), 'r')).readlines())
         embed = discord.Embed(title=f'`Current circle of hell for user {ctx.message.author}`', colour=0xc27c0e, timestamp=now())
         info = f'''
         {ctx.message.author.mention} `stats`:
