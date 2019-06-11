@@ -13,17 +13,19 @@
 
 
 import datetime
+import os
 
 from discord.ext import commands as comms
 import discord
 
 from rehasher.containers.QOL.shortened import now
+from rehasher.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# <> request cog
+# Simple cog
 # //////////////////////////////////////////////////////////////////////////// #
-# Get information from <>
+# A cog for all the simple commands
 # //////////////////////////////////////////////////////////////////////////// #
 
 
@@ -40,6 +42,9 @@ class Simples_Cog(comms.Cog):
     Commands
 
     """
+    """
+    Time
+    """
     @comms.command()
     async def from_timestamp(self, ctx, stamp):
         dt_object = datetime.datetime.fromtimestamp(int(stamp))
@@ -48,6 +53,20 @@ class Simples_Cog(comms.Cog):
     @comms.command()
     async def time(self, ctx):
         await ctx.send(f'**Current time:** {now()}')
+    
+    """
+    
+    Events
+    
+    """
+    """
+    Emoticons in text
+    """
+    @comms.Cog.listener()
+    async def on_message(self, message):
+        command_list = [f'${x[:-4]}' for x in os.listdir(path('repository', 'emoticons'))]
+        if message.content.startswith(command_list):
+            pass
 
 
 def setup(bot):
