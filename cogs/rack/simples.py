@@ -53,19 +53,22 @@ class Simples_Cog(comms.Cog):
     @comms.command()
     async def time(self, ctx):
         await ctx.send(f'**Current time:** {now()}')
-    
+
     """
-    
+
     Events
-    
+
     """
     """
     Emoticons in text
     """
     @comms.Cog.listener()
     async def on_message(self, message):
-        command_list = [f'${x[:-4]}' for x in os.listdir(path('repository', 'emoticons'))]
-        if message.content.startswith(command_list):
+        try:
+            command_list = [f'${x[:-4]}' for x in os.listdir(path('repository', 'emoticons'))]
+            if message.content.startswith(command_list):
+                pass
+        except:
             pass
 
 
