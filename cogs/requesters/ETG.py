@@ -1,5 +1,5 @@
 '''
->> Rehasher.py
+>> SoftBot
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 '''
@@ -22,9 +22,9 @@ import aiohttp
 from discord.ext import commands as comms
 import discord
 
-from rehasher.containers.QOL.shortened import now
-from rehasher.containers.QOL.pathing import path
-from rehasher.containers.output.printer import printc
+from SoftBot.containers.QOL.shortened import now
+from SoftBot.containers.QOL.pathing import path
+from SoftBot.containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #

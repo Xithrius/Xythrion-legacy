@@ -1,5 +1,5 @@
 '''
->> Rehasher.py
+>> SoftBot
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 '''
@@ -14,7 +14,7 @@
 
 from discord.ext import commands as comms
 
-from rehasher.containers.output.printer import printc
+from SoftBot.containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #

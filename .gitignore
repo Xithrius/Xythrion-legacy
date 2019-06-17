@@ -1,11 +1,10 @@
 *__pycache__/
 *.mp3
 *.webm
-rehasher/configuration/config.json
+SoftBot/configuration/config.json
 *.ini
 *.vscode
 logs/*.txt
 repository/memes/*
 repository/tmp/*
 repository/logs/*
-passion.py

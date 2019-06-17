@@ -1,7 +1,7 @@
-<img align="right" src="rehasher/icon.png">
+<img align="right" src="SoftBot/icon.png">
 
 
-# Rehasher.py
+# SoftBot
 Requesting information from the internet
 
 
@@ -34,7 +34,7 @@ Requesting information from the internet
 
 ## v0.00.001, pushed
 ### Main changes:
-* Bot has been renamed to "Rehasher", from whatever it was before
+* Bot has been renamed to "SoftBot", from whatever it was before
 * All other bots that I own have been either deleted completely from existance or parts have been removed from them and were put into this one.
 ### Modifications:
 * Everything, literally.

@@ -1,5 +1,5 @@
 '''
->> Rehasher.py
+>> SoftBot
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 '''
@@ -17,7 +17,7 @@ import secrets
 from discord.ext import commands as comms
 import discord
 
-from rehasher.containers.QOL.shortened import now
+from SoftBot.containers.QOL.shortened import now
 
 
 # //////////////////////////////////////////////////////////////////////////// #
