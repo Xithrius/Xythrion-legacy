@@ -42,9 +42,6 @@ class Simples_Cog(comms.Cog):
     Commands
 
     """
-    """
-    Time
-    """
     @comms.command()
     async def from_timestamp(self, ctx, stamp):
         dt_object = datetime.datetime.fromtimestamp(int(stamp))
@@ -52,16 +49,34 @@ class Simples_Cog(comms.Cog):
 
     @comms.command()
     async def time(self, ctx):
+        """
+
+        """
         await ctx.send(f'**Current time:** {now()}')
+
+    @comms.command(name='members')
+    @comms.guild_only()
+    async def get_members(self, ctx):
+        """
+        Get all users that exist within the guild
+        """
+        embed = discord.Embed(name=f'Members on the server', value=f'{ctx.message.guild}', colour=0xc27c0e, timestamp=now())
+        embed.add_field(name='Members:', value=', '.join(str(x) for x in ctx.message.guild.members))
+        await ctx.send(embed=embed)
+
+    @comms.command(name='password')
+    async def random_password(self, ctx, userRange=14):
+        """
+        Give a random password to the user
+        """
+        await ctx.send(secrets.token_urlsafe(userRange))
 
     """
 
     Events
 
     """
-    """
-    Emoticons in text
-    """
+    """ Emoticons in text """
     @comms.Cog.listener()
     async def on_message(self, message):
         try:

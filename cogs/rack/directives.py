@@ -40,22 +40,30 @@ class Directives_Cog(comms.Cog):
     Commands
 
     """
-    @comms.command(name='members')
-    @comms.guild_only()
-    async def get_members(self, ctx):
-        """
-        Get all users that exist within the guild
-        """
-        embed = discord.Embed(name=f'Members on the server', value=f'{ctx.message.guild}', colour=0xc27c0e, timestamp=now())
-        embed.add_field(name='Members:', value=', '.join(str(x) for x in ctx.message.guild.members))
-        await ctx.send(embed=embed)
-
-    @comms.command(name='password')
-    async def random_password(self, ctx, userRange=14):
-        """
-        Give a random password to the user
-        """
-        await ctx.send(secrets.token_urlsafe(userRange))
+    @comms.command()
+    async def create_cog(self, ctx, new_cog):
+        good_cog = False
+        while not good_cog:
+            cog_type = input('Type of cog (rack, requester, detector): ')
+            cog_name = input('Name of the cog: ')
+            if cog_type in ['rack', 'requester', 'detector']:
+                good_cog = True
+        cog_name = cog_name.lower()
+        cog_file = f'{cog_name}.py'
+        shutil.copy2(path('automation', 'template.py'), path('automation', 'new_cogs', cog_file))
+        replacedata = {
+            'placeholder_type': f'{cog_type.title()} cog for {cog_name.title()}',
+            'PLACEHOLDER_COG': f'{cog_name.title()}_{cog_type.title()}',
+            'PLACEHOLDER': cog_name.upper(),
+            'Placeholder': cog_name.title(),
+            'placeholder': cog_name
+        }
+        with open(path('automation', 'new_cogs', cog_file), 'r') as f:
+            filedata = f.read()
+            for k, v in replacedata.items():
+                filedata = filedata.replace(k, v)
+        with open(path('automation', 'new_cogs', cog_file), 'w') as f:
+            f.write(filedata)
 
 
 def setup(bot):
