@@ -33,7 +33,7 @@ Requesting information from the internet
 - [ ] Quality Of Life command creations
 - [ ] Playback Youtube videos as mp3
 - [ ] 2FA for owner with a cooldown
-- [x] Text to speech through bot
+- [ ] Text to speech through bot
 
 
 # Changelog

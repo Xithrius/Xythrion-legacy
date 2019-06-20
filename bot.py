@@ -155,11 +155,6 @@ class MainCog(comms.Cog):
         """
         Destroys everything when exiting
         """
-        for cog in self.all_cogs:
-            try:
-                self.bot.unload_extension(cog)
-            except comms.ExtensionNotLoaded:
-                pass
         printc('WARNING: CLIENT IS LOGGING OUT')
         await ctx.bot.logout()
 
