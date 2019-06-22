@@ -1,7 +1,7 @@
 *__pycache__/
 *.mp3
 *.webm
-SoftBot/configuration/config.json
+ARi0/configuration/config.json
 *.ini
 *.vscode
 logs/*.txt
