@@ -1,9 +1,9 @@
 *__pycache__/
 *.mp3
 *.webm
-ARi0/configuration/config.json
 *.ini
 logs/*.txt
 repository/memes/*
 repository/tmp/*
 repository/logs/*
+ARi0/configuration/config.json

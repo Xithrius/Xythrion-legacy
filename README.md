@@ -1,8 +1,8 @@
-<img align="right" src="SoftBot/icon.png">
+<img align="right" src="ARi0/icon.png">
 
 
-# SoftBot
-Requesting information from the internet
+# ARi0.py
+Requesting information from the internet's REST APIs.
 
 
 [![License](https://img.shields.io/apm/l/vim-mode.svg)](https://img.shields.io/apm/l/vim-mode.svg) [![Python Version](https://img.shields.io/badge/python-3.7.3-green.svg)](https://www.python.org/downloads/release/python-373/) [![discord](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)

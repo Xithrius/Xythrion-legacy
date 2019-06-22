@@ -1,0 +1,6 @@
+# from discord.ext import commands as comms
+# import discord
+
+# from ARi0.containers.QOL.pathing import path
+# from ARi0.containers.QOL.shortened import now
+# from ARi0.containers.output.printer import printc
