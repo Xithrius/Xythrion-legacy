@@ -1,5 +1,5 @@
 '''
->> SoftBot
+>> ARi0
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 '''
@@ -21,9 +21,9 @@ import aiohttp
 from discord.ext import commands as comms
 import discord
 
-from SoftBot.containers.QOL.shortened import now
-from SoftBot.containers.QOL.pathing import path
-from SoftBot.containers.output.printer import printc
+from ARi0.containers.QOL.shortened import now
+from ARi0.containers.QOL.pathing import path
+from ARi0.containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -63,7 +63,7 @@ class PLACEHOLDER_COG(comms.Cog):
             self.active_service = False
             if not self.active_service:
                 printc('[...]: CHECKING PLACEHOLDER SERVICE AVAILABILITY')
-                # self.token = json.load(open(path('SoftBot', 'configuration', 'config.json')))['']
+                # self.token = json.load(open(path('ARi0', 'configuration', 'config.json')))['']
                 async with aiohttp.ClientSession() as session:
                     async with session.get() as test_response:
                         if test_response.status == 200:

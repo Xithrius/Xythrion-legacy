@@ -1,5 +1,5 @@
 '''
->> SoftBot
+>> ARi0
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 '''
@@ -19,7 +19,7 @@ from discord.ext import commands as comms
 from google.cloud import texttospeech  # <<< ssml must be well-formed according to: https://www.w3.org/TR/speech-synthesis/
 import discord
 
-from SoftBot.containers.QOL.pathing import path
+from ARi0.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -41,8 +41,7 @@ class TTS_Cog(comms.Cog):
     Error handling for GOOGLE_APPLICATION_CREDENTIALS
     """
     try:
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path(
-            'SoftBot', 'configuration', 'gst.json')
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('ARi0', 'configuration', 'gst.json')
     except FileNotFoundError:
         print('WARNING: GOOGLE SERVICE TOKEN COULD NOT BE FOUND')
 

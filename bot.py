@@ -1,5 +1,5 @@
 '''
->> SoftBot
+>> ARi0
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 '''
@@ -20,9 +20,9 @@ import sys
 import discord
 from discord.ext import commands as comms
 
-from SoftBot.containers.QOL.pathing import path
-from SoftBot.containers.output.printer import duplicate, printc, sectional_print
-import SoftBot
+from ARi0.containers.QOL.pathing import path
+from ARi0.containers.output.printer import duplicate, printc, sectional_print
+import ARi0
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -168,7 +168,7 @@ class MainCog(comms.Cog):
         """
         Event activates when bot is ready for use
         """
-        lines = [f'SoftBot v{SoftBot.__version__}',
+        lines = [f'ARi0.py v{ARi0.__version__}',
                  f'Logged in as: {self.bot.user}',
                  f'Client ID: {self.bot.user.id}']
         print('\n'.join(str(y) for y in lines))
@@ -181,9 +181,9 @@ if __name__ == '__main__':
         for (dirpath, dirnames, filenames) in os.walk(path('cogs')):
             cog = '.'.join(str(y) for y in dirpath[len(path()):].split('\\'))
             if '__pycache__' not in cog.split('.'):
-                cogs.extend([f'{cog}.{i[:-3]}' for i in filenames if i[:-3] not in [x[:-1] for x in open(path('SoftBot', 'configuration', 'blocked_cogs.txt'), 'r').readlines()]])
+                cogs.extend([f'{cog}.{i[:-3]}' for i in filenames if i[:-3] not in [x[:-1] for x in open(path('ARi0', 'configuration', 'blocked_cogs.txt'), 'r').readlines()]])
         bot.add_cog(MainCog(bot, cogs))
-        bot.run(json.load(open(path('SoftBot', 'configuration', 'config.json')))[
+        bot.run(json.load(open(path('ARi0', 'configuration', 'config.json')))[
                 'discord'], bot=True, reconnect=True)
     except discord.errors.LoginFailure as e:
         printc(f'WARNING: {e}')

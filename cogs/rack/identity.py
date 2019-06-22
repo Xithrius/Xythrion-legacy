@@ -1,5 +1,5 @@
 '''
->> SoftBot
+>> ARi0
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 '''
@@ -19,7 +19,7 @@ import datetime
 from discord.ext import commands as comms
 import discord
 
-from SoftBot.containers.QOL.pathing import path
+from ARi0.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -63,7 +63,7 @@ class Identity_Cog(comms.Cog):
         embed = discord.Embed(name=f"{self.bot.user}'s favorite songs'", colour=0xc27c0e, timestamp=datetime.datetime.now() + datetime.timedelta(hours=7))
         songs = []
         song_dict = {}
-        with open(path('SoftBot', 'tracking', 'media', 'generated', 'self_generated', 'favorite_songs.csv'), 'r') as f:
+        with open(path('ARi0', 'tracking', 'media', 'generated', 'self_generated', 'favorite_songs.csv'), 'r') as f:
             reader = csv.reader(f)
             for row in reader:
                 song = row[0]

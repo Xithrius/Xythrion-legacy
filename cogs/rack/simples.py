@@ -1,5 +1,5 @@
 '''
->> SoftBot
+>> ARi0
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 '''
@@ -18,8 +18,8 @@ import os
 from discord.ext import commands as comms
 import discord
 
-from SoftBot.containers.QOL.shortened import now
-from SoftBot.containers.QOL.pathing import path
+from ARi0.containers.QOL.shortened import now
+from ARi0.containers.QOL.pathing import path
 
 
 # //////////////////////////////////////////////////////////////////////////// #

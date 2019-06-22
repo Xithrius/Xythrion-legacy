@@ -1,5 +1,5 @@
 '''
->> SoftBot
+>> ARi0
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 '''
@@ -21,9 +21,9 @@ import random
 from discord.ext import commands as comms
 import discord
 
-from SoftBot.containers.QOL.shortened import now
-from SoftBot.containers.QOL.pathing import path, create_dir
-from SoftBot.containers.output.printer import printc
+from ARi0.containers.QOL.shortened import now
+from ARi0.containers.QOL.pathing import path, create_dir
+from ARi0.containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #

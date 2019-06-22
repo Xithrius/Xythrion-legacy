@@ -1,5 +1,5 @@
 '''
->> SoftBot
+>> ARi0
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 '''
@@ -14,7 +14,7 @@
 
 from discord.ext import commands as comms
 
-from SoftBot.containers.output.printer import printc
+from ARi0.containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #

@@ -1,6 +1,0 @@
-- Make Warframe requester only have two commands, help and get.
-- Finish up IO requester so people can start importing memes
-- Finish plotting calculator
-- Fix reddit requester (400 code)
-- Get devoloper token for riot requester
-- Make template requester better

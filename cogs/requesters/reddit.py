@@ -1,5 +1,5 @@
 '''
->> SoftBot
+>> ARi0
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 '''
@@ -20,10 +20,10 @@ import platform
 from discord.ext import commands as comms
 import discord
 
-from SoftBot.containers.output.printer import printc
-from SoftBot.containers.QOL.pathing import path
-from SoftBot.containers.QOL.shortened import now
-import SoftBot
+from ARi0.containers.output.printer import printc
+from ARi0.containers.QOL.pathing import path
+from ARi0.containers.QOL.shortened import now
+import ARi0
 
 
 # //////////////////////////////////////////////////////////////////////////// #
@@ -62,10 +62,10 @@ class Reddit_Requester(comms.Cog):
         while not self.bot.is_closed():
             self.active_reddit = False
             if not self.active_reddit:
-                f = json.load(open(path('SoftBot', 'configuration', 'config.json')))['reddit']
+                f = json.load(open(path('ARi0', 'configuration', 'config.json')))['reddit']
                 client_auth = aiohttp.BasicAuth(login=f['client_ID'], password=f['client_secret'])
                 post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
-                headers = {"User-Agent": f"SoftBot/{SoftBot.__version__} by {f['username']}"}
+                headers = {"User-Agent": f"ARi0/{ARi0.__version__} by {f['username']}"}
                 async with aiohttp.ClientSession(auth=client_auth, headers=headers) as session:
                     async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as test_response:
                         if test_response.status == 200:
@@ -73,7 +73,7 @@ class Reddit_Requester(comms.Cog):
                             if js != {'error': 'invalid_grant'}:
                                 self.active_reddit = True
                                 await asyncio.sleep(js['expires_in'] + 1)
-                                # self.headers = {"Authorization": f"{response['token_type']} {response['access_token']}", "User-Agent": f"SoftBot.py/{SoftBot.__version__} by {f['username']}"}
+                                # self.headers = {"Authorization": f"{response['token_type']} {response['access_token']}", "User-Agent": f"ARi0.py/{ARi0.__version__} by {f['username']}"}
                                 # response = requests.get('https://oauth.reddit.com/api/v1/me', headers=self.headers).json()
                                 printc('[ ! ]: REDDIT REQUESTS ENABLED')
                             else:
