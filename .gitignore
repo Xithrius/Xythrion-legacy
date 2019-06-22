@@ -3,7 +3,6 @@
 *.webm
 ARi0/configuration/config.json
 *.ini
-*.vscode
 logs/*.txt
 repository/memes/*
 repository/tmp/*
