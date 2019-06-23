@@ -22,6 +22,7 @@ from discord.ext import commands as comms
 
 from ARi0.containers.QOL.pathing import path
 from ARi0.containers.output.printer import duplicate, printc, sectional_print
+from ARi0.containers.QOL.shortened import now
 import ARi0
 
 
@@ -168,11 +169,14 @@ class MainCog(comms.Cog):
         """
         Event activates when bot is ready for use
         """
-        lines = [f'ARi0.py v{ARi0.__version__}',
+        lines = [f'> [{now()}]',
+                 f'ARi0.py v{ARi0.__version__}',
                  f'Logged in as: {self.bot.user}',
                  f'Client ID: {self.bot.user.id}']
-        print('\n'.join(str(y) for y in lines))
-
+        longest = max(map(len, lines))
+        barrier = f"+{'-' * (longest + 4)}+"
+        lines = '\n\t'.join(str(y) for y in [f'|  {x}{" " * (longest - len(x))}  |' for x in lines])
+        print(f'\n\t{barrier}\n\t{lines}\n\t{barrier}\n')
 
 if __name__ == '__main__':
     try:

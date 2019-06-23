@@ -13,22 +13,25 @@
 
 
 import platform
+import time
+import asyncio
 
 from discord.ext import commands as comms
 import discord
 
-from ARi0.containers.QOL.pathing import path
 from ARi0.containers.QOL.shortened import now
+from ARi0.containers.QOL.pathing import path
+from ARi0.containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #
-# Identity cog
+# Porgram evaluator
 # //////////////////////////////////////////////////////////////////////////// #
-# Commands with a little bit of personality
+# Returning evaluations of programs
 # //////////////////////////////////////////////////////////////////////////// #
 
 
-class Identity_Cog(comms.Cog):
+class Program_Evaluator(comms.Cog):
 
     def __init__(self, bot):
         """ Object(s):
@@ -42,24 +45,25 @@ class Identity_Cog(comms.Cog):
 
     """
     @comms.command()
-    async def creator(self, ctx):
-        """
-        Shows the person who created the bot
-        """
-        embed = discord.Embed(colour=0xc27c0e)
-        embed.set_author(name='Xithrius', icon_url='https://i.imgur.com/TtcOXxx.jpg')
-        embed.add_field(name='Private Github:', value='[Right here](https://github.com/Xithrius/Relay.py)')
-        embed.add_field(name='Command caller:', value=ctx.author.mention)
-        embed.set_footer(text=f'discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-        await ctx.send(embed=embed)
-
-    @comms.command(name='icon')
-    async def get_own_avatar(self, ctx):
-        """
-        The avatar of the bot
-        """
-        await ctx.send(self.bot.user.avatar_url)
+    @comms.is_owner()
+    async def exec(self, ctx):
+        msg = ctx.message.content[9:len(ctx.message.content) - 4]
+        if msg[0:2] == 'py':
+            msg = msg[3:]
+            try:
+                print(f'[{now()}] RUNNING PROGRAM:')
+                print('```py')
+                print(msg)
+                print('```')
+                print(f'OUTPUT')
+                start_time = time.time()
+                exec(msg)
+                finish_time = round((time.time() - start_time), 3)
+                await ctx.send(f':white_check_mark: Program finished in {finish_time}')
+            except Exception as e:
+                print(e)
+                await ctx.send(f':x:{e}')
 
 
 def setup(bot):
-    bot.add_cog(Identity_Cog(bot))
+    bot.add_cog(Program_Evaluator(bot))

@@ -26,4 +26,4 @@ def now():
     """
     Returns the time depending on time zone (will look at file soon)
     """
-    return datetime.datetime.now() + datetime.timedelta(hours=7)
+    return f'{datetime.datetime.now() + datetime.timedelta(hours=7)}'

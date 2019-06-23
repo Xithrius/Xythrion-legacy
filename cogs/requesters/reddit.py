@@ -81,7 +81,7 @@ class Reddit_Requester(comms.Cog):
                                 break
                         else:
                             printc(f'WARNING: REDDIT REQUESTS CANNOT BE ACTIVATED. ERROR CODE: {test_response.status}')
-                            await asyncio.sleep(60)
+                            break
 
     """
 

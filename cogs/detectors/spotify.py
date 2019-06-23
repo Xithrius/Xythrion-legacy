@@ -91,6 +91,13 @@ class Spotify_Detector(comms.Cog):
     async def disable(self, ctx):
         pass
 
+    @comms.command()
+    async def spotify_playing(self, ctx):
+        embed = discord.Embed(title=f'Currently playing for {ctx.author.name}:\n__*{ctx.author.activities[0].title} by {ctx.author.activities[0].artist}*__', colour=0xc27c0e)
+        embed.set_author(name='Xithrius', icon_url='https://i.imgur.com/wzl5IHi.png')
+        embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Spotify_Detector(bot))

@@ -53,4 +53,3 @@ def sectional_print(loaded_cogs):
         all_cogs.append(within_cogs)
     for i in all_cogs:
         print(f'\t{i[0]}: {", ".join(str(y) for y in i[1])}')
-    print()

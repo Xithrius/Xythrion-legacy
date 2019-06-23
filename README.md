@@ -34,6 +34,7 @@ Requesting information from the internet's REST APIs.
 - [ ] Playback Youtube videos as mp3
 - [ ] 2FA for owner with a cooldown
 - [ ] Text to speech through bot
+- [ ]
 
 
 # Changelog
