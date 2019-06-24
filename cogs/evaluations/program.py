@@ -59,7 +59,7 @@ class Program_Evaluator(comms.Cog):
                 start_time = time.time()
                 exec(msg)
                 finish_time = round((time.time() - start_time), 3)
-                await ctx.send(f':white_check_mark: Program finished in {finish_time}')
+                await ctx.send(f':white_check_mark: Program finished in {finish_time}s')
             except Exception as e:
                 print(e)
                 await ctx.send(f':x:{e}')

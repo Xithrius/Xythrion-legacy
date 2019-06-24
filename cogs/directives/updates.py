@@ -37,16 +37,6 @@ class Updates_Cog(comms.Cog):
         Misc setup background task
         """
         self.bot = bot
-        self.bg_task = self.bot.loop.create_task(self.misc_setup())
-        self.presence = 'with info'
-
-    """
-
-    Background tasks
-
-    """
-    async def misc_setup(self):
-        await self.bot.change_presence(activity=discord.Game(name=self.presence))
 
     """
 

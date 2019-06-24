@@ -177,6 +177,8 @@ class MainCog(comms.Cog):
         barrier = f"+{'-' * (longest + 4)}+"
         lines = '\n\t'.join(str(y) for y in [f'|  {x}{" " * (longest - len(x))}  |' for x in lines])
         print(f'\n\t{barrier}\n\t{lines}\n\t{barrier}\n')
+        await self.bot.change_presence(activity=discord.Game(name='Visual Studio Code'))
+
 
 if __name__ == '__main__':
     try:
@@ -187,7 +189,6 @@ if __name__ == '__main__':
             if '__pycache__' not in cog.split('.'):
                 cogs.extend([f'{cog}.{i[:-3]}' for i in filenames if i[:-3] not in [x[:-1] for x in open(path('ARi0', 'configuration', 'blocked_cogs.txt'), 'r').readlines()]])
         bot.add_cog(MainCog(bot, cogs))
-        bot.run(json.load(open(path('ARi0', 'configuration', 'config.json')))[
-                'discord'], bot=True, reconnect=True)
+        bot.run(json.load(open(path('ARi0', 'configuration', 'config.json')))['discord'], bot=True, reconnect=True)
     except discord.errors.LoginFailure as e:
         printc(f'WARNING: {e}')
