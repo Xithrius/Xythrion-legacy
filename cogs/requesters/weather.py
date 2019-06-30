@@ -1,40 +1,24 @@
-'''
->> ARi0
+"""
+>> Xiux
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
-'''
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# Libraries                                                                    #
-# //////////////////////////////////////////////////////////////////////////// #
-# Built-in modules, third-party modules, custom modules                        #
-# //////////////////////////////////////////////////////////////////////////// #
+"""
 
 
 import platform
 import time
 import pytemperature
 import json
-import asyncio
 import aiohttp
 
 from discord.ext import commands as comms
 import discord
 
-from ARi0.containers.QOL.shortened import now
-from ARi0.containers.QOL.pathing import path
-from ARi0.containers.output.printer import printc
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# OpenWeatherMap.org request cog
-# //////////////////////////////////////////////////////////////////////////// #
-# Get information from OpenWeatherMap
-# //////////////////////////////////////////////////////////////////////////// #
+from handlers.modules.output import now, path, printc
 
 
 class Weather_Requester(comms.Cog):
+    """ Get information from OpenWeatherMap """
 
     def __init__(self, bot):
         """ Object(s):
@@ -45,26 +29,19 @@ class Weather_Requester(comms.Cog):
         self.load_credentials = self.bot.loop.create_task(self.load_weather())
 
     def cog_unload(self):
-        """
-        Cancel background task(s) when cog is unloaded
-        """
+        """ Cancel background task(s) when cog is unloaded """
         self.load_credentials.cancel()
 
-    """
+    """ Background tasks """
 
-    Background tasks
-
-    """
     async def load_weather(self):
-        """
-        Checks if openweathermap is accessable
-        """
+        """ Checks if openweathermap is accessable """
         await self.bot.wait_until_ready()
         if not self.bot.is_closed():
             self.active_weather = False
             if not self.active_weather:
                 printc('[...]: CHECKING WEATHER SERVICE AVAILABILITY')
-                self.token = json.load(open(path('ARi0', 'configuration', 'config.json')))['weather']
+                self.token = json.load(open(path('handlers', 'configuration', 'config.json')))['weather']
                 async with aiohttp.ClientSession() as session:
                     async with session.get(f'http://api.openweathermap.org/data/2.5/weather?zip=12345,us&APPID={self.token}') as test_response:
                         if test_response.status == 200:
@@ -73,16 +50,11 @@ class Weather_Requester(comms.Cog):
                         else:
                             raise ValueError(f'WARNING: WEATHER SERVICE NOT AVAILABLE {test_response}')
 
-    """
+    """ Commands """
 
-    Commands
-
-    """
     @comms.group()
     async def weather(self, ctx):
-        """
-        Helps the user with weather
-        """
+        """ Helps the user with weather """
         if ctx.invoked_subcommand is None:
             embed = discord.Embed(title=':thunder_cloud_rain: `Usage of the weather command` :thunder_cloud_rain:', colour=0xc27c0e, timestamp=now())
             help = '''
@@ -96,9 +68,7 @@ class Weather_Requester(comms.Cog):
 
     @weather.command(name='zip')
     async def weather_by_zip(self, ctx, *args):
-        """
-        Using the OpenWeatherMap API to complete requests for weather in a location
-        """
+        """ Using the OpenWeatherMap API to complete requests for weather in a location """
         if self.active_weather:
             async with aiohttp.ClientSession() as session:
                 async with session.get(f'http://api.openweathermap.org/data/2.5/weather?zip={args[0]},{args[1]}&APPID={self.token}') as r:

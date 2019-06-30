@@ -1,7 +1,7 @@
-<img align="right" src="ARi0/icon.png">
+<img align="right" src="repository/icon.png">
 
 
-# ARi0.py
+# Xiux
 Requesting information from the internet's REST APIs.
 
 
@@ -34,7 +34,6 @@ Requesting information from the internet's REST APIs.
 - [ ] Playback Youtube videos as mp3
 - [ ] 2FA for owner with a cooldown
 - [ ] Text to speech through bot
-- [ ]
 
 
 # Changelog

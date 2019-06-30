@@ -1,15 +1,8 @@
-'''
->> ARi0
+"""
+>> Xiux
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
-'''
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# Libraries                                                                    #
-# //////////////////////////////////////////////////////////////////////////// #
-# Built-in modules, third-party modules, custom modules                        #
-# //////////////////////////////////////////////////////////////////////////// #
+"""
 
 
 import platform
@@ -21,9 +14,9 @@ import random
 from discord.ext import commands as comms
 import discord
 
-from ARi0.containers.QOL.shortened import now
-from ARi0.containers.QOL.pathing import path, create_dir
-from ARi0.containers.output.printer import printc
+from Xiux.containers.QOL.shortened import now
+from Xiux.containers.QOL.pathing import path, create_dir
+from Xiux.containers.output.printer import printc
 
 
 # //////////////////////////////////////////////////////////////////////////// #

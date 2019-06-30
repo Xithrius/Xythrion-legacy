@@ -1,34 +1,16 @@
-'''
->> ARi0
+"""
+>> Xiux
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
-'''
+"""
 
-
-# //////////////////////////////////////////////////////////////////////////// #
-# Libraries                                                                    #
-# //////////////////////////////////////////////////////////////////////////// #
-# Built-in modules, third-party modules, custom modules                        #
-# //////////////////////////////////////////////////////////////////////////// #
-
-
-import platform
 
 from discord.ext import commands as comms
 import discord
 
-from ARi0.containers.QOL.pathing import path
-from ARi0.containers.QOL.shortened import now
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# Identity cog
-# //////////////////////////////////////////////////////////////////////////// #
-# Commands with a little bit of personality
-# //////////////////////////////////////////////////////////////////////////// #
-
 
 class Identity_Cog(comms.Cog):
+    """ Commands with a small amount of personality """
 
     def __init__(self, bot):
         """ Object(s):
@@ -36,16 +18,11 @@ class Identity_Cog(comms.Cog):
         """
         self.bot = bot
 
-    """
+    """ Commands """
 
-    Commands
-
-    """
     @comms.command()
     async def creator(self, ctx):
-        """
-        Shows the person who created the bot
-        """
+        """ Shows the person who created the bot """
         embed = discord.Embed(colour=0xc27c0e)
         embed.set_author(name='Xithrius', icon_url='https://i.imgur.com/TtcOXxx.jpg')
         embed.add_field(name='Private Github:', value='[Right here](https://github.com/Xithrius/Relay.py)')
@@ -55,9 +32,7 @@ class Identity_Cog(comms.Cog):
 
     @comms.command(name='icon')
     async def get_own_avatar(self, ctx):
-        """
-        The avatar of the bot
-        """
+        """ The avatar of the bot """
         await ctx.send(self.bot.user.avatar_url)
 
 

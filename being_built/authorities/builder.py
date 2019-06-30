@@ -1,3 +1,10 @@
+"""
+>> Xiux
+> Copyright (c) 2019 Xithrius
+> MIT license, Refer to LICENSE for more info
+"""
+
+'''
     @comms.command()
     async def create_cog(self, ctx, new_cog):
         good_cog = False
@@ -22,3 +29,4 @@
                 filedata = filedata.replace(k, v)
         with open(path('automation', 'new_cogs', cog_file), 'w') as f:
             f.write(filedata)
+'''

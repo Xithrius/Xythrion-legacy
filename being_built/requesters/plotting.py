@@ -1,39 +1,24 @@
-'''
->> ARi0
+"""
+>> Xiux
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
-'''
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# Libraries                                                                    #
-# //////////////////////////////////////////////////////////////////////////// #
-# Built-in modules, third-party modules, custom modules                        #
-# //////////////////////////////////////////////////////////////////////////// #
+"""
 
 
 import platform
-import matplotlib
 import matplotlib.pyplot as plt
-import numpy as np
 import re
+# import matplotlib
+# import numpy as np
 
 from discord.ext import commands as comms
 import discord
 
-from ARi0.containers.QOL.shortened import now
-from ARi0.containers.QOL.pathing import path
-from ARi0.containers.output.printer import printc
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# Plotting request cog
-# //////////////////////////////////////////////////////////////////////////// #
-# Get a graph given parameters
-# //////////////////////////////////////////////////////////////////////////// #
+from handlers.modules.output import now, path
 
 
 class Plot_Requester(comms.Cog):
+    """ Give graphs """
 
     def __init__(self, bot):
         """ Object(s):
@@ -41,11 +26,8 @@ class Plot_Requester(comms.Cog):
         """
         self.bot = bot
 
-    """
+    """ Commands """
 
-    Commands
-
-    """
     @comms.group(name='plot')
     async def custom_plot(self, ctx):
         if ctx.invoked_subcommand is None:
@@ -70,6 +52,7 @@ class Plot_Requester(comms.Cog):
         # embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
         await ctx.send(file=discord.File(path('tmp', 'plots', 'plot.png')))
         embed = discord.Embed(title=f'`{equation}`', colour=0xc27c0e, timestamp=now())
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

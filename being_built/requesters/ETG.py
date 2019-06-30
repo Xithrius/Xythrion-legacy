@@ -1,40 +1,22 @@
-'''
->> ARi0
+"""
+>> Xiux
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
-'''
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# Libraries                                                                    #
-# //////////////////////////////////////////////////////////////////////////// #
-# Built-in modules, third-party modules, custom modules                        #
-# //////////////////////////////////////////////////////////////////////////// #
+"""
 
 
 from bs4 import BeautifulSoup
 import platform
-import time
-import json
-import asyncio
 import aiohttp
 
 from discord.ext import commands as comms
 import discord
 
-from ARi0.containers.QOL.shortened import now
-from ARi0.containers.QOL.pathing import path
-from ARi0.containers.output.printer import printc
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# enterthegungeon.gamepedia.com requesting cog
-# //////////////////////////////////////////////////////////////////////////// #
-# Get information from the enter the gungeon wiki
-# //////////////////////////////////////////////////////////////////////////// #
+from handlers.modules.output import printc, now
 
 
 class ETG_Requester(comms.Cog):
+    """ Get information from the enter the gungeon wiki """
 
     def __init__(self, bot):
         """ Object(s):
@@ -45,20 +27,13 @@ class ETG_Requester(comms.Cog):
         self.load_service = self.bot.loop.create_task(self.load_ETG())
 
     def cog_unload(self):
-        """
-        Cancel background task(s) when cog is unloaded
-        """
+        """ Cancel background task(s) when cog is unloaded """
         self.load_service.cancel()
 
-    """
+    """ Background tasks """
 
-    Background tasks
-
-    """
     async def load_ETG(self):
-        """
-        Checks if ETG service is accessable
-        """
+        """ Checks if ETG service is accessable """
         await self.bot.wait_until_ready()
         if not self.bot.is_closed():
             self.active_ETG = False
@@ -70,18 +45,12 @@ class ETG_Requester(comms.Cog):
                             printc('[ ! ]: ETG SERVICE AVAILABLE')
                             self.active_ETG = True
                         else:
-                            raise ValueError(f'WARNING: ETG SERVICE NOT AVAILABLE {test_response}')
+                            raise ValueError(f'[WARNING]: ETG SERVICE NOT AVAILABLE {test_response}')
 
-    """
-
-    Commands
-
-    """
+    """ Commands """
     @comms.command()
     async def etg(self, ctx, item):
-        """
-        Helps the user with ETG commands
-        """
+        """ Helps the user with ETG commands """
         if item not in ['guns', 'items', 'gungeoneers', 'bosses']:
             embed = discord.Embed(title='`Usage of the Enter the Gungeon (ETG) commands`', colour=0xc27c0e, timestamp=now())
             help = '''
@@ -133,4 +102,3 @@ class ETG_Requester(comms.Cog):
 
 def setup(bot):
     bot.add_cog(ETG_Requester(bot))
-
