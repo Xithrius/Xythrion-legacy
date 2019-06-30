@@ -1,47 +1,37 @@
-'''
->> SoftBot.py
+"""
+>> Xiux
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
-'''
+"""
 
 
-# //////////////////////////////////////////////////////////////////////////// #
-# Libraries                                                                    #
-# //////////////////////////////////////////////////////////////////////////// #
-# Built-in modules, third-party modules, custom modules                        #
-# //////////////////////////////////////////////////////////////////////////// #
-
-
+import __main__
 import datetime
+import os
 
 
-"""
-
-Functions for printing to locations with customized uniting
-
-"""
+def path(*objects):
+    """ Returns path relative to caller file location with additional objects, if any """
+    newPath = ((__main__.__file__).split(os.sep))[:-1]
+    for i in objects:
+        newPath.append(i)
+    return (os.sep).join(str(y) for y in newPath)
 
 
 def printc(string: str):
-    """
-    Customized printing to the console with timestamps
-    """
+    """ Customized printing to the console with timestamps """
     now = datetime.datetime.now()
     print(f"~> [{now}] {string}")
 
 
 def duplicate(string: str):
-    """
-    Prints to console and wherever else
-    """
+    """ Prints to console and wherever else """
     printc(string)
     return (string[string.index(':') + 2]).upper() + (string[string.index(':') + 3]).lower()
 
 
 def sectional_print(loaded_cogs):
-    """
-    Prints cogs out in sections
-    """
+    """ Prints cogs out in sections """
     all_cogs, sectioned_cogs = [], []
     l_cogs = [x.split('.')[-2:] for x in loaded_cogs]
     for i in range(len(l_cogs) - 1):
@@ -53,3 +43,8 @@ def sectional_print(loaded_cogs):
         all_cogs.append(within_cogs)
     for i in all_cogs:
         print(f'\t{i[0]}: {", ".join(str(y) for y in i[1])}')
+
+
+def now():
+    """ Returns the time depending on time zone from file """
+    return datetime.datetime.now()

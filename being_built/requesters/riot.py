@@ -1,15 +1,8 @@
-'''
->> ARi0
+"""
+>> Xiux
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
-'''
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# Libraries                                                                    #
-# //////////////////////////////////////////////////////////////////////////// #
-# Built-in modules, third-party modules, custom modules                        #
-# //////////////////////////////////////////////////////////////////////////// #
+"""
 
 
 import asyncio
@@ -19,19 +12,11 @@ import requests
 from discord.ext import commands as comms
 import discord
 
-from ARi0.containers.output.printer import printc
-from ARi0.containers.QOL.pathing import path
-from ARi0.containers.QOL.shortened import now
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# Riot request cog
-# //////////////////////////////////////////////////////////////////////////// #
-# Getting information from Riot
-# //////////////////////////////////////////////////////////////////////////// #
+from handlers.modules.output import printc, path, now
 
 
 class Riot_Requester(comms.Cog):
+    """ Getting information from Riot """
 
     def __init__(self, bot):
         """ Object(s):
@@ -42,20 +27,13 @@ class Riot_Requester(comms.Cog):
         self.load_script = self.bot.loop.create_task(self.load_riot_script())
 
     def cog_unload(self):
-        """
-        Cancel background task(s) when cog is unloaded
-        """
+        """ Cancel background task(s) when cog is unloaded """
         self.load_script.cancel()
 
-    """
+    """ Background tasks """
 
-    Background tasks
-
-    """
     async def load_riot_script(self):
-        """
-        Checks if League of Legends is accessable
-        """
+        """ Checks if League of Legends is accessable """
         await self.bot.wait_until_ready()
         if not self.bot.is_closed():
             self.riot_script_active = False
@@ -63,7 +41,7 @@ class Riot_Requester(comms.Cog):
             self.headers = {
                 "Origin": "https://developer.riotgames.com",
                 "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
-                "X-Riot-Token": json.load(open(path('ARi0', 'configuration', 'config.json')))['riot'],
+                "X-Riot-Token": json.load(open(path('Xiux', 'configuration', 'config.json')))['riot'],
                 "Accept-Language": "en-US,en;q=0.9",
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36"
             }
@@ -75,24 +53,17 @@ class Riot_Requester(comms.Cog):
                 self.riot_script_active = True
                 printc('[ ! ]: RIOT SCRIPT CREDENTIALS ACTIVATED')
 
-    """
+    """ Commands """
 
-    Commands
-
-    """
     @comms.group()
     async def lol(self, ctx):
-        """
-        League of Legends group command
-        """
+        """ League of Legends group command """
         if ctx.invoked_subcommand in ['help' or None]:
             await ctx.send('Help is being worked on')
 
     @lol.command(name='user')
     async def lol_summoner(self, ctx):
-        """
-        Gets information about a summoner
-        """
+        """ Gets information about a summoner """
         user = ctx.message.content[9:]
         print(user)
         userRequest = requests.get(f'https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/{user}', headers=self.headers).json()

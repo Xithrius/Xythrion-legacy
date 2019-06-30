@@ -13,6 +13,18 @@
 			"--ignore=E501",
 			"--max-line-length=500"
 		],
-		"python.globalModuleInstallation": true
+		"python.globalModuleInstallation": true,
+		"sqltools.connections": [
+			{
+				"askForPassword": true,
+				"connectionTimeout": 30,
+				"database": "testing",
+				"dialect": "MySQL",
+				"name": "test",
+				"port": 3306,
+				"server": "127.0.0.1",
+				"username": "xithrius"
+			}
+		]
 	}
 }

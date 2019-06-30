@@ -7,5 +7,7 @@
     },
     "discord": "discord bot API token",
     "weather": "openweathermap API token",
-    "riot": "Riot Developer API token"
+    "riot": "Riot Developer API token",
+    "owners": ["discord id ints"],
+    "blocked cogs": ["riot"]
 }

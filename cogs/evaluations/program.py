@@ -1,37 +1,18 @@
-'''
->> ARi0
+"""
+>> Xiux
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
-'''
+"""
 
-
-# //////////////////////////////////////////////////////////////////////////// #
-# Libraries                                                                    #
-# //////////////////////////////////////////////////////////////////////////// #
-# Built-in modules, third-party modules, custom modules                        #
-# //////////////////////////////////////////////////////////////////////////// #
-
-
-import platform
 import time
-import asyncio
 
 from discord.ext import commands as comms
-import discord
 
-from ARi0.containers.QOL.shortened import now
-from ARi0.containers.QOL.pathing import path
-from ARi0.containers.output.printer import printc
-
-
-# //////////////////////////////////////////////////////////////////////////// #
-# Porgram evaluator
-# //////////////////////////////////////////////////////////////////////////// #
-# Returning evaluations of programs
-# //////////////////////////////////////////////////////////////////////////// #
+from handlers.modules.output import now
 
 
 class Program_Evaluator(comms.Cog):
+    """ Returning evaluations of programs"""
 
     def __init__(self, bot):
         """ Object(s):
@@ -39,14 +20,12 @@ class Program_Evaluator(comms.Cog):
         """
         self.bot = bot
 
-    """
+    """ Commands """
 
-    Commands
-
-    """
     @comms.command()
     @comms.is_owner()
     async def exec(self, ctx):
+        """ """
         msg = ctx.message.content[9:len(ctx.message.content) - 4]
         if msg[0:2] == 'py':
             msg = msg[3:]

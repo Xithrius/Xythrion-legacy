@@ -1,9 +1,3 @@
 *__pycache__/
-*.mp3
-*.webm
-*.ini
-logs/*.txt
-repository/memes/*
-repository/tmp/*
-repository/logs/*
-ARi0/configuration/config.json
+handlers/configuration/config.json
+repository/data/
