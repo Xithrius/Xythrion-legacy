@@ -39,8 +39,7 @@ class MainCog(comms.Cog):
     async def load_extensions(self):
         """ Load the cogs in after the bot is ready """
         printc('[...]: LOADING EXTENSION(S)')
-        loaded_cogs = []
-        broken_cogs = []
+        loaded_cogs, broken_cogs = [], []
         await self.bot.wait_until_ready()
         if not self.bot.is_closed():
             for cog in self.cogs:
@@ -64,8 +63,8 @@ class MainCog(comms.Cog):
     @comms.command(name='r', hidden=True)
     async def reload_cogs(self, ctx):
         """ Reload all cog(s) """
-        printc('\n[...]: RELOADING EXTENSION(S)\n')
-        loaded_cogs, broken_cogs = [], []
+        printc('[...]: RELOADING EXTENSION(S):')
+        loaded_cogs, broken_cogs_errors, broken_cogs = [], [], []
         for cog in self.cogs:
             try:
                 self.bot.unload_extension(cog)
@@ -73,11 +72,14 @@ class MainCog(comms.Cog):
             except comms.ExtensionNotLoaded:
                 self.bot.load_extension(cog)
             except Exception as e:
-                broken_cogs.append(f'{cog}: {type(e).__name__} - {e}\n')
+                broken_cogs_errors.append(f'\n{cog}: {e}\n')
+                broken_cogs.append(cog)
             else:
                 loaded_cogs.append(cog)
         if len(broken_cogs) > 0:
-            await ctx.send(duplicate(f"[WARNING]: EXTENSION(S) COULD NOT BE RELOADED:\n\t{', '.join(str(y) for y in broken_cogs)}"), delete_after=10)
+            printc(f"[WARNING]: EXTENSION(S) COULD NOT BE RELOADED:")
+            sectional_print(broken_cogs)
+            await ctx.send(f'```css\n[WARNING]: THE FOLLOWING EXTENSIONS COULD NOT BE LOADED:{broken_cogs_errors}```')
         if len(loaded_cogs) > 0:
             printc(f"[ ! ]: EXTENSION(S) RELOADED:")
             sectional_print(loaded_cogs)
@@ -116,6 +118,7 @@ class MainCog(comms.Cog):
                 await ctx.send(duplicate(f'[ ! ]: EXTENSION {cog} UNLOADED SUCCESSFULLY'), delete_after=10)
             except Exception as e:
                 printc(f'{cog}: {type(e).__name__} - {e}\n')
+                await ctx.send(f'```css\n[WARNING]: COG {cog} COULD NOT BE LOADED:\n{e}\n```')
         else:
             await ctx.send(duplicate(f'[WARNING]: EXTENSION {cog} IS BLOCKED OR DOES NOT EXIST'), delete_after=10)
 

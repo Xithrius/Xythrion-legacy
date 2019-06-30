@@ -24,8 +24,6 @@ class Updates_Cog(comms.Cog):
         """
         self.bot = bot
         self.db_path = path('repository', 'data', 'user_info.db')
-        if not os.path.isfile(self.db_path):
-            self.create_db()
 
     """ Database checking """
 
@@ -42,13 +40,15 @@ class Updates_Cog(comms.Cog):
     async def on_guild_join(self, guild):
         """ Creating the leveling system for users when joining a guild, and also greeting them """
         printc(f'[WARNING]: CLIENT HAS JOINED GUILD {guild}')
+        if not os.path.isfile(self.db_path):
+            self.create_db()
         printc('[...]: SCANNING ALL USERS IN GUILD...')
         self.conn = sqlite3.connect(self.db_path)
         c = self.conn.cursor()
         members_added = 0
         for member in guild.members:
             try:
-                c.execute('''INSERT INTO Users VALUES (?, ?, ?)''', (member.id, member.user, 0))
+                c.execute('''INSERT INTO Users VALUES (?, ?, ?)''', (member.id, member.display_name, 0))
                 members_added += 1
             except sqlite3.IntegrityError:
                 pass

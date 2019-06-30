@@ -18,7 +18,7 @@ def path(*objects):
     return (os.sep).join(str(y) for y in newPath)
 
 
-def printc(string: str):
+def printc(string):
     """ Customized printing to the console with timestamps """
     now = datetime.datetime.now()
     print(f"~> [{now}] {string}")
@@ -48,3 +48,7 @@ def sectional_print(loaded_cogs):
 def now():
     """ Returns the time depending on time zone from file """
     return datetime.datetime.now()
+
+
+def progressBar(amount, total):
+    x = '█'
