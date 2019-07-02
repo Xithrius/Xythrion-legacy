@@ -7,6 +7,7 @@
 
 import sqlite3
 import platform
+import os
 
 from discord.ext import commands as comms
 import discord
@@ -20,9 +21,35 @@ class Messages_Ranker(comms.Cog):
     def __init__(self, bot):
         """ Object(s):
         Bot
+        Path to database
+        Checking if a database exists on startup
+        Connecting to the database
+        Refreshing database background task
         """
         self.bot = bot
         self.db_path = path('repository', 'data', 'user_info.db')
+        if not os.path.isfile(self.db_path):
+            self.createDB()
+        self.conn = sqlite3.connect(self.db_path)
+        # self.background_service = self.bot.loop.create_task(self.refreshDB())
+
+    """ Database checking """
+
+    def createDB(self):
+        self.conn = sqlite3.connect(self.db_path)
+        c = self.conn.cursor()
+        c.execute('''CREATE TABLE Users(
+                    id INTEGER NOT NULL PRIMARY KEY UNIQUE,
+                    name TEXT UNIQUE ON CONFLICT IGNORE,
+                    points INTEGER)''')
+        self.conn.commit()
+        self.conn.close()
+
+    def insertToDB(self, member):
+        self.conn = sqlite3.connect(self.db_path)
+        c = self.conn.cursor()
+        c.execute('''INSERT INTO Users VALUES (?, ?, ?)''', (member.id, member.display_name, 1))
+        self.conn.commit()
 
     """ Commands """
 
@@ -49,19 +76,16 @@ class Messages_Ranker(comms.Cog):
         self.conn = sqlite3.connect(self.db_path)
         c = self.conn.cursor()
         c.execute('SELECT name, points FROM Users')
-        points = sorted(c.fetchall(), lambda x: x[2])
-        r = -5
-        check = False
-        while not check:
-            try:
-                points = points[:r]
-                check = True
-            except IndexError:
-                r += 1
-        embed = discord.Embed(title=f'Top {abs(r)} users', colour=0x27c0e, timestamp=now())
-        for i in range(len(points)):
-            embed.add_field(name=f'**{points[i][0]}**:', value=f'{points[i][1]} points')
-        await ctx.send(embed=embed)
+        points = c.fetchall()
+        points = sorted(points, key=lambda x: x[1], reverse=True)
+        if len(points) > 5:
+            points = points[:-5]
+        longest = max(map(len, [x[0] for x in points]))
+        points = [f'[{x[0].rjust(longest)}] : {x[1]}' for x in points]
+        points = '\n'.join(str(y) for y in points)
+        info = f'''\n```css\n{points}\n```'''
+        await ctx.send(f'__**Users with the most points**__:{info}')
+        self.conn.close()
 
     """ Events """
 
@@ -71,14 +95,6 @@ class Messages_Ranker(comms.Cog):
         printc(f'[WARNING]: CLIENT HAS JOINED GUILD {guild}')
         self.conn = sqlite3.connect(self.db_path)
         c = self.conn.cursor()
-        try:
-            c.execute('''CREATE TABLE Users(
-                        id INTEGER NOT NULL PRIMARY KEY UNIQUE,
-                        name TEXT UNIQUE ON CONFLICT IGNORE,
-                        points INTEGER)''')
-            self.conn.commit()
-        except Exception as e:
-            pass
         printc('[...]: SCANNING ALL USERS IN GUILD...')
         members_added = 1
         for member in guild.members:
@@ -89,17 +105,20 @@ class Messages_Ranker(comms.Cog):
                 pass
         printc(f'[ ! ]: MEMBERS ADDED TO DATABASE: {members_added}')
         self.conn.commit()
-        self.conn.close()
 
     @comms.Cog.listener()
     async def on_message(self, message):
         """ Listens for messages to give points in the leveling system """
         self.conn = sqlite3.connect(self.db_path)
         c = self.conn.cursor()
-        c.execute('SELECT id, points FROM Users WHERE id = ?', (message.author.id,))
-        points = c.fetchall()[0][1]
-        c.execute('''UPDATE Users SET points = ? WHERE id = ?''', (points + 1, message.author.id))
-        self.conn.commit()
+        try:
+            c.execute('SELECT id, points FROM Users WHERE id = ?', (message.author.id,))
+            points = c.fetchall()[0][1]
+            c.execute('''UPDATE Users SET points = ? WHERE id = ?''', (points + 1, message.author.id))
+            self.conn.commit()
+        except IndexError:
+            self.insertToDB(message.author)
+            self.conn.close()
 
 
 def setup(bot):
