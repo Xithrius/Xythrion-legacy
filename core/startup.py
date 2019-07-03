@@ -60,7 +60,7 @@ class MainCog(comms.Cog):
 
     """ Commands """
 
-    @comms.command(name='r', hidden=True)
+    @comms.command(name='.r', hidden=True)
     async def reload_cogs(self, ctx):
         """ Reload all cog(s) """
         printc('[...]: RELOADING EXTENSION(S):')
@@ -87,7 +87,7 @@ class MainCog(comms.Cog):
         else:
             printc("[WARNING]: NO EXTENSION(S) HAVE BEEN RELOADED")
 
-    @comms.command(name='l', hidden=True)
+    @comms.command(name='.l', hidden=True)
     async def load_cog(self, ctx, cog):
         """ Load a specific cog """
         printc(f'[...]: LOADING EXTENSION {cog}')
@@ -108,7 +108,7 @@ class MainCog(comms.Cog):
         if not cog_exists:
             printc(f'[WARNING]: EXTENSION {cog} IS BLOCKED OR DOES NOT EXIST')
 
-    @comms.command(name='u', hidden=True)
+    @comms.command(name='.u', hidden=True)
     async def unload_cog(self, ctx, cog):
         """ Unload a specific cog """
         if cog in self.all_cogs:
@@ -122,7 +122,7 @@ class MainCog(comms.Cog):
         else:
             await ctx.send(duplicate(f'[WARNING]: EXTENSION {cog} IS BLOCKED OR DOES NOT EXIST'), delete_after=10)
 
-    @comms.command()
+    @comms.command(name='.exit')
     async def exit(self, ctx):
         """ Makes the bot logout, duh """
         printc('[WARNING]: CLIENT IS LOGGING OUT')
@@ -148,7 +148,7 @@ class MainCog(comms.Cog):
 
 def start(info):
     try:
-        bot = comms.Bot(command_prefix='$', help_command=None)
+        bot = comms.Bot(command_prefix='', help_command=None)
         cogs = []
         config = json.load(open(path('handlers', 'configuration', 'config.json'), 'r'))
         for folder in os.listdir(path('cogs')):

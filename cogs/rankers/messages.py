@@ -38,10 +38,7 @@ class Messages_Ranker(comms.Cog):
     def createDB(self):
         self.conn = sqlite3.connect(self.db_path)
         c = self.conn.cursor()
-        c.execute('''CREATE TABLE Users(
-                    id INTEGER NOT NULL PRIMARY KEY UNIQUE,
-                    name TEXT UNIQUE ON CONFLICT IGNORE,
-                    points INTEGER)''')
+        c.execute('''CREATE TABLE Users(id INTEGER NOT NULL PRIMARY KEY UNIQUE, name TEXT UNIQUE ON CONFLICT IGNORE, points INTEGER)''')
         self.conn.commit()
         self.conn.close()
 
@@ -53,7 +50,7 @@ class Messages_Ranker(comms.Cog):
 
     """ Commands """
 
-    @comms.command(name='rank')
+    @comms.command(name='.rank')
     async def check_COH_rank(self, ctx):
         """ """
         self.conn = sqlite3.connect(self.db_path)
@@ -70,7 +67,7 @@ class Messages_Ranker(comms.Cog):
         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
         await ctx.send(embed=embed)
 
-    @comms.command(name='top')
+    @comms.command(name='.top')
     async def check_top_COH_rank(self, ctx):
         """ """
         self.conn = sqlite3.connect(self.db_path)
@@ -80,11 +77,13 @@ class Messages_Ranker(comms.Cog):
         points = sorted(points, key=lambda x: x[1], reverse=True)
         if len(points) > 5:
             points = points[:-5]
-        longest = max(map(len, [x[0] for x in points]))
-        points = [f'[{x[0].rjust(longest)}] : {x[1]}' for x in points]
+        longestName = max(map(len, [x[0] for x in points]))
+        longestPoint = max(map(len, [str(round((x[1] / 75), 4)) for x in points]))
+        points = [f'[{x[0].rjust(longestName)}] : {str(round((x[1] / 75), 4)).rjust(longestPoint)} : ({x[1]})' for x in points]
         points = '\n'.join(str(y) for y in points)
-        info = f'''\n```css\n{points}\n```'''
-        await ctx.send(f'__**Users with the most points**__:{info}')
+        title = f'[{"Name".rjust(longestName)}] : [{"Circle".rjust(longestPoint)}] [(Messages sent)]'
+        info = f'''```css\n{title}\n{points}```'''
+        await ctx.send(f'__**Top 5 users in the circles of hell**__:{info}')
         self.conn.close()
 
     """ Events """
@@ -119,6 +118,9 @@ class Messages_Ranker(comms.Cog):
         except IndexError:
             self.insertToDB(message.author)
             self.conn.close()
+        if points % 75 == 0:
+            embed = discord.Embed(title=f'yay another level ({points / 75})')
+            await message.channel.send(embed=embed)
 
 
 def setup(bot):

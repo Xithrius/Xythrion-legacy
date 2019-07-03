@@ -1,3 +1,4 @@
 *__pycache__/
 handlers/configuration/config.json
 repository/data/
+repository/tmp/
