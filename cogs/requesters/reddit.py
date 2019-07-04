@@ -11,7 +11,7 @@ import aiohttp
 
 from discord.ext import commands as comms
 
-from handlers.modules.output import printc, path
+from handlers.modules.output import printc, path, aiohttp_requester
 import core
 
 
@@ -73,7 +73,7 @@ class Reddit_Requester(comms.Cog):
 
     @comms.command(name='r/random')
     async def user(self, ctx):
-        info = await self.aiohttp_requester(ctx, 'https://oauth.reddit.com/random')
+        info = await aiohttp_requester(ctx, 'https://oauth.reddit.com/random', {'limit': 1})
         with open(path('repository', 'tmp', 'info.json'), 'w') as f:
             json.dump(info, f)
 

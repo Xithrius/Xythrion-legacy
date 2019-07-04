@@ -72,13 +72,14 @@ class MainCog(comms.Cog):
             except comms.ExtensionNotLoaded:
                 self.bot.load_extension(cog)
             except Exception as e:
-                broken_cogs_errors.append(f'\n{cog}: {e}\n')
+                broken_cogs_errors.append(f'{cog}: {e}')
                 broken_cogs.append(cog)
             else:
                 loaded_cogs.append(cog)
         if len(broken_cogs) > 0:
             printc(f"[WARNING]: EXTENSION(S) COULD NOT BE RELOADED:")
             sectional_print(broken_cogs)
+            broken_cogs_errors = '\n'.join(str(y) for y in broken_cogs_errors)
             await ctx.send(f'```css\n[WARNING]: THE FOLLOWING EXTENSIONS COULD NOT BE LOADED:{broken_cogs_errors}```')
         if len(loaded_cogs) > 0:
             printc(f"[ ! ]: EXTENSION(S) RELOADED:")

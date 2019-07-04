@@ -8,6 +8,7 @@
 import __main__
 import datetime
 import os
+import aiohttp
 
 
 def path(*objects):
@@ -52,3 +53,13 @@ def now():
 
 def progressBar(amount, total):
     x = '█'
+
+
+async def aiohttp_requester(self, ctx, url, data=None):
+    """ Gets data from a REST API """
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, headers=self.headers, data=data) as response:
+            if response.status == 200:
+                return await response.json()
+            else:
+                await ctx.send(f'Status {response.status}: Requester unavailable')
