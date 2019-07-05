@@ -115,12 +115,13 @@ class Messages_Ranker(comms.Cog):
             points = c.fetchall()[0][1]
             c.execute('''UPDATE Users SET points = ? WHERE id = ?''', (points + 1, message.author.id))
             self.conn.commit()
+            if points % 75 == 0:
+                embed = discord.Embed(title=f'#({points / 75}) circle of Hell reached', colour=0xc27c0e, timestamp=now())
+                embed.add_field(name=f'Total messages sent by {message.author.user}', value=f'{points} messages')
+                await message.channel.send(embed=embed)
         except IndexError:
             self.insertToDB(message.author)
             self.conn.close()
-        if points % 75 == 0:
-            embed = discord.Embed(title=f'yay another level ({points / 75})')
-            await message.channel.send(embed=embed)
 
 
 def setup(bot):

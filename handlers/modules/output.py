@@ -48,14 +48,14 @@ def sectional_print(loaded_cogs):
 
 def now():
     """ Returns the time depending on time zone from file """
-    return datetime.datetime.now()
+    return datetime.datetime.now() + datetime.timedelta(hours=7)
 
 
 def progressBar(amount, total):
     x = '█'
 
 
-async def aiohttp_requester(option, ctx, url, headers, data=None):
+async def aiohttp_requester(ctx, option, url, headers, data=None):
     """ Gets data from a REST API """
     async with aiohttp.ClientSession() as session:
         if option == 'GET':

@@ -11,9 +11,10 @@ Requesting information from the internet's REST APIs.
 # TODO
 - [ ] Requesting information:
     - [x] Weather
-    - [ ] Reddit
+    - [x] Reddit
     - [ ] Twitter
     - [ ] Getting sources
+    - [ ] Imgur
     - [ ] League of Legends (Riot)
     - [ ] Stock and cryptocoin information
     - [ ] Playback from videos

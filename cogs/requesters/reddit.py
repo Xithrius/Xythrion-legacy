@@ -62,15 +62,9 @@ class Reddit_Requester(comms.Cog):
 
     """ Commands """
 
-    @comms.command(name='r/random')
-    async def user(self, ctx):
-        info = await aiohttp_requester('GET', ctx, 'https://oauth.reddit.com/random', self.headers, {'limit': 1})
-        with open(path('repository', 'tmp', 'info.json'), 'w') as f:
-            json.dump(info, f, indent=4, sort_keys=True)
-
     @comms.command(name='r/search')
     async def search_subreddits(self, ctx, query):
-        info = await aiohttp_requester('POST', ctx, 'https://oauth.reddit.com/api/search_subreddits', self.headers, {'query': query, 'include_over_18': True})
+        info = await aiohttp_requester(ctx, 'POST', 'https://oauth.reddit.com/api/search_subreddits', self.headers, {'query': query, 'include_over_18': True})
         info = info['subreddits']
         embed = discord.Embed(title=f'Reddit subreddit query for {query}', colour=0xc27c0e, timestamp=now())
         for i in range(5):
@@ -86,7 +80,7 @@ class Reddit_Requester(comms.Cog):
 
     @comms.command(name='r/top')
     async def topIn_subreddit(self, ctx, subreddit, top=5):
-        info = await aiohttp_requester('GET', ctx, f'https://oauth.reddit.com/r/{subreddit}/top', self.headers, {'t': 'all', 'count': 1})
+        info = await aiohttp_requester(ctx, 'GET', f'https://oauth.reddit.com/r/{subreddit}/top', self.headers, {'t': 'all', 'count': 1})
         info = info['data']['children']
         embed = discord.Embed(title=f'Top {top} posts of r/{subreddit}', colour=0xc27c0e, timestamp=now())
         for i in range(top):
@@ -103,14 +97,38 @@ class Reddit_Requester(comms.Cog):
 
     @comms.command(name='r/preview')
     async def previewIn_subreddit(self, ctx, subreddit):
-        info = await aiohttp_requester('GET', ctx, f'https://oauth.reddit.com/r/{subreddit}/top', self.headers, {'t': 'all', 'limit': 100})
-        info = info['data']['children'][random.randint(1, 100)]['data']
+        info = await aiohttp_requester(ctx, 'GET', f'https://oauth.reddit.com/r/{subreddit}/top', self.headers, {'t': 'all', 'limit': 100})
+        info = info['data']['children'][random.randint(1, 25)]['data']
         embed = discord.Embed(title=f'Preview of the {subreddit} subreddit', colour=0xc27c0e, timestamp=now())
         q_info = {'Title': info['title'], 'Link': f"https://www.reddit.com{info['permalink']}", 'Upvotes': info['ups']}
         q_info = '\n'.join(f'**{k}**: {v}' for k, v in q_info.items())
         embed.add_field(name='__**Info on post**__', value=q_info, inline=False)
         embed.set_image(url=info['url'])
         await ctx.send(embed=embed)
+
+    @comms.command(name='r/hot')
+    async def hotIn_subreddit(self, ctx, subreddit, amount=25):
+        info = await aiohttp_requester(ctx, 'GET', f'https://oauth.reddit.com/r/{subreddit}/hot', self.headers, {'g': 'GLOBAL', 'count': amount})
+        info = info['data']['children']
+        for i in range(amount):
+            embed = discord.Embed(title=f'Currently hot on the {subreddit} subreddit', colour=0xc27c0e, timestamp=now())
+            I = info[random.randint(1, amount)]['data']
+            try:
+                if I['stickied']:
+                    raise KeyError
+                q_info = {'Link': f"https://www.reddit.com{I['permalink']}",
+                          'Upvotes': I['ups']}
+                q_info = '\n'.join(f'**{k}**: {v}' for k, v in q_info.items())
+                embed.add_field(name=f"__{I['title']}__", value=q_info, inline=False)
+                if not I['is_video']:
+                    embed.set_image(url=I['url'])
+                break
+            except KeyError:
+                continue
+        if I['is_video']:
+            await ctx.send(content=I['url'], embed=embed)
+        else:
+            await ctx.send(embed=embed)
 
 
 def setup(bot):
