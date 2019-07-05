@@ -10,25 +10,23 @@ Requesting information from the internet's REST APIs.
 
 # TODO
 - [ ] Requesting information:
-    - [ ] Stock and cryptocoin information
-    - [x] Importing and exporting memes
-    - [ ] League of Legends (Riot)
-    - [ ] Playback from videos
-    - [ ] Getting sources
-    - [ ] Plotting
     - [x] Weather
-    - [ ] Twitter
     - [ ] Reddit
+    - [ ] Twitter
+    - [ ] Getting sources
+    - [ ] League of Legends (Riot)
+    - [ ] Stock and cryptocoin information
+    - [ ] Playback from videos
+    - [ ] Plotting
     - [ ] Osu!
+- [x] Warns user of errors through discord messages and console timestamps
+- [x] Leveling system for amounts of messages
 - [ ] Customized commands created through discord messages that are put into separate folder
 - [ ] Add permissions to the bot, so multiple people can have access to high-level commands
-- [x] Warns user of errors through discord messages and console timestamps
 - [ ] Recreate the help command for all commands including hidden ones
 - [ ] Make Warframe requester only have two commands, help and get.
 - [ ] Creates, saves, and edits checklists requested by users
-- [ ] Finish Riot requester to get the dev token
-- [x] Leveling system for amounts of messages
-- [ ] Get reddit requester running once again
+- [ ] Get Riot developer token
 - [ ] Finish the calculator for plotting
 - [ ] Quality Of Life command creations
 - [ ] Playback Youtube videos as mp3
@@ -40,7 +38,7 @@ Requesting information from the internet's REST APIs.
 
 ## v0.0.1 in development (see TODO)
 ### Main changes:
-* Bot has been renamed to "SoftBot", from whatever it was before
+* Bot has been renamed to "Xiux", from whatever it was before
 * All other bots that I own have been either deleted completely from existance or parts have been removed from them and were put into this one.
 ### Modifications:
 * Everything, literally.

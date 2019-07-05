@@ -55,11 +55,18 @@ def progressBar(amount, total):
     x = '█'
 
 
-async def aiohttp_requester(self, ctx, url, data=None):
+async def aiohttp_requester(option, ctx, url, headers, data=None):
     """ Gets data from a REST API """
     async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers=self.headers, data=data) as response:
-            if response.status == 200:
-                return await response.json()
-            else:
-                await ctx.send(f'Status {response.status}: Requester unavailable')
+        if option == 'GET':
+            async with session.get(url, headers=headers, data=data) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    await ctx.send(f'Status {response.status}: Requester unavailable')
+        elif option == 'POST':
+            async with session.post(url, headers=headers, data=data) as response:
+                if response.status == 200:
+                    return await response.json()
+                else:
+                    await ctx.send(f'Status {response.status}: Requester unavailable')

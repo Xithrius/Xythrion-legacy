@@ -22,12 +22,6 @@ class WarningsCog(comms.Cog):
     """ Events """
 
     @comms.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        """ Sends error to the user """
-        await ctx.send(error)
-        printc(f'[WARNING]: {ctx.message.author} HAS CAUSED ERROR:\n\t{ctx.message.content}\n\t{error}')
-
-    @comms.Cog.listener()
     async def on_disconnect(self):
         """ Sends warning when the client disconnects from the network """
         printc(f'[WARNING]: CLIENT HAS DISCONNECTED FROM NETWORK')

@@ -8,10 +8,12 @@
 import asyncio
 import json
 import aiohttp
+import random
 
 from discord.ext import commands as comms
+import discord
 
-from handlers.modules.output import printc, path, aiohttp_requester
+from handlers.modules.output import printc, path, aiohttp_requester, now
 import core
 
 
@@ -58,24 +60,57 @@ class Reddit_Requester(comms.Cog):
                         printc(f'WARNING: REDDIT REQUESTS CANNOT BE ACTIVATED. ERROR CODE: {test_response.status}')
                         break
 
-    """ Asynchronus functions """
-
-    async def aiohttp_requester(self, ctx, url, data=None):
-        """ Gets data from Reddit """
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=self.headers, data=data) as response:
-                if response.status == 200:
-                    return await response.json()
-                else:
-                    await ctx.send(f'Status {response.status}: Currently cannot request from Reddit')
-
     """ Commands """
 
     @comms.command(name='r/random')
     async def user(self, ctx):
-        info = await aiohttp_requester(ctx, 'https://oauth.reddit.com/random', {'limit': 1})
+        info = await aiohttp_requester('GET', ctx, 'https://oauth.reddit.com/random', self.headers, {'limit': 1})
         with open(path('repository', 'tmp', 'info.json'), 'w') as f:
-            json.dump(info, f)
+            json.dump(info, f, indent=4, sort_keys=True)
+
+    @comms.command(name='r/search')
+    async def search_subreddits(self, ctx, query):
+        info = await aiohttp_requester('POST', ctx, 'https://oauth.reddit.com/api/search_subreddits', self.headers, {'query': query, 'include_over_18': True})
+        info = info['subreddits']
+        embed = discord.Embed(title=f'Reddit subreddit query for {query}', colour=0xc27c0e, timestamp=now())
+        for i in range(5):
+            try:
+                q_info = {'Link': f"https://www.reddit.com/r/{info[i]['name']}",
+                          'Subscribers': info[i]['subscriber_count'],
+                          'Active users': info[i]['active_user_count']}
+                q_info = '\n'.join(f'**{k}**: {v}' for k, v in q_info.items())
+                embed.add_field(name=f'__Query #{i + 1}__', value=q_info, inline=False)
+            except IndexError:
+                break
+        await ctx.send(embed=embed)
+
+    @comms.command(name='r/top')
+    async def topIn_subreddit(self, ctx, subreddit, top=5):
+        info = await aiohttp_requester('GET', ctx, f'https://oauth.reddit.com/r/{subreddit}/top', self.headers, {'t': 'all', 'count': 1})
+        info = info['data']['children']
+        embed = discord.Embed(title=f'Top {top} posts of r/{subreddit}', colour=0xc27c0e, timestamp=now())
+        for i in range(top):
+            I = info[i]['data']
+            try:
+                q_info = {'Title': I['title'],
+                          'Link': f"https://www.reddit.com{I['permalink']}",
+                          'Upvotes': I['ups']}
+                q_info = '\n'.join(f'**{k}**: {v}' for k, v in q_info.items())
+                embed.add_field(name=f'__Top post #{i + 1}__', value=q_info, inline=False)
+            except IndexError:
+                break
+        await ctx.send(embed=embed)
+
+    @comms.command(name='r/preview')
+    async def previewIn_subreddit(self, ctx, subreddit):
+        info = await aiohttp_requester('GET', ctx, f'https://oauth.reddit.com/r/{subreddit}/top', self.headers, {'t': 'all', 'limit': 100})
+        info = info['data']['children'][random.randint(1, 100)]['data']
+        embed = discord.Embed(title=f'Preview of the {subreddit} subreddit', colour=0xc27c0e, timestamp=now())
+        q_info = {'Title': info['title'], 'Link': f"https://www.reddit.com{info['permalink']}", 'Upvotes': info['ups']}
+        q_info = '\n'.join(f'**{k}**: {v}' for k, v in q_info.items())
+        embed.add_field(name='__**Info on post**__', value=q_info, inline=False)
+        embed.set_image(url=info['url'])
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

@@ -50,7 +50,7 @@ class Messages_Ranker(comms.Cog):
 
     """ Commands """
 
-    @comms.command(name='.rank')
+    @comms.command(name='rank')
     async def check_COH_rank(self, ctx):
         """ """
         self.conn = sqlite3.connect(self.db_path)
@@ -67,7 +67,7 @@ class Messages_Ranker(comms.Cog):
         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
         await ctx.send(embed=embed)
 
-    @comms.command(name='.top')
+    @comms.command(name='top')
     async def check_top_COH_rank(self, ctx):
         """ """
         self.conn = sqlite3.connect(self.db_path)
