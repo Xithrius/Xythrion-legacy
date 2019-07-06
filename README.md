@@ -1,7 +1,7 @@
 <img align="right" src="repository/icon.png">
 
 
-# Xiux
+# Xiux v0.0.1
 Requesting information from the internet's REST APIs.
 
 

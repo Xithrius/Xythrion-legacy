@@ -46,13 +46,23 @@ def sectional_print(loaded_cogs):
         print(f'\t{i[0]}: {", ".join(str(y) for y in i[1])}')
 
 
+def create_table()
+
+
 def now():
     """ Returns the time depending on time zone from file """
     return datetime.datetime.now() + datetime.timedelta(hours=7)
 
 
-def progressBar(amount, total):
-    x = '█'
+def progress_bar(iteration, total, prefix='Progress:', suffix='Complete', decimals=2, length=50, fill='█'):
+    """ Progress bar for tracking progress """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end='\r')
+    # Print New Line on Complete
+    if iteration == total:
+        print()
 
 
 async def aiohttp_requester(ctx, option, url, headers, data=None):
