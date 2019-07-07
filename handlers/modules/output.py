@@ -46,7 +46,9 @@ def sectional_print(loaded_cogs):
         print(f'\t{i[0]}: {", ".join(str(y) for y in i[1])}')
 
 
-def create_table()
+def create_table():
+    """ """
+    pass
 
 
 def now():
@@ -54,7 +56,7 @@ def now():
     return datetime.datetime.now() + datetime.timedelta(hours=7)
 
 
-def progress_bar(iteration, total, prefix='Progress:', suffix='Complete', decimals=2, length=50, fill='█'):
+def progress_bar(iteration, total, prefix='PROGRESS:', suffix='COMPLETE', decimals=2, length=50, fill='█'):
     """ Progress bar for tracking progress """
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filledLength = int(length * iteration // total)

@@ -48,17 +48,12 @@ class Reddit_Requester(comms.Cog):
                 async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as test_response:
                     if test_response.status == 200:
                         js = await test_response.json()
-                        if js != {'error': 'invalid_grant'}:
-                            self.active_reddit = True
-                            printc('[ ! ]: REDDIT SERVICE AVAILABLE')
-                            self.headers = {"Authorization": f"bearer {js['access_token']}", **headers}
-                            await asyncio.sleep(js['expires_in'])
-                        else:
-                            printc(f'WARNING: BROKEN REDDIT REQUESTER. ERROR CODE: {js}')
-                            break
-                    else:
-                        printc(f'WARNING: REDDIT REQUESTS CANNOT BE ACTIVATED. ERROR CODE: {test_response.status}')
-                        break
+                        self.active_reddit = True
+                        printc('[ ! ]: REDDIT SERVICE AVAILABLE')
+                        self.headers = {"Authorization": f"bearer {js['access_token']}", **headers}
+                        await asyncio.sleep(js['expires_in'])
+            print(self.headers)
+            printc(f'WARNING: REDDIT REQUESTS CANNOT BE ACTIVATED. ERROR CODE: {test_response.status}')
 
     """ Commands """
 

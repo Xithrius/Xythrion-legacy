@@ -5,9 +5,11 @@
 """
 
 
-import os
-import json
+import collections
 import sqlite3
+import json
+import os
+import pickle
 
 from discord.ext import commands as comms
 import discord
@@ -25,9 +27,15 @@ class XiuxBot(comms.Bot):
         if self.db_checks():
             pass
 
-        self.add_command(self.reload_cogs)
-        # self.add_command(self.load_cog)
-        # self.add_command(self.unload_cog)
+        self.getAttributes()
+
+    """ Adding attributes """
+
+    def getAttributes(self):
+        """ """
+        with open(path('handlers', 'configuration', 'config.json'), "r", encoding="utf8") as f:
+            data = json.dumps(json.load(f))
+            self.config = json.loads(data, object_hook=lambda d: collections.namedtuple("config", d.keys())(*d.values()))
 
     """ Database checking, before startup """
 
@@ -37,6 +45,50 @@ class XiuxBot(comms.Bot):
             try:
                 conn = sqlite3.connect(path('repository', 'database', db))
                 conn.close()
+            except:
+                pass
+
+    """ Events """
+
+    async def on_ready(self):
+        """ Extensions are loaded as quickly as possible """
+        printc('[. . .]: LOADING EXTENSION(S)')
+        cogs = []
+        blocked_cogs = json.load(open(path('handlers', 'configuration', 'config.json'), 'r'))['blocked cogs']
+        for folder in os.listdir(path('cogs')):
+            cogs.extend([f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if cog[:-3] not in ['__pycach', *blocked_cogs]])
+        cog_amount = len(cogs)
+        broken_cogs = []
+        loaded_cogs = 0
+        progress_bar(0, cog_amount)
+        for i, cog in enumerate(cogs):
+            try:
+                self.load_extension(cog)
+            except Exception as e:
+                broken_cogs.append([cog, e])
+            progress_bar(i + 1, cog_amount)
+
+    async def on_disconnect(self):
+        """ Sends warning when the client disconnects from the network """
+        printc('[WARNING]: CLIENT HAS DISCONNECTED FROM NETWORK')
+
+    async def on_connect(self):
+        """ Sends warning when the client connects to the network """
+        printc('[WARNING]: CLIENT HAS CONNECTED TO NETWORK')
+
+    async def on_resumed(self):
+        """ Sends warning when the client resumes a session """
+        printc('[WARNING]: CLIENT HAS RESUMED CURRENT SESSION')
+
+
+class MainCog(comms.Cog):
+    """ """
+
+    def __init__(self, bot):
+        """ Objects:
+        Xiux(comms.Bot) as a class attribute
+        """
+        self.bot = bot
 
     """ Checks """
 
@@ -46,42 +98,33 @@ class XiuxBot(comms.Bot):
     """ Commands """
 
     @comms.command(name='r')
-    async def reload(self, ctx):
+    async def reload_cog(self, ctx, cog=False):
+        if not cog:
+            pass
+        else:
+            try:
+                self.bot.unload_extension(cog)
+                self.bot.load_extension(cog)
+            except Exception as e:
+                pass  # Make another error
+
+    @comms.command(name='l')
+    async def unload_cog(self, ctx, cog: str):
         pass
 
-    """ Events """
+    @comms.command(name='u')
+    async def load_cog(self, ctx, cog: str):
+        pass
 
-    async def on_ready(self):
-        """ Extensions are loaded as quickly as possible """
-        printc('[. . .]: LOADING EXTENSION(S)')
-        self.cogs = []
-        blocked_cogs = json.load(open(path('handlers', 'configuration', 'config.json'), 'r'))['blocked cogs']
-        for folder in os.listdir(path('cogs')):
-            self.cogs.extend([f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if cog[:-3] not in ['__pycach', *blocked_cogs]])
-        cog_amount = len(cogs)
-        broken_cogs = []
-        loaded_cogs = 0
-        progress_bar(0, cog_amount)
-        for i, cog in enumerate(self.cogs):
-            try:
-                self.load_extension(cog)
-                progress_bar(i + 1, cog_amount)
-            except Exception as e:
-                broken_cogs.append([cog, e])
-
-
-    async def on_disconnect(self):
-        """ Sends warning when the client disconnects from the network """
-        printc('[WARNING]: BOT HAS DISCONNECTED FROM NETWORK')
-
-    async def on_connect(self):
-        """ Sends warning when the client connects to the network """
-        printc('[WARNING]: BOT HAS CONNECTED TO NETWORK')
-
-    async def on_resumed(self):
-        """ Sends warning when the client resumes a session """
-        printc('[WARNING]: BOT HAS RESUMED CURRENT SESSION')
+    @comms.command()
+    async def exit(self, ctx):
+        """ Makes the client logout """
+        printc('[WARNING]: CLIENT IS LOGGING OUT')
+        await ctx.bot.logout()
 
 
 if __name__ == "__main__":
     xiux = XiuxBot(command_prefix='.', help_command=None)
+    xiux.run(xiux.config.discord)
+    token = json.load(open(path('handlers', 'configuration', 'config.json'), 'r'))['discord']
+    xiux.run(token, bot=True, reconnect=True)
