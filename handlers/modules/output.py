@@ -46,6 +46,8 @@ def sectional_print(loaded_cogs):
         print(f'\t{i[0]}: {", ".join(str(y) for y in i[1])}')
 
 
+
+
 def create_table():
     """ """
     pass

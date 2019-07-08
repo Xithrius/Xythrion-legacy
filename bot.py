@@ -45,28 +45,28 @@ class XiuxBot(comms.Bot):
             try:
                 conn = sqlite3.connect(path('repository', 'database', db))
                 conn.close()
-            except:
-                pass
+            except Exception as e:
+                printc('')
 
     """ Events """
 
     async def on_ready(self):
         """ Extensions are loaded as quickly as possible """
         printc('[. . .]: LOADING EXTENSION(S)')
-        cogs = []
-        blocked_cogs = json.load(open(path('handlers', 'configuration', 'config.json'), 'r'))['blocked cogs']
+        self.extensions = {}
         for folder in os.listdir(path('cogs')):
-            cogs.extend([f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if cog[:-3] not in ['__pycach', *blocked_cogs]])
-        cog_amount = len(cogs)
+            self.extensions['folder'] = [cog for cog in os.listdir(path('cogs', folder)) if cog[:-3] not in ['__pycach', *self.config.blocked_cogs]]
+        self.attached_extensions = [f'cogs.{k}.{v}' for k, v in self.extensions.items()]
+        cog_amount = len(self.attached_extensions)
         broken_cogs = []
         loaded_cogs = 0
         progress_bar(0, cog_amount)
-        for i, cog in enumerate(cogs):
+        for i, cog in enumerate(self.attached_extensions):
             try:
                 self.load_extension(cog)
+                progress_bar(i + 1, cog_amount)
             except Exception as e:
                 broken_cogs.append([cog, e])
-            progress_bar(i + 1, cog_amount)
 
     async def on_disconnect(self):
         """ Sends warning when the client disconnects from the network """
@@ -93,7 +93,7 @@ class MainCog(comms.Cog):
     """ Checks """
 
     async def cog_check(self, ctx):
-        return ctx.author.id in ctx.bot.config.owners
+        return ctx.author.id in self.bot.config.owners
 
     """ Commands """
 
@@ -106,7 +106,7 @@ class MainCog(comms.Cog):
                 self.bot.unload_extension(cog)
                 self.bot.load_extension(cog)
             except Exception as e:
-                pass  # Make another error
+                pass
 
     @comms.command(name='l')
     async def unload_cog(self, ctx, cog: str):
@@ -125,6 +125,4 @@ class MainCog(comms.Cog):
 
 if __name__ == "__main__":
     xiux = XiuxBot(command_prefix='.', help_command=None)
-    xiux.run(xiux.config.discord)
-    token = json.load(open(path('handlers', 'configuration', 'config.json'), 'r'))['discord']
-    xiux.run(token, bot=True, reconnect=True)
+    xiux.run(xiux.config.discord, bot=True, reconnect=True)
