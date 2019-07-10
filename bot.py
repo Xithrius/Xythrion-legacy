@@ -14,7 +14,7 @@ import pickle
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import path, now, printc, sectional_print, progress_bar
+from handlers.modules.output import path, now, printc, create_table, progress_bar
 
 
 class XiuxBot(comms.Bot):
@@ -52,11 +52,13 @@ class XiuxBot(comms.Bot):
 
     async def on_ready(self):
         """ Extensions are loaded as quickly as possible """
-        printc('[. . .]: LOADING EXTENSION(S)')
-        self.extensions = {}
+        printc('[. . .]: LOADING EXTENSION(S):')
+        extensions = {}
         for folder in os.listdir(path('cogs')):
-            self.extensions['folder'] = [cog for cog in os.listdir(path('cogs', folder)) if cog[:-3] not in ['__pycach', *self.config.blocked_cogs]]
-        self.attached_extensions = [f'cogs.{k}.{v}' for k, v in self.extensions.items()]
+            extensions[folder] = [cog for cog in os.listdir(path('cogs', folder)) if cog[:-3] not in ['__pycach', *self.config.blocked_cogs]]
+        self.attached_extensions = []
+        for k, v in extensions.items():
+            self.attached_extensions.extend([f'cogs.{k}.{i[:-3]}' for i in v])
         cog_amount = len(self.attached_extensions)
         broken_cogs = []
         loaded_cogs = 0
@@ -67,6 +69,8 @@ class XiuxBot(comms.Bot):
                 progress_bar(i + 1, cog_amount)
             except Exception as e:
                 broken_cogs.append([cog, e])
+        create_table(extensions)
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='the users'))
 
     async def on_disconnect(self):
         """ Sends warning when the client disconnects from the network """

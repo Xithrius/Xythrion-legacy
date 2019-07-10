@@ -31,26 +31,20 @@ def duplicate(string: str):
     return (string[string.index(':') + 2]).upper() + (string[string.index(':') + 3]).lower()
 
 
-def sectional_print(loaded_cogs):
-    """ Prints cogs out in sections """
-    all_cogs, sectioned_cogs = [], []
-    l_cogs = [x.split('.')[-2:] for x in loaded_cogs]
-    for i in range(len(l_cogs) - 1):
-        x = [j for j, v in enumerate([x[0] for x in l_cogs]) if v == l_cogs[i][0]]
-        if x not in sectioned_cogs:
-            sectioned_cogs.append(x)
-    for i in range(len(sectioned_cogs)):
-        within_cogs = [l_cogs[sectioned_cogs[i][0]][0], [l_cogs[j][1] for j in sectioned_cogs[i]]]
-        all_cogs.append(within_cogs)
-    for i in all_cogs:
-        print(f'\t{i[0]}: {", ".join(str(y) for y in i[1])}')
-
-
-
-
-def create_table():
+def create_table(cogs_dict):
     """ """
-    pass
+    keys, cogs = [], []
+    for k, v in cogs_dict.items():
+        keys.append(k)
+        cogs.append(', '.join(str(y)[:-3] for y in v))
+    longest_cog_name = max(map(len, keys))
+    longest_cog_line = max(map(len, cogs))
+    print()
+    for i in range(len(keys)):
+        print(f'\t+{"-" * (longest_cog_name + 2)}+{"-" * (longest_cog_line + 2)}+')
+        print(f'\t| {keys[i]}{" " * (longest_cog_name - len(keys[i]))} | {cogs[i]}{" " * (longest_cog_line - len(cogs[i]))} |')
+    print(f'\t+{"-" * (longest_cog_name + 2)}+{"-" * (longest_cog_line + 2)}+')
+    print()
 
 
 def now():
