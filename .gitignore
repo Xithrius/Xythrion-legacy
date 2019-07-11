@@ -2,4 +2,4 @@
 handlers/configuration/config.json
 repository/database/*
 repository/tmp/*
-testing/*
+test/*
