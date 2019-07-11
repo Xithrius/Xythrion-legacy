@@ -1,5 +1,11 @@
+# Python
 *__pycache__/
+
+# Sensitive folders
 handlers/configuration/config.json
 repository/database/*
 repository/tmp/*
 test/*
+
+# Visual Studio Code
+/.vscode
