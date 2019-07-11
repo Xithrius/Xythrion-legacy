@@ -24,8 +24,8 @@ class XiuxBot(comms.Bot):
         """ Securing before safely starting the bot """
         super().__init__(*args, **kwargs)
 
-        if self.db_checks():
-            pass
+        # if self.db_checks():
+        #    pass
 
         self.getAttributes()
 
@@ -36,6 +36,7 @@ class XiuxBot(comms.Bot):
         with open(path('handlers', 'configuration', 'config.json'), "r", encoding="utf8") as f:
             data = json.dumps(json.load(f))
             self.config = json.loads(data, object_hook=lambda d: collections.namedtuple("config", d.keys())(*d.values()))
+            self.__version__ = 'v0.0.1'
 
     """ Database checking, before startup """
 
@@ -46,7 +47,7 @@ class XiuxBot(comms.Bot):
                 conn = sqlite3.connect(path('repository', 'database', db))
                 conn.close()
             except Exception as e:
-                printc('')
+                printc(e)
 
     """ Events """
 
@@ -69,7 +70,10 @@ class XiuxBot(comms.Bot):
                 progress_bar(i + 1, cog_amount)
             except Exception as e:
                 broken_cogs.append([cog, e])
-        create_table(extensions)
+        if len(broken_cogs) > 0:
+            print('\n'.join(str(y) for y in broken_cogs))
+        else:
+            create_table(extensions)
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='the users'))
 
     async def on_disconnect(self):
@@ -96,8 +100,8 @@ class MainCog(comms.Cog):
 
     """ Checks """
 
-    async def cog_check(self, ctx):
-        return ctx.author.id in self.bot.config.owners
+    # async def cog_check(self, ctx):
+    #     return ctx.author.id in self.bot.config.owners
 
     """ Commands """
 

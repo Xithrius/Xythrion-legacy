@@ -9,30 +9,36 @@ Requesting information from the internet's REST APIs.
 
 
 # TODO
-- [ ] Requesting information:
-    - [x] Weather
-    - [x] Reddit
-    - [ ] Twitter
-    - [ ] Getting sources
-    - [ ] Imgur
-    - [ ] League of Legends (Riot)
-    - [ ] Stock and cryptocoin information
-    - [ ] Playback from videos
-    - [ ] Plotting
-    - [ ] Osu!
-- [x] Warns user of errors through discord messages and console timestamps
-- [x] Leveling system for amounts of messages
-- [ ] Customized commands created through discord messages that are put into separate folder
-- [ ] Add permissions to the bot, so multiple people can have access to high-level commands
-- [ ] Recreate the help command for all commands including hidden ones
-- [ ] Make Warframe requester only have two commands, help and get.
-- [ ] Creates, saves, and edits checklists requested by users
-- [ ] Get Riot developer token
-- [ ] Finish the calculator for plotting
-- [ ] Quality Of Life command creations
-- [ ] Playback Youtube videos as mp3
-- [ ] 2FA for owner with a cooldown
-- [ ] Text to speech through bot
+
+## Requesting information:
+- [x] Weather
+- [x] Reddit
+- [ ] Twitter
+- [ ] Getting sources
+- [ ] Imgur
+- [ ] League of Legends (Riot)
+- [ ] Stock and cryptocoin information
+- [ ] Playback from videos
+- [ ] Plotting
+- [ ] Osu!
+
+## Current objectives:
+* Let cogs.rankers.messages find the databases
+* Have comms.Bot have many attributes to activate requesters, instead of having way too many background tasks
+* Settle on a way to present information
+
+## Future objectives:
+* Customized commands created through discord messages that are put into separate folder
+* Add permissions to the bot, so multiple people can have access to high-level commands
+* Recreate the help command for all commands including hidden ones
+* Make Warframe requester only have two commands, help and get.
+* Creates, saves, and edits checklists requested by users
+* Get Riot developer token
+* Finish the calculator for plotting
+* Quality Of Life command creations
+* Playback Youtube videos as mp3
+* 2FA for owner with a cooldown
+* Text to speech through bot
 
 
 # Changelog

@@ -14,7 +14,6 @@ from discord.ext import commands as comms
 import discord
 
 from handlers.modules.output import printc, path, aiohttp_requester, now
-import core
 
 
 class Reddit_Requester(comms.Cog):
@@ -40,10 +39,10 @@ class Reddit_Requester(comms.Cog):
         printc('[...]: CHECKING REDDIT SERVICE AVAILABILITY')
         while not self.bot.is_closed():
             self.active_reddit = False
-            f = json.load(open(path('handlers', 'configuration', 'config.json')))['reddit']
-            self.client_auth = aiohttp.BasicAuth(login=f['client_ID'], password=f['client_secret'])
-            post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
-            headers = {"User-Agent": f"Xiux/{core.__version__} by {f['username']}"}
+            f = self.bot.config.reddit
+            self.client_auth = aiohttp.BasicAuth(login=f.client_ID, password=f.client_secret)
+            post_data = {"grant_type": "password", "username": f.username, "password": f.password}
+            headers = {"User-Agent": f"Xiux/{self.bot.__version__} by {f.username}"}
             async with aiohttp.ClientSession(auth=self.client_auth, headers=headers) as session:
                 async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as test_response:
                     if test_response.status == 200:
@@ -52,8 +51,8 @@ class Reddit_Requester(comms.Cog):
                         printc('[ ! ]: REDDIT SERVICE AVAILABLE')
                         self.headers = {"Authorization": f"bearer {js['access_token']}", **headers}
                         await asyncio.sleep(js['expires_in'])
-            print(self.headers)
-            printc(f'WARNING: REDDIT REQUESTS CANNOT BE ACTIVATED. ERROR CODE: {test_response.status}')
+                    else:
+                        printc(f'WARNING: REDDIT REQUESTS CANNOT BE ACTIVATED. ERROR CODE: {test_response.status}')
 
     """ Commands """
 
