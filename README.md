@@ -26,6 +26,7 @@ Requesting information from the internet's REST APIs.
 * Let cogs.rankers.messages find the databases
 * Have comms.Bot have many attributes to activate requesters, instead of having way too many background tasks
 * Settle on a way to present information
+* Have a website for the changelog
 
 ## Future objectives:
 * Customized commands created through discord messages that are put into separate folder
