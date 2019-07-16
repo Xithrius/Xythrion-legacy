@@ -133,4 +133,5 @@ class MainCog(comms.Cog):
 
 if __name__ == "__main__":
     xiux = XiuxBot(command_prefix='.', help_command=None)
+    xiux.add_cog(MainCog(xiux))
     xiux.run(xiux.config.discord, bot=True, reconnect=True)
