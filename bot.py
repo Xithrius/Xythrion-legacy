@@ -28,7 +28,6 @@ class _1Xq4417(comms.Bot):
         #    pass
 
         self.get_attributes()
-        self.check_services()
 
     """ Adding attributes """
 
@@ -66,11 +65,8 @@ class _1Xq4417(comms.Bot):
         loaded_cogs = 0
         progress_bar(0, cog_amount)
         for i, cog in enumerate(self.attached_extensions):
-            try:
-                self.load_extension(cog)
-                progress_bar(i + 1, cog_amount)
-            except Exception as e:
-                broken_cogs.append([cog, e])
+            self.load_extension(cog)
+            progress_bar(i + 1, cog_amount)
         if len(broken_cogs) > 0:
             print('\n'.join(str(y) for y in broken_cogs))
         else:

@@ -8,44 +8,44 @@ Requesting information from the internet's REST APIs.
 [![License](https://img.shields.io/apm/l/vim-mode.svg)](https://img.shields.io/apm/l/vim-mode.svg) [![Python Version](https://img.shields.io/badge/python-3.7.3-green.svg)](https://www.python.org/downloads/release/python-373/) [![discord](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)
 
 
-# TODO
+# Setup:
 
-## Requesting information:
-- [x] Weather
-- [x] Reddit
-- [ ] Twitter
-- [ ] Getting sources
-- [ ] Imgur
-- [ ] League of Legends (Riot)
-- [ ] Stock and cryptocoin information
-- [ ] Playback from videos
-- [ ] Plotting
-- [ ] Osu!
+### Installing requirements:
+|  Operating system  |  Command  |
+| ------------- | ------------- |
+|  Windows  |  `py -3 -m pip install -r requirements.txt`  |
+|  Linux  | `python3 -m pip install -r requirements.txt`  |
 
-## Current objectives:
-* Let cogs.rankers.messages find the databases
-* Have comms.Bot have many attributes to activate requesters, instead of having way too many background tasks
-* Settle on a way to present information
-* Have a website for the changelog
+### Setting up configuration:
+* Copy `config_example.json` into `config.json`, then replace "Discord token" with your bot token that you get from [Here](https://discordapp.com/developers/applications/) after you create your bot.
 
-## Future objectives:
-* Customized commands created through discord messages that are put into separate folder
-* Add permissions to the bot, so multiple people can have access to high-level commands
-* Recreate the help command for all commands including hidden ones
-* Make Warframe requester only have two commands, help and get.
-* Creates, saves, and edits checklists requested by users
-* Get Riot developer token
-* Finish the calculator for plotting
-* Quality Of Life command creations
-* Playback Youtube videos as mp3
-* 2FA for owner with a cooldown
-* Text to speech through bot
+### Invite the bot:
+* After inviting the bot to your server with [this link](https://discordapp.com/oauth2/authorize?client_id=598030607875833856&scope=bot&permissions=37028928), run the following command, depending on your operating system:
 
+### Running the bot:
+|  Operating system  |  Command  |
+| ------------- | ------------- |
+|  Windows  |  `py -3 bot.py`  |
+|  Linux  |  `python3 bot.py`  |
 
-# VScode configuration
-- Material theme: ocean high contrast
-- Atom keymap
-- Discord precense
-- Markdown preview enhanced
-- Python
-- VScode icons
+# Commands:
+* Commands and arguments are always seperated by space
+* Output is usually a fancy embed message
+* Command prefix: `.` (goes before all commands, no space)
+
+### Reddit:
+|  Command  |  Argument(s)  |  Example  |
+| ------------- | ------------- | ------------- |
+|  r/hot  |  `<subreddit>`  |  ![example](https://imgur.com/ntJ197I)  |
+
+### Weather:
+|  Command  |  Arguments  |  Example  |  Output  |
+| ------------- | ------------- | ------------- | ------------- |
+|  weather  |  a  |  a  |  a  |
+
+# Changelog: 
+
+## v1.0:
+*
+
+## The rest of the changelog is [here](https://github.com/Xithrius/1Xq4417/blob/master/CHANGELOG.md)

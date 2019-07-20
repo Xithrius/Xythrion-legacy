@@ -7,7 +7,6 @@
 
 import platform
 import time
-import pytemperature
 import json
 import aiohttp
 import sqlite3
@@ -78,7 +77,7 @@ class Weather_Requester(comms.Cog):
                         embed = discord.Embed(title='Weather', colour=0xc27c0e, timestamp=now())
                         embed.add_field(name='Location:', value=f"{data['name']}, {args[0]}, {data['sys']['country']}", inline=False)
                         embed.add_field(name='Weather Type:', value=data['weather'][0]['description'], inline=False)
-                        embed.add_field(name='Temperature:', value=f"Now: {pytemperature.k2f(data['main']['temp'])} °F\nLow: {pytemperature.k2f(data['main']['temp_min'])} °F\nHigh: {pytemperature.k2f(data['main']['temp_max'])} °F", inline=False)
+                        embed.add_field(name='Temperature:', value=f"Now: {data['main']['temp']} °F\nLow: {data['main']['temp_min']} °F\nHigh: {data['main']['temp_max']} °F", inline=False)
                         embed.add_field(name='Humidity:', value=f"{data['main']['humidity']}%", inline=False)
                         embed.add_field(name='Sunrise:', value=time.ctime(data['sys']['sunrise']), inline=False)
                         embed.add_field(name='Sunset:', value=time.ctime(data['sys']['sunset']), inline=False)
