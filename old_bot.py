@@ -1,5 +1,5 @@
 """
->> 1Xq4417
+>> LogistiX
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 """
@@ -17,7 +17,7 @@ import discord
 from handlers.modules.output import path, now, printc, create_table, progress_bar
 
 
-class _1Xq4417(comms.Bot):
+class LogistiXBot(comms.Bot):
     """ """
 
     def __init__(self, *args, **kwargs):
@@ -27,22 +27,21 @@ class _1Xq4417(comms.Bot):
         # if self.db_checks():
         #    pass
 
-        self.get_attributes()
-        self.check_services()
+        self.getAttributes()
 
     """ Adding attributes """
 
-    def get_attributes(self):
+    def getAttributes(self):
         """ """
         with open(path('handlers', 'configuration', 'config.json'), "r", encoding="utf8") as f:
             data = json.dumps(json.load(f))
             self.config = json.loads(data, object_hook=lambda d: collections.namedtuple("config", d.keys())(*d.values()))
             self.__version__ = 'v0.0.1'
 
-    """ Preparing bot services """
+    """ Database checking, before startup """
 
     def db_checks(self):
-        """ Database checking, before startup """
+        """ """
         for db in os.listdir(path('repository', 'database')):
             try:
                 conn = sqlite3.connect(path('repository', 'database', db))
@@ -101,8 +100,8 @@ class MainCog(comms.Cog):
 
     """ Checks """
 
-    async def cog_check(self, ctx):
-        return ctx.author.id in self.bot.config.owners
+    # async def cog_check(self, ctx):
+    #     return ctx.author.id in self.bot.config.owners
 
     """ Commands """
 
@@ -133,6 +132,6 @@ class MainCog(comms.Cog):
 
 
 if __name__ == "__main__":
-    bot = _1Xq4417(command_prefix='.', help_command=None)
+    bot = LogistiXBot(command_prefix='.', help_command=None)
     bot.add_cog(MainCog(bot))
     bot.run(bot.config.discord, bot=True, reconnect=True)

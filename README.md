@@ -1,7 +1,7 @@
 <img align="right" src="repository/icon.png">
 
 
-# LogistiX v0.0.1
+# 1Xq4417 v0.0.1
 Requesting information from the internet's REST APIs.
 
 
@@ -46,7 +46,6 @@ Requesting information from the internet's REST APIs.
 
 ## v0.0.1 in development (see TODO)
 ### Main changes:
-* Bot has been renamed to "Xiux", from whatever it was before
 * All other bots that I own have been either deleted completely from existance or parts have been removed from them and were put into this one.
 ### Modifications:
 * Everything, literally.

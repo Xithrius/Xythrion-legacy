@@ -1,5 +1,5 @@
 """
->> LogistiX
+>> 1Xq4417
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 """
@@ -19,6 +19,11 @@ class Program_Evaluator(comms.Cog):
         Bot
         """
         self.bot = bot
+
+    """ Checks """
+
+    async def cog_check(self, ctx):
+        return ctx.author.id in self.bot.config.owners
 
     """ Commands """
 
