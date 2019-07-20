@@ -36,7 +36,7 @@ Requesting information from the internet's REST APIs.
 ### Reddit:
 |  Command  |  Argument(s)  |  Example  |
 | ------------- | ------------- | ------------- |
-|  r/hot  |  `<subreddit>`  |  ![example](https://imgur.com/ntJ197I)  |
+|  r/hot  |  `<subreddit>`  |  ![](https://imgur.com/ntJ197I)  |
 
 ### Weather:
 |  Command  |  Arguments  |  Example  |  Output  |
