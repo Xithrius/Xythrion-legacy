@@ -42,15 +42,6 @@ Requesting information from the internet's REST APIs.
 * Text to speech through bot
 
 
-# Changelog
-
-## v0.0.1 in development (see TODO)
-### Main changes:
-* All other bots that I own have been either deleted completely from existance or parts have been removed from them and were put into this one.
-### Modifications:
-* Everything, literally.
-
-
 # VScode configuration
 - Material theme: ocean high contrast
 - Atom keymap
