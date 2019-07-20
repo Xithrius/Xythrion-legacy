@@ -1,5 +1,5 @@
 """
->> Xiux
+>> LogistiX
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 """
@@ -17,7 +17,7 @@ import discord
 from handlers.modules.output import path, now, printc, create_table, progress_bar
 
 
-class XiuxBot(comms.Bot):
+class LogistiXBot(comms.Bot):
     """ """
 
     def __init__(self, *args, **kwargs):
@@ -132,6 +132,6 @@ class MainCog(comms.Cog):
 
 
 if __name__ == "__main__":
-    xiux = XiuxBot(command_prefix='.', help_command=None)
-    xiux.add_cog(MainCog(xiux))
-    xiux.run(xiux.config.discord, bot=True, reconnect=True)
+    bot = LogistiXBot(command_prefix='.', help_command=None)
+    bot.add_cog(MainCog(bot))
+    bot.run(bot.config.discord, bot=True, reconnect=True)
