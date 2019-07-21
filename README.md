@@ -1,5 +1,11 @@
-<img align="right" src="repository/icon.png">
+<img align="right" src="repository/images/icon.png">
 
+<style>
+    .img {
+        width: 75%;
+        height: 75%;
+    }
+</style>
 
 # 1Xq4417 v0.0.1
 Requesting information from the internet's REST APIs.
@@ -36,7 +42,7 @@ Requesting information from the internet's REST APIs.
 ### Reddit:
 |  Command  |  Argument(s)  |  Example  |
 | ------------- | ------------- | ------------- |
-|  r/hot  |  `<subreddit>`  |  ![](https://imgur.com/ntJ197I)  |
+|  r/hot  |  `<subreddit>`  |  <img class="img" src="repository/images/reddithot.png" alt="Cat">  |
 
 ### Weather:
 |  Command  |  Arguments  |  Example  |  Output  |
