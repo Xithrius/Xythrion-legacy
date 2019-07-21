@@ -4,7 +4,6 @@
         height: 50%;
     }
 </style>
-
 ### Weather:
 |  Command  |  Example  |
 | ------------- | ------------- |

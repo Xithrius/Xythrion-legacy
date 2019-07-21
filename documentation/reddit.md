@@ -4,7 +4,6 @@
         height: 50%;
     }
 </style>
-
 ### Reddit:
 |  Command  |  Example  |
 | ------------- | ------------- |

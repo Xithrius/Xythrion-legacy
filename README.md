@@ -4,7 +4,6 @@
         height: 50%;
     }
 </style>
-
 <img align="right" src="repository/images/icon.png">
 
 
