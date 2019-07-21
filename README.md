@@ -1,14 +1,29 @@
-<img align="center" src="repository/images/icon.png">
+<p align="center">
+    <img src="repository/images/icon.png"/>
+</p>
+<h1 align="center">1Xq4417 v0.0.1</h1>
+<h3 align="center">Databasing information from APIs</h3>
+<p align="center">
+    <img src="https://img.shields.io/apm/l/vim-mode.svg"/>
+    <img src="https://img.shields.io/badge/python-3.7.3-green.svg">
+    <img src="https://img.shields.io/badge/discord-Xithrius%231318-green.svg">
+</p>
 
 
-# 1Xq4417 v0.0.1
-Requesting information from the internet's REST APIs.
+## Table of Contents
+- [Components](#components)
+- [Setup](#setup)
+- [Commands](#commands)
+    - [Reddit](#reddit)
+    - [Weather](#weather)
+- [Changelog](#changelog)
 
 
-[![License](https://img.shields.io/apm/l/vim-mode.svg)](https://img.shields.io/apm/l/vim-mode.svg) [![Python Version](https://img.shields.io/badge/python-3.7.3-green.svg)](https://www.python.org/downloads/release/python-373/) [![discord](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)](https://img.shields.io/badge/discord-Xithrius%231318-green.svg)
+## Components
+* I'll do this when v1.0 is finished.
 
 
-# Setup:
+## Setup:
 
 ### Installing requirements:
 |  Operating system  |  Command  |
@@ -28,12 +43,15 @@ Requesting information from the internet's REST APIs.
 |  Windows  |  `py -3 bot.py`  |
 |  Linux  |  `python3 bot.py`  |
 
----
 
-# Commands:
+## Commands:
 * Commands and arguments are always seperated by space
 * Output is usually a fancy embed message
 * Command prefix: `.` (goes before all commands, no space)
+<p align="left">
+    <a href="#reddit">Reddit</a>
+    <a href="#weather">Weather</a>
+</p>
 
 ### Reddit:
 |  Command  |  Argument(s)  |  Output  |
@@ -48,12 +66,11 @@ Requesting information from the internet's REST APIs.
 | ------------- | ------------- | ------------- |
 |  weather  |  `zip <zip code> <country>`  |  A direct message with weather information  |
 
-[Image examples of all commands](https://github.com/Xithrius/1Xq4417/blob/master/documentation)
----
 
-# Changelog: 
+## Changelog:
 
-## v1.0:
-*
-
-## The rest of the changelog is [here](https://github.com/Xithrius/1Xq4417/blob/master/CHANGELOG.md)
+### v0.0.1:
+#### Main changes:
+* All other bots that I own have been either deleted completely from existance or parts have been removed from them and were put into this one.
+#### Modifications:
+* Everything, literally.
