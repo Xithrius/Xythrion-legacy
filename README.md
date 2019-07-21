@@ -1,10 +1,4 @@
-<style>
-    .img {
-        width: 50%;
-        height: 50%;
-    }
-</style>
-<img align="right" src="repository/images/icon.png">
+<img align="middle" src="repository/images/icon.png">
 
 
 # 1Xq4417 v0.0.1
