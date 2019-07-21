@@ -1,4 +1,4 @@
-<img align="middle" src="repository/images/icon.png">
+<img align="center" src="repository/images/icon.png">
 
 
 # 1Xq4417 v0.0.1
