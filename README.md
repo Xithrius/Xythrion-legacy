@@ -14,8 +14,6 @@
 - [Components](#components)
 - [Setup](#setup)
 - [Commands](#commands)
-    - [Reddit](#reddit)
-    - [Weather](#weather)
 - [Changelog](#changelog)
 
 
@@ -48,10 +46,8 @@
 * Commands and arguments are always seperated by space
 * Output is usually a fancy embed message
 * Command prefix: `.` (goes before all commands, no space)
-<p align="left">
-    <a href="#reddit">Reddit</a>
-    <a href="#weather">Weather</a>
-</p>
+- [Reddit](#reddit)
+- [Weather](#weather)
 
 ### Reddit:
 |  Command  |  Argument(s)  |  Output  |
