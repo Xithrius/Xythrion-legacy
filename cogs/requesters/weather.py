@@ -40,7 +40,6 @@ class Weather_Requester(comms.Cog):
         if not self.bot.is_closed():
             self.active_weather = False
             if not self.active_weather:
-                printc('[...]: CHECKING WEATHER SERVICE AVAILABILITY')
                 self.token = json.load(open(path('handlers', 'configuration', 'config.json')))['weather']
                 async with aiohttp.ClientSession() as session:
                     async with session.get(f'http://api.openweathermap.org/data/2.5/weather?zip=12345,us&APPID={self.token}') as test_response:
@@ -48,7 +47,7 @@ class Weather_Requester(comms.Cog):
                             printc('[ ! ]: WEATHER SERVICE AVAILABLE')
                             self.active_weather = True
                         else:
-                            raise ValueError(f'WARNING: WEATHER SERVICE NOT AVAILABLE {test_response}')
+                            printc(f'WARNING: WEATHER SERVICE NOT AVAILABLE: {test_response.status}')
 
     """ Commands """
 

@@ -36,9 +36,8 @@ class Reddit_Requester(comms.Cog):
     async def load_reddit(self):
         """ Checks if reddit is accessable """
         await self.bot.wait_until_ready()
-        printc('[...]: CHECKING REDDIT SERVICE AVAILABILITY')
+        self.active_reddit = False
         while not self.bot.is_closed():
-            self.active_reddit = False
             f = self.bot.config.reddit
             self.client_auth = aiohttp.BasicAuth(login=f.client_ID, password=f.client_secret)
             post_data = {"grant_type": "password", "username": f.username, "password": f.password}
@@ -47,12 +46,13 @@ class Reddit_Requester(comms.Cog):
                 async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as test_response:
                     if test_response.status == 200:
                         js = await test_response.json()
+                        if not self.active_reddit:
+                            printc('[ ! ]: REDDIT SERVICE AVAILABLE')
                         self.active_reddit = True
-                        printc('[ ! ]: REDDIT SERVICE AVAILABLE')
                         self.headers = {"Authorization": f"bearer {js['access_token']}", **headers}
                         await asyncio.sleep(js['expires_in'])
                     else:
-                        printc(f'WARNING: REDDIT REQUESTS CANNOT BE ACTIVATED. ERROR CODE: {test_response.status}')
+                        printc(f'WARNING: REDDIT SERVICE NOT AVAILABLE: {test_response.status}')
 
     """ Commands """
 
