@@ -10,6 +10,9 @@ import time
 import json
 import aiohttp
 import sqlite3
+import os
+import asyncio
+import datetime
 
 from discord.ext import commands as comms
 import discord
@@ -26,7 +29,34 @@ class Weather_Requester(comms.Cog):
         Background task for checking token
         """
         self.bot = bot
+        self.db_path = path('repository', 'database', 'weather.db')
+
+        if not os.path.isfile(self.db_path):
+            self.createDB()
+
         self.load_credentials = self.bot.loop.create_task(self.load_weather())
+
+    def createDB(self):
+        self.conn = sqlite3.connect(self.db_path)
+        c = self.conn.cursor()
+        c.execute('''CREATE TABLE WeatherDB(time INTEGER NOT NULL PRIMARY KEY UNIQUE, high INTEGER, low INTEGER, humidity INTEGER, sunrise INTEGER, sunset INTEGER)''')
+        self.conn.commit()
+        self.conn.close()
+
+    def weatherData(self):
+        self.conn = sqlite3.connect(self.db_path)
+        c = self.conn.cursor()
+        try:
+            self.conn.commit()
+            c.execute('''SELECT time FROM WeatherDB''')
+            checkDate = c.fetchall()[0]
+            x = not len(checkDate)
+            y = not datetime.datetime.date(now()) == datetime.datetime.date(datetime.datetime.fromtimestamp(checkDate[0]))
+            checker = any((x, y))
+            if checker:
+                c.execute('''INSERT INTO WeatherDB VALUES (?, ?, ?, ?, ?, ?)''', (datetime.datetime.date(now()),))
+        except Exception as e:
+            print(e)
 
     def cog_unload(self):
         """ Cancel background task(s) when cog is unloaded """
@@ -37,17 +67,20 @@ class Weather_Requester(comms.Cog):
     async def load_weather(self):
         """ Checks if openweathermap is accessable """
         await self.bot.wait_until_ready()
-        if not self.bot.is_closed():
-            self.active_weather = False
-            if not self.active_weather:
-                self.token = json.load(open(path('handlers', 'configuration', 'config.json')))['weather']
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(f'http://api.openweathermap.org/data/2.5/weather?zip=12345,us&APPID={self.token}') as test_response:
-                        if test_response.status == 200:
+        self.active_weather = False
+        while not self.bot.is_closed():
+            self.token = json.load(open(path('handlers', 'configuration', 'config.json')))['weather']
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f'http://api.openweathermap.org/data/2.5/weather?zip=12345,us&APPID={self.token}') as test_response:
+                    if test_response.status == 200:
+                        if not self.active_weather:
                             printc('[ ! ]: WEATHER SERVICE AVAILABLE')
-                            self.active_weather = True
-                        else:
-                            printc(f'WARNING: WEATHER SERVICE NOT AVAILABLE: {test_response.status}')
+                        self.active_weather = True
+                    else:
+                        printc(f'WARNING: WEATHER SERVICE NOT AVAILABLE: {test_response.status}')
+            if self.active_weather:
+                self.weatherData()
+                await asyncio.sleep(60)
 
     """ Commands """
 
@@ -68,6 +101,10 @@ class Weather_Requester(comms.Cog):
     @weather.command(name='zip')
     async def weather_by_zip(self, ctx, *args):
         """ Using the OpenWeatherMap API to complete requests for weather in a location """
+        try:
+            await ctx.message.delete()
+        except Exception as e:
+            pass
         if self.active_weather:
             async with aiohttp.ClientSession() as session:
                 async with session.get(f'http://api.openweathermap.org/data/2.5/weather?zip={args[0]},{args[1]}&APPID={self.token}') as r:
@@ -81,7 +118,7 @@ class Weather_Requester(comms.Cog):
                         embed.add_field(name='Sunrise:', value=time.ctime(data['sys']['sunrise']), inline=False)
                         embed.add_field(name='Sunset:', value=time.ctime(data['sys']['sunset']), inline=False)
                         embed.set_footer(text=f'Python {platform.python_version()} with discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
-                        await ctx.author.send(embed=embed, delete_after=30)
+                        await ctx.author.send(embed=embed)
                     else:
                         await ctx.send(f'Weather: status code {r.status}')
 

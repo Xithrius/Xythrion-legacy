@@ -28,6 +28,7 @@ class Messages_Ranker(comms.Cog):
         """
         self.bot = bot
         self.db_path = path('repository', 'data', 'user_info.db')
+
         if not os.path.isfile(self.db_path):
             self.createDB()
         self.conn = sqlite3.connect(self.db_path)

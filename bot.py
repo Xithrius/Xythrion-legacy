@@ -61,16 +61,15 @@ class _1Xq4417(comms.Bot):
         for k, v in extensions.items():
             self.attached_extensions.extend([f'cogs.{k}.{i[:-3]}' for i in v])
         cog_amount = len(self.attached_extensions)
-        broken_cogs = []
         loaded_cogs = 0
-        progress_bar(0, cog_amount)
+        # progress_bar(0, cog_amount)
         for i, cog in enumerate(self.attached_extensions):
-            self.load_extension(cog)
-            progress_bar(i + 1, cog_amount)
-        if len(broken_cogs) > 0:
-            print('\n'.join(str(y) for y in broken_cogs))
-        else:
-            create_table({'Cogs:': ['Extensions:.py'], **extensions})
+            try:
+                self.load_extension(cog)
+            except Exception as e:
+                print(e)
+            # progress_bar(i + 1, cog_amount)
+        create_table({'Cogs:': ['Extensions:.py'], **extensions})
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='the users'))
 
     async def on_disconnect(self):
@@ -103,23 +102,37 @@ class MainCog(comms.Cog):
     """ Commands """
 
     @comms.command(name='r')
-    async def reload_cog(self, ctx, cog=False):
-        if not cog:
-            pass
-        else:
+    async def reload_cog(self, ctx):
+        printc('[. . .]: RELOADING EXTENSIONS:')
+        broken_cogs = []
+        for cog in self.bot.attached_extensions:
             try:
                 self.bot.unload_extension(cog)
                 self.bot.load_extension(cog)
             except Exception as e:
-                pass
+                broken_cogs.append([cog, e])
+        if len(broken_cogs):
+            printc('\n'.join(f'{y[0]: y[1]}' for y in broken_cogs))
+            await ctx.send(f'The following cogs are broken: {",".join(y[0] for y in broken_cogs)}')
+        else:
+            printc('[ ! ]: EXTENSIONS SUCCESSFULLY RELOADED')
+            await ctx.send(f'**{len(self.bot.attached_extensions)}** cog(s) have been reloaded')
 
     @comms.command(name='l')
     async def unload_cog(self, ctx, cog: str):
-        pass
+        try:
+            self.bot.load_extension(cog)
+        except Exception as e:
+            printc(cog, e)
+            await ctx.send(f'Extension {cog.split(".")[-1]} could not be loaded')
 
     @comms.command(name='u')
     async def load_cog(self, ctx, cog: str):
-        pass
+        try:
+            self.bot.unload_extension(cog)
+        except Exception as e:
+            printc(cog, e)
+            await ctx.send(f'Extension {cog.split(".")[-1]} could not be unloaded')
 
     @comms.command()
     async def exit(self, ctx):
