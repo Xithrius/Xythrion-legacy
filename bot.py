@@ -150,7 +150,7 @@ class MainCog(comms.Cog):
     @comms.command(name='lst_cogs')
     async def list_all_cogs(self, ctx):
         """ Lists all current cogs loaded into the bot """
-        await ctx.send(f'List of cogs: {", ".join(y.split(".")[-1] for y in self.bot.attached_extensions)}')
+        await ctx.send(f'List of **{len(self.bot.attached_extensions)}** cog(s): {", ".join(y.split(".")[-1] for y in self.bot.attached_extensions)}')
 
     @comms.command()
     async def exit(self, ctx):

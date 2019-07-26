@@ -8,11 +8,11 @@
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import path, printc, now, aiohttp_requester
+from handlers.modules.output import path, printc, now
 
 
-class Cog_Type(comms.Cog):
-    """ desc """
+class Remote_Playbacker(comms.Cog):
+    """ Playbacker for remote """
 
     def __init__(self, bot):
         """ Object(s):
@@ -21,7 +21,7 @@ class Cog_Type(comms.Cog):
         """
         self.bot = bot
 
-        self._loader = self.bot.loop.create_task(self.load_placeholder())
+        self._loader = self.bot.loop.create_task(self.load_remote())
 
     def cog_unload(self):
         """ Cancel background task(s) when cog is unloaded """
@@ -29,24 +29,24 @@ class Cog_Type(comms.Cog):
 
     """ Background tasks """
 
-    async def load_placeholder(self):
+    async def load_remote(self):
         """ """
         pass
 
     """ Events """
 
     @comms.Cog.listener()
-    async def placeholder_event(self):
+    async def remote_event(self):
         """ """
         pass
 
     """ Commands """
 
     @comms.command()
-    async def placeholder_command(self, ctx):
+    async def remote_command(self, ctx):
         """ """
         pass
 
 
 def setup(bot):
-    bot.add_cog(Cog_Type(bot))
+    bot.add_cog(Remote_Playbacker(bot))
