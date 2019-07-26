@@ -1,2 +1,3 @@
 discord.py[voice]
 datetime
+google-cloud-texttospeech

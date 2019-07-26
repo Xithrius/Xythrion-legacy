@@ -104,7 +104,7 @@ venv.bak/
 .mypy_cache/
 
 # Sensitive folders/files
-handlers/configuration/config.json
+handlers/configuration/*.json
 repository/database/*
 repository/tmp/*
 test/*
