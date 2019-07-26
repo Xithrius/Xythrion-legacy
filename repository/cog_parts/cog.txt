@@ -1,0 +1,52 @@
+"""
+>> 1Xq4417
+> Copyright (c) 2019 Xithrius
+> MIT license, Refer to LICENSE for more info
+"""
+
+
+from discord.ext import commands as comms
+import discord
+
+from handlers.modules.output import path, printc, now, aiohttp_requester
+
+
+class Cog_Type(comms.Cog):
+    """ desc """
+
+    def __init__(self, bot):
+        """ Object(s):
+        Bot
+        Background task loop creation
+        """
+        self.bot = bot
+
+        self._loader = self.bot.loop.create_task(self.load_placeholder())
+
+    def cog_unload(self):
+        """ Cancel background task(s) when cog is unloaded """
+        self._loader.cancel()
+
+    """ Background tasks """
+
+    async def load_placeholder(self):
+        """ """
+        pass
+
+    """ Events """
+
+    @comms.Cog.listener()
+    async def fooo(self):
+        """ """
+        pass
+
+    """ Commands """
+
+    @comms.command()
+    async def foooo(self, ctx):
+        """ """
+        pass
+
+
+def setup(bot):
+    bot.add_cog(Cog_Type(bot))
