@@ -107,6 +107,7 @@ venv.bak/
 handlers/configuration/*.json
 repository/database/*
 repository/tmp/*
+repository/music/*
 test/*
 
 # Visual Studio Code
