@@ -54,6 +54,16 @@ class Simples_Cog(comms.Cog):
         """ Gives an invite like for the bot, with barely any permissions """
         await ctx.send(f'https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=32885952')
 
+    @comms.command()
+    async def ping_vc(self, ctx):
+        """ Pings everyone that's in the same voice channel as the caller """
+        vc = ctx.message.author.voice.channel.members
+        print(vc)
+
+    @comms.command()
+    async def user_icon(self, ctx, member: discord.Member):
+        await ctx.send(member.avatar_url)
+
 
 def setup(bot):
     bot.add_cog(Simples_Cog(bot))

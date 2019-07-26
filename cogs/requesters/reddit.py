@@ -38,10 +38,10 @@ class Reddit_Requester(comms.Cog):
         await self.bot.wait_until_ready()
         self.active_reddit = False
         while not self.bot.is_closed():
-            f = self.bot.config.reddit
-            self.client_auth = aiohttp.BasicAuth(login=f.client_ID, password=f.client_secret)
-            post_data = {"grant_type": "password", "username": f.username, "password": f.password}
-            headers = {"User-Agent": f"1Xq4417/{self.bot.__version__} by {f.username}"}
+            f = self.bot.config['reddit']
+            self.client_auth = aiohttp.BasicAuth(login=f['client_ID'], password=f['client_secret'])
+            post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
+            headers = {"User-Agent": f"1Xq4417/{self.bot.__version__} by {f['username']}"}
             async with aiohttp.ClientSession(auth=self.client_auth, headers=headers) as session:
                 async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as test_response:
                     if test_response.status == 200:

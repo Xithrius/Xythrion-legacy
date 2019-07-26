@@ -18,7 +18,7 @@
 
 
 ## Components
-* I'll do this when v1.0 is finished.
+* I'll do this when v1.0 is released.
 
 
 ## Setup:
@@ -28,6 +28,10 @@
 | ------------- | ------------- |
 |  Windows  |  `py -3 -m pip install -r requirements.txt`  |
 |  Linux  | `python3 -m pip install -r requirements.txt`  |
+If running the bot gives errors, run the following commands in a console:
+`pip install --upgrade --user google-cloud-texttospeech`,
+`pip install discord.py[voice]`,
+`pip install datetime`
 
 ### Setting up configuration:
 * Copy the contents of `template_config.json` into a file named `config.json` in the same directory, then replace "Discord token" with your bot token that you get from [Here](https://discordapp.com/developers/applications/), after you create your bot.

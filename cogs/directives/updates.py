@@ -93,6 +93,11 @@ class Updates_Cog(comms.Cog):
         """ """
         pass
 
+    @comms.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        """ Alerts command caller of an error """
+        await ctx.send(f'**Command error**: {error}')
+
 
 def setup(bot):
     bot.add_cog(Updates_Cog(bot))
