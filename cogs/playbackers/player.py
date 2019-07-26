@@ -75,5 +75,12 @@ class Youtube_Playbacker(comms.Cog):
         except AttributeError:
             await ctx.send("There's nothing to stop!")
 
+    @comms.command()
+    async def volume(self, ctx, volume: int):
+        try:
+            self.vc.source.volume = volume
+        except AttributeError:
+            await ctx.send("There's no volume to adjust!")
+
 def setup(bot):
     bot.add_cog(Youtube_Playbacker(bot))
