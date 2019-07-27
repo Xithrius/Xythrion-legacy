@@ -37,6 +37,7 @@ class Youtube_Playbacker(comms.Cog):
     """ Commands """
 
     @comms.command()
+    @comms.is_owner()
     async def play(self, ctx):
         """ """
         url = ctx.message.content[6:]
@@ -54,6 +55,7 @@ class Youtube_Playbacker(comms.Cog):
         os.remove(path('repository', 'music', f'{video_id}.mp3'))
 
     @comms.command()
+    @comms.is_owner()
     async def pause(self, ctx):
         """ """
         try:
@@ -62,6 +64,7 @@ class Youtube_Playbacker(comms.Cog):
             await ctx.send("There's nothing to pause!")
 
     @comms.command()
+    @comms.is_owner()
     async def resume(self, ctx):
         try:
             self.vc.resume()
@@ -69,6 +72,7 @@ class Youtube_Playbacker(comms.Cog):
             await ctx.send("There's nothing to resume!")
 
     @comms.command()
+    @comms.is_owner()
     async def stop(self, ctx):
         try:
             self.vc.stop()
@@ -76,11 +80,16 @@ class Youtube_Playbacker(comms.Cog):
             await ctx.send("There's nothing to stop!")
 
     @comms.command()
-    async def volume(self, ctx, volume: int):
+    @comms.is_owner()
+    async def volume(self, ctx, volume):
         try:
+            volume = int(volume)
             self.vc.source.volume = volume
         except AttributeError:
             await ctx.send("There's no volume to adjust!")
+        except ValueError:
+            await ctx.send("Please pass a integer for volume")
+
 
 def setup(bot):
     bot.add_cog(Youtube_Playbacker(bot))
