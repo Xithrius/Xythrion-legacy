@@ -9,12 +9,12 @@
     <img src="https://img.shields.io/badge/discord-Xithrius%231318-green.svg">
 </p>
 
-
-|  [Components](#components)  |  [Setup](#setup)  |  [Commands](#commands)  |  [Changelog](#changelog)  |
-| ------------- | ------------- | ------------- | ------------- |
-
-
-<h5 align="center">[Components](#components)</h5>
+<p align="center">
+	[Components](#components) -
+    [Setup](#setup) -
+    [Commands](#commands) -
+    [Changelog](#changelog)
+</p>
 
 
 ## Components
