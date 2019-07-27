@@ -9,10 +9,13 @@
     <img src="https://img.shields.io/badge/discord-Xithrius%231318-green.svg">
 </p>
 
-<center>
+
 |  [Components](#components)  |  [Setup](#setup)  |  [Commands](#commands)  |  [Changelog](#changelog)  |
 | ------------- | ------------- | ------------- | ------------- |
-</center>
+
+
+<h5 align="center">[Components](#components)</h5>
+
 
 ## Components
 * I'll do this when v1.0 is released.
