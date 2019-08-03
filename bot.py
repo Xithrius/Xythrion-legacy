@@ -43,8 +43,6 @@ class Robot(comms.Bot):
     def create_RequestsDB(self):
         """ Creation of the requesting database if it does not exist """
         possible_services = ', '.join(str(y) for y in [f'{k} TEXT' for k, v in self.services.items()])
-        print(possible_services)
-        return
         self.conn = sqlite3.connect(self.db_path)
         c = self.conn.cursor()
         c.execute(f'''CREATE TABLE RequestsDB (id INTEGER NOT NULL PRIMARY KEY UNIQUE, {possible_services})''')
@@ -222,4 +220,4 @@ class MainCog(comms.Cog):
 if __name__ == "__main__":
     bot = Robot(command_prefix='.', help_command=None)
     bot.add_cog(MainCog(bot))
-    bot.run(bot.tokens['discord'], bot=True, reconnect=True)
+    bot.run(bot.config['discord'], bot=True, reconnect=True)

@@ -33,7 +33,7 @@ class Weather_Requester(comms.Cog):
         if not os.path.isfile(self.db_path):
             self.createDB()
 
-        self.background_weather = self.bot.loop.create_task(self.collect_weather())
+        # self.background_weather = self.bot.loop.create_task(self.collect_weather())
 
     def createDB(self):
         self.conn = sqlite3.connect(self.db_path)
@@ -65,22 +65,28 @@ class Weather_Requester(comms.Cog):
         while not self.bot.is_closed():
             self.conn = sqlite3.connect(path('repository', 'database', 'user_requests.db'))
             c = self.conn.cursor()
-            c.execute('''SELECT * FROM RequestsDB''')
-            info = c.fetchall()
-            printc(info)
-            printc(f'length of info: {len(info)}, breaking')
-            await asyncio.sleep(10)
-            continue
-
-            if len(info):
-                for request in requests:
-                    pass
+            c.execute('''SELECT id, weather FROM RequestsDB''')
+            requests = c.fetchall()
             self.conn.close()
             self.conn = sqlite3.connect(self.db_path)
             c = self.conn.cursor()
             c.execute('''SELECT id, time from WeatherDB''')
-            weatherInfo = c.fetchall()
-            printc(f'Weather info: {weatherInfo}')
+            weatherDB = c.fetchall()
+            if len(requests):
+                for request in requests:
+                    _id = request[0]
+                    try:
+                        r = [x[0] for x in weatherDB].index(_id)
+                        lastRequest = weatherDB[r]
+                        today = datetime.datetime.date(now())
+                        lastDate = datetime.datetime.date(datetime.datetime.fromtimestamp(lastRequest[1]))
+                        if today != lastDate:
+                            raise ValueError
+                    except ValueError:
+                        pass
+            self.conn.close()
+            await asyncio.sleep(60)
+            """
             for request in info:
                 rn = datetime.datetime.date(now())
                 anotherDate = datetime.datetime.date(datetime.datetime.fromtimestamp(weatherInfo[0][1]))
@@ -95,8 +101,7 @@ class Weather_Requester(comms.Cog):
                     printc(reqInfo)
                     c.execute('''INSERT INTO WeatherDB VALUES (?, ?, ?, ?, ?, ?, ?)''', reqInfo)
                     self.conn.commit()
-            self.conn.close()
-            await asyncio.sleep(15)
+            """
 
     """ Commands """
 
@@ -105,13 +110,13 @@ class Weather_Requester(comms.Cog):
     async def init_weather(self, ctx, zip_code, country='US'):
         self.conn = sqlite3.connect(path('repository', 'database', 'user_requests.db'))
         c = self.conn.cursor()
-        c.execute('''INSERT INTO RequestsDB VALUES (?, ?, ?)''', (ctx.message.author.id, zip_code, country))
+        c.execute('''INSERT INTO RequestsDB (id, weather) VALUES (?, ?)''', (ctx.message.author.id, f'{zip_code},{country.upper()}'))
         self.conn.commit()
-        await ctx.send(f'Weather collection requester **enabled** for {zip_code}, {country}')
+        await ctx.send(f'Weather collection requester **enabled** for {zip_code}, {country.upper()}')
 
     @comms.command()
     async def daily(self, ctx, zip_code, amount=7, country='US'):
-        info = await get_aiohttp(f'https://api.weatherbit.io/v2.0/forecast/daily?postal_code={zip_code},{country}&units=I&key={self.bot.tokens["weather"]}')
+        info = await get_aiohttp(f'https://api.weatherbit.io/v2.0/forecast/daily?postal_code={zip_code},{country.upper()}&units=I&key={self.bot.tokens["weather"]}')
         info = info['data'][:amount]
         requests = ['valid_date', 'max_temp', 'min_temp']
         dates = [[v for k, v in dict.items() if k in requests] for dict in info]
@@ -126,7 +131,7 @@ class Weather_Requester(comms.Cog):
         plt.grid()
         plt.xlabel("Date")
         plt.ylabel("Temperature (°F)")
-        plt.title(f"Temperature for the next {amount} days in {zip_code}, {country}")
+        plt.title(f"Zip {zip_code}, {country}: High/low temperatures")
         plt.gcf().autofmt_xdate()
         plt.savefig(path('repository', 'graphs', 'weather.png'))
         plt.clf()
