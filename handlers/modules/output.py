@@ -43,7 +43,7 @@ def create_table(cogs_dict):
 
 def now():
     """ Returns the time depending on time zone from file """
-    return datetime.datetime.now() + datetime.timedelta(hours=7)
+    return datetime.datetime.now()
 
 
 def progress_bar(iteration, total, prefix='PROGRESS:', suffix='COMPLETE', decimals=2, length=50, fill='█'):
@@ -57,18 +57,10 @@ def progress_bar(iteration, total, prefix='PROGRESS:', suffix='COMPLETE', decima
         print()
 
 
-async def aiohttp_requester(ctx, option, url, headers, data=None):
-    """ Gets data from a REST API """
+async def get_aiohttp(url, headers=None, data=None):
     async with aiohttp.ClientSession() as session:
-        if option == 'GET':
-            async with session.get(url, headers=headers, data=data) as response:
-                if response.status == 200:
-                    return await response.json()
-                else:
-                    await ctx.send(f'Status {response.status}: Requester unavailable')
-        elif option == 'POST':
-            async with session.post(url, headers=headers, data=data) as response:
-                if response.status == 200:
-                    return await response.json()
-                else:
-                    await ctx.send(f'Status {response.status}: Requester unavailable')
+        async with session.get(url, headers=headers, data=data) as response:
+            if response.status == 200:
+                return await response.json()
+            else:
+                raise Exception(f'Fatal request error status: {response.status}')

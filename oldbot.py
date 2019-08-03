@@ -9,8 +9,6 @@ import collections
 import sqlite3
 import json
 import os
-import asyncio
-import aiohttp
 
 from discord.ext import commands as comms
 import discord
@@ -22,98 +20,49 @@ class Robot(comms.Bot):
     """ """
 
     def __init__(self, *args, **kwargs):
-        """ Objects:
-        Passing *args and **kwargs into comms.Bot
-        Creating background task for checking services
-        Creating requests database path
-        """
+        """ Securing before safely starting the bot """
         super().__init__(*args, **kwargs)
 
         self.db_path = path('repository', 'database', 'user_requests.db')
 
-        self.create_Attributes()
+        # self.checking_DBs()
 
         if not os.path.isfile(self.db_path):
             self.create_RequestsDB()
 
-        self.background_services = self.loop.create_task(self.load_services())
+        self.create_Attributes()
 
-    """ Preparing bot databases """
+        self.load_credentials = self.loop.create_task(self.load_test())
 
-    def create_RequestsDB(self):
-        """ Creation of the requesting database if it does not exist """
-        possible_services = ', '.join(str(y) for y in [f'{k} TEXT' for k, v in self.services.items()])
-        print(possible_services)
-        return
-        self.conn = sqlite3.connect(self.db_path)
-        c = self.conn.cursor()
-        c.execute(f'''CREATE TABLE RequestsDB (id INTEGER NOT NULL PRIMARY KEY UNIQUE, {possible_services})''')
-        self.conn.commit()
-        self.conn.close()
+    async def load_test(self):
+        print('test complete')
+
+    """ Adding attributes """
 
     def create_Attributes(self):
         """ """
         with open(path('handlers', 'configuration', 'config.json'), "r") as f:
             self.config = json.load(f)
-            self.services = {k: False for k in self.config['services'].keys()}
-            self.tokens = self.config['services']
             self.__version__ = 'v0.0.1'
 
-    def cog_unload(self):
-        """ Cancel background task(s) when cog is unloaded """
-        self.background_services.cancel()
+    """ Preparing bot databases """
 
-    async def load_services(self):
-        await self.wait_until_ready()
-        while not self.is_closed():
+    def create_RequestsDB(self):
+        """ Creation of the requesting database if it does not exist """
+        self.conn = sqlite3.connect(self.db_path)
+        c = self.conn.cursor()
+        c.execute('''CREATE TABLE Requests(id INTEGER NOT NULL PRIMARY KEY UNIQUE, zip INTEGER, country TEXT)''')
+        self.conn.commit()
+        self.conn.close()
 
-            """ Weather """
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f'https://api.weatherbit.io/v2.0/forecast/daily?postal_code={12345}&country=US&key={self.tokens["weather"]}') as test_response:
-                    if test_response.status == 200:
-                        if not self.services['weather']:
-                            printc('[ ! ]: WEATHER SERVICE AVAILABLE')
-                        self.services['weather'] = True
-                    else:
-                        printc(f'WARNING: WEATHER SERVICE NOT AVAILABLE: {test_response.status}')
-
-            """ Reddit """
-
-            f = self.tokens['reddit']
-            self.client_auth = aiohttp.BasicAuth(login=f['client_ID'], password=f['client_secret'])
-            post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
-            headers = {"User-Agent": f"1Xq4417/{self.__version__} by {f['username']}"}
-            async with aiohttp.ClientSession(auth=self.client_auth, headers=headers) as session:
-                async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as test_response:
-                    if test_response.status == 200:
-                        js = await test_response.json()
-                        if not self.services['reddit']:
-                            printc('[ ! ]: REDDIT SERVICE AVAILABLE')
-                        self.services['reddit'] = {"Authorization": f"bearer {js['access_token']}", **headers}
-                    else:
-                        printc(f'WARNING: REDDIT SERVICE NOT AVAILABLE: {test_response.status}')
-
-            await asyncio.sleep(60)
-
-        """ Checks if reddit is accessable """
-        await self.bot.wait_until_ready()
-        self.active_reddit = False
-        while not self.bot.is_closed():
-            f = self.bot.config['reddit']
-            self.client_auth = aiohttp.BasicAuth(login=f['client_ID'], password=f['client_secret'])
-            post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
-            headers = {"User-Agent": f"1Xq4417/{self.__version__} by {f['username']}"}
-            async with aiohttp.ClientSession(auth=self.client_auth, headers=headers) as session:
-                async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as test_response:
-                    if test_response.status == 200:
-                        js = await test_response.json()
-                        if not self.active_reddit:
-                            printc('[ ! ]: REDDIT SERVICE AVAILABLE')
-                        self.active_reddit = True
-                        self.headers = {"Authorization": f"bearer {js['access_token']}", **headers}
-                        await asyncio.sleep(js['expires_in'])
-                    else:
-                        printc(f'WARNING: REDDIT SERVICE NOT AVAILABLE: {test_response.status}')
+    def checking_DBs(self):
+        """ Checking if databases can be connected to, then adding them as a class attribute """
+        for db in os.listdir(path('repository', 'database')):
+            try:
+                conn = sqlite3.connect(path('repository', 'database', db))
+                conn.close()
+            except Exception as e:
+                printc(e)
 
     """ Events """
 
@@ -222,4 +171,4 @@ class MainCog(comms.Cog):
 if __name__ == "__main__":
     bot = Robot(command_prefix='.', help_command=None)
     bot.add_cog(MainCog(bot))
-    bot.run(bot.tokens['discord'], bot=True, reconnect=True)
+    bot.run(bot.config['discord'], bot=True, reconnect=True)

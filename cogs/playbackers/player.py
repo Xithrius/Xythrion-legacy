@@ -8,7 +8,6 @@
 import youtube_dl
 import asyncio
 import os
-import traceback
 
 from discord.ext import commands as comms
 import discord
@@ -24,20 +23,42 @@ class Youtube_Playbacker(comms.Cog):
         Bot
         """
         self.bot = bot
+        self._loop = False
 
-    """ Downloading youtube information """
+    """ Checking permissions """
+
+    async def cog_check(self, ctx):
+        return ctx.author.id in self.bot.config['owners']
+
+    """ """
+
+    def cog_unload(self):
+        """ """
+        try:
+            self.vc.stop()
+        except AttributeError:
+            pass
+        for audio in os.listdir(path('repository', 'music')):
+            os.remove(path('repository', 'music', audio))
+
+    """ Inputting/outputting YouTube """
 
     async def dlyt(self, url):
         with youtube_dl.YoutubeDL(self.bot.config['ytdlopts']) as ydl:
             data = ydl.extract_info(url, download=True)
-            video_id = data.get("id", None)
-            video_title = data.get('title', None)
-        return video_id, video_title
+        return data.get("id", None), data.get('title', None)
+
+    async def _play(self, video_id):
+        self.vc.play(discord.FFmpegPCMAudio(source=path('repository', 'music', f'{video_id}.mp3'), options='-loglevel fatal'))
+        self.vc.source = discord.PCMVolumeTransformer(self.vc.source)
+        self.vc.source.volume = 0.2
+        while self.vc.is_playing():
+            await asyncio.sleep(1)
+        self.vc.stop()
 
     """ Commands """
 
     @comms.command()
-    @comms.is_owner()
     async def play(self, ctx):
         """ """
         url = ctx.message.content[6:]
@@ -46,16 +67,10 @@ class Youtube_Playbacker(comms.Cog):
         self.vc = ctx.guild.voice_client
         if not self.vc:
             self.vc = await ctx.author.voice.channel.connect()
-        self.vc.play(discord.FFmpegPCMAudio(source=path('repository', 'music', f'{video_id}.mp3'), options='-loglevel fatal'))
-        self.vc.source = discord.PCMVolumeTransformer(self.vc.source)
-        self.vc.source.volume = 0.05
-        while self.vc.is_playing():
-            await asyncio.sleep(1)
-        self.vc.stop()
+        await self._play(video_id)
         os.remove(path('repository', 'music', f'{video_id}.mp3'))
 
     @comms.command()
-    @comms.is_owner()
     async def pause(self, ctx):
         """ """
         try:
@@ -64,7 +79,6 @@ class Youtube_Playbacker(comms.Cog):
             await ctx.send("There's nothing to pause!")
 
     @comms.command()
-    @comms.is_owner()
     async def resume(self, ctx):
         try:
             self.vc.resume()
@@ -72,7 +86,6 @@ class Youtube_Playbacker(comms.Cog):
             await ctx.send("There's nothing to resume!")
 
     @comms.command()
-    @comms.is_owner()
     async def stop(self, ctx):
         try:
             self.vc.stop()
@@ -80,15 +93,12 @@ class Youtube_Playbacker(comms.Cog):
             await ctx.send("There's nothing to stop!")
 
     @comms.command()
-    @comms.is_owner()
     async def volume(self, ctx, volume):
         try:
-            volume = int(volume)
-            self.vc.source.volume = volume
+            volume = int(volume * 100)
+            self.vc.source.volume = volume / 100
         except AttributeError:
             await ctx.send("There's no volume to adjust!")
-        except ValueError:
-            await ctx.send("Please pass a integer for volume")
 
 
 def setup(bot):

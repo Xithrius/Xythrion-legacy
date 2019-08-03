@@ -1,13 +1,33 @@
 {
-    "reddit": {
-        "username": "reddit username",
-        "password": "reddit password",
-        "client_ID": "application ID",
-        "client_secret": "application secret"
+    "services": {
+        "reddit": {
+            "username": "",
+            "password": "",
+            "client_ID": "",
+            "client_secret": ""
+        },
+        "discord": "",
+        "weather": "",
+        "riot": ""
     },
-    "discord": "discord bot API token",
-    "weather": "openweathermap API token",
-    "riot": "Riot Developer API token",
-    "owners": ["discord id ints"],
-    "blocked cogs": ["riot"]
+    "owners": [],
+    "blocked_cogs": [],
+    "ytdlopts": {
+        "format": "bestaudio/best",
+        "outtmpl": "/repository/music/%(id)s.%(ext)s",
+        "postprocessors": [{
+            "key": "FFmpegExtractAudio",
+            "preferredcodec": "mp3",
+            "preferredquality": "192"
+        }],
+        "'restrictfilenames'": true,
+        "noplaylist": true,
+        "nocheckcertificate": true,
+        "ignoreerrors": false,
+        "logtostderr": false,
+        "quiet": true,
+        "no_warnings": true,
+        "default_search": "auto",
+        "source_address": "0.0.0.0"
+    }
 }

@@ -5,7 +5,7 @@
 <h3 align="center">Databasing information from APIs</h3>
 <p align="center">
     <img src="https://img.shields.io/apm/l/vim-mode.svg"/>
-    <img src="https://img.shields.io/badge/python-3.7.3-green.svg">
+    <img src="https://img.shields.io/badge/python-3.7.4-green.svg">
     <img src="https://img.shields.io/badge/discord-Xithrius%231318-green.svg">
 </p>
 

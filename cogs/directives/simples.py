@@ -62,7 +62,26 @@ class Simples_Cog(comms.Cog):
 
     @comms.command()
     async def user_icon(self, ctx, member: discord.Member):
+        """ Returns the user icon """
         await ctx.send(member.avatar_url)
+
+    @comms.command()
+    async def purge(self, ctx, amount=10):
+        """ Deletes an amount of messages """
+        try:
+            await ctx.message.delete()
+            await ctx.channel.purge(limit=amount)
+        except Exception as e:
+            print(e)
+
+    @comms.command()
+    async def emojis(self, ctx):
+        emojis = [str(i) + '\N{combining enclosing keycap}' for i in range(10)]
+        emojis.append('\N{keycap ten}')
+        embed = discord.Embed(title=f'**Emojis 0-10**\n{" ".join(emojis)}', colour=0xc27c0e, timestamp=now())
+        msg = await ctx.send(embed=embed)
+        for emoji in emojis:
+            await msg.add_reaction(emoji)
 
 
 def setup(bot):
