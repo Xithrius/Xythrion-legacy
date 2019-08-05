@@ -95,8 +95,10 @@ class Updates_Cog(comms.Cog):
 
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
-        """ Alerts command caller of an error """
-        await ctx.send(f'**Command error**: {error}')
+        if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
+            pass
+        else:
+            printc(error)
 
 
 def setup(bot):

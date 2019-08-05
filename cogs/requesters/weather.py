@@ -51,7 +51,7 @@ class Weather_Requester(comms.Cog):
     """ Checks """
 
     async def cog_check(self, ctx):
-        return self.bot.services[os.path.basename(__file__)[:-3]]
+        return ctx.message.author.id in self.bot.services[os.path.basename(__file__)[:-3]]
 
     def cog_unload(self):
         """ """

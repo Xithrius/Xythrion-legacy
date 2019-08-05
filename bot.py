@@ -78,7 +78,7 @@ class Robot(comms.Bot):
             """ Reddit """
 
             f = self.tokens['reddit']
-            self.client_auth = aiohttp.BasicAuth(login=f['client_ID'], password=f['client_secret'])
+            self.client_auth = aiohttp.BasicAuth(login=f['ID'], password=f['secret'])
             post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
             headers = {"User-Agent": f"1Xq4417/{self.__version__} by {f['username']}"}
             async with aiohttp.ClientSession(auth=self.client_auth, headers=headers) as session:
@@ -218,6 +218,6 @@ class MainCog(comms.Cog):
 
 
 if __name__ == "__main__":
-    bot = Robot(command_prefix='.', help_command=None)
+    bot = Robot(command_prefix=comms.when_mentioned_or('.'), help_command=None)
     bot.add_cog(MainCog(bot))
     bot.run(bot.config['discord'], bot=True, reconnect=True)
