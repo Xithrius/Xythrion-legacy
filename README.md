@@ -10,8 +10,8 @@
 </p>
 
 <p align="center">
-	[Setup](#setup) -
-    [Commands](#commands) -
+	[Setup](#setup) - 
+    [Commands](#commands) - 
     [Changelog](#changelog)
 </p>
 
@@ -52,7 +52,6 @@
 | ------------- | ------------- |
 |  Windows  |  `py -m pip install --user -r requirements.txt`  |
 |  Linux  | `python3 -m pip install --user -r requirements.txt`  |
-
 
 ### Setting up configuration:
 * Create a new file called `config.json` within the directory of `handlers/configuration`.
