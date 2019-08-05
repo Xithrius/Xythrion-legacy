@@ -10,8 +10,7 @@
 </p>
 
 <p align="center">
-	[Components](#components) -
-    [Setup](#setup) -
+	[Setup](#setup) -
     [Commands](#commands) -
     [Changelog](#changelog)
 </p>
@@ -42,6 +41,7 @@
 #### [Install python](https://www.python.org/downloads/)
 * Python 3.7.3+ must be installed for this bot to run. Which ever one gives a version that is Python 3.7.3 or higher, replace `py`, which I use in the following commands, with the prefix (ex. `python`). 
 * To check your current Python version, execute one of these commands in your favorite terminal:
+# 
 |  Operating system  |  Command  |
 | ------------- | ------------- |
 |  Windows  |  `python -V`, `py -V`, or `py -3 -V`  |
