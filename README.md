@@ -10,9 +10,9 @@
 </p>
 
 <p align="center">
-  <a href="#setup">Setup</a> -
-  <a href="#commands">Commands</a> -
-  <a href="#changelog">Changelog</a>
+    <a href="#setup">Setup</a> -
+    <a href="#commands">Commands</a> -
+    <a href="#changelog">Changelog</a>
 </p>
 
 
@@ -92,13 +92,14 @@
 |  Windows  |  `py bot.py`  |
 |  Linux  |  `python3 bot.py`  |
 
-
-## Commands:
-* Commands and arguments are always seperated by space
-* Output is usually a fancy embed message
-* Command prefix: `.` (goes before all commands, no space)
-- [Reddit](#reddit)
-- [Weather](#weather)
+<p align="center">
+    <h3>Commands:</h3>
+    <b>Commands and arguments are always seperated by space</b>
+    <b>Output is usually a fancy embed message</b>
+    <b>Command prefix: `.` (goes before all commands, no space)</b>
+    <a href="#reddit">Reddit</a> -
+    <a href="#weather">Weather</a> -
+</p>
 
 ### Reddit:
 |  Command  |  Argument(s)  |  Output  |
