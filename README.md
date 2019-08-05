@@ -103,6 +103,7 @@
 <p align="left">
     <a href="#reddit">Reddit</a> -
     <a href="#weather">Weather</a> -
+    <a href="#miscellaneous">Miscellaneous</a>
 </p>
 
 ### Reddit:
@@ -112,12 +113,39 @@
 |  r/preview  |  `<subreddit>`  |  A sneak peak of a subreddit  |
 |  r/hot  |  `<subreddit>`  |  See a singular post from what's hot in a subreddit  |
 |  r/top  |  `<subreddit>`  |  See a singular post from the top of a subreddit  |
+Example: `.r/hot python`
 
 ### Weather:
 |  Command  |  Argument(s)  |  Output  |
 | ------------- | ------------- | ------------- |
 |  weather  |  `zip <zip code> <country>`  |  A direct message with weather information  |
+Example: `weather zip 12345 US`
 
+### Miscellaneous:
+|  Command  |  Argument(s)  |  Output  |
+| ------------- | ------------- | ------------- |
+|  creator  |  None  |  The creator of the bot  |
+|  icon  |  None  |  Gets the icon of the bot  |
+|  from_timestamp  |  Datetime integer timestamp  |  Readable date format  |
+|  time  |  None  |  Get the current time  |
+|  members  |  None  |  Get a list of all members within the server  |
+|  rstring  |  Length (defaults to 14)  |  A string of random letters and numbers  |
+|  invite  |  None  |  Link to invite the bot to a server  |
+|  ping_vc  |  None  |  Pings everyone in the current voice chat that you are in  |
+|  user_icon  |  Mention  |  The icon of a user  |
+|  emojis  |  None  |  Emojis 0-10  |
+
+### Owner-only:
+|  Command  |  Argument(s)  |  Output  |
+| ------------- | ------------- | ------------- |
+|  tts  |  A string  |  When in a voice chat, the bot will use text to speech to speak through it's own mic  |
+|  purge  |  integer (max 100, default 10) |  Deletes the number of messages specified  |
+|  exec  |  `"```py"` followed by a python script, then another `"```"` on the last line  |  The output of the python script in the terminal to the owner, and a message to say if the execution was successful to everyone else.  |
+|  r  |  None  |  Reload all cog files  |
+|  l  |  Cog path seperated by "."  |  Load the specific cog  |
+|  u  |  Cog path seperated by "."  |  unload the specific cog  |
+|  exit  |  None  |  Makes the bot go offline, unloading all cogs, disconnecting from all databases, and cancelling all background tasks.  |
+Example: `.l cogs.directives.simples`
 
 ## Changelog:
 

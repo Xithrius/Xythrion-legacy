@@ -44,9 +44,9 @@ class Simples_Cog(comms.Cog):
         embed.add_field(name='Members:', value=', '.join(str(x) for x in ctx.message.guild.members))
         await ctx.send(embed=embed)
 
-    @comms.command(name='password')
-    async def random_password(self, ctx, userRange=14):
-        """ Give a random password to the user """
+    @comms.command(name='rstring')
+    async def random_string(self, ctx, userRange=14):
+        """ Give a random string to the user """
         await ctx.send(secrets.token_urlsafe(userRange))
 
     @comms.command()
@@ -66,6 +66,7 @@ class Simples_Cog(comms.Cog):
         await ctx.send(member.avatar_url)
 
     @comms.command()
+    @comms.is_owner()
     async def purge(self, ctx, amount=10):
         """ Deletes an amount of messages """
         try:
