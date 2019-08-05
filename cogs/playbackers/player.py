@@ -8,6 +8,7 @@
 import asyncio
 import youtube_dl
 import json
+import os
 
 from discord.ext import commands as comms
 import discord
@@ -52,32 +53,8 @@ class Music(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    """ Checks """
-
-    @play.before_invoke
-    async def ensure_voice(self, ctx):
-        """ Makes sure the player is ready before connecting """
-        if ctx.voice_client is None:
-            if ctx.author.voice:
-                await ctx.author.voice.channel.connect()
-            else:
-                await ctx.send(f'{ctx.message.author.mention} You are not in a voice chat')
-        elif ctx.voice_client.is_playing():
-            await ctx.send(f"Stopping Audio to prioritize {ctx.message.author.mention}'s request")
-            ctx.voice_client.stop()
-
-    @volume.before_invoke
-    @leave.before_invoke
-    @pause.before_invoke
-    @resume.before_invoke
-    async def ensure_voice_modifier(self, ctx):
-        """ Checking if the voice client is connected """
-        if ctx.voice_client is None:
-            await ctx.send(f'Cannot preform the {ctx.command.name} action for a voice chat')
-
     async def cog_check(self, ctx):
-        return ctx.message.author.id in self.bot.services[os.path.basename(__file__)[:-3]]
-        return True
+        return ctx.author.id in self.bot.config['owners']
 
     """ Commands """
 
@@ -112,6 +89,29 @@ class Music(comms.Cog):
     async def stop(self, ctx):
         """ Discontinues current audio from playing """
         await ctx.voice_client.stop()
+
+    """ Checks """
+
+    @play.before_invoke
+    async def ensure_voice(self, ctx):
+        """ Makes sure the player is ready before connecting """
+        if ctx.voice_client is None:
+            if ctx.author.voice:
+                await ctx.author.voice.channel.connect()
+            else:
+                await ctx.send(f'{ctx.message.author.mention} You are not in a voice chat')
+        elif ctx.voice_client.is_playing():
+            await ctx.send(f"Stopping Audio to prioritize {ctx.message.author.mention}'s request")
+            ctx.voice_client.stop()
+
+    @volume.before_invoke
+    @leave.before_invoke
+    @pause.before_invoke
+    @resume.before_invoke
+    async def ensure_voice_modifier(self, ctx):
+        """ Checking if the voice client is connected """
+        if ctx.voice_client is None:
+            await ctx.send(f'Cannot preform the {ctx.command.name} action for a voice chat')
 
 
 def setup(bot):
