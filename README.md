@@ -65,17 +65,20 @@
 |  Weather  | `weather` will be given the API key that you're emailed after signing up for one.  |  [WeatherBit dashbord](https://www.weatherbit.io/account/dashboard)  |
 
 #### Reference for what to replace items with:
-```json
-"discord": "",
-"owners": [],
-"services": {
-    "reddit": {
-        "username": "",
-        "password": "",
-        "ID": "",
-        "secret": ""
+```JSON
+{
+    "discord": "",
+    "owners": [],
+    "services": {
+        "reddit": {
+            "username": "",
+            "password": "",
+            "ID": "",
+            "secret": ""
+        },
+        "weather": ""
     },
-    "weather": ""
+    "There should be no need to modify": "anything below this line in config.json"
 }
 ```
 
