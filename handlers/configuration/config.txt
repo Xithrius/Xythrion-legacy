@@ -1,16 +1,16 @@
 {
     "discord": "",
+    "owners": [],
     "services": {
         "reddit": {
             "username": "",
             "password": "",
-            "client_ID": "",
-            "client_secret": ""
+            "ID": "",
+            "secret": ""
         },
         "weather": "",
         "riot": ""
     },
-    "owners": [],
     "blocked_cogs": [],
     "ytdlopts": {
         "format": "bestaudio/best",
@@ -29,5 +29,8 @@
         "no_warnings": true,
         "default_search": "auto",
         "source_address": "0.0.0.0"
+    },
+    "ffmpeg_options": {
+        "options": "-vn"
     }
 }
