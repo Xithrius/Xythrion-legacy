@@ -113,12 +113,14 @@
 |  r/preview  |  `<subreddit>`  |  A sneak peak of a subreddit  |
 |  r/hot  |  `<subreddit>`  |  See a singular post from what's hot in a subreddit  |
 |  r/top  |  `<subreddit>`  |  See a singular post from the top of a subreddit  |
+
 Example: `.r/hot python`
 
 ### Weather:
 |  Command  |  Argument(s)  |  Output  |
 | ------------- | ------------- | ------------- |
 |  weather  |  `zip <zip code> <country>`  |  A direct message with weather information  |
+
 Example: `weather zip 12345 US`
 
 ### Miscellaneous:
@@ -145,6 +147,7 @@ Example: `weather zip 12345 US`
 |  l  |  Cog path seperated by "."  |  Load the specific cog  |
 |  u  |  Cog path seperated by "."  |  unload the specific cog  |
 |  exit  |  None  |  Makes the bot go offline, unloading all cogs, disconnecting from all databases, and cancelling all background tasks.  |
+
 Example: `.l cogs.directives.simples`
 
 ## Changelog:
