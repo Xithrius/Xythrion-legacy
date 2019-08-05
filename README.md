@@ -92,8 +92,8 @@
 |  Windows  |  `py bot.py`  |
 |  Linux  |  `python3 bot.py`  |
 
+<h3 align="center">Commands:</h3>
 <p align="center">
-    <h3>Commands:</h3>
     <b>Commands and arguments are always seperated by space</b>
     <b>Output is usually a fancy embed message</b>
     <b>Command prefix: `.` (goes before all commands, no space)</b>
