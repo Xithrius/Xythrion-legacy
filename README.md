@@ -92,14 +92,15 @@
 |  Windows  |  `py bot.py`  |
 |  Linux  |  `python3 bot.py`  |
 
-### Commands rules:
+
+## Commands rules:
 * Commands and arguments are always seperated by space
 * Output is usually a fancy embed message
 * Command prefix: "." or mention
 * Command prefix and command are not seperated by anything
 
-<h3 align="center">#Commands</h3>
-<p align="center">
+## Commands:
+<p align="left">
     <a href="#reddit">Reddit</a> -
     <a href="#weather">Weather</a> -
 </p>
