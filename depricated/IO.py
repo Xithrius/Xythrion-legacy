@@ -1,9 +1,8 @@
 """
->> 1Xq4417
+>> Xylene
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 """
-
 
 import platform
 import json

@@ -1,5 +1,5 @@
 """
->> 1Xq4417
+>> Xylene
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 """
@@ -80,7 +80,7 @@ class Robot(comms.Bot):
             f = self.tokens['reddit']
             self.client_auth = aiohttp.BasicAuth(login=f['ID'], password=f['secret'])
             post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
-            headers = {"User-Agent": f"1Xq4417/{self.__version__} by {f['username']}"}
+            headers = {"User-Agent": f"Xylene/{self.__version__} by {f['username']}"}
             async with aiohttp.ClientSession(auth=self.client_auth, headers=headers) as session:
                 async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as test_response:
                     if test_response.status == 200:
@@ -92,26 +92,6 @@ class Robot(comms.Bot):
                         printc(f'WARNING: REDDIT SERVICE NOT AVAILABLE: {test_response.status}')
 
             await asyncio.sleep(60)
-
-        """ Checks if reddit is accessable """
-        await self.bot.wait_until_ready()
-        self.active_reddit = False
-        while not self.bot.is_closed():
-            f = self.bot.config['reddit']
-            self.client_auth = aiohttp.BasicAuth(login=f['client_ID'], password=f['client_secret'])
-            post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
-            headers = {"User-Agent": f"1Xq4417/{self.__version__} by {f['username']}"}
-            async with aiohttp.ClientSession(auth=self.client_auth, headers=headers) as session:
-                async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as test_response:
-                    if test_response.status == 200:
-                        js = await test_response.json()
-                        if not self.active_reddit:
-                            printc('[ ! ]: REDDIT SERVICE AVAILABLE')
-                        self.active_reddit = True
-                        self.headers = {"Authorization": f"bearer {js['access_token']}", **headers}
-                        await asyncio.sleep(js['expires_in'])
-                    else:
-                        printc(f'WARNING: REDDIT SERVICE NOT AVAILABLE: {test_response.status}')
 
     """ Events """
 

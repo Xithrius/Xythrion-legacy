@@ -1,7 +1,7 @@
 <p align="center">
     <img src="repository/images/icon.png"/>
 </p>
-<h1 align="center">1Xq4417 v0.0.1</h1>
+<h1 align="center">Xylene v0.0.1</h1>
 <h3 align="center">Databasing information from APIs</h3>
 <p align="center">
     <img src="https://img.shields.io/apm/l/vim-mode.svg"/>
@@ -35,7 +35,7 @@
 ## Setup:
 ### Preface: 
 * This bot is currently not meant for anyone to run, as it has specific requirements. The ones listed below are listed to the best of my ability, but they may not be completely complete. If you want my bot on your server, it can be [invited](https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=1664470208).
-* I am a Windows 10 user. If you submit an [issue](https://github.com/Demonically/1Xq4417/issues) regarding Linux, I'll do my best to help you, but there are no gaurantees that I will be able to figure out the problem. 
+* I am a Windows 10 user. If you submit an [issue](https://github.com/Xithrius/Xylene/issues) regarding Linux, I'll do my best to help you, but there are no gaurantees that I will be able to figure out the problem. 
 
 ### Requirements:
 #### [Install python](https://www.python.org/downloads/)
