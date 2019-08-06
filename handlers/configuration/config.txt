@@ -11,26 +11,5 @@
         "weather": "",
         "riot": ""
     },
-    "blocked_cogs": [],
-    "ytdlopts": {
-        "format": "bestaudio/best",
-        "outtmpl": "/repository/music/%(id)s.%(ext)s",
-        "postprocessors": [{
-            "key": "FFmpegExtractAudio",
-            "preferredcodec": "mp3",
-            "preferredquality": "192"
-        }],
-        "'restrictfilenames'": true,
-        "noplaylist": true,
-        "nocheckcertificate": true,
-        "ignoreerrors": false,
-        "logtostderr": false,
-        "quiet": true,
-        "no_warnings": true,
-        "default_search": "auto",
-        "source_address": "0.0.0.0"
-    },
-    "ffmpeg_options": {
-        "options": "-vn"
-    }
+    "blocked_cogs": []
 }

@@ -147,8 +147,6 @@ class MainCog(comms.Cog):
 
     @comms.command(name='r')
     async def reload_cog(self, ctx):
-        print()
-        printc('[. . .]: RELOADING EXTENSIONS:')
         broken_cogs = []
         for cog in self.bot.attached_extensions:
             try:
@@ -159,7 +157,6 @@ class MainCog(comms.Cog):
             except Exception as e:
                 broken_cogs.append([cog, e])
         if not len(broken_cogs):
-            printc('[ ! ]: EXTENSIONS SUCCESSFULLY RELOADED')
             await ctx.send(f'**{len(self.bot.attached_extensions)}** cog(s) have been reloaded')
         else:
             info = '\n'.join(f'[{y[0]}]: {type(y[1]).__name__} - #{y[1]}' for y in broken_cogs)
@@ -195,6 +192,29 @@ class MainCog(comms.Cog):
         except AttributeError:
             pass
         await ctx.bot.logout()
+
+    """ Events """
+
+    @comms.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
+            pass
+        elif isinstance(error, discord.ext.commands.errors.CheckFailure):
+            await ctx.send(f'You do not have enough permissions to run the command **.{ctx.command.name}**')
+        elif isinstance(error, discord.ext.commands.CommandNotFound):
+            msg = ctx.message.content
+            try:
+                msg = msg[:msg.index(' ')]
+            except ValueError:
+                pass
+            possibilities = [x.name for x in self.bot.commands]
+            if len(possibilities):
+                embed = discord.Embed(title='\n'.join(str(y) for y in [x.name for x in self.bot.commands] if y in msg))
+                await ctx.send(content=f'**{msg}** command not found. Maybe you meant one of the following?', embed=embed)
+            else:
+                await ctx.send(f'Could not find a command similar to **{msg}**')
+        else:
+            await ctx.send(f'Notifying owner <@{self.bot.owner_id}> of error `{error}`')
 
 
 if __name__ == "__main__":

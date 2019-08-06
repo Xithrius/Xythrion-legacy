@@ -7,6 +7,7 @@
 
 import os
 import sqlite3
+import json
 
 from discord.ext import commands as comms
 import discord
@@ -92,15 +93,6 @@ class Updates_Cog(comms.Cog):
     async def on_member_update(self, before, after):
         """ """
         pass
-
-    @comms.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
-            pass
-        elif isinstance(error, discord.ext.commands.errors.CheckFailure):
-            await ctx.send(f'You do not have enough permissions to run the command **.{ctx.command.name}**')
-        else:
-            printc(error)
 
 
 def setup(bot):
