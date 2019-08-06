@@ -39,7 +39,7 @@ class Messages_Ranker(comms.Cog):
     def createDB(self):
         self.conn = sqlite3.connect(self.db_path)
         c = self.conn.cursor()
-        c.execute('''CREATE TABLE Users(id INTEGER NOT NULL PRIMARY KEY UNIQUE, name TEXT UNIQUE ON CONFLICT IGNORE, points INTEGER)''')
+        c.execute('''CREATE TABLE Users (id INTEGER NOT NULL PRIMARY KEY UNIQUE, name TEXT UNIQUE ON CONFLICT IGNORE, points INTEGER)''')
         self.conn.commit()
         self.conn.close()
 
