@@ -27,7 +27,7 @@ ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 class YTDLSource(discord.PCMVolumeTransformer):
 
-    def __init__(self, source, *, data, volume=0.2):
+    def __init__(self, source, *, data, volume=1):
         super().__init__(source, volume)
 
         self.data = data
@@ -48,7 +48,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
 
-class Music(comms.Cog):
+class Player_Playbacker(comms.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -115,4 +115,4 @@ class Music(comms.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Music(bot))
+    bot.add_cog(Player_Playbacker(bot))

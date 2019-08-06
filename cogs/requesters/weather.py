@@ -16,7 +16,7 @@ import datetime
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import now, path, get_aiohttp, printc
+from handlers.modules.output import now, path, get_aiohttp, printc, floorer
 
 
 class Weather_Requester(comms.Cog):
@@ -51,7 +51,10 @@ class Weather_Requester(comms.Cog):
     """ Checks """
 
     async def cog_check(self, ctx):
-        return ctx.message.author.id in self.bot.services[os.path.basename(__file__)[:-3]]
+        # owner = ctx.message.author.id in self.bot.config['owners']
+        active = self.bot.services[os.path.basename(__file__)[:-3]]
+        # return all((owner, active))
+        return active
 
     def cog_unload(self):
         """ """
