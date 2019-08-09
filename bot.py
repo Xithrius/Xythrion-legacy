@@ -153,7 +153,7 @@ class MainCog(comms.Cog):
                 self.bot.unload_extension(cog)
                 self.bot.load_extension(cog)
             except discord.ext.commands.errors.ExtensionNotFound:
-                    self.bot.attached_extensions.remove(cog)
+                self.bot.attached_extensions.remove(cog)
             except Exception as e:
                 broken_cogs.append([cog, e])
         if not len(broken_cogs):

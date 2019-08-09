@@ -64,7 +64,3 @@ async def get_aiohttp(url, headers=None, data=None):
                 return await response.json()
             else:
                 raise Exception(f'Fatal request error status: {response.status}')
-
-
-def floorer(num, divisor=10):
-    return num - (num % divisor)

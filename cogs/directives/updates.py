@@ -49,7 +49,8 @@ class Updates_Cog(comms.Cog):
         members_added = 0
         for member in guild.members:
             try:
-                c.execute('''INSERT INTO Users VALUES (?, ?, ?)''', (member.id, member.display_name, 0))
+                c.execute('''INSERT INTO Users VALUES (?, ?, ?)''',
+                          (member.id, member.display_name, 0))
                 members_added += 1
             except sqlite3.IntegrityError:
                 pass

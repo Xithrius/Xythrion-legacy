@@ -27,7 +27,7 @@ class Messages_Ranker(comms.Cog):
         Refreshing database background task
         """
         self.bot = bot
-        self.db_path = path('repository', 'data', 'user_info.db')
+        self.db_path = path('repository', 'database', 'user_info.db')
 
         if not os.path.isfile(self.db_path):
             self.createDB()
@@ -46,7 +46,8 @@ class Messages_Ranker(comms.Cog):
     def insertToDB(self, member):
         self.conn = sqlite3.connect(self.db_path)
         c = self.conn.cursor()
-        c.execute('''INSERT INTO Users VALUES (?, ?, ?)''', (member.id, member.display_name, 1))
+        c.execute('''INSERT INTO Users VALUES (?, ?, ?)''',
+                  (member.id, member.display_name, 1))
         self.conn.commit()
 
     """ Commands """
@@ -61,7 +62,7 @@ class Messages_Ranker(comms.Cog):
         embed = discord.Embed(title=f'`Current circle of hell for user {ctx.message.author}`', colour=0xc27c0e, timestamp=now())
         info = f'''
         {ctx.message.author.mention} `stats`:
-        `Current circle of hell`: `Level {round((points / 75), 4)}`
+        `Current circle of hell`: `Level {round((points / 100), 4)}`
         `Total messages sent:` `{points}`
         '''
         embed.add_field(name='`Info`:', value=info)
@@ -79,8 +80,8 @@ class Messages_Ranker(comms.Cog):
         if len(points) > 5:
             points = points[:-5]
         longestName = max(map(len, [x[0] for x in points]))
-        longestPoint = max(map(len, [str(round((x[1] / 75), 4)) for x in points]))
-        points = [f'[{x[0].rjust(longestName)}] : {str(round((x[1] / 75), 4)).rjust(longestPoint)} : ({x[1]})' for x in points]
+        longestPoint = max(map(len, [str(round((x[1] / 100), 4)) for x in points]))
+        points = [f'[{x[0].rjust(longestName)}] : {str(round((x[1] / 100), 4)).rjust(longestPoint)} : ({x[1]})' for x in points]
         points = '\n'.join(str(y) for y in points)
         title = f'[{"Name".rjust(longestName)}] : [{"Circle".rjust(longestPoint)}] [(Messages sent)]'
         info = f'''```css\n{title}\n{points}```'''
@@ -99,7 +100,8 @@ class Messages_Ranker(comms.Cog):
         members_added = 1
         for member in guild.members:
             try:
-                c.execute('''INSERT INTO Users VALUES (?, ?, ?)''', (member.id, member.display_name, 0))
+                c.execute('''INSERT INTO Users VALUES (?, ?, ?)''',
+                          (member.id, member.display_name, 0))
                 members_added += 1
             except sqlite3.IntegrityError:
                 pass
@@ -112,12 +114,14 @@ class Messages_Ranker(comms.Cog):
         self.conn = sqlite3.connect(self.db_path)
         c = self.conn.cursor()
         try:
-            c.execute('SELECT id, points FROM Users WHERE id = ?', (message.author.id,))
+            c.execute('SELECT id, points FROM Users WHERE id = ?',
+                      (message.author.id,))
             points = c.fetchall()[0][1]
-            c.execute('''UPDATE Users SET points = ? WHERE id = ?''', (points + 1, message.author.id))
+            c.execute('''UPDATE Users SET points = ? WHERE id = ?''',
+                      (points + 1, message.author.id))
             self.conn.commit()
-            if points % 75 == 0:
-                embed = discord.Embed(title=f'#({points / 75}) circle of Hell reached', colour=0xc27c0e, timestamp=now())
+            if points % 100 == 0:
+                embed = discord.Embed(title=f'#({points / 100}) circle of Hell reached', colour=0xc27c0e, timestamp=now())
                 embed.add_field(name=f'Total messages sent by {message.author.user}', value=f'{points} messages')
                 await message.channel.send(embed=embed)
         except IndexError:

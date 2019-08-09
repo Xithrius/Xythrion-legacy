@@ -113,7 +113,8 @@ class Weather_Requester(comms.Cog):
     async def init_weather(self, ctx, zip_code, country='US'):
         self.conn = sqlite3.connect(path('repository', 'database', 'user_requests.db'))
         c = self.conn.cursor()
-        c.execute('''INSERT INTO RequestsDB (id, weather) VALUES (?, ?)''', (ctx.message.author.id, f'{zip_code},{country.upper()}'))
+        c.execute('''INSERT INTO RequestsDB (id, weather) VALUES (?, ?)''',
+                  (ctx.message.author.id, f'{zip_code},{country.upper()}'))
         self.conn.commit()
         await ctx.send(f'Weather collection requester **enabled** for {zip_code}, {country.upper()}')
 
