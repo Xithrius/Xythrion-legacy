@@ -18,6 +18,50 @@ import discord
 from handlers.modules.output import path, now, printc, create_table, progress_bar
 
 
+class Service_Connecter:
+
+    def __init__(self):
+
+
+    def attempt_weather(self):
+        f = self.tokens["weather"]
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://api.weatherbit.io/v2.0/forecast/daily?postal_code=12345&country=US&key={f}') as __t:
+                if __t.status == 200:
+                    if not self.services['weather']:
+                        printc('[ ! ]: WEATHER SERVICE AVAILABLE')
+                    self.services['weather'] = True
+                else:
+                    printc(f'WARNING: WEATHER SERVICE NOT AVAILABLE: {t.status}')
+
+    def attempt_reddit(self):
+        f = self.tokens['reddit']
+        client_auth = aiohttp.BasicAuth(login=f['ID'], password=f['secret'])
+        post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
+        headers = {"User-Agent": f"Xylene/{self.__version__} by {f['username']}"}
+        async with aiohttp.ClientSession(auth=client_auth, headers=headers) as session:
+            async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as __t:
+                if __t.status == 200:
+                    js = await __t.json()
+                    if not self.services['reddit']:
+                        printc('[ ! ]: REDDIT SERVICE AVAILABLE')
+                    self.services['reddit'] = {"Authorization": f"bearer {js['access_token']}", **headers}
+                else:
+                    printc(f'WARNING: REDDIT SERVICE NOT AVAILABLE: {t.status}')
+
+    def attempt_osu(self):
+        f = self.tokens['osu']
+        parameters = {'k': f, 'u': 'Xithrius'}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://osu.ppy.sh/api/get_user', params=parameters) as __t:
+                if __t.status == 200:
+                    if not self.services['osu']:
+                        printc('[ ! ]: OSU! SERVICE AVAILABLE')
+                    self.services['osu'] = True
+                else:
+                    printc(f'WARNING: OSU! SERVICE NOT AVAILABLE: {t.status}')
+
+
 class Robot(comms.Bot):
     """ """
 
@@ -29,25 +73,25 @@ class Robot(comms.Bot):
         """
         super().__init__(*args, **kwargs)
 
-        self.db_path = path('repository', 'database', 'user_requests.db')
-
         self.create_Attributes()
-
-        if not os.path.isfile(self.db_path):
-            self.create_RequestsDB()
 
         self.background_services = self.loop.create_task(self.load_services())
 
+        self.db_path = path('repository', 'database', 'requests.db')
+
+        if not os.path.isfile(self.db_path):
+            self.create_Requests_db()
+
     """ Preparing bot databases """
 
-    def create_RequestsDB(self):
+    def create_Requests_db(self):
         """ Creation of the requesting database if it does not exist """
         possible_services = ', '.join(str(y) for y in [f'{k} TEXT' for k, v in self.services.items()])
-        self.conn = sqlite3.connect(self.db_path)
-        c = self.conn.cursor()
-        c.execute(f'''CREATE TABLE RequestsDB (id INTEGER NOT NULL PRIMARY KEY UNIQUE, {possible_services})''')
-        self.conn.commit()
-        self.conn.close()
+        self.c = sqlite3.connect(self.db_path)
+        c = self.c.cursor()
+        c.execute(f'''CREATE TABLE Requests (id INTEGER NOT NULL PRIMARY KEY UNIQUE, {possible_services})''')
+        self.c.commit()
+        self.c.close()
 
     def create_Attributes(self):
         """ """
@@ -57,46 +101,19 @@ class Robot(comms.Bot):
             self.tokens = self.config['services']
             self.__version__ = 'v0.0.1'
 
-    def cog_unload(self):
-        """ Cancel background task(s) when cog is unloaded """
-        self.background_services.cancel()
-
     async def load_services(self):
         await self.wait_until_ready()
         while not self.is_closed():
-
-            """ Weather """
-            async with aiohttp.ClientSession() as session:
-                async with session.get(f'https://api.weatherbit.io/v2.0/forecast/daily?postal_code={12345}&country=US&key={self.tokens["weather"]}') as test_response:
-                    if test_response.status == 200:
-                        if not self.services['weather']:
-                            printc('[ ! ]: WEATHER SERVICE AVAILABLE')
-                        self.services['weather'] = True
-                    else:
-                        printc(f'WARNING: WEATHER SERVICE NOT AVAILABLE: {test_response.status}')
-
-            """ Reddit """
-
-            f = self.tokens['reddit']
-            self.client_auth = aiohttp.BasicAuth(login=f['ID'], password=f['secret'])
-            post_data = {"grant_type": "password", "username": f['username'], "password": f['password']}
-            headers = {"User-Agent": f"Xylene/{self.__version__} by {f['username']}"}
-            async with aiohttp.ClientSession(auth=self.client_auth, headers=headers) as session:
-                async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as test_response:
-                    if test_response.status == 200:
-                        js = await test_response.json()
-                        if not self.services['reddit']:
-                            printc('[ ! ]: REDDIT SERVICE AVAILABLE')
-                        self.services['reddit'] = {"Authorization": f"bearer {js['access_token']}", **headers}
-                    else:
-                        printc(f'WARNING: REDDIT SERVICE NOT AVAILABLE: {test_response.status}')
-
+            await self.attempt_weather()
+            await self.attempt_reddit()
+            await self.attempt_osu()
             await asyncio.sleep(60)
 
     """ Events """
 
     async def on_ready(self):
-        """ Extensions are loaded as quickly as possible """
+        """ Extensions are loaded as quickly as possible, main session is created """
+        self.s = aiohttp.ClientSession()
         printc('[. . .]: LOADING EXTENSION(S):')
         extensions = {}
         for folder in os.listdir(path('cogs')):
@@ -105,16 +122,22 @@ class Robot(comms.Bot):
         for k, v in extensions.items():
             self.attached_extensions.extend([f'cogs.{k}.{i[:-3]}' for i in v])
         cog_amount = len(self.attached_extensions)
-        loaded_cogs = 0
-        # progress_bar(0, cog_amount)
+        errors = []
+        progress_bar(0, cog_amount)
         for i, cog in enumerate(self.attached_extensions):
             try:
                 self.load_extension(cog)
+                progress_bar(i + 1, cog_amount)
             except Exception as e:
-                print(e)
-            # progress_bar(i + 1, cog_amount)
+                errors.append(e)
+        if len(errors):
+            print('\n'.join(str(y) for y in errors))
         create_table({'Cogs:': ['Extensions:.py'], **extensions})
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='the users'))
+
+    async def close(self):
+        await self.s.close()
+        await super().close()
 
     async def on_disconnect(self):
         """ Sends warning when the client disconnects from the network """
@@ -187,37 +210,42 @@ class MainCog(comms.Cog):
     async def exit(self, ctx):
         """ Makes the client logout """
         printc('[WARNING]: CLIENT IS LOGGING OUT')
+        for cog in self.bot.attached_extensions:
+            try:
+                self.bot.unload_extension(cog)
+            except Exception as e:
+                await ctx.send(f'Extension {cog.split(".")[-1]} could not be unloaded')
         try:
-            self.conn.close()
+            self.c.close()
         except AttributeError:
             pass
         await ctx.bot.logout()
-
-    """ Events """
-
-    @comms.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
-            pass
-        elif isinstance(error, discord.ext.commands.errors.CheckFailure):
-            await ctx.send(f'You do not have enough permissions to run the command **.{ctx.command.name}**')
-        elif isinstance(error, discord.ext.commands.CommandNotFound):
-            msg = ctx.message.content
-            try:
-                msg = msg[:msg.index(' ')]
-            except ValueError:
-                pass
-            possibilities = [x.name for x in self.bot.commands]
-            if len(possibilities):
-                embed = discord.Embed(title='\n'.join(str(y) for y in [x.name for x in self.bot.commands] if y in msg))
-                await ctx.send(content=f'**{msg}** command not found. Maybe you meant one of the following?', embed=embed)
-            else:
-                await ctx.send(f'Could not find a command similar to **{msg}**')
-        else:
-            await ctx.send(f'Notifying owner <@{self.bot.owner_id}> of error `{error}`')
 
 
 if __name__ == "__main__":
     bot = Robot(command_prefix=comms.when_mentioned_or('.'), help_command=None)
     bot.add_cog(MainCog(bot))
     bot.run(bot.config['discord'], bot=True, reconnect=True)
+
+'''
+@comms.Cog.listener()
+async def on_command_error(self, ctx, error):
+    if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
+        pass
+    elif isinstance(error, discord.ext.commands.errors.CheckFailure):
+        await ctx.send(f'You do not have enough permissions to run the command **.{ctx.command.name}**')
+    elif isinstance(error, discord.ext.commands.CommandNotFound):
+        msg = ctx.message.content
+        try:
+            msg = msg[:msg.index(' ')]
+        except ValueError:
+            pass
+        possibilities = [x.name for x in self.bot.commands]
+        if len(possibilities):
+            embed = discord.Embed(title='\n'.join(str(y) for y in [x.name for x in self.bot.commands] if y in msg))
+            await ctx.send(content=f'**{msg}** command not found. Maybe you meant one of the following?', embed=embed)
+        else:
+            await ctx.send(f'Could not find a command similar to **{msg}**')
+    else:
+        await ctx.send(f'Notifying owner <@{self.bot.owner_id}> of error `{error}`')
+'''

@@ -9,7 +9,7 @@
             "secret": ""
         },
         "weather": "",
-        "riot": ""
+        "osu": ""
     },
     "blocked_cogs": []
 }

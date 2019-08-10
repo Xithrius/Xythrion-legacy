@@ -122,7 +122,7 @@ class Messages_Ranker(comms.Cog):
             self.conn.commit()
             if points % 100 == 0:
                 embed = discord.Embed(title=f'#({points / 100}) circle of Hell reached', colour=0xc27c0e, timestamp=now())
-                embed.add_field(name=f'Total messages sent by {message.author.user}', value=f'{points} messages')
+                embed.add_field(name=f'Total messages sent by {message.author.mention}', value=f'{points} messages')
                 await message.channel.send(embed=embed)
         except IndexError:
             self.insertToDB(message.author)

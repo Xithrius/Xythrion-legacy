@@ -9,6 +9,8 @@ import __main__
 import datetime
 import os
 import aiohttp
+from google.cloud import texttospeech
+import asyncio
 
 
 def path(*objects):
@@ -17,6 +19,10 @@ def path(*objects):
     for i in objects:
         newPath.append(i)
     return (os.sep).join(str(y) for y in newPath)
+
+
+credentials_path = path('handlers', 'configuration', 'google_service_credentials.json')
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
 
 
 def printc(string):
@@ -56,11 +62,23 @@ def progress_bar(iteration, total, prefix='PROGRESS:', suffix='COMPLETE', decima
     if iteration == total:
         print()
 
-
-async def get_aiohttp(url, headers=None, data=None):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, headers=headers, data=data) as response:
-            if response.status == 200:
-                return await response.json()
-            else:
-                raise Exception(f'Fatal request error status: {response.status}')
+'''
+async def tts(ctx):
+    """ Text to speech through the bot's mic """
+    client = texttospeech.TextToSpeechClient()
+    synthesis_input = texttospeech.types.SynthesisInput(text=(ctx.message.content)[5:])
+    voice = texttospeech.types.VoiceSelectionParams(language_code='en-US-Wavenet-D', ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
+    audio_config = texttospeech.types.AudioConfig(audio_encoding=texttospeech.enums.AudioEncoding.MP3)
+    response = client.synthesize_speech(synthesis_input, voice, audio_config)
+    with open(path('repository', 'tmp', 'output.mp3'), 'wb') as out:
+        out.write(response.audio_content)
+        vc = ctx.guild.voice_client
+        if not vc:
+            vc = await ctx.author.voice.channel.connect()
+        vc.play(discord.FFmpegPCMAudio(source=path('repository', 'tmp', 'output.mp3'), options='-loglevel fatal'))
+        vc.source = discord.PCMVolumeTransformer(vc.source)
+        vc.source.volume = 1
+        while vc.is_playing():
+            await asyncio.sleep(1)
+        vc.stop()
+'''
