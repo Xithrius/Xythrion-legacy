@@ -14,7 +14,7 @@ import os
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import printc, path, now, get_aiohttp
+from handlers.modules.output import printc, path, now
 
 
 class Reddit_Requester(comms.Cog):
@@ -27,34 +27,38 @@ class Reddit_Requester(comms.Cog):
         Required headers for requests
         """
         self.bot = bot
-        self.s = aiohttp.ClientSession()
         self.h = self.bot.services[os.path.basename(__file__)[:-3]]
-
-    """ Cog events """
-
-    async def cog_unload(self):
-        self.bot.loop.create_tank(self.s.close())
 
     """ Permission checking """
 
     async def cog_check(self, ctx):
         """ """
         _is_owner = ctx.message.author.id in self.bot.config['owners']
-        return all((_is_owner, self.h))
+        if self.h is not False:
+            return _is_owner
+        else:
+            return False
 
     """ Commands """
 
     @comms.group()
     async def reddit(self, ctx):
         """ """
-        if ctx.invoked_subcommand is None:
-            pass
+        if ctx.invoked_subcommand is None or ctx.invoked_subcommand is 'help':
+            _help = [
+                '.reddit search <query>',
+                '.reddit top <subreddit>',
+                '.reddit preview <subreddit>',
+                '.reddit hot <subreddit>'
+            ]
+            _help = '\n'.join(str(y) for y in _help)
+            await ctx.send(f'''**Help for the .reddit command**\n```\n{_help}```''')
 
-    @reddit.command()
+    @reddit.command(name='search')
     async def _search(self, ctx, query):
         """ Searches for a subreddit named similarly to <query>, returns top 5 results """
         data = {'query': query, 'include_over_18': True}
-        async with self.s.get('https://oauth.reddit.com/api/search_subreddits', self.h, data) as r:
+        async with self.bot.s.get('https://oauth.reddit.com/api/search_subreddits', self.h, data) as r:
             if r.status == 200:
                 _json = await r.json()
                 info = _json['subreddits']
@@ -74,11 +78,11 @@ class Reddit_Requester(comms.Cog):
             else:
                 await ctx.send(f'Requester failed. Status code: **{r.status}**')
 
-    @reddit.command()
+    @reddit.command(name='top')
     async def _top(self, ctx, subreddit, top=5):
         """ Gives <top> links from the top of all time in <subreddit> """
         data = {'t': 'all', 'count': 1}
-        async with self.s.get(f'https://oauth.reddit.com/r/{subreddit}/top', self.h, data) as r:
+        async with self.bot.s.get(f'https://oauth.reddit.com/r/{subreddit}/top', self.h, data) as r:
             if r.status == 200:
                 _json = await r.json()
                 info = _json['data']['children']
@@ -99,11 +103,11 @@ class Reddit_Requester(comms.Cog):
             else:
                 await ctx.send(f'Requester failed. Status code: **{r.status}**')
 
-    @reddit.command()
+    @reddit.command(name='preview')
     async def _preview(self, ctx, subreddit):
         """ Gives out a random post from the top 100 of all time in <subreddit> """
         data = {'t': 'all', 'limit': 100}
-        async with self.s.get(f'https://oauth.reddit.com/r/{subreddit}/top', self.h, data) as r:
+        async with self.bot.s.get(f'https://oauth.reddit.com/r/{subreddit}/top', self.h, data) as r:
             if r.status == 200:
                 _json = await r.json()
                 info = _json['data']['children'][random.randint(1, 25)]['data']
@@ -118,11 +122,11 @@ class Reddit_Requester(comms.Cog):
             else:
                 await ctx.send(f'Requester failed. Status code: **{r.status}**')
 
-    @reddit.command()
-    async def _hot(self, ctx, subreddit. amount=10):
+    @reddit.command(name='hot')
+    async def _hot(self, ctx, subreddit, amount=5):
         """ Gives <amount> of links from what's currently hot in <subreddit> """
         data = {'g': 'GLOBAL', 'count': amount}
-        async with self.s.get(f'https://oauth.reddit.com/r/{subreddit}/hot', self.h, data) as r:
+        async with self.bot.s.get(f'https://oauth.reddit.com/r/{subreddit}/hot', headers=self.h, data=data) as r:
             if r.status == 200:
                 _json = await r.json()
                 info = _json['data']['children']

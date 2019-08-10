@@ -34,7 +34,9 @@
 
 ## Setup:
 ### Preface: 
-* This bot is currently not meant for anyone to run, as it has specific requirements. The ones listed below are listed to the best of my ability, but they may not be completely complete. If you want my bot on your server, it can be [invited](https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=1664470208).
+* This bot is currently not meant for anyone to run, as it has specific requirements. The ones listed below are listed to the best of my ability, but they may not be completely complete. 
+* I will be setting up a DigitalOcean instance of the bot soon, so as of now, the bot is still in experimental mode, and is __unstable__
+* If you want my bot on your server, it can be [invited](https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=1664470208).
 * I am a Windows 10 user. If you submit an [issue](https://github.com/Xithrius/Xylene/issues) regarding Linux, I'll do my best to help you, but there are no gaurantees that I will be able to figure out the problem. 
 
 ### Requirements:
@@ -63,6 +65,7 @@
 | Owners  |  A list of integers that are linked to user IDs. These user IDs can be obtained by right-clicking on a user's profile, and going all the way down to `Copy ID`. If this does not appear, turn on `Developer Mode`, hidden in `Settings > Appearence`  |  None  |
 |  Reddit  |  Give `username` and `password` your username and password. `ID` and `secret` are self-explanitory after setting up the personal-use script. Use `http://127.0.0.1:65010/authorize_callback` for the `redirect uri`  |  [Reddit user preferences](https://old.reddit.com/prefs/apps/)  |
 |  Weather  | `weather` will be given the API key that you're emailed after signing up for one.  |  [WeatherBit dashbord](https://www.weatherbit.io/account/dashboard)  |
+|  Osu!  |  Give `osu` the API key that you'll recieve when registering for a token.  |  [Osu API Registration](https://osu.ppy.sh/p/api/)  |
 
 #### Reference for what to replace items with:
 ```JSON
