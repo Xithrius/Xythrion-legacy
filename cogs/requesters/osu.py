@@ -27,23 +27,37 @@ class Osu_Requester(comms.Cog):
         Required headers for requests
         """
         self.bot = bot
-        self.s = aiohttp.ClientSession()
+
+    """ Events """
+
+    @comms.Cog.listener()
+    async def on_ready(self):
         self.h = self.bot.services[os.path.basename(__file__)[:-3]]
 
-    """ Cog events """
+    """ Permission checking """
 
-    async def cog_unload(self):
-        self.bot.loop.create_tank(self.s.close())
-
-        """ Permission checking """
-
-        async def cog_check(self, ctx):
-            """ """
-            # _is_owner = ctx.message.author.id in self.bot.config['owners']
-            # return all((_is_owner, self.h))
-            return if self.h
+    async def cog_check(self, ctx):
+        """ """
+        _owner = ctx.message.author.id in self.bot.owner_ids
+        check = (_owner, self.h)
+        return all(check)
 
     """ Commands """
+
+    @comms.group()
+    async def osu(self, ctx):
+        """ """
+        if ctx.invoked_subcommand is None or ctx.invoked_subcommand is 'help':
+            _help = [
+                '.osu user <username>',
+                '.osu beatmap <query>'
+            ]
+            _help = '\n'.join(str(y) for y in _help)
+            await ctx.send(f'''**Help for the .reddit command**\n```\n{_help}```''')
+
+    @osu.command()
+    async def _user(self, ctx, **kwargs):
+        await ctx.send(kwargs)
 
 
 def setup(bot):

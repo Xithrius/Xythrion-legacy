@@ -29,8 +29,6 @@ class Weather_Requester(comms.Cog):
         Required headers for requests
         """
         self.bot = bot
-        self.s = aiohttp.ClientSession()
-        self.h = self.bot.services[os.path.basename(__file__)[:-3]]
 
         # self.background_weather = self.bot.loop.create_task(self.collect_weather())
 
@@ -39,22 +37,11 @@ class Weather_Requester(comms.Cog):
 
         self.c = sqlite3.connect(self.bot.db_path)
 
-    """ Cog events """
-
-    async def cog_unload(self):
-        self.bot.loop.create_tank(self.s.close())
-        try:
-            self.c.close()
-        except Exception as e:
-            pass
-
     """ Permission checking """
 
     async def cog_check(self, ctx):
         """ """
-        # _is_owner = ctx.message.author.id in self.bot.config['owners']
-        # return all((_is_owner, self.h))
-        return if self.h
+        return all((ctx.message.author.id in self.bot.owner_ids, self.h))
 
     """ Databasing """
 
@@ -66,8 +53,6 @@ class Weather_Requester(comms.Cog):
         self.conn.close()
 
     """ Commands """
-
-
 
 
 def setup(bot):

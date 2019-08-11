@@ -33,11 +33,7 @@ class Reddit_Requester(comms.Cog):
 
     async def cog_check(self, ctx):
         """ """
-        _is_owner = ctx.message.author.id in self.bot.config['owners']
-        if self.h is not False:
-            return _is_owner
-        else:
-            return False
+        return all((ctx.message.author.id in self.bot.owner_ids, self.h))
 
     """ Commands """
 
@@ -58,7 +54,7 @@ class Reddit_Requester(comms.Cog):
     async def _search(self, ctx, query):
         """ Searches for a subreddit named similarly to <query>, returns top 5 results """
         data = {'query': query, 'include_over_18': True}
-        async with self.bot.s.get('https://oauth.reddit.com/api/search_subreddits', self.h, data) as r:
+        async with self.bot.s.get('https://oauth.reddit.com/api/search_subreddits', headers=self.h, data=data) as r:
             if r.status == 200:
                 _json = await r.json()
                 info = _json['subreddits']
@@ -82,7 +78,7 @@ class Reddit_Requester(comms.Cog):
     async def _top(self, ctx, subreddit, top=5):
         """ Gives <top> links from the top of all time in <subreddit> """
         data = {'t': 'all', 'count': 1}
-        async with self.bot.s.get(f'https://oauth.reddit.com/r/{subreddit}/top', self.h, data) as r:
+        async with self.bot.s.get(f'https://oauth.reddit.com/r/{subreddit}/top', headers=self.h, data=data) as r:
             if r.status == 200:
                 _json = await r.json()
                 info = _json['data']['children']
@@ -107,7 +103,7 @@ class Reddit_Requester(comms.Cog):
     async def _preview(self, ctx, subreddit):
         """ Gives out a random post from the top 100 of all time in <subreddit> """
         data = {'t': 'all', 'limit': 100}
-        async with self.bot.s.get(f'https://oauth.reddit.com/r/{subreddit}/top', self.h, data) as r:
+        async with self.bot.s.get(f'https://oauth.reddit.com/r/{subreddit}/top', headers=self.h, data=data) as r:
             if r.status == 200:
                 _json = await r.json()
                 info = _json['data']['children'][random.randint(1, 25)]['data']
