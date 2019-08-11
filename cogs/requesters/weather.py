@@ -37,6 +37,12 @@ class Weather_Requester(comms.Cog):
 
         self.c = sqlite3.connect(self.bot.db_path)
 
+    """ Events """
+
+    @comms.Cog.listener()
+    async def on_ready(self):
+        self.h = self.bot.services[os.path.basename(__file__)[:-3]]
+
     """ Permission checking """
 
     async def cog_check(self, ctx):

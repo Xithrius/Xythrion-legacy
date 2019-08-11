@@ -27,6 +27,11 @@ class Reddit_Requester(comms.Cog):
         Required headers for requests
         """
         self.bot = bot
+
+    """ Events """
+
+    @comms.Cog.listener()
+    async def on_ready(self):
         self.h = self.bot.services[os.path.basename(__file__)[:-3]]
 
     """ Permission checking """
