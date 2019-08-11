@@ -105,7 +105,7 @@ venv.bak/
 
 # Sensitive folders/files
 handlers/configuration/*.json
-repository/database/*
+repository/data/*
 repository/tmp/*
 repository/music/*
 test/*
