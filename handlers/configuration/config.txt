@@ -5,7 +5,7 @@
         "reddit": {
             "username": "",
             "password": "",
-            "ID": "",
+            "id": "",
             "secret": ""
         },
         "weather": "",
