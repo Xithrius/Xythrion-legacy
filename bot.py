@@ -86,7 +86,7 @@ class Robot(comms.Bot, Service_Connector):
 
         Service_Connector.__init__(self, config=self.config)
 
-        self.background_services = self.loop.create_task(self.load_services())
+        self.loop.create_task(self.load_services())
 
         self.owner_ids = set(self.config.owners)
         self.activity = discord.Activity(type=discord.ActivityType.watching, name='the users')
@@ -96,27 +96,27 @@ class Robot(comms.Bot, Service_Connector):
         if not os.path.isfile(self.db_path):
             self.c = sqlite3.connect(self.db_path)
             c = self.c.cursor()
-            # possibilities = ', '.join(str(y) for y in [f'{k} TEXT' for k, v in self.config.services.items()])
-            # c.execute('''CREATE TABLE Requests ()''')
-            # c.execute(''' ''')
+            services = ', '.join(str(y) for y in [f'{x} TEXT' for x in self.config.services._fields])
+            c.execute(f'''CREATE TABLE Requests (id INTEGER, {services})''')
+            c.execute('''CREATE TABLE Weather (id INTEGER,
+                                               time INTEGER,
+                                               high INTEGER,
+                                               low INTEGER,
+                                               humidity INTEGER,
+                                               sunrise INTEGER,
+                                               sunset INTEGER,
+                                               moonrise INTEGER,
+                                               moonset INTEGER,
+                                               pop INTEGER,
+                                               precip INTEGER,
+                                               snow INTEGER,
+                                               snow_depth INTEGER)''')
+            self.c.commit()
             self.c.close()
-
-        self.cog_folders = [folder for folder in os.listdir(path('cogs')) if folder != '__pycache__']
-        self.exts = []
-        for folder in self.cog_folders:
-            folder_cogs = [f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if os.path.isfile(path('cogs', folder, cog))]
-            self.exts.extend(folder_cogs)
-        printc('[. . .]: LOADING EXTENSIONS')
-        for cog in self.exts:
-            try:
-                self.load_extension(cog)
-            except Exception as e:
-                printc(f'{cog}, {type(e).__name__}: {e}')
 
     """ Background tasks """
 
     async def load_services(self):
-        # await self.wait_until_ready()
         while not self.is_closed():
             await self.start_services()
             await asyncio.sleep(60)
@@ -125,6 +125,17 @@ class Robot(comms.Bot, Service_Connector):
 
     async def on_ready(self):
         self.s = aiohttp.ClientSession()
+        self.cog_folders = [folder for folder in os.listdir(path('cogs')) if folder != '__pycache__']
+        self.exts = []
+        for folder in self.cog_folders:
+            folder_cogs = [f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if os.path.isfile(path('cogs', folder, cog)) and cog[:-3] not in self.config.blocked_cogs]
+            self.exts.extend(folder_cogs)
+        printc('[. . .]: LOADING EXTENSIONS')
+        for cog in self.exts:
+            try:
+                self.load_extension(cog)
+            except Exception as e:
+                printc(f'{cog}, {type(e).__name__}: {e}')
         printc('[ ! ]: BOT IS READY FOR USE')
 
     async def close(self):
@@ -183,15 +194,14 @@ class MainCog(comms.Cog):
             except discord.ext.commands.errors.ExtensionNotFound:
                 self.bot.exts.remove(cog)
         printc('[ ! ]: COGS HAVE BEEN RELOADED')
+        await ctx.send(f'**{len(self.bot.exts)}** cog(s) have been reloaded', delete_after=30)
 
-    """ Events """
-
-    @comms.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        await ctx.send(f'{ctx.message.author.mention} has caused error: `{error}`')
+    @comms.command()
+    async def list_cogs(self, ctx):
+        await ctx.send(', '.join(str(y).split('.')[0] for y in self.bot.cogs.keys()))
 
 
 if __name__ == "__main__":
-    bot = Robot(command_prefix=comms.when_mentioned_or('.'), help_command=None)
+    bot = Robot(command_prefix=comms.when_mentioned_or('.'))
     bot.add_cog(MainCog(bot))
     bot.run(bot.config.discord, bot=True, reconnect=True)
