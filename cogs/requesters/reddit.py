@@ -23,15 +23,8 @@ class Reddit_Requester(comms.Cog):
     def __init__(self, bot):
         """ Object(s):
         Bot
-        Aiohttp session
-        Required headers for requests
         """
         self.bot = bot
-
-    """ Events """
-
-    @comms.Cog.listener()
-    async def on_ready(self):
         self.h = self.bot.services[os.path.basename(__file__)[:-3]]
 
     """ Permission checking """
@@ -45,15 +38,8 @@ class Reddit_Requester(comms.Cog):
     @comms.group()
     async def reddit(self, ctx):
         """ """
-        if ctx.invoked_subcommand is None or ctx.invoked_subcommand is 'help':
-            _help = [
-                '.reddit search <query>',
-                '.reddit top <subreddit>',
-                '.reddit preview <subreddit>',
-                '.reddit hot <subreddit>'
-            ]
-            _help = '\n'.join(str(y) for y in _help)
-            await ctx.send(f'''**Help for the .reddit command**\n```\n{_help}```''')
+        if ctx.invoked_subcommand is None:
+            await ctx.send(f'Type the command **.help {ctx.command}** for help')
 
     @reddit.command(name='search')
     async def _search(self, ctx, query):
