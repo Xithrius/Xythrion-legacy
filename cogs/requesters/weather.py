@@ -108,7 +108,7 @@ class Weather_Requester(comms.Cog):
         c = self.c.cursor()
         c.execute('''SELECT id, weather FROM Requests WHERE id = ?''', (ctx.message.author.id,))
         requests = c.fetchall()
-        if len(requests) == 1 or not len(requests):
+        if not len(requests):
             c.execute('''INSERT INTO Requests (id, weather) VALUES (?, ?)''', (ctx.message.author.id, f'{_zip},{country}'))
             self.c.commit()
         else:
