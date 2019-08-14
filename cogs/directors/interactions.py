@@ -26,16 +26,25 @@ class Interactions_Director(comms.Cog):
     """ Events """
 
     @comms.Cog.listener()
-    async def interactions_event(self):
-        """ """
-        pass
-
-    """ Commands """
-
-    @comms.command()
-    async def interactions_command(self, ctx):
-        """ """
-        pass
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
+            pass
+        elif isinstance(error, discord.ext.commands.errors.CheckFailure):
+            await ctx.send(f'You do not have enough permissions to run the command **.{ctx.command.name}**')
+        elif isinstance(error, discord.ext.commands.CommandNotFound):
+            msg = ctx.message.content
+            try:
+                msg = msg[:msg.index(' ')]
+            except ValueError:
+                pass
+            possibilities = [x.name for x in self.bot.commands]
+            if len(possibilities):
+                embed = discord.Embed(title='\n'.join(str(y) for y in [x.name for x in self.bot.commands] if y in msg))
+                await ctx.send(content=f'**{msg}** command not found. Maybe you meant one of the following?', embed=embed)
+            else:
+                await ctx.send(f'Could not find a command similar to **{msg}**')
+        else:
+            await ctx.send(f'Notifying owner <@{self.bot.owner_id}> of error `{error}`')
 
 
 def setup(bot):
