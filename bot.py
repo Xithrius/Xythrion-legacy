@@ -81,7 +81,7 @@ class Robot(comms.Bot, Service_Connector):
 
     def __init__(self, *args, **kwargs):
         """ Objects:
-
+        Passing arguments into subclass
         """
         super().__init__(*args, **kwargs)
 
@@ -119,6 +119,13 @@ class Robot(comms.Bot, Service_Connector):
                                                precip INTEGER,
                                                snow INTEGER,
                                                snow_depth INTEGER)''')
+            c.execute('''CREATE TABLE Weather (id INTEGER,
+                                               time INTEGER,
+                                               high INTEGER,
+                                               low INTEGER,
+                                               humidity INTEGER,
+                                               sunrise INTEGER,
+                                               sunset INTEGER)''')
             self.c.commit()
             self.c.close()
 
