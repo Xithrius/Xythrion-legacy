@@ -3,3 +3,4 @@ datetime
 google-cloud-texttospeech
 aiohttp
 matplotlib
+youtube_dl
