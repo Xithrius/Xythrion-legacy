@@ -27,24 +27,9 @@ class Messages_Ranker(comms.Cog):
         Refreshing database background task
         """
         self.bot = bot
-        self.db_path = path('repository', 'database', 'user_info.db')
-
-        if not os.path.isfile(self.db_path):
-            self.createDB()
-        self.conn = sqlite3.connect(self.db_path)
-        # self.background_service = self.bot.loop.create_task(self.refreshDB())
-
-    """ Database checking """
-
-    def createDB(self):
-        self.conn = sqlite3.connect(self.db_path)
-        c = self.conn.cursor()
-        c.execute('''CREATE TABLE Users (id INTEGER NOT NULL PRIMARY KEY UNIQUE, name TEXT UNIQUE ON CONFLICT IGNORE, points INTEGER)''')
-        self.conn.commit()
-        self.conn.close()
 
     def insertToDB(self, member):
-        self.conn = sqlite3.connect(self.db_path)
+        self.conn = sqlite3.connect(self.bot.db_path)
         c = self.conn.cursor()
         c.execute('''INSERT INTO Users VALUES (?, ?, ?)''',
                   (member.id, member.display_name, 1))
@@ -55,7 +40,7 @@ class Messages_Ranker(comms.Cog):
     @comms.command(name='rank')
     async def check_COH_rank(self, ctx):
         """ """
-        self.conn = sqlite3.connect(self.db_path)
+        self.conn = sqlite3.connect(self.bot.db_path)
         c = self.conn.cursor()
         c.execute('SELECT id, points FROM Users WHERE id = ?', (ctx.author.id,))
         points = c.fetchall()[0][1]
@@ -72,7 +57,7 @@ class Messages_Ranker(comms.Cog):
     @comms.command(name='top')
     async def check_top_COH_rank(self, ctx):
         """ """
-        self.conn = sqlite3.connect(self.db_path)
+        self.conn = sqlite3.connect(self.bot.db_path)
         c = self.conn.cursor()
         c.execute('SELECT name, points FROM Users')
         points = c.fetchall()
@@ -94,7 +79,7 @@ class Messages_Ranker(comms.Cog):
     async def on_guild_join(self, guild):
         """ Creating the leveling system for users when joining a guild, and also greeting them """
         printc(f'[WARNING]: CLIENT HAS JOINED GUILD {guild}')
-        self.conn = sqlite3.connect(self.db_path)
+        self.conn = sqlite3.connect(self.bot.db_path)
         c = self.conn.cursor()
         printc('[...]: SCANNING ALL USERS IN GUILD...')
         members_added = 1
@@ -111,7 +96,7 @@ class Messages_Ranker(comms.Cog):
     @comms.Cog.listener()
     async def on_message(self, message):
         """ Listens for messages to give points in the leveling system """
-        self.conn = sqlite3.connect(self.db_path)
+        self.conn = sqlite3.connect(self.bot.db_path)
         c = self.conn.cursor()
         try:
             c.execute('SELECT id, points FROM Users WHERE id = ?',
