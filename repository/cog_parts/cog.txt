@@ -23,9 +23,16 @@ class Cog_Type(comms.Cog):
 
         self._loader = self.bot.loop.create_task(self.load_placeholder())
 
+    """ Cog events """
+
     def cog_unload(self):
         """ Cancel background task(s) when cog is unloaded """
         self._loader.cancel()
+
+    """ Checks """
+
+    async def cog_check(self, ctx):
+        return ctx.message.author.id in self.bot.owner_ids
 
     """ Background tasks """
 
