@@ -32,19 +32,21 @@ class Interactions_Director(comms.Cog):
         elif isinstance(error, discord.ext.commands.errors.CheckFailure):
             await ctx.send(f'You do not have enough permissions to run the command **.{ctx.command.name}**')
         elif isinstance(error, discord.ext.commands.CommandNotFound):
-            msg = ctx.message.content
-            try:
-                msg = msg[:msg.index(' ')]
-            except ValueError:
-                pass
-            possibilities = [x.name for x in self.bot.commands]
-            if len(possibilities):
-                embed = discord.Embed(title='\n'.join(str(y) for y in [x.name for x in self.bot.commands] if y in msg))
-                await ctx.send(content=f'**{msg}** command not found. Maybe you meant one of the following?', embed=embed)
-            else:
-                await ctx.send(f'Could not find a command similar to **{msg}**')
+            await ctx.send(content=f'**{msg}** command not found, sorry.')
         else:
             await ctx.send(f'Notifying owner <@{self.bot.owner_id}> of error `{error}`')
+
+    """ Commands """
+
+    @comms.command(name='join')
+    async def _join(self, ctx):
+        if ctx.voice_client is None:
+            if ctx.author.voice:
+                await ctx.author.voice.channel.connect()
+            else:
+                await ctx.send(f'{ctx.message.author.mention} You are not in a voice chat')
+        else:
+            await ctx.author.voice.channel.connect()
 
 
 def setup(bot):
