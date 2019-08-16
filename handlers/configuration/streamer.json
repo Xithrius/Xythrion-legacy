@@ -7,6 +7,9 @@
         "ignoreerrors": true,
         "logtostderr": false,
         "quiet": true,
+        "panic": false,
+        "fatal": false,
+        "error": false,
         "no_warnings": true,
         "default_search": "auto",
         "source_address": "0.0.0.0"
