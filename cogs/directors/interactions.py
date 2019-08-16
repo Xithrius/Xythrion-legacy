@@ -27,14 +27,14 @@ class Interactions_Director(comms.Cog):
 
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
+        if hasattr(ctx.command, 'on_error'):
+            return
         if isinstance(error, discord.ext.commands.errors.CommandInvokeError):
             pass
         elif isinstance(error, discord.ext.commands.errors.CheckFailure):
             await ctx.send(f'You do not have enough permissions to run the command **.{ctx.command.name}**')
         elif isinstance(error, discord.ext.commands.CommandNotFound):
-            await ctx.send(content=f'**{msg}** command not found, sorry.')
-        else:
-            await ctx.send(f'Notifying owner <@{self.bot.owner_id}> of error `{error}`')
+            await ctx.send(content=f'Command not found, sorry.')
 
     """ Commands """
 
