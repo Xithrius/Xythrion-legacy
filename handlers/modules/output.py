@@ -8,8 +8,6 @@
 import __main__
 import datetime
 import os
-import aiohttp
-from google.cloud import texttospeech
 import asyncio
 
 
@@ -19,10 +17,6 @@ def path(*objects):
     for i in objects:
         newPath.append(i)
     return (os.sep).join(str(y) for y in newPath)
-
-
-credentials_path = path('handlers', 'configuration', 'google_service_credentials.json')
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
 
 
 def printc(string):
@@ -62,23 +56,11 @@ def progress_bar(iteration, total, prefix='PROGRESS:', suffix='COMPLETE', decima
     if iteration == total:
         print()
 
-'''
-async def tts(ctx):
-    """ Text to speech through the bot's mic """
-    client = texttospeech.TextToSpeechClient()
-    synthesis_input = texttospeech.types.SynthesisInput(text=(ctx.message.content)[5:])
-    voice = texttospeech.types.VoiceSelectionParams(language_code='en-US-Wavenet-D', ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
-    audio_config = texttospeech.types.AudioConfig(audio_encoding=texttospeech.enums.AudioEncoding.MP3)
-    response = client.synthesize_speech(synthesis_input, voice, audio_config)
-    with open(path('repository', 'tmp', 'output.mp3'), 'wb') as out:
-        out.write(response.audio_content)
-        vc = ctx.guild.voice_client
-        if not vc:
-            vc = await ctx.author.voice.channel.connect()
-        vc.play(discord.FFmpegPCMAudio(source=path('repository', 'tmp', 'output.mp3'), options='-loglevel fatal'))
-        vc.source = discord.PCMVolumeTransformer(vc.source)
-        vc.source.volume = 1
-        while vc.is_playing():
-            await asyncio.sleep(1)
-        vc.stop()
-'''
+
+def get_cogs(blocked_cogs):
+    folders = [folder for folder in os.listdir(path('cogs')) if folder != '__pycache__']
+    exts = []
+    for folder in folders:
+        folder_cogs = [f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if os.path.isfile(path('cogs', folder, cog)) and cog[:-3] not in blocked_cogs]
+        exts.extend(folder_cogs)
+    return exts
