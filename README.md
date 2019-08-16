@@ -55,7 +55,7 @@
 |  Windows  |  `py -m pip install --user -r requirements.txt`  |
 |  Linux  | `python3 -m pip install --user -r requirements.txt`  |
 
-### Setting up configuration:
+### Setting up configuration for supported cogs:
 * Create a new file called `config.json` within the directory of `handlers/configuration`.
 * Copy the contents of `config.txt` into `config.json`, then conduct the following:
 
@@ -66,24 +66,6 @@
 |  Reddit  |  Give `username` and `password` your username and password. `ID` and `secret` are self-explanitory after setting up the personal-use script. Use `http://127.0.0.1:65010/authorize_callback` for the `redirect uri`  |  [Reddit user preferences](https://old.reddit.com/prefs/apps/)  |
 |  Weather  | `weather` will be given the API key that you're emailed after signing up for one.  |  [WeatherBit dashbord](https://www.weatherbit.io/account/dashboard)  |
 |  Osu!  |  Give `osu` the API key that you'll recieve when registering for a token.  |  [Osu API Registration](https://osu.ppy.sh/p/api/)  |
-
-#### Reference for what to replace items with:
-```JSON
-{
-    "discord": "",
-    "owners": [],
-    "services": {
-        "reddit": {
-            "username": "",
-            "password": "",
-            "ID": "",
-            "secret": ""
-        },
-        "weather": ""
-    },
-    "There should be no need to modify": "anything below this line in config.json"
-}
-```
 
 ### Invite the bot:
 * Remember the ID that you were given while creating the bot? Well here's where you use it. Take the ID, and replace IDENTIFICATION within the link below. Click on the link when you're done with this process.
