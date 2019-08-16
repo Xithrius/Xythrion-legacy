@@ -15,7 +15,7 @@ import logging
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import path, printc
+from handlers.modules.output import path, printc, get_cogs
 
 
 logger = logging.getLogger('discord')
@@ -67,7 +67,7 @@ class Service_Connector:
         f = self.config.services.osu
         parameters = {'k': f, 'u': 'Xithrius'}
         async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://osu.ppy.sh/api/get_user', params=parameters) as response:
+            async with session.get('https://osu.ppy.sh/api/get_user', params=parameters) as response:
                 if response.status == 200:
                     if not self.services['osu']:
                         printc('[ ! ]: OSU! SERVICE AVAILABLE')
@@ -140,11 +140,7 @@ class Robot(comms.Bot, Service_Connector):
 
     async def on_ready(self):
         self.s = aiohttp.ClientSession()
-        self.cog_folders = [folder for folder in os.listdir(path('cogs')) if folder != '__pycache__']
-        self.exts = []
-        for folder in self.cog_folders:
-            folder_cogs = [f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if os.path.isfile(path('cogs', folder, cog)) and cog[:-3] not in self.config.blocked_cogs]
-            self.exts.extend(folder_cogs)
+        self.exts = get_cogs(self.config.blocked_cogs)
         printc('[. . .]: LOADING EXTENSIONS')
         for cog in self.exts:
             try:
@@ -183,7 +179,7 @@ class MainCog(comms.Cog):
 
     def __init__(self, bot):
         """ Objects:
-
+        Robot(comms.Bot) as a class attribute
         """
         self.bot = bot
 
@@ -205,15 +201,15 @@ class MainCog(comms.Cog):
         for cog in self.bot.exts:
             try:
                 self.bot.unload_extension(cog)
+            except Exception as e:
+                pass
+        for cog in get_cogs(self.bot.config.blocked_cogs):
+            try:
                 self.bot.load_extension(cog)
-            except discord.ext.commands.errors.ExtensionNotFound:
-                self.bot.exts.remove(cog)
+            except Exception as e:
+                print(e)
         printc('[ ! ]: COGS HAVE BEEN RELOADED')
         await ctx.send(f'**{len(self.bot.exts)}** cog(s) have been reloaded', delete_after=30)
-
-    @comms.command()
-    async def list_cogs(self, ctx):
-        await ctx.send(', '.join(str(y).split('.')[0] for y in self.bot.cogs.keys()))
 
 
 if __name__ == "__main__":
