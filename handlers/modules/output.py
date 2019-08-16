@@ -25,6 +25,11 @@ def printc(string):
     print(f"~> [{now}] {string}")
 
 
+def now():
+    """ Returns the time depending on time zone from file """
+    return datetime.datetime.now()
+
+
 def create_table(cogs_dict):
     """ """
     keys, cogs = [], []
@@ -41,11 +46,6 @@ def create_table(cogs_dict):
     print()
 
 
-def now():
-    """ Returns the time depending on time zone from file """
-    return datetime.datetime.now()
-
-
 def progress_bar(iteration, total, prefix='PROGRESS:', suffix='COMPLETE', decimals=2, length=50, fill='█'):
     """ Progress bar for tracking progress """
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
@@ -58,9 +58,14 @@ def progress_bar(iteration, total, prefix='PROGRESS:', suffix='COMPLETE', decima
 
 
 def get_cogs(blocked_cogs):
+    """ Gets '.' joined filepaths for one iteration of folders within the 'cogs' folder """
     folders = [folder for folder in os.listdir(path('cogs')) if folder != '__pycache__']
     exts = []
     for folder in folders:
         folder_cogs = [f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if os.path.isfile(path('cogs', folder, cog)) and cog[:-3] not in blocked_cogs]
         exts.extend(folder_cogs)
     return exts
+
+
+def get_filename(id, end=''):
+    return f'{int(datetime.datetime.timestamp((now())))}-{id}{end}'

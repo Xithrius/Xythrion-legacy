@@ -16,7 +16,7 @@ import datetime
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import now, path, printc
+from handlers.modules.output import now, path, printc, get_filename
 
 
 class Weather_Requester(comms.Cog):
@@ -28,7 +28,7 @@ class Weather_Requester(comms.Cog):
         """
         self.bot = bot
         self.h = self.bot.services[os.path.basename(__file__)[:-3]]
-        self.background_weather = self.bot.loop.create_task(self.collect_weather())
+        # self.background_weather = self.bot.loop.create_task(self.collect_weather())
 
     """ Cog events """
 
@@ -137,7 +137,7 @@ class Weather_Requester(comms.Cog):
                 plt.ylabel("Temperature (°F)")
                 plt.title(f"Zip {zip_code}, {country}: High/low temperatures")
                 plt.gcf().autofmt_xdate()
-                filename = f'{int(datetime.datetime.timestamp((now())))}-{ctx.message.author.id}.png'
+                filename = get_filename(ctx.message.author.id, '.png')
                 plt.savefig(path('repository', 'tmp', filename))
                 plt.clf()
                 await ctx.send(file=discord.File(path('repository', 'tmp', filename)))
