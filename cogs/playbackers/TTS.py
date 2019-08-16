@@ -24,8 +24,7 @@ class TTS_Playbacker(comms.Cog):
         """
         self.bot = bot
 
-        credentials_path = path('handlers', 'configuration', 'google_service_credentials.json')
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('handlers', 'configuration', 'gsc.json')
 
     """ Commands """
 
