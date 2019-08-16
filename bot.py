@@ -206,6 +206,8 @@ class MainCog(comms.Cog):
         for cog in get_cogs(self.bot.config.blocked_cogs):
             try:
                 self.bot.load_extension(cog)
+            except discord.ext.commands.errors.ExtensionAlreadyLoaded:
+                pass
             except Exception as e:
                 print(e)
         printc('[ ! ]: COGS HAVE BEEN RELOADED')
