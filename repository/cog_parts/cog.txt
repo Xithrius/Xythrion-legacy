@@ -8,7 +8,7 @@
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import path, printc, now, aiohttp_requester
+from handlers.modules.output import path, printc, now
 
 
 class Cog_Type(comms.Cog):
