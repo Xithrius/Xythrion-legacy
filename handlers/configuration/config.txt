@@ -2,12 +2,7 @@
     "discord": "",
     "owners": [],
     "services": {
-        "reddit": {
-            "username": "",
-            "password": "",
-            "id": "",
-            "secret": ""
-        },
+        "reddit": "",
         "weather": "",
         "osu": ""
     },
