@@ -12,7 +12,7 @@ import os
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import path, printc, now
+from handlers.modules.output import path, now, ds
 
 
 class Messages_Ranker(comms.Cog):
@@ -78,10 +78,10 @@ class Messages_Ranker(comms.Cog):
     @comms.Cog.listener()
     async def on_guild_join(self, guild):
         """ Creating the leveling system for users when joining a guild, and also greeting them """
-        printc(f'[WARNING]: CLIENT HAS JOINED GUILD {guild}')
+        ds(f'[WARNING]: CLIENT HAS JOINED GUILD {guild}')
         self.conn = sqlite3.connect(self.bot.db_path)
         c = self.conn.cursor()
-        printc('[...]: SCANNING ALL USERS IN GUILD...')
+        ds('[...]: SCANNING ALL USERS IN GUILD...')
         members_added = 1
         for member in guild.members:
             try:
@@ -90,7 +90,7 @@ class Messages_Ranker(comms.Cog):
                 members_added += 1
             except sqlite3.IntegrityError:
                 pass
-        printc(f'[ ! ]: MEMBERS ADDED TO DATABASE: {members_added}')
+        ds(f'[ ! ]: MEMBERS ADDED TO DATABASE: {members_added}')
         self.conn.commit()
 
     @comms.Cog.listener()

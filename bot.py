@@ -15,9 +15,10 @@ import logging
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import path, printc, get_cogs
+from handlers.modules.output import path, get_cogs, ds
 
 
+# Logging
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
 handler = logging.FileHandler(filename=path('repository', 'logs', 'discord.log'), encoding='utf-8', mode='w')
@@ -26,63 +27,64 @@ logger.addHandler(handler)
 
 
 class Service_Connector:
-    """ """
+    """ A background task for checking if services are available """
 
     def __init__(self, config):
         self.config = config
         self.services = {k: False for k in self.config.services._fields}
 
     async def start_services(self):
+        """ Starting all the services """
         await self.attempt_weather()
         await self.attempt_reddit()
         await self.attempt_osu()
 
     async def attempt_weather(self):
+        """ Attempting to connect to the weatherbit.io API """
         f = self.config.services.weather
         async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://api.weatherbit.io/v2.0/forecast/daily?postal_code=12345&country=US&key={f}') as response:
-                if response.status == 200:
+            async with session.get(f'https://api.weatherbit.io/v2.0/forecast/daily?postal_code=12345&country=US&key={f}') as r:
+                if r.status == 200:
                     if not self.services['weather']:
-                        printc('[ ! ]: WEATHER SERVICE AVAILABLE')
+                        ds('[ SUCCESS ]: WEATHER SERVICE AVAILABLE')
                     self.services['weather'] = True
                 else:
-                    printc(f'WARNING: WEATHER SERVICE NOT AVAILABLE: {t.status}')
+                    ds(f'[ WARNING ]: WEATHER SERVICE NOT AVAILABLE: {r.status}')
 
     async def attempt_reddit(self):
+        """ Attempting to connect to the Reddit API """
         f = self.config.services.reddit
         client_auth = aiohttp.BasicAuth(login=f.id, password=f.secret)
         post_data = {"grant_type": "password", "username": f.username, "password": f.password}
-        headers = {"User-Agent": f"Xylene/{self.__version__} by {f.username}"}
+        headers = {"User-Agent": f"Xylene/v0.0.1 by {f.username}"}
         async with aiohttp.ClientSession(auth=client_auth, headers=headers) as session:
-            async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as response:
-                if response.status == 200:
-                    js = await response.json()
+            async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as r:
+                if r.status == 200:
+                    js = await r.json()
                     if not self.services['reddit']:
-                        printc('[ ! ]: REDDIT SERVICE AVAILABLE')
+                        ds('[ SUCCESS ]: REDDIT SERVICE AVAILABLE')
                     self.services['reddit'] = {"Authorization": f"bearer {js['access_token']}", **headers}
                 else:
-                    printc(f'WARNING: REDDIT SERVICE NOT AVAILABLE: {t.status}')
+                    ds(f'[ WARNING ]: REDDIT SERVICE NOT AVAILABLE: {r.status}')
 
     async def attempt_osu(self):
+        """ Attempting to connect to the Osu! API """
         f = self.config.services.osu
         parameters = {'k': f, 'u': 'Xithrius'}
         async with aiohttp.ClientSession() as session:
-            async with session.get('https://osu.ppy.sh/api/get_user', params=parameters) as response:
-                if response.status == 200:
+            async with session.get('https://osu.ppy.sh/api/get_user', params=parameters) as r:
+                if r.status == 200:
                     if not self.services['osu']:
-                        printc('[ ! ]: OSU! SERVICE AVAILABLE')
+                        ds('[ SUCCESS ]: OSU! SERVICE AVAILABLE')
                     self.services['osu'] = True
                 else:
-                    printc(f'WARNING: OSU! SERVICE NOT AVAILABLE: {t.status}')
+                    ds(f'[ WARNING ]: OSU! SERVICE NOT AVAILABLE: {r.status}')
 
 
 class Robot(comms.Bot, Service_Connector):
-    """ """
+    """ Subclassing comms.Bot, inhereting Service_Connector """
 
     def __init__(self, *args, **kwargs):
-        """ Objects:
-        Passing arguments into subclass
-        """
         super().__init__(*args, **kwargs)
 
         with open(path('handlers', 'configuration', 'config.json'), "r", encoding="utf8") as f:
@@ -92,12 +94,11 @@ class Robot(comms.Bot, Service_Connector):
 
         self.__version__ = 'v0.0.1'
 
-        Service_Connector.__init__(self, config=self.config)
+        Service_Connector.__init__(self, self.config)
 
         self.loop.create_task(self.load_services())
 
         self.owner_ids = set(self.config.owners)
-        self.activity = discord.Activity(type=discord.ActivityType.watching, name='the users')
 
         self.db_path = path('repository', 'data', 'requests.db')
 
@@ -132,6 +133,7 @@ class Robot(comms.Bot, Service_Connector):
     """ Background tasks """
 
     async def load_services(self):
+        """ Checking services every minute """
         while not self.is_closed():
             await self.start_services()
             await asyncio.sleep(60)
@@ -139,65 +141,91 @@ class Robot(comms.Bot, Service_Connector):
     """ Events """
 
     async def on_ready(self):
+        """ When ready, the session for requesting is loaded along with cogs """
         self.s = aiohttp.ClientSession()
         self.exts = get_cogs(self.config.blocked_cogs)
-        printc('[. . .]: LOADING EXTENSIONS')
+        ds('[. . .]: LOADING EXTENSIONS')
         for cog in self.exts:
             try:
                 self.load_extension(cog)
             except Exception as e:
-                printc(f'{cog}, {type(e).__name__}: {e}')
-        printc('[ ! ]: BOT IS READY FOR USE')
+                ds(f'{cog}, {type(e).__name__}: {e}')
+        ds('[ SUCCESS ]: BOT IS READY FOR USE')
+        self.activity = discord.Activity(type=discord.ActivityType.watching, name='the users')
 
     async def close(self):
         """ Safely closes connections """
         await self.s.close()
         try:
             self.c.close()
-        except Exception as e:
+        except Exception:
             pass
         await super().close()
 
-    """ Miscellaneous events """
-
     async def on_disconnect(self):
         """ Sends warning when the client disconnects from the network """
-        printc('[WARNING]: CLIENT HAS DISCONNECTED FROM NETWORK')
+        pass
 
     async def on_connect(self):
         """ Sends warning when the client connects to the network """
-        # printc('[WARNING]: CLIENT HAS CONNECTED TO NETWORK')
         pass
 
     async def on_resumed(self):
         """ Sends warning when the client resumes a session """
-        printc('[WARNING]: CLIENT HAS RESUMED CURRENT SESSION')
+        pass
 
 
 class MainCog(comms.Cog):
-    """ """
+    """ Essential cog for bugchecking """
 
     def __init__(self, bot):
-        """ Objects:
-        Robot(comms.Bot) as a class attribute
-        """
         self.bot = bot
 
-    """ Cog checks """
-
     async def cog_check(self, ctx):
+        """Checks permissions of a user.
+
+        Args:
+            ctx: Context object where the command is called.
+
+        Returns:
+            True or false depending on if the user's id is in the owner set.
+
+        """
         return ctx.author.id in self.bot.owner_ids
 
     """ Commands """
 
     @comms.command()
     async def exit(self, ctx):
-        """ Makes the bot log out """
-        printc('[WARNING]: BOT IS LOGGING OUT')
+        """Unloads currently loaded cogs, then loads from the 'cogs' directory.
+
+        Args:
+            ctx: Context object where the command is called.
+
+        Raises:
+            type(e).__name__: Cog cannot be loaded. Reason: 'e'.
+
+        Returns:
+            Errors, or a confirmation of success.
+
+        """
+        ds('[ WARNING ]: BOT IS LOGGING OUT')
         await ctx.bot.logout()
 
     @comms.command(name='r')
     async def reload(self, ctx):
+        """Unloads currently loaded cogs, then loads from the 'cogs' directory.
+
+        Args:
+            ctx: Context object where the command is called.
+
+        Raises:
+            type(e).__name__: Cog cannot be loaded. Reason: 'e'.
+
+        Returns:
+            Errors, or a confirmation of success.
+
+        """
         for cog in self.bot.exts:
             try:
                 self.bot.unload_extension(cog)
@@ -210,8 +238,7 @@ class MainCog(comms.Cog):
                 pass
             except Exception as e:
                 print(e)
-        printc('[ ! ]: COGS HAVE BEEN RELOADED')
-        await ctx.send(f'**{len(self.bot.exts)}** cog(s) have been reloaded', delete_after=30)
+        return ds('[ SUCCESS ]: COGS HAVE BEEN RELOADED')
 
 
 if __name__ == "__main__":

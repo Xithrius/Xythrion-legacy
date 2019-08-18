@@ -14,7 +14,7 @@ import os
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import printc, path, now
+from handlers.modules.output import path, now, ds
 
 
 class Osu_Requester(comms.Cog):
@@ -53,9 +53,9 @@ class Osu_Requester(comms.Cog):
         async with self.bot.s.get(f'https://osu.ppy.sh/api/get_user', params=params) as r:
             if r.status == 200:
                 _json = await r.json()
-                info = '\n'.join(f'**{k}**: {v}' for k, v in _json[0].items())
                 embed = discord.Embed(title=f'Osu! User info:')
-                embed.add_field(name='', value='')
+                for k, v in _json.items():
+                    embed.add_field(name=f'**{k}**', value=v)
                 await ctx.send(embed=embed)
             elif r.status == 404:
                 await ctx.send(f'User **{u}** could not be found.')

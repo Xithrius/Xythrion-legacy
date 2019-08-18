@@ -16,7 +16,7 @@ import datetime
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import now, path, printc, get_filename
+from handlers.modules.output import now, path, ds, get_filename
 
 
 class Weather_Requester(comms.Cog):
@@ -33,10 +33,10 @@ class Weather_Requester(comms.Cog):
     """ Cog events """
 
     def cog_unload(self):
-        self.background_weather.cancel()
+        # self.background_weather.cancel()
         try:
             self.c.close()
-        except Exception as e:
+        except Exception:
             pass
 
     """ Permission checking """

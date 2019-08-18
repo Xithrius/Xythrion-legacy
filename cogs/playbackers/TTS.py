@@ -32,11 +32,14 @@ class TTS_Playbacker(comms.Cog):
     @comms.is_owner()
     async def tts(self, ctx):
         """ Text to speech through the bot's mic """
-        client = texttospeech.TextToSpeechClient()
-        synthesis_input = texttospeech.types.SynthesisInput(text=(ctx.message.content)[5:])
-        voice = texttospeech.types.VoiceSelectionParams(language_code='en-US-Wavenet-D', ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
-        audio_config = texttospeech.types.AudioConfig(audio_encoding=texttospeech.enums.AudioEncoding.MP3)
-        response = client.synthesize_speech(synthesis_input, voice, audio_config)
+        try:
+            client = texttospeech.TextToSpeechClient()
+            synthesis_input = texttospeech.types.SynthesisInput(text=(ctx.message.content)[5:])
+            voice = texttospeech.types.VoiceSelectionParams(language_code='en-US-Wavenet-D', ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
+            audio_config = texttospeech.types.AudioConfig(audio_encoding=texttospeech.enums.AudioEncoding.MP3)
+            response = client.synthesize_speech(synthesis_input, voice, audio_config)
+        except Exception:
+            pass
         with open(path('repository', 'tmp', 'output.mp3'), 'wb') as out:
             out.write(response.audio_content)
         vc = ctx.guild.voice_client
@@ -48,20 +51,6 @@ class TTS_Playbacker(comms.Cog):
         while vc.is_playing():
             await asyncio.sleep(1)
         vc.stop()
-
-    @comms.command(hidden=True)
-    @comms.is_owner()
-    async def test_tts(self, ctx):
-        """ TTS through the REST API """
-        url = 'https://texttospeech.googleapis.com/v1beta1/text:synthesize'
-        # data = self.bot.config['google']
-        # data['text'] = ctx.message.content[5:]
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=self.tts) as response:
-                await ctx.send(response.status)
-                await ctx.send(response)
-                if response.status == 200:
-                    js = await response.json()
 
 
 def setup(bot):

@@ -14,7 +14,7 @@ import os
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import printc, path, now
+from handlers.modules.output import path, now, ds
 
 
 class Reddit_Requester(comms.Cog):
@@ -117,7 +117,7 @@ class Reddit_Requester(comms.Cog):
             if r.status == 200:
                 _json = await r.json()
                 info = _json['data']['children']
-                for i in range(amount):
+                for _ in range(amount):
                     embed = discord.Embed(title=f'Currently hot on the {subreddit} subreddit', colour=0xc27c0e, timestamp=now())
                     I = info[random.randint(1, amount)]['data']
                     try:
