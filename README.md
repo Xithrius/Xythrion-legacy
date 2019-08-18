@@ -25,11 +25,13 @@
   - [ ] Enter the Gungeon
 - [ ] Websites:
   - [x] Reddit
-  - [x] Weather
+  - [x] Weather*
   - [ ] Github
   - [ ] Imgur
   - [ ] Twitter
   - [ ] Open Movie Database (OMDb)
+
+> *currently contains databasing capabilities
 
 
 ## Setup:
@@ -38,6 +40,8 @@
 * I will be setting up a DigitalOcean instance of the bot soon, so as of now, the bot is still in experimental mode, and is __unstable__
 * If you want my bot on your server, it can be [invited](https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=1664470208).
 * I am a Windows 10 user. If you submit an [issue](https://github.com/Xithrius/Xylene/issues) regarding Linux, I'll do my best to help you, but there are no gaurantees that I will be able to figure out the problem. 
+* Cog files have categories in this order: `Background tasks`, `Commands`, and `Events`. Anything that doesn't go into these categories are placed before these and are not labeled.
+* Doc strings should always be formatted as such: `short desc`, `Args`, `Raises`, and `Returns`.
 
 ### Requirements:
 #### [Install python](https://www.python.org/downloads/)
