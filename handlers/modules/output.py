@@ -37,8 +37,8 @@ def now():
     return datetime.datetime.now()
 
 
-def date_string(string):
-    """Returning a customized string with a timestamp that includes the date.
+def ds(string, end=False):
+    """(AKA date_string) Returning a customized string with a timestamp that includes the date.
 
     Args:
         string: Just a regular string.
@@ -47,7 +47,10 @@ def date_string(string):
         A string with the current date within square brackets.
 
     """
-    return f"[{now()}] {string}"
+    if not end:
+        print(f"[{now()}] {string}")
+    else:
+        print(f"[{now()}] {string}", end=end)
 
 
 def get_cogs(blocked_cogs):
