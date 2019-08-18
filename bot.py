@@ -59,6 +59,7 @@ class Service_Connector:
                     js = await r.json()
                     if not self.services['reddit']:
                         ds('[ SUCCESS ]: REDDIT SERVICE AVAILABLE')
+                    self.services['reddit'] = True
                 else:
                     ds(f'[ WARNING ]: REDDIT SERVICE NOT AVAILABLE: {r.status}')
 
