@@ -11,54 +11,55 @@ import os
 import asyncio
 
 
-def path(*objects):
-    """ Returns path relative to caller file location with additional objects, if any """
+def path(*_items):
+    """ Gives a path relative to caller file location with added items.
+
+    Args:
+        objects: An amount of different items to path to as strings.
+
+    Returns:
+        A Path joined by the operating system's seperator.
+
+    """
     newPath = ((__main__.__file__).split(os.sep))[:-1]
-    for i in objects:
+    for i in _items:
         newPath.append(i)
     return (os.sep).join(str(y) for y in newPath)
 
 
-def printc(string):
-    """ Customized printing to the console with timestamps """
-    now = datetime.datetime.now()
-    print(f"~> [{now}] {string}")
-
-
 def now():
-    """ Returns the time depending on time zone from file """
+    """Returns the time depending on time zone from file
+
+    Returns:
+        The current date down to the milisecond.
+
+    """
     return datetime.datetime.now()
 
 
-def create_table(cogs_dict):
-    """ """
-    keys, cogs = [], []
-    for k, v in cogs_dict.items():
-        keys.append(k)
-        cogs.append(', '.join(str(y)[:-3] for y in v))
-    longest_cog_name = max(map(len, keys))
-    longest_cog_line = max(map(len, cogs))
-    print()
-    for i in range(len(keys)):
-        print(f'\t+{"-" * (longest_cog_name + 2)}+{"-" * (longest_cog_line + 2)}+')
-        print(f'\t| {keys[i]}{" " * (longest_cog_name - len(keys[i]))} | {cogs[i]}{" " * (longest_cog_line - len(cogs[i]))} |')
-    print(f'\t+{"-" * (longest_cog_name + 2)}+{"-" * (longest_cog_line + 2)}+')
-    print()
+def date_string(string):
+    """Returning a customized string with a timestamp that includes the date.
 
+    Args:
+        string: Just a regular string.
 
-def progress_bar(iteration, total, prefix='PROGRESS:', suffix='COMPLETE', decimals=2, length=50, fill='█'):
-    """ Progress bar for tracking progress """
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-    filledLength = int(length * iteration // total)
-    bar = fill * filledLength + '-' * (length - filledLength)
-    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end='\r')
-    # Print New Line on Complete
-    if iteration == total:
-        print()
+    Returns:
+        A string with the current date within square brackets.
+
+    """
+    return f"[{now()}] {string}"
 
 
 def get_cogs(blocked_cogs):
-    """ Gets '.' joined filepaths for one iteration of folders within the 'cogs' folder """
+    """Gets cog filepaths within the 'cogs' folder
+
+    Args:
+        blocked_cogs: A list of cogs that are not allowed to be loaded
+
+    Returns:
+        A list of strings with filepaths joined by a '.'
+
+    """
     folders = [folder for folder in os.listdir(path('cogs')) if folder != '__pycache__']
     exts = []
     for folder in folders:
@@ -68,4 +69,14 @@ def get_cogs(blocked_cogs):
 
 
 def get_filename(id, end=''):
+    """Here's a specific, random file name.
+
+    Args:
+        id: The ID of a user
+        end: The format of the file
+
+    Returns:
+        A string with the current date, id of a user, and the 
+
+    """
     return f'{int(datetime.datetime.timestamp((now())))}-{id}{end}'
