@@ -53,17 +53,12 @@ class Service_Connector:
 
     async def attempt_reddit(self):
         """ Attempting to connect to the Reddit API """
-        f = self.config.services.reddit
-        client_auth = aiohttp.BasicAuth(login=f.id, password=f.secret)
-        post_data = {"grant_type": "password", "username": f.username, "password": f.password}
-        headers = {"User-Agent": f"Xylene/v0.0.1 by {f.username}"}
-        async with aiohttp.ClientSession(auth=client_auth, headers=headers) as session:
-            async with session.post("https://www.reddit.com/api/v1/access_token", data=post_data) as r:
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://www.reddit.com/r/pics/hot.json") as r:
                 if r.status == 200:
                     js = await r.json()
                     if not self.services['reddit']:
                         ds('[ SUCCESS ]: REDDIT SERVICE AVAILABLE')
-                    self.services['reddit'] = {"Authorization": f"bearer {js['access_token']}", **headers}
                 else:
                     ds(f'[ WARNING ]: REDDIT SERVICE NOT AVAILABLE: {r.status}')
 
@@ -150,8 +145,9 @@ class Robot(comms.Bot, Service_Connector):
                 self.load_extension(cog)
             except Exception as e:
                 ds(f'{cog}, {type(e).__name__}: {e}')
-        ds('[ SUCCESS ]: BOT IS READY FOR USE')
-        self.activity = discord.Activity(type=discord.ActivityType.watching, name='the users')
+        ds('[ READY ]')
+        game = discord.Game('the users')
+        await self.change_presence(status=discord.ActivityType.watching, activity=game)
 
     async def close(self):
         """ Safely closes connections """
