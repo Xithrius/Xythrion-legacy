@@ -1,2 +1,0 @@
-Automate service updater based on .json files and os.listdir(path('cogs', 'requesters'))
-^ Only for Service_Connector
