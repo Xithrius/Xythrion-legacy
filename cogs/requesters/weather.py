@@ -28,12 +28,12 @@ class Weather_Requester(comms.Cog):
         """
         self.bot = bot
         self.h = self.bot.services[os.path.basename(__file__)[:-3]]
-        # self.background_weather = self.bot.loop.create_task(self.collect_weather())
+        self.background_weather = self.bot.loop.create_task(self.collect_weather())
 
     """ Cog events """
 
     def cog_unload(self):
-        # self.background_weather.cancel()
+        self.background_weather.cancel()
         try:
             self.c.close()
         except Exception:
@@ -43,8 +43,7 @@ class Weather_Requester(comms.Cog):
 
     async def cog_check(self, ctx):
         """ """
-        # return all((ctx.message.author.id in self.bot.owner_ids, self.h))
-        return True
+        return self.h
 
     """ Background tasks """
 
@@ -64,7 +63,7 @@ class Weather_Requester(comms.Cog):
                         await self.get_weather(request[0], area[0], area[1])
                     else:
                         n = datetime.datetime.date(now())
-                        other_date = datetime.datetime.fromtimestamp(weather_requests[0][1])
+                        other_date = datetime.datetime.fromtimestamp(weather_requests[-1][1])
                         other_date = datetime.datetime.date(other_date)
                         if n > other_date:
                             await self.get_weather(request[0], area[0], area[1])
