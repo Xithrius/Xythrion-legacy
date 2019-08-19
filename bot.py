@@ -37,7 +37,6 @@ class Service_Connector:
         """ Starting all the services """
         await self.attempt_weather()
         await self.attempt_reddit()
-        await self.attempt_osu()
 
     async def attempt_weather(self):
         """ Attempting to connect to the weatherbit.io API """
@@ -62,19 +61,6 @@ class Service_Connector:
                     self.services['reddit'] = True
                 else:
                     ds(f'[ WARNING ]: REDDIT SERVICE NOT AVAILABLE: {r.status}')
-
-    async def attempt_osu(self):
-        """ Attempting to connect to the Osu! API """
-        f = self.config.services.osu
-        parameters = {'k': f, 'u': 'Xithrius'}
-        async with aiohttp.ClientSession() as session:
-            async with session.get('https://osu.ppy.sh/api/get_user', params=parameters) as r:
-                if r.status == 200:
-                    if not self.services['osu']:
-                        ds('[ SUCCESS ]: OSU! SERVICE AVAILABLE')
-                    self.services['osu'] = True
-                else:
-                    ds(f'[ WARNING ]: OSU! SERVICE NOT AVAILABLE: {r.status}')
 
 
 class Robot(comms.Bot, Service_Connector):
