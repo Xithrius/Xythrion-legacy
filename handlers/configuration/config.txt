@@ -2,7 +2,6 @@
     "discord": "",
     "owners": [],
     "services": {
-        "reddit": "",
         "weather": "",
         "osu": ""
     },
