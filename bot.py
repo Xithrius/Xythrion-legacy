@@ -29,10 +29,6 @@ logger.addHandler(handler)
 class Service_Connector:
     """ A background task for checking if services are available """
 
-    def __init__(self, config):
-        self.config = config
-        self.services = {k: False for k in self.config.services._fields}
-
     async def start_services(self):
         """ Starting all the services """
         await self.attempt_weather()
@@ -63,20 +59,25 @@ class Service_Connector:
                     ds(f'[ WARNING ]: REDDIT SERVICE NOT AVAILABLE: {r.status}')
 
 
-class Robot(comms.Bot, Service_Connector):
-    """ Subclassing comms.Bot, inhereting Service_Connector """
+class Robot(comms.Bot):
+    """ Subclassing comms.Bot """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        with open(path('handlers', 'configuration', 'config.json'), "r", encoding="utf8") as f:
+        self.s = aiohttp.ClientSession()
+
+        with open(path('handlers', 'configuration', 'config.json'), 'r', encoding='utf8') as f:
             data = json.dumps(json.load(f))
+
+        with open(path('handlers', 'configuration', 'urls.json'), 'r') as f:
+            self.testing_urls = json.load(f)
 
         self.config = json.loads(data, object_hook=lambda d: collections.namedtuple("config", d.keys())(*d.values()))
 
-        self.__version__ = 'v0.0.1'
+        self.services = data['services']
 
-        Service_Connector.__init__(self, self.config)
+        self.requester_status = {k: False for k in os.listdir(path('cogs', 'requesters')) if k[:-3] == '.py'}
 
         self.loop.create_task(self.load_services())
 
@@ -87,7 +88,7 @@ class Robot(comms.Bot, Service_Connector):
         if not os.path.isfile(self.db_path):
             self.c = sqlite3.connect(self.db_path)
             c = self.c.cursor()
-            services = ', '.join(str(y) for y in [f'{x} TEXT' for x in self.config.services._fields])
+            services = ', '.join(str(y) for y in [f'{x} TEXT' for x in self.requester_status.keys()])
             c.execute(f'''CREATE TABLE Requests (id INTEGER, {services})''')
             c.execute('''CREATE TABLE Weather (id INTEGER,
                                                time INTEGER,
@@ -115,16 +116,34 @@ class Robot(comms.Bot, Service_Connector):
     """ Background tasks """
 
     async def load_services(self):
-        """ Checking services every minute """
+        """ Calling services every minute """
         while not self.is_closed():
-            await self.start_services()
+            await self.check_services()
             await asyncio.sleep(60)
+
+    async def check_services(self):
+        """ Checking availability of different services """
+        for k, v in self.testing_urls.items():
+            url = v['test_url']
+            if 'TOKEN' in url:
+                url.replace('TOKEN', self.services[k])
+            if 'headers' in v.keys():
+                headers = {k, v.replace('TOKEN', self.services[k]) for k, v in v['headers']}
+            else:
+                headers = None
+            async with self.s.get(url, headers=headers) as r:
+                if r.status == 200:
+                    js = await r.json()
+                    if not self.requester_status[k]:
+                        ds(f'[ SUCCESS ]: {k.upper()} SERVICE AVAILABLE')
+                    self.requester_status[k] = True
+                else:
+                    ds(f'[ WARNING ]: {k.upper()} SERVICE NOT AVAILABLE: {r.status}')
 
     """ Events """
 
     async def on_ready(self):
         """ When ready, the session for requesting is loaded along with cogs """
-        self.s = aiohttp.ClientSession()
         self.exts = get_cogs(self.config.blocked_cogs)
         ds('[. . .]: LOADING EXTENSIONS')
         for cog in self.exts:
