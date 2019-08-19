@@ -26,39 +26,6 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 
-class Service_Connector:
-    """ A background task for checking if services are available """
-
-    async def start_services(self):
-        """ Starting all the services """
-        await self.attempt_weather()
-        await self.attempt_reddit()
-
-    async def attempt_weather(self):
-        """ Attempting to connect to the weatherbit.io API """
-        f = self.config.services.weather
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f'https://api.weatherbit.io/v2.0/forecast/daily?postal_code=12345&country=US&key={f}') as r:
-                if r.status == 200:
-                    if not self.services['weather']:
-                        ds('[ SUCCESS ]: WEATHER SERVICE AVAILABLE')
-                    self.services['weather'] = True
-                else:
-                    ds(f'[ WARNING ]: WEATHER SERVICE NOT AVAILABLE: {r.status}')
-
-    async def attempt_reddit(self):
-        """ Attempting to connect to the Reddit API """
-        async with aiohttp.ClientSession() as session:
-            async with session.get("https://www.reddit.com/r/pics/hot.json") as r:
-                if r.status == 200:
-                    js = await r.json()
-                    if not self.services['reddit']:
-                        ds('[ SUCCESS ]: REDDIT SERVICE AVAILABLE')
-                    self.services['reddit'] = True
-                else:
-                    ds(f'[ WARNING ]: REDDIT SERVICE NOT AVAILABLE: {r.status}')
-
-
 class Robot(comms.Bot):
     """ Subclassing comms.Bot """
 
