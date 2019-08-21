@@ -1,7 +1,7 @@
 <p align="center">
     <img src="repository/images/icon.png"/>
 </p>
-<h1 align="center">Xylene v0.0.1</h1>
+<h1 align="center">Xythrion v0.0.1</h1>
 <h3 align="center">Databasing information from APIs</h3>
 <p align="center">
     <img src="https://img.shields.io/apm/l/vim-mode.svg"/>
@@ -39,7 +39,7 @@
 * This bot is currently not meant for anyone to run, as it has specific requirements. The ones listed below are listed to the best of my ability, but they may not be completely complete. 
 * I will be setting up a DigitalOcean instance of the bot soon, so as of now, the bot is still in experimental mode, and is __unstable__
 * If you want my bot on your server, it can be [invited](https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=1664470208).
-* I am a Windows 10 user. If you submit an [issue](https://github.com/Xithrius/Xylene/issues) regarding Linux, I'll do my best to help you, but there are no gaurantees that I will be able to figure out the problem. 
+* I am a Windows 10 user. If you submit an [issue](https://github.com/Xithrius/Xythrion/issues) regarding Linux, I'll do my best to help you, but there are no gaurantees that I will be able to figure out the problem. 
 * Cog files have categories in this order: `Background tasks`, `Commands`, and `Events`. Anything that doesn't go into these categories are placed before these and are not labeled.
 * Doc strings should always be formatted as such: `short desc`, `Args`, `Raises`, and `Returns`.
 

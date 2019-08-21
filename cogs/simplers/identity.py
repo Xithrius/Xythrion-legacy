@@ -1,5 +1,5 @@
 """
->> Xylene
+>> Xythrion
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 """
@@ -25,7 +25,7 @@ class Identity_Cog(comms.Cog):
         """ Shows the person who created the bot """
         embed = discord.Embed(colour=0xc27c0e)
         embed.set_author(name='Xithrius', icon_url='https://i.imgur.com/TtcOXxx.jpg')
-        embed.add_field(name='Private Github:', value='[Right here](https://github.com/Xithrius/Xylene)')
+        embed.add_field(name='Private Github:', value='[Right here](https://github.com/Xithrius/Xythrion)')
         embed.add_field(name='Command caller:', value=ctx.author.mention)
         embed.set_footer(text=f'discord.py rewrite {discord.__version__}', icon_url='http://i.imgur.com/5BFecvA.png')
         await ctx.send(embed=embed)
