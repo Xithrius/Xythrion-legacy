@@ -32,25 +32,24 @@ class Robot(comms.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.s = aiohttp.ClientSession()
-
         with open(path('handlers', 'configuration', 'config.json'), 'r', encoding='utf8') as f:
-            data = json.dumps(json.load(f))
+            _data = json.load(f)
+            data = json.dumps(_data)
 
         with open(path('handlers', 'configuration', 'urls.json'), 'r') as f:
             self.testing_urls = json.load(f)
 
         self.config = json.loads(data, object_hook=lambda d: collections.namedtuple("config", d.keys())(*d.values()))
 
-        self.services = data['services']
+        self.services = _data['services']
 
-        self.requester_status = {k: False for k in os.listdir(path('cogs', 'requesters')) if k[:-3] == '.py'}
-
-        self.loop.create_task(self.load_services())
+        self.requester_status = {x[:-3]: False for x in os.listdir(path('cogs', 'requesters')) if x[-3:] == '.py'}
 
         self.owner_ids = set(self.config.owners)
 
         self.db_path = path('repository', 'data', 'requests.db')
+
+        self.loop.create_task(self.load_services())
 
         if not os.path.isfile(self.db_path):
             self.c = sqlite3.connect(self.db_path)
@@ -85,42 +84,49 @@ class Robot(comms.Bot):
     async def load_services(self):
         """ Calling services every minute """
         while not self.is_closed():
-            await self.check_services()
-            await asyncio.sleep(60)
-
-    async def check_services(self):
-        """ Checking availability of different services """
-        for k, v in self.testing_urls.items():
-            url = v['test_url']
-            if 'TOKEN' in url:
-                url.replace('TOKEN', self.services[k])
-            if 'headers' in v.keys():
-                headers = {k, v.replace('TOKEN', self.services[k]) for k, v in v['headers']}
-            else:
-                headers = None
-            async with self.s.get(url, headers=headers) as r:
-                if r.status == 200:
-                    js = await r.json()
-                    if not self.requester_status[k]:
-                        ds(f'[ SUCCESS ]: {k.upper()} SERVICE AVAILABLE')
-                    self.requester_status[k] = True
+            try:
+                await self.s.close()
+            except Exception as e:
+                pass
+            self.s = aiohttp.ClientSession()
+            self.total_services = len(self.requester_status)
+            self.borked_services = []
+            for k, v in self.testing_urls.items():
+                if k in self.config.blocked_cogs:
+                    continue
+                url = v['test_url']
+                if 'TOKEN' in url:
+                    url = url.replace('TOKEN', self.services[k])
+                if 'headers' in v.keys():
+                    headers = {k1: v1.replace('TOKEN', self.services[k]) for k1, v1 in v['headers'].items()}
                 else:
-                    ds(f'[ WARNING ]: {k.upper()} SERVICE NOT AVAILABLE: {r.status}')
+                    headers = None
+                async with self.s.get(url, headers=headers) as r:
+                    if r.status == 200:
+                        js = await r.json()
+                        self.requester_status[k] = True
+                    else:
+                        self.borked_services.append(f'[ {k.upper()} ]: {r.status} - {r}')
+            await asyncio.sleep(60)
 
     """ Events """
 
     async def on_ready(self):
         """ When ready, the session for requesting is loaded along with cogs """
         self.exts = get_cogs(self.config.blocked_cogs)
+        borked_cogs = []
         ds('[. . .]: LOADING EXTENSIONS')
         for cog in self.exts:
             try:
                 self.load_extension(cog)
             except Exception as e:
-                ds(f'{cog}, {type(e).__name__}: {e}')
-        ds('[ READY ]')
-        game = discord.Game('the users')
-        await self.change_presence(status=discord.ActivityType.watching, activity=game)
+                borked_cogs.append(f'{cog}, {type(e).__name__}: {e}')
+        if len(self.borked_services):
+            errors = "\n\t".join(str(y) for y in self.borked_services)
+            ds(f'[ WARNING ]: {len(self.borked_services)}/{self.total_services} SERVICE(S) BROKEN:\n{errors}')
+        else:
+            ds('[ READY ]: ALL SERVICES AND COGS')
+        await self.change_presence(status=discord.ActivityType.watching, activity=discord.Game('the users'))
 
     async def close(self):
         """ Safely closes connections """
