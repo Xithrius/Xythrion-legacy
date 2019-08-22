@@ -26,8 +26,8 @@
 - [ ] Websites:
   - [x] Reddit
   - [x] Weather*
-  - [ ] Github
   - [ ] Imgur
+  - [ ] Github
   - [ ] Twitter
   - [ ] Open Movie Database (OMDb)
 
@@ -130,8 +130,6 @@ Example: `weather zip 12345 US`
 |  Command  |  Argument(s)  |  Output  |
 | ------------- | ------------- | ------------- |
 |  tts  |  A string  |  When in a voice chat, the bot will use text to speech to speak through it's own mic  |
-|  purge  |  integer (max 100, default 10) |  Deletes the number of messages specified  |
-|  exec  |  `"```py"` followed by a python script, then another `"```"` on the last line  |  The output of the python script in the terminal to the owner, and a message to say if the execution was successful to everyone else.  |
 |  r  |  None  |  Reload all cog files  |
 |  l  |  Cog path seperated by "."  |  Load the specific cog  |
 |  u  |  Cog path seperated by "."  |  unload the specific cog  |
