@@ -12,24 +12,46 @@ from handlers.modules.output import path, now, ds,
 
 
 class Cog_Type(comms.Cog):
-    """ desc """
+    """The summary line for a class docstring should fit on one line."""
 
     def __init__(self, bot):
-        """ Object(s):
-        Robot(comms.Bot) as a class attribute
+        """
+
+        Args:
+            bot (obj): Robot(comms.Bot) as a class attribute
+
         """
         self.bot = bot
 
     """ Checks """
 
     async def cog_check(self, ctx):
+        """Summary of method
+
+        Args:
+            param1: The first parameter.
+            param2: The second parameter.
+
+        Returns:
+            True if successful, False otherwise.
+
+        """
         return ctx.message.author.id in self.bot.owner_ids
 
     """ Commands """
 
     @comms.command()
     async def test(self, ctx):
-        """ """
+        """Summary of method
+
+        Args:
+            param1: The first parameter.
+            param2: The second parameter.
+
+        Returns:
+            True if successful, False otherwise.
+
+        """
         pass
 
 
