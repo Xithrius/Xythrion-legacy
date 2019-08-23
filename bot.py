@@ -39,7 +39,7 @@ logger.addHandler(handler)
 
 
 class Robot(comms.Bot):
-    """ Subclassing comms.Bot """
+    """Subclassing comms.Bot to setup up all class attributes and services before cogs are loaded."""
 
     def __init__(self, *args, **kwargs):
 
@@ -214,12 +214,7 @@ class Robot(comms.Bot):
 
 
 class MainCog(comms.Cog):
-    """The essential cog for bugchecking and refreshing the bot.
-
-    Attributes:
-        comms.Cog (obj): Inheretence from subclass of comms.Bot, listed above as 'Robot'.
-
-    """
+    """The essential cog for bugchecking and refreshing the bot."""
 
     def __init__(self, bot):
 
