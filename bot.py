@@ -2,7 +2,19 @@
 >> Xythrion
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
+
+
+This is the main Python file for the discord.py bot, as all important attributes,
+checks, and background tasks are created here.
+
+Example:
+    $ py -3 bot.py
+
+Todo:
+    * Complete formatting with the Google stylesheet
+
 """
+
 
 import collections
 import os
@@ -30,31 +42,46 @@ class Robot(comms.Bot):
     """ Subclassing comms.Bot """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
+        #: Initiating subclass with specific arg(s)/kwarg(s)
+        super().__init__(command_prefix=comms.when_mentioned_or('.'))
+
+        #: Opening config file to get settings and service details
         with open(path('handlers', 'configuration', 'config.json'), 'r', encoding='utf8') as f:
             _data = json.load(f)
             data = json.dumps(_data)
-
         with open(path('handlers', 'configuration', 'urls.json'), 'r') as f:
             self.testing_urls = json.load(f)
 
+        #: Giving attribute attributes of a named tuple
         self.config = json.loads(data, object_hook=lambda d: collections.namedtuple("config", d.keys())(*d.values()))
 
+        #: Attribute loading in service tokens (if any)
         self.services = _data['services']
 
+        #: Dictionary created with the names of cogs in the requesters folder, while setting all values to false
         self.requester_status = {x[:-3]: False for x in os.listdir(path('cogs', 'requesters')) if x[-3:] == '.py'}
 
+        #: Setting a set of owner ids that have owner access to the bot
         self.owner_ids = set(self.config.owners)
 
+        #: Setting the database path for all cogs to use
         self.db_path = path('repository', 'data', 'requests.db')
 
+        #: Creating background task for testing services
         self.loop.create_task(self.load_services())
 
+        #: Checking if database exists. If database does not exist, tables are created for the requesters
         if not os.path.isfile(self.db_path):
+
+            #: Building file and connecting to the empty database file
             self.c = sqlite3.connect(self.db_path)
             c = self.c.cursor()
+
+            #: Building string of requester possibilities for users
             services = ', '.join(str(y) for y in [f'{x} TEXT' for x in self.requester_status.keys()])
+
+            #: Adding requests and weather table to the database
             c.execute(f'''CREATE TABLE Requests (id INTEGER, {services})''')
             c.execute('''CREATE TABLE Weather (id INTEGER,
                                                time INTEGER,
@@ -69,20 +96,33 @@ class Robot(comms.Bot):
                                                precip INTEGER,
                                                snow INTEGER,
                                                snow_depth INTEGER)''')
-            c.execute('''CREATE TABLE Weather (id INTEGER,
-                                               time INTEGER,
-                                               high INTEGER,
-                                               low INTEGER,
-                                               humidity INTEGER,
-                                               sunrise INTEGER,
-                                               sunset INTEGER)''')
+
+            #: Closing database for now
             self.c.commit()
             self.c.close()
 
     """ Background tasks """
 
+    async def create_timer(self):
+        """Creating an instance of a timer to count up to a point, or keep track of time.
+
+        Returns:
+            An integer that builds up by 1 every second, starting at 0.
+
+        """
+        i = 0
+        while not self.is_closed():
+            await asyncio.sleep(1)
+            i += 1
+            return i
+
     async def load_services(self):
-        """ Calling services every minute """
+        """Calling services every minute to check if they're available for use.
+
+        Returns:
+            An error when a service is not available
+
+        """
         while not self.is_closed():
             try:
                 await self.s.close()
@@ -112,7 +152,12 @@ class Robot(comms.Bot):
     """ Events """
 
     async def on_ready(self):
-        """ When ready, the session for requesting is loaded along with cogs """
+        """When the bot is ready cogs are loaded into the bot.
+
+        Returns:
+            Warnings if cogs and/or services aren't available
+
+        """
         self.exts = get_cogs(self.config.blocked_cogs)
         borked_cogs = []
         ds('[. . .]: LOADING EXTENSIONS')
@@ -124,12 +169,15 @@ class Robot(comms.Bot):
         if len(self.borked_services):
             errors = "\n\t".join(str(y) for y in self.borked_services)
             ds(f'[ WARNING ]: {len(self.borked_services)}/{self.total_services} SERVICE(S) BROKEN:\n{errors}')
-        else:
-            ds('[ READY ]: ALL SERVICES AND COGS')
         await self.change_presence(status=discord.ActivityType.watching, activity=discord.Game('the users'))
 
     async def close(self):
-        """ Safely closes connections """
+        """Safely closes connections.
+
+        Returns:
+            Nothing. Bot should disconnect from the network no matter what when command is ran.
+
+        """
         await self.s.close()
         try:
             self.c.close()
@@ -138,22 +186,44 @@ class Robot(comms.Bot):
         await super().close()
 
     async def on_disconnect(self):
-        """ Sends warning when the client disconnects from the network """
+        """Sends warning when the client disconnects from the network.
+
+        Returns:
+            Warning to the console if the timer has exceeded 10 seconds.
+
+        """
         pass
 
     async def on_connect(self):
-        """ Sends warning when the client connects to the network """
+        """Sends warning when the client connects to the network.
+
+        Returns:
+            How long it took to reconnect, if it ever happened.
+
+        """
         pass
 
     async def on_resumed(self):
-        """ Sends warning when the client resumes a session """
+        """Sends warning when the client resumes a session.
+
+        Returns:
+            If the client has connected but not resumed, another timer is started.
+
+        """
         pass
 
 
 class MainCog(comms.Cog):
-    """ Essential cog for bugchecking """
+    """The essential cog for bugchecking and refreshing the bot.
+
+    Attributes:
+        comms.Cog (obj): Inheretence from subclass of comms.Bot, listed above as 'Robot'.
+
+    """
 
     def __init__(self, bot):
+
+        #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
 
     async def cog_check(self, ctx):
@@ -217,6 +287,6 @@ class MainCog(comms.Cog):
 
 
 if __name__ == "__main__":
-    bot = Robot(command_prefix=comms.when_mentioned_or('.'))
+    bot = Robot()
     bot.add_cog(MainCog(bot))
     bot.run(bot.config.discord, bot=True, reconnect=True)
