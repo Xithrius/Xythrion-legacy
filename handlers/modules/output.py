@@ -79,7 +79,7 @@ def get_filename(id, end=''):
         end: The format of the file
 
     Returns:
-        A string with the current date, id of a user, and the 
+        A string with the current date, id of a user, and the format of the file (if any)
 
     """
     return f'{int(datetime.datetime.timestamp((now())))}-{id}{end}'
