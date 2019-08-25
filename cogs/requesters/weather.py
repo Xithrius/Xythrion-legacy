@@ -2,6 +2,10 @@
 >> Xythrion
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
+
+Todo:
+    * Nothing
+
 """
 
 
@@ -20,19 +24,31 @@ from handlers.modules.output import now, path, ds, get_filename
 
 
 class Weather_Requester(comms.Cog):
-    """ Get information from WeatherBit """
+    """Fetching weather information from WeatherBit.io"""
 
     def __init__(self, bot):
-        """ Object(s):
-        Bot
-        """
+
+        #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
+
+        #: Creating attribute of weather availability
         self.h = self.bot.services[os.path.basename(__file__)[:-3]]
+
+        #: Creation of background task for collecting weather initiated by requests of users
         self.background_weather = self.bot.loop.create_task(self.collect_weather())
 
     """ Cog events """
 
     def cog_unload(self):
+        """Safely cancels background tasks and possible database connection.
+
+        Raises:
+            A very rare error when canceling the background task
+
+        Returns:
+            Hopefully nothing unless an error occurs
+
+        """
         self.background_weather.cancel()
         try:
             self.c.close()
@@ -42,12 +58,23 @@ class Weather_Requester(comms.Cog):
     """ Permission checking """
 
     async def cog_check(self, ctx):
-        """ """
+        """Commands are only passed if the service is available
+
+        Returns:
+            True or False depending on the availability of the service
+
+        """
         return self.h
 
     """ Background tasks """
 
     async def collect_weather(self):
+        """Collects weather for a user's requested singular zip code once a day.
+
+        Returns:
+            Data from weatherbit.io into the requests.db's Weather table.
+
+        """
         await self.bot.wait_until_ready()
         while not self.bot.is_closed():
             self.c = sqlite3.connect(self.bot.db_path)
@@ -70,6 +97,20 @@ class Weather_Requester(comms.Cog):
             await asyncio.sleep(60)
 
     async def get_weather(self, _id, zip_code, country):
+        """Inserting weather into the database.
+
+        Args:
+            _id (int): The unique ID of a user.
+            zip_code (int): Requested zip code from a user.
+            country (str): The country the zip_code is within.
+
+        Raises:
+            Possible fatal error when requesting from the service.
+
+        Returns:
+            A large amount of data that is promptly inserted in the database of weather requests.
+
+        """
         async with self.bot.s.get(f'https://api.weatherbit.io/v2.0/forecast/daily?postal_code={zip_code},{country.upper()}&units=I&key={self.bot.config.services.weather}') as r:
             if r.status == 200:
                 _json = await r.json()
@@ -96,13 +137,34 @@ class Weather_Requester(comms.Cog):
 
     @comms.group()
     async def weather(self, ctx):
-        """ """
+        """The weather group command for commands that are weather related.
+
+        Args:
+            ctx: Context object where the command is called.
+
+        Returns:
+            The built-in help command if no group command is passed
+
+        """
         if ctx.invoked_subcommand is None:
             await ctx.send(f'Type the command **.help {ctx.command}** for help')
 
     @weather.command(name='init')
     async def _init(self, ctx, _zip, country='US'):
-        """ """
+        """Initiates the daily requesting for a user and their zip code
+
+        Args:
+            ctx: Context object where the command is called.
+            _zip (int): The zip code of a country.
+            country (str): The country in which code the zip code is in.
+
+        Raises:
+            An error if the user already has a request running
+
+        Returns:
+            A success message, or a fatal error depending on if the user has a request running or not.
+
+        """
         self.c = sqlite3.connect(self.bot.db_path)
         c = self.c.cursor()
         c.execute('''SELECT id, weather FROM Requests WHERE id = ?''', (ctx.message.author.id,))
@@ -110,13 +172,28 @@ class Weather_Requester(comms.Cog):
         if not len(requests):
             c.execute('''INSERT INTO Requests (id, weather) VALUES (?, ?)''', (ctx.message.author.id, f'{_zip},{country}'))
             self.c.commit()
+            await ctx.send('Weather requester initiated.')
         else:
             await ctx.send('You have already requested an area! Notify owner to request a change to your area.')
         self.c.close()
 
     @weather.command()
     async def daily(self, ctx, zip_code, amount=7, country='US'):
-        """ """
+        """
+
+        Args:
+            ctx: Context object where the command is called.
+            _zip (int): The zip code of a country.
+            amount (int): How many days ahead the graph should be (including today)
+            country (str): The country in which code the zip code is in.
+
+        Raises:
+            A possible error depending on service availability
+
+        Returns:
+            A graph with a high and low temperatures for the days within the amount.
+
+        """
         async with self.bot.s.get(f'https://api.weatherbit.io/v2.0/forecast/daily?postal_code={zip_code},{country.upper()}&units=I&key={self.bot.config.services.weather}') as r:
             if r.status == 200:
                 _json = await r.json()
