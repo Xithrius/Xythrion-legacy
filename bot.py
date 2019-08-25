@@ -8,10 +8,11 @@ This is the main Python file for the discord.py bot, as all important attributes
 checks, and background tasks are created here.
 
 Example:
+    $ py -3 -m pip install --user -r requirements.txt
     $ py -3 bot.py
 
 Todo:
-    * Complete formatting with the Google stylesheet
+    * More descriptive comments, maybe.
 
 """
 
@@ -307,7 +308,6 @@ class MainCog(comms.Cog):
 
         Args:
             ctx: Context object where the command is called.
-
 
         Returns:
             An embed object with links to creator's information and bot's repository.
