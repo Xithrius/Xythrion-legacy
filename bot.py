@@ -65,6 +65,9 @@ class Robot(comms.Bot):
         #: Setting a set of owner ids that have owner access to the bot
         self.owner_ids = set(self.config.owners)
 
+        #: Setting embed color once so it doesn't have to be repeated
+        self.ec = 0xc27c0e
+
         #: Setting the database path for all cogs to use
         self.db_path = path('repository', 'data', 'requests.db')
 
@@ -141,12 +144,15 @@ class Robot(comms.Bot):
                     headers = {k1: v1.replace('TOKEN', self.services[k]) for k1, v1 in v['headers'].items()}
                 else:
                     headers = None
-                async with self.s.get(url, headers=headers) as r:
-                    if r.status == 200:
-                        js = await r.json()
-                        self.requester_status[k] = True
-                    else:
-                        self.borked_services.append(f'[ {k.upper()} ]: {r.status} - {r}')
+                try:
+                    async with self.s.get(url, headers=headers) as r:
+                        if r.status == 200:
+                            js = await r.json()
+                            self.requester_status[k] = True
+                        else:
+                            self.borked_services.append(f'[ {k.upper()} ]: {r.status} - {r}')
+                except aiohttp.client_exceptions.ClientOSError:
+                    pass
             await asyncio.sleep(60)
 
     """ Events """
@@ -307,11 +313,12 @@ class MainCog(comms.Cog):
             An embed object with links to creator's information and bot's repository.
 
         """
-        embed = discord.Embed(title='Author information', colour=0xc27c0e)
-        embed.add_field(name='Github', value='https://github.com/Xithrius/Xythrion', inline=False)
-        embed.add_field(name='Twitter', value='https://twitter.com/_Xithrius')
-        embed.set_thumbnail('https://imgur.com/a/i9m2dXl')
-        await ctx.send(embed=embed)
+        info = {
+            'Twitter': 'https://twitter.com/_Xithrius',
+            'Github': 'https://github.com/Xithrius/Xythrion'
+        }
+        e = discord.Embed(title='Project creation date: March 30, 2019', description='\n'.join(f'[`{k}`]({v})' for k, v in info.items()), colour=self.bot.ec)
+        await ctx.send(embed=e)
 
 
 if __name__ == "__main__":
