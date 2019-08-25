@@ -2,6 +2,10 @@
 >> Xythrion
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
+
+Todo:
+    * Nothing at this current moment
+
 """
 
 
