@@ -19,13 +19,7 @@ class Messages_Ranker(comms.Cog):
     """ Leveling up users """
 
     def __init__(self, bot):
-        """ Object(s):
-        Bot
-        Path to database
-        Checking if a database exists on startup
-        Connecting to the database
-        Refreshing database background task
-        """
+
         self.bot = bot
 
     def insertToDB(self, member):
