@@ -15,12 +15,8 @@ class Cog_Type(comms.Cog):
     """The summary line for a class docstring should fit on one line."""
 
     def __init__(self, bot):
-        """
 
-        Args:
-            bot (obj): Robot(comms.Bot) as a class attribute
-
-        """
+        #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
 
     """ Checks """
