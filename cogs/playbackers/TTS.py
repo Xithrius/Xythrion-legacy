@@ -2,6 +2,10 @@
 >> Xythrion
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
+
+Todo:
+    Stream the voice
+
 """
 
 
@@ -17,13 +21,14 @@ from handlers.modules.output import path
 
 
 class TTS_Playbacker(comms.Cog):
+    """Using Google Cloud's Text-To-Speech API to speak through the bot's microphone."""
 
     def __init__(self, bot):
-        """ Object(s):
-        Bot
-        """
+
+        #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
 
+        #: Setting the environment path so the credentials can be reached by the API.
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('handlers', 'configuration', 'gsc.json')
 
     """ Commands """
@@ -31,7 +36,16 @@ class TTS_Playbacker(comms.Cog):
     @comms.command()
     @comms.is_owner()
     async def tts(self, ctx):
-        """ Text to speech through the bot's mic """
+        """Text to speech through the bot's microphone.
+
+        Args:
+            ctx: Context object where the command is called.
+            content (isn't passed into the function): message content that occurs after the command call. Ex. `.tts some string`
+
+        Returns:
+            Live text to speech through the bot's mic after downloading the audio, then removing it after.
+
+        """
         try:
             client = texttospeech.TextToSpeechClient()
             synthesis_input = texttospeech.types.SynthesisInput(text=(ctx.message.content)[5:])
