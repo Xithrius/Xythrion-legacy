@@ -2,6 +2,10 @@
 >> Xythrion
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
+
+Todo:
+    * Faster speeds, maybe?
+
 """
 
 import os
@@ -14,12 +18,11 @@ from handlers.modules.output import path
 
 
 class Cog_Builder(comms.Cog):
-    """ Commands with a small amount of personality """
+    """Creating cogs with the help of a file with a bunch of placeholders."""
 
     def __init__(self, bot):
-        """ Object(s):
-        Bot
-        """
+
+        #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
 
     """ Commands """
@@ -27,6 +30,19 @@ class Cog_Builder(comms.Cog):
     @comms.command()
     @comms.is_owner()
     async def create_cog(self, ctx, cog_type, cog_name):
+        """Creates, tests, and loads new cogs.
+
+        Args:
+            cog_type (str): Different types of cogs listed within the 'cogs' folder.
+            cog_name (str): The name that will be given to the file of the cog
+
+        Raises:
+           ExtensionAlreadyLoaded: Cog already exists, and has been overwritten.
+
+        Returns:
+            A loaded in cog created from the cog.txt placeholders.
+
+        """
         types = [_type[:-1] for _type in os.listdir(path('cogs'))]
         cog_type = cog_type.lower()
         cog_name = cog_name.lower()
