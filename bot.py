@@ -160,7 +160,7 @@ class Robot(comms.Bot):
         """
         self.exts = get_cogs(self.config.blocked_cogs)
         borked_cogs = []
-        ds('[. . .]: LOADING EXTENSIONS')
+        ds('[. . .]: LOADING EXTENSIONS', '\r')
         for cog in self.exts:
             try:
                 self.load_extension(cog)
@@ -169,6 +169,8 @@ class Robot(comms.Bot):
         if len(self.borked_services):
             errors = "\n\t".join(str(y) for y in self.borked_services)
             ds(f'[ WARNING ]: {len(self.borked_services)}/{self.total_services} SERVICE(S) BROKEN:\n{errors}')
+        else:
+            ds('[ SUCCESS ]: ALL EXTENSIONS AND SERVICES AVAILABLE', '\n')
         await self.change_presence(status=discord.ActivityType.watching, activity=discord.Game('the users'))
 
     async def close(self):
@@ -279,6 +281,37 @@ class MainCog(comms.Cog):
             except Exception as e:
                 print(e)
         return ds('[ SUCCESS ]: COGS HAVE BEEN RELOADED')
+
+    @comms.command()
+    async def invite(self, ctx):
+        """Gives the invite link of this bot. It is not 'essential', but it's still useful.
+
+        Args:
+            ctx: Context object where the command is called.
+
+        Returns:
+            The invite link so the bot can be invited to a server.
+
+        """
+        await ctx.send(f'https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=32885952')
+
+    @comms.command()
+    async def about(self, ctx):
+        """Returns information about this bot's origin
+
+        Args:
+            ctx: Context object where the command is called.
+
+
+        Returns:
+            An embed object with links to creator's information and bot's repository.
+
+        """
+        embed = discord.Embed(title='Author information', colour=0xc27c0e)
+        embed.add_field(name='Github', value='https://github.com/Xithrius/Xythrion', inline=False)
+        embed.add_field(name='Twitter', value='https://twitter.com/_Xithrius')
+        embed.set_thumbnail('https://imgur.com/a/i9m2dXl')
+        await ctx.send(embed=embed)
 
 
 if __name__ == "__main__":
