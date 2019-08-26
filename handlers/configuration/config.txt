@@ -3,7 +3,7 @@
     "owners": [],
     "services": {
         "weather": "",
-        "osu": ""
+        "imgur": ""
     },
     "blocked_cogs": []
 }
