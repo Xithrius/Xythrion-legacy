@@ -1,7 +1,7 @@
 <p align="center">
     <img src="repository/images/icon.png"/>
 </p>
-<h1 align="center">Xythrion v0.0.1</h1>
+<h1 align="center">Xythrion v1.0</h1>
 <h3 align="center">Databasing information from APIs</h3>
 <p align="center">
     <img src="https://img.shields.io/apm/l/vim-mode.svg"/>
@@ -43,7 +43,11 @@
 |  Windows  |  `py -3 -m pip install --user -r requirements.txt`  |
 |  Linux  | `python3 -m pip install --user -r requirements.txt`  |
 
-### Services that require tokens:
+
+#### Create config.json
+Within the directory of `handlers/configuration`, create a new file called `config.json`. Copy the internals of `config.txt` into it, then insert data from the steps that will be taken in the following instructions.
+
+#### Services that require tokens:
 
 |  Item  |  Instructions  |  Link  |
 | ------------- | ------------- | ------------- |
@@ -51,7 +55,9 @@
 |  Weather  | `weather` will be given the API key that you're emailed after signing up for one.  |  [WeatherBit dashbord](https://www.weatherbit.io/account/dashboard)  |
 |  TTS  |  This will be included later, but a VERY long amount of instructions are needed. A different README will be supplied at a later date  |  Something something Google Cloud Text-To-Speech API  |
 
-### Running the bot:
+After tokens that aren't TTS related are gathered, insert them into the `services` section of the `config.json` file.
+
+#### Running the bot:
 |  Operating system  |  Command  |
 | ------------- | ------------- |
 |  Windows  |  `py -3 bot.py`  |
@@ -88,6 +94,6 @@ Example: `.tts Bagles with cream cheese`
 
 ## Changelog:
 
-### v0.0.1:
+### v1.0:
 * Permission loading and service checks are now automated before bot is available for use.
 * First real stable version with no major flaws (I haven't found any within testing yet).
