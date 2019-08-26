@@ -178,7 +178,7 @@ class Robot(comms.Bot):
             ds(f'[ WARNING ]: {len(self.borked_services)}/{self.total_services} SERVICE(S) BROKEN:\n{errors}')
         else:
             ds('[ SUCCESS ]: ALL EXTENSIONS AND SERVICES AVAILABLE', '\n')
-        await self.change_presence(status=discord.ActivityType.watching, activity=discord.Game('the users'))
+        await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with user data'))
 
     async def close(self):
         """Safely closes connections.

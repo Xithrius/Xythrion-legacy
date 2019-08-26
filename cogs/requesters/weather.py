@@ -202,11 +202,11 @@ class Weather_Requester(comms.Cog):
                 dates = [[v for k, v in _dict.items() if k in requests] for _dict in info]
                 highs = [x[1] for x in dates]
                 lows = [x[2] for x in dates]
-                plt.plot([x[0] for x in dates], highs, linestyle='dotted', label="high")
-                plt.plot([x[0] for x in dates], lows, linestyle='dotted', label="low")
-                max_temp, min_temp = max(highs + lows), min(highs + lows)
+                plt.plot([x[0] for x in dates], highs, linestyle='solid', label="high")
+                plt.plot([x[0] for x in dates], lows, linestyle='solid', label="low")
+                max_temp, min_temp = max(highs), min(lows)
                 plt.xticks(rotation='vertical')
-                plt.yticks(np.arange(min_temp, max_temp + 1, 5), highs + lows)
+                plt.yticks(ticks=np.arange(min_temp, max_temp + 1, 5))
                 plt.legend()
                 plt.grid()
                 plt.xlabel("Date")
