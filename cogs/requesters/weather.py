@@ -221,6 +221,23 @@ class Weather_Requester(comms.Cog):
             else:
                 await ctx.send(f'Requester failed. Status code: **{r.status}**')
 
+    """ Events """
+
+    @comms.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        """Catches errors specifically within this cog
+
+        Args:
+            ctx: Context object where the command is called.
+            error: Error object of what the command caused.
+
+        Returns:
+            A specific string depending on the error within the cog.
+
+        """
+        if ctx.command.cog_name == self.__class__.__name__:
+            await ctx.send('Requester failed to get subreddit information.')
+
 
 def setup(bot):
     bot.add_cog(Weather_Requester(bot))

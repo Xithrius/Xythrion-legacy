@@ -60,7 +60,7 @@ class Reddit_Requester(comms.Cog):
             await ctx.send(f'Type the command **.help {ctx.command}** for help')
 
     @reddit.command()
-    async def top(self, ctx, subreddit, amount):
+    async def top(self, ctx, subreddit, amount=1):
         """
 
         Args:
@@ -69,7 +69,7 @@ class Reddit_Requester(comms.Cog):
             amount: How many links are to be provided (between 1 and 25).
 
         Returns:
-            An embed with a list or a single list of top link(s).
+           An embed with information or a list of link(s).
 
         """
         try:
@@ -78,7 +78,7 @@ class Reddit_Requester(comms.Cog):
                 raise ValueError
         except ValueError:
             await ctx.send('Amount can only be in between 1 and 25')
-        async with self.bot.s.get(f'https://www.reddit.com/r/{subreddit}/top.json') as r:
+        async with self.bot.s.get(f'https://www.reddit.com/r/{subreddit}/top/.json?t=all') as r:
             assert r.status == 200
             info = await r.json()
             info = info['data']['children']
@@ -90,13 +90,15 @@ class Reddit_Requester(comms.Cog):
                 await ctx.send(embed=embed)
             elif amount == 1:
                 info = info[0]['data']
-                embed = discord.Embed(title=f"#1 post from r/{subreddit}: {info['title']}", colour=self.bot.ec)
-                embed.set_image(url=info['url'])
-                embed.set_footer(text=f'OP: u/{info["author_fullname"]}, Upvotes: {info["ups"]}')
-                await ctx.send(embed=embed)
+                temp_info = [
+                    info['url'],
+                    f"`#1 top post from r/{subreddit}: '{info['title']}'`",
+                    f"`OP: u/{info['author_fullname']}, Upvotes: {info['ups']}`"
+                ]
+                await ctx.send('\n'.join(str(y) for y in temp_info))
 
     @reddit.command()
-    async def hot(self, ctx, subreddit, amount=5):
+    async def hot(self, ctx, subreddit, amount=1):
         """
 
         Args:
@@ -105,25 +107,34 @@ class Reddit_Requester(comms.Cog):
             amount: How many links are to be provided (between 1 and 25).
 
         Returns:
-            An embed with a list or a single list of hot link(s).
+            An embed with information or a list of link(s).
 
         """
-        pass
-
-    @reddit.command()
-    async def search(self, ctx, subreddit, amount=5):
-        """
-
-        Args:
-            ctx: Context object where the command is called.
-            subreddit: The name of a subreddit
-            amount: How many links are to be provided (between 1 and 25)
-
-        Returns:
-            An embed with a list or a single list of queries that are similar to the search.
-
-        """
-        pass
+        try:
+            amount = int(amount)
+            if amount not in range(1, 26):
+                raise ValueError
+        except ValueError:
+            await ctx.send('Amount can only be in between 1 and 25')
+        async with self.bot.s.get(f'https://www.reddit.com/r/{subreddit}/hot.json') as r:
+            assert r.status == 200
+            info = await r.json()
+            info = info['data']['children']
+            info = sorted(info, key=lambda x: x['data']['ups'], reverse=True)
+            if amount in range(2, 26):
+                info = info[:amount]
+                embed = discord.Embed(title=f'**Top {amount} posts from r/{subreddit}**', colour=self.bot.ec)
+                e_info = [f'#{num + 1}: [{i["data"]["title"]}](https://reddit.com{i["data"]["permalink"]})' for num, i in enumerate(info)]
+                embed.description = '\n'.join(str(y) for y in e_info)
+                await ctx.send(embed=embed)
+            elif amount == 1:
+                info = info[0]['data']
+                temp_info = [
+                    info['url'],
+                    f"`#1 hot post from r/{subreddit}: '{info['title']}'`",
+                    f"`OP: u/{info['author_fullname']}, Upvotes: {info['ups']}`"
+                ]
+                await ctx.send('\n'.join(str(y) for y in temp_info))
 
     """ Events """
 
@@ -139,9 +150,8 @@ class Reddit_Requester(comms.Cog):
             A specific string depending on the error within the cog.
 
         """
-        print(error)
-        # if ctx.command.cog_name == os.path.basename(__file__)[:-3] and type(error).__name__ == AssertionError:
-        #    await ctx.send(f'Command **{ctx.command}** has failed at requesting information.')
+        if ctx.command.cog_name == self.__class__.__name__:
+            await ctx.send('Requester failed to get subreddit information.')
 
 
 def setup(bot):
