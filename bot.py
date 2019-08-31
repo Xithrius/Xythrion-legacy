@@ -40,7 +40,18 @@ logger.addHandler(handler)
 
 
 class MyHelpCommand(commands.MinimalHelpCommand):
+    """Customization for the help command"""
+
     def get_command_signature(self, command):
+        """Calling services every minute to check if they're available for use.
+
+        Args:
+            command: object with command attributes.
+
+        Returns:
+            The signature of a command
+
+        """
         return '{0.clean_prefix}{1.qualified_name} {1.signature}'.format(self, command)
 
 
@@ -54,13 +65,14 @@ class Robot(comms.Bot):
 
         #: Opening config file to get settings and service details
         with open(path('handlers', 'configuration', 'config.json'), 'r', encoding='utf8') as f:
-            _data = json.load(f)
-            data = json.dumps(_data)
+            data = json.load(f)
+
+        #: Get urls for testing connection for services
         with open(path('handlers', 'configuration', 'urls.json'), 'r') as f:
             self.testing_urls = json.load(f)
 
         #: Giving attribute attributes of a named tuple
-        self.config = json.loads(data, object_hook=lambda d: collections.namedtuple("config", d.keys())(*d.values()))
+        self.config = json.loads(json.dumps(data), object_hook=lambda d: collections.namedtuple("config", d.keys())(*d.values()))
 
         #: Attribute loading in service tokens (if any)
         self.services = _data['services']
@@ -74,62 +86,20 @@ class Robot(comms.Bot):
         #: Setting embed color once so it doesn't have to be repeated
         self.ec = 0xc27c0e
 
-        #: Setting the database path for all cogs to use
-        self.db_path = path('repository', 'data', 'requests.db')
+        #: Setting the database paths for all cogs to use
+        self.req_p = path('repository', 'data', 'requests.db')
+        self.rec_p = path('repository', 'data', 'records.db')
 
         #: Creating background task for testing services
         self.loop.create_task(self.load_services())
 
-        #: Checking if database exists. If database does not exist, tables are created for the requesters
-        if not os.path.isfile(self.db_path):
-
-            #: Building file and connecting to the empty database file
-            self.c = sqlite3.connect(self.db_path)
-            c = self.c.cursor()
-
-            #: Building string of requester possibilities for users
-            services = ', '.join(str(y) for y in [f'{x} TEXT' for x in self.requester_status.keys()])
-
-            #: Adding requests and weather table to the database
-            c.execute(f'''CREATE TABLE Requests (id INTEGER, {services})''')
-            c.execute('''CREATE TABLE Weather (id INTEGER,
-                                               time INTEGER,
-                                               high INTEGER,
-                                               low INTEGER,
-                                               humidity INTEGER,
-                                               sunrise INTEGER,
-                                               sunset INTEGER,
-                                               moonrise INTEGER,
-                                               moonset INTEGER,
-                                               pop INTEGER,
-                                               precip INTEGER,
-                                               snow INTEGER,
-                                               snow_depth INTEGER)''')
-
-            #: Closing database for now
-            self.c.commit()
-            self.c.close()
-
     """ Background tasks """
-
-    async def create_timer(self):
-        """Creating an instance of a timer to count up to a point, or keep track of time.
-
-        Returns:
-            An integer that builds up by 1 every second, starting at 0.
-
-        """
-        i = 0
-        while not self.is_closed():
-            await asyncio.sleep(1)
-            i += 1
-            return i
 
     async def load_services(self):
         """Calling services every minute to check if they're available for use.
 
         Returns:
-            An error when a service is not available
+            Possible error depending on service availability
 
         """
         while not self.is_closed():
@@ -139,7 +109,7 @@ class Robot(comms.Bot):
                 pass
             self.s = aiohttp.ClientSession()
             self.total_services = len(self.requester_status)
-            self.borked_services = []
+            self.broken_services = []
             for k, v in self.testing_urls.items():
                 if k in self.config.blocked_cogs:
                     continue
@@ -156,7 +126,7 @@ class Robot(comms.Bot):
                             js = await r.json()
                             self.requester_status[k] = True
                         else:
-                            self.borked_services.append(f'[ {k.upper()} ]: {r.status} - {r}')
+                            self.broken_services.append(f'[ {k.upper()} ]: {r.status} - {r}')
                 except aiohttp.client_exceptions.ClientOSError:
                     pass
             await asyncio.sleep(60)
@@ -171,16 +141,16 @@ class Robot(comms.Bot):
 
         """
         self.exts = get_cogs(self.config.blocked_cogs)
-        borked_cogs = []
+        broken_cogs = []
         ds('[. . .]: LOADING EXTENSIONS', '\r')
         for cog in self.exts:
             try:
                 self.load_extension(cog)
             except Exception as e:
-                borked_cogs.append(f'{cog}, {type(e).__name__}: {e}')
-        if len(self.borked_services):
-            errors = "\n\t".join(str(y) for y in self.borked_services)
-            ds(f'[ WARNING ]: {len(self.borked_services)}/{self.total_services} SERVICE(S) BROKEN:\n{errors}')
+                broken_cogs.append(f'{cog}, {type(e).__name__}: {e}')
+        if len(self.broken_services):
+            errors = "\n\t".join(str(y) for y in self.broken_services)
+            ds(f'[ WARNING ]: {len(self.broken_services)}/{self.total_services} SERVICE(S) BROKEN:\n{errors}')
         else:
             ds('[ SUCCESS ]: ALL EXTENSIONS AND SERVICES AVAILABLE', '\n')
         await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with user data'))
@@ -225,6 +195,34 @@ class Robot(comms.Bot):
 
         """
         pass
+
+
+class RecorderCog(comms.Cog):
+    """Cog for ."""
+
+    def __init__(self, bot):
+
+        #: Setting Robot(comms.Bot) as a class attribute
+        self.bot = bot
+
+        #: Checking if database exists. If database does not exist, tables are created for the requesters
+        if not os.path.isfile(self.bot.db_path):
+
+            #: Building file and connecting to the empty database file
+            self.c = sqlite3.connect(self.db_path)
+            c = self.c.cursor()
+
+            #: Building string of requester possibilities for users
+            services = ', '.join(str(y) for y in [f'{x} TEXT' for x in self.requester_status.keys()])
+
+            #: Adding tables to the database
+            #: Specific 
+            c.execute(f'''CREATE TABLE Requests (id INTEGER, {services})''')
+            c.execute('''CREATE TABLE Weather (id INTEGER, time INTEGER, high INTEGER, low INTEGER, humidity INTEGER, sunrise INTEGER, sunset INTEGER, moonrise INTEGER, moonset INTEGER, pop INTEGER, precip INTEGER, snow INTEGER, snow_depth INTEGER)''')
+
+            #: Closing database for now
+            self.c.commit()
+            self.c.close()
 
 
 class MainCog(comms.Cog):

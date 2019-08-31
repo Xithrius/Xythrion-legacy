@@ -31,6 +31,31 @@ class Weather_Requester(comms.Cog):
         #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
 
+        if not os.path.isfile(self.db_path):
+
+            #: Building file and connecting to the empty database file
+            self.c = sqlite3.connect(self.db_path)
+            c = self.c.cursor()
+
+            
+            c.execute('''CREATE TABLE Weather (id INTEGER,
+                                        time INTEGER,
+                                        high INTEGER,
+                                        low INTEGER,
+                                        humidity INTEGER,
+                                        sunrise INTEGER,
+                                        sunset INTEGER,
+                                        moonrise INTEGER,
+                                        moonset INTEGER,
+                                        pop INTEGER,
+                                        precip INTEGER,
+                                        snow INTEGER,
+                                        snow_depth INTEGER)''')
+
+            #: Closing database for now
+            self.c.commit()
+            self.c.close()
+
         #: Creating attribute of weather availability
         self.h = self.bot.services[os.path.basename(__file__)[:-3]]
 
