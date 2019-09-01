@@ -12,7 +12,7 @@ Example:
     $ py -3 bot.py
 
 Todo:
-    * More descriptive comments, maybe.
+    * Rewrite everything to match to PortgreSQL
 
 """
 
@@ -31,77 +31,25 @@ import discord
 from handlers.modules.output import path, get_cogs, ds
 
 
-# Logging
-logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(filename=path('repository', 'logs', 'discord.log'), encoding='utf-8', mode='w')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
-
-
-class MyHelpCommand(commands.MinimalHelpCommand):
-    """Customization for the help command"""
-
-    def get_command_signature(self, command):
-        """Calling services every minute to check if they're available for use.
-
-        Args:
-            command: object with command attributes.
-
-        Returns:
-            The signature of a command
-
-        """
-        return '{0.clean_prefix}{1.qualified_name} {1.signature}'.format(self, command)
-
-
 class Robot(comms.Bot):
-    """Subclassing comms.Bot to setup up all class attributes and services before cogs are loaded."""
 
     def __init__(self, *args, **kwargs):
-
-        #: Initiating subclass with specific arg(s)/kwarg(s)
         super().__init__(command_prefix=comms.when_mentioned_or('.'))
 
-        #: Opening config file to get settings and service details
         with open(path('handlers', 'configuration', 'config.json'), 'r', encoding='utf8') as f:
             data = json.load(f)
-
-        #: Get urls for testing connection for services
         with open(path('handlers', 'configuration', 'urls.json'), 'r') as f:
             self.testing_urls = json.load(f)
 
-        #: Giving attribute attributes of a named tuple
         self.config = json.loads(json.dumps(data), object_hook=lambda d: collections.namedtuple("config", d.keys())(*d.values()))
-
-        #: Attribute loading in service tokens (if any)
         self.services = _data['services']
-
-        #: Dictionary created with the names of cogs in the requesters folder, while setting all values to false
         self.requester_status = {x[:-3]: False for x in os.listdir(path('cogs', 'requesters')) if x[-3:] == '.py'}
-
-        #: Setting a set of owner ids that have owner access to the bot
         self.owner_ids = set(self.config.owners)
-
-        #: Setting embed color once so it doesn't have to be repeated
-        self.ec = 0xc27c0e
-
-        #: Setting the database paths for all cogs to use
-        self.req_p = path('repository', 'data', 'requests.db')
-        self.rec_p = path('repository', 'data', 'records.db')
-
-        #: Creating background task for testing services
+        self.req_p = path()
+        self.rec_p = path()
         self.loop.create_task(self.load_services())
 
-    """ Background tasks """
-
     async def load_services(self):
-        """Calling services every minute to check if they're available for use.
-
-        Returns:
-            Possible error depending on service availability
-
-        """
         while not self.is_closed():
             try:
                 await self.s.close()
@@ -131,15 +79,7 @@ class Robot(comms.Bot):
                     pass
             await asyncio.sleep(60)
 
-    """ Events """
-
     async def on_ready(self):
-        """When the bot is ready cogs are loaded into the bot.
-
-        Returns:
-            Warnings if cogs and/or services aren't available
-
-        """
         self.exts = get_cogs(self.config.blocked_cogs)
         broken_cogs = []
         ds('[. . .]: LOADING EXTENSIONS', '\r')
@@ -163,179 +103,25 @@ class Robot(comms.Bot):
 
         """
         await self.s.close()
-        try:
-            self.c.close()
-        except Exception:
-            pass
         await super().close()
-
-    async def on_disconnect(self):
-        """Sends warning when the client disconnects from the network.
-
-        Returns:
-            Warning to the console if the timer has exceeded 10 seconds.
-
-        """
-        pass
-
-    async def on_connect(self):
-        """Sends warning when the client connects to the network.
-
-        Returns:
-            How long it took to reconnect, if it ever happened.
-
-        """
-        pass
-
-    async def on_resumed(self):
-        """Sends warning when the client resumes a session.
-
-        Returns:
-            If the client has connected but not resumed, another timer is started.
-
-        """
-        pass
 
 
 class RecorderCog(comms.Cog):
-    """Cog for ."""
 
     def __init__(self, bot):
-
-        #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
-
-        #: Checking if database exists. If database does not exist, tables are created for the requesters
         if not os.path.isfile(self.bot.db_path):
-
-            #: Building file and connecting to the empty database file
-            self.c = sqlite3.connect(self.db_path)
-            c = self.c.cursor()
-
-            #: Building string of requester possibilities for users
-            services = ', '.join(str(y) for y in [f'{x} TEXT' for x in self.requester_status.keys()])
-
-            #: Adding tables to the database
-            #: Specific 
-            c.execute(f'''CREATE TABLE Requests (id INTEGER, {services})''')
-            c.execute('''CREATE TABLE Weather (id INTEGER, time INTEGER, high INTEGER, low INTEGER, humidity INTEGER, sunrise INTEGER, sunset INTEGER, moonrise INTEGER, moonset INTEGER, pop INTEGER, precip INTEGER, snow INTEGER, snow_depth INTEGER)''')
-
-            #: Closing database for now
-            self.c.commit()
-            self.c.close()
+            pass
 
 
 class MainCog(comms.Cog):
-    """The essential cog for bugchecking and refreshing the bot."""
 
     def __init__(self, bot):
-
-        #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
-
-        #: Creating help command
-        self._original_help_command = bot.help_command
-        bot.help_command = MyHelpCommand()
-        bot.help_command.cog = self
-
-    def cog_unload(self):
-        """Recreates help command if cog is unloaded
-
-        Returns:
-            A set help command depending on what's set in the class
-
-        """
-        self.bot.help_command = self._original_help_command
-
-    async def cog_check(self, ctx):
-        """Checks permissions of a user.
-
-        Args:
-            ctx: Context object where the command is called.
-
-        Returns:
-            True or false depending on if the user's id is in the owner set.
-
-        """
-        return ctx.author.id in self.bot.owner_ids
-
-    """ Commands """
 
     @comms.command()
     async def exit(self, ctx):
-        """Unloads currently loaded cogs, then loads from the 'cogs' directory.
-
-        Args:
-            ctx: Context object where the command is called.
-
-        Raises:
-            type(e).__name__: Cog cannot be loaded. Reason: 'e'.
-
-        Returns:
-            Errors, or a confirmation of success.
-
-        """
-        ds('[ WARNING ]: BOT IS LOGGING OUT')
         await ctx.bot.logout()
-
-    @comms.command(name='r')
-    async def reload(self, ctx):
-        """Unloads currently loaded cogs, then loads from the 'cogs' directory.
-
-        Args:
-            ctx: Context object where the command is called.
-
-        Raises:
-            type(e).__name__: Cog cannot be loaded. Reason: 'e'.
-
-        Returns:
-            Errors, or a confirmation of success.
-
-        """
-        for cog in self.bot.exts:
-            try:
-                self.bot.unload_extension(cog)
-            except Exception as e:
-                pass
-        for cog in get_cogs(self.bot.config.blocked_cogs):
-            try:
-                self.bot.load_extension(cog)
-            except discord.ext.commands.errors.ExtensionAlreadyLoaded:
-                pass
-            except Exception as e:
-                print(e)
-        return ds('[ SUCCESS ]: COGS HAVE BEEN RELOADED')
-
-    @comms.command()
-    async def invite(self, ctx):
-        """Gives the invite link of this bot. It is not 'essential', but it's still useful.
-
-        Args:
-            ctx: Context object where the command is called.
-
-        Returns:
-            The invite link so the bot can be invited to a server.
-
-        """
-        await ctx.send(f'https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=32885952')
-
-    @comms.command()
-    async def about(self, ctx):
-        """Returns information about this bot's origin
-
-        Args:
-            ctx: Context object where the command is called.
-
-        Returns:
-            An embed object with links to creator's information and bot's repository.
-
-        """
-        info = {
-            'Twitter': 'https://twitter.com/_Xithrius',
-            'Github': 'https://github.com/Xithrius/Xythrion'
-        }
-        e = discord.Embed(title='Project creation date: March 30, 2019', description='\n'.join(f'[`{k}`]({v})' for k, v in info.items()), colour=self.bot.ec)
-        await ctx.send(embed=e)
 
 
 if __name__ == "__main__":

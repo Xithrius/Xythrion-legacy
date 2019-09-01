@@ -33,36 +33,6 @@
 * Digital Ocean or AWS will be running this bot in the future, so there should be no need to create your own instance of the bot unless you're testing it. If you happen not to be testing it, you can invite the bot [here](https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=53992512)
 * If you want to test the bot, the instructions below will guide your way.
 
-### Requirements:
-#### [Install python](https://www.python.org/downloads/)
-* Python 3.7.x must be installed for this bot to run.
-
-#### Install package requirements:
-|  Operating system  |  Command  |
-| ------------- | ------------- |
-|  Windows  |  `py -3 -m pip install --user -r requirements.txt`  |
-|  Linux  | `python3 -m pip install --user -r requirements.txt`  |
-
-
-#### Create config.json
-Within the directory of `handlers/configuration`, create a new file called `config.json`. Copy the internals of `config.txt` into it, then insert data from the steps that will be taken in the following instructions.
-
-#### Services that require tokens:
-
-|  Item  |  Instructions  |  Link  |
-| ------------- | ------------- | ------------- |
-| Discord  |  `New application > bot > add bot > copy token` this token will be given to `discord` in the config. The bot's ID in `General Information` will be used later in [the invite portion](#invite-the-bot), so be sure to keep that in mind. |  [Discord Developer Portal](https://discordapp.com/developers/applications/)  |
-|  Weather  | `weather` will be given the API key that you're emailed after signing up for one.  |  [WeatherBit dashbord](https://www.weatherbit.io/account/dashboard)  |
-|  TTS  |  This will be included later, but a VERY long amount of instructions are needed. A different README will be supplied at a later date  |  Something something Google Cloud Text-To-Speech API  |
-
-After tokens that aren't TTS related are gathered, insert them into the `services` section of the `config.json` file.
-
-#### Running the bot:
-|  Operating system  |  Command  |
-| ------------- | ------------- |
-|  Windows  |  `py -3 bot.py`  |
-|  Linux  |  `python3 bot.py`  |
-
 
 ## Commands:
 
