@@ -19,8 +19,8 @@ Todo:
 
 import collections
 import json
-import psycopg2
-import configparser
+import asyncpg
+import asyncio
 
 from discord.ext import commands as comms
 import discord
@@ -28,23 +28,29 @@ import discord
 from handlers.modules.output import path, get_cogs, ds
 
 
-class Robot(comms.Bot):
+class Robot(comms.Bot, Requesters):
 
     def __init__(self, *args, **kwargs):
         super().__init__(command_prefix=comms.when_mentioned_or('.'))
 
+        self.loop = asyncio.get_event_loop()
+        loop.run_until_complete(fetch_page(session, 'http://python.org'))
+
+        #:
+
+        #:
         with open(path('handlers', 'configuration', 'config.json'), 'r', encoding='utf8') as f:
             data = json.load(f)
 
+        #:
         self.config = json.loads(json.dumps(data), object_hook=lambda d: collections.namedtuple("config", d.keys())(*d.values()))
 
-
-class RecorderCog(comms.Cog):
-
-    def __init__(self, bot):
-        self.bot = bot
-        if not os.path.isfile(self.bot.db_path):
-            pass
+    async def get_service_status(self):
+        with aiohttp.ClientSession(loop=self.loop) as session:
+            with aiohttp.Timeout(10):
+                async with session.get(url) as response:
+                    assert response.status == 200
+                    print('got here')
 
 
 class MainCog(comms.Cog):
