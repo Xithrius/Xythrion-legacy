@@ -39,7 +39,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 
-class MyHelpCommand(commands.MinimalHelpCommand):
+class MyHelpCommand(comms.MinimalHelpCommand):
     """Customization for the help command"""
 
     def get_command_signature(self, command):
@@ -75,7 +75,7 @@ class Robot(comms.Bot):
         self.config = json.loads(json.dumps(data), object_hook=lambda d: collections.namedtuple("config", d.keys())(*d.values()))
 
         #: Attribute loading in service tokens (if any)
-        self.services = _data['services']
+        self.services = data['services']
 
         #: Dictionary created with the names of cogs in the requesters folder, while setting all values to false
         self.requester_status = {x[:-3]: False for x in os.listdir(path('cogs', 'requesters')) if x[-3:] == '.py'}
@@ -87,8 +87,8 @@ class Robot(comms.Bot):
         self.ec = 0xc27c0e
 
         #: Setting the database paths for all cogs to use
-        self.req_p = path('repository', 'data', 'requests.db')
-        self.rec_p = path('repository', 'data', 'records.db')
+        # self.req_p = path('repository', 'data', 'requests.db')
+        # self.rec_p = path('repository', 'data', 'records.db')
 
         #: Creating background task for testing services
         self.loop.create_task(self.load_services())
