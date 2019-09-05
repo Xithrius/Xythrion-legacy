@@ -1,4 +1,10 @@
-img {
-    width: 150%;
-    height: 150%
+img.main_icon {
+    box-shadow:
+    0 0 0 10px hsl(0, 0%, 50%),
+    0 0 0 15px hsl(0, 0%, 60%),
+    0 0 0 20px hsl(0, 0%, 70%),
+    0 0 0 25px hsl(0, 0%, 80%),
+    0 0 0 30px hsl(0, 0%, 90%);
+
+    margin: 40px;
 }
