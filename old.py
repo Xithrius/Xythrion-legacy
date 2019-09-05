@@ -91,7 +91,7 @@ class Robot(comms.Bot):
         # self.rec_p = path('repository', 'data', 'records.db')
 
         #: Creating background task for testing services
-        self.loop.create_task(self.load_services())
+        # self.loop.create_task(self.load_services())
 
     """ Background tasks """
 
@@ -140,6 +140,7 @@ class Robot(comms.Bot):
             Warnings if cogs and/or services aren't available
 
         """
+        self.broken_services = []
         self.exts = get_cogs(self.config.blocked_cogs)
         broken_cogs = []
         ds('[. . .]: LOADING EXTENSIONS', '\r')
