@@ -21,6 +21,7 @@ Todo:
 
 import collections
 import json
+import asyncio
 
 from discord.ext import commands as comms
 
@@ -40,6 +41,9 @@ class Robot(comms.Bot):
         #:
         self.config = json.loads(json.dumps(config), object_hook=lambda d: collections.namedtuple('config', d.keys())(*d.values()))
 
+        #:
+        sem = asyncio.Semaphore()
+
 
 class RobotCog(comms.Cog):
     """."""
@@ -47,10 +51,10 @@ class RobotCog(comms.Cog):
     def __init__(self, bot):
         #:
         self.bot = bot
-    
+
     @comms.command()
     async def exit(self, ctx):
-        ds('[ Warning ]: Logging out.')
+        ds.w('[ Warning ]: Logging out.')
         await ctx.bot.logout()
 
 
