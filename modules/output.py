@@ -27,6 +27,27 @@ def path(*_items):
     return (os.sep).join(str(y) for y in newPath)
 
 
+# DON'T JUDGE ME THIS IS TEMPORARY AND MAY NOT MAKE SENSE (3AM PROGRAMMING)
+# I'LL AUTOMATE THE PROCESS OF DIFFERENT ERRORS SOON.
+class ds:
+    """A date that also includes the string passed through."""
+
+    def insert_items(self, warning, string):
+        return f'[{now}] [ {warning} ]: {string}'
+
+    def w(self, string):
+        """Returns a warning string."""
+        return self.insert_items('Warning', string)
+
+    def f(self, string):
+        """Returns a fatal string."""
+        return self.insert_items('Fatal', string)
+
+    def s(self, string):
+        """Returns a success string."""
+        return self.insert_items('Success', string)
+
+
 def now():
     """Returns the time depending on time zone from file
 
@@ -35,22 +56,6 @@ def now():
 
     """
     return datetime.datetime.now()
-
-
-def ds(string, end=False):
-    """(AKA date_string) Returning a customized string with a timestamp that includes the date.
-
-    Args:
-        string: Just a regular string.
-
-    Returns:
-        A string with the current date within square brackets.
-
-    """
-    if not end:
-        print(f"[{now()}] {string}")
-    else:
-        print(f"[{now()}] {string}", end=end)
 
 
 def get_cogs(blocked_cogs):
