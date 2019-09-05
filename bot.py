@@ -2,18 +2,6 @@
 >> Xythrion
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
-
-
-This is the main Python file for the discord.py bot, as all important attributes,
-checks, and background tasks are created here.
-
-Example:
-    $ py -3 -m pip install --user -r requirements.txt
-    $ py -3 bot.py
-
-Todo:
-    * Rewrite everything to match to PortgreSQL
-
 """
 
 
@@ -21,6 +9,7 @@ import collections
 import json
 import asyncpg
 import asyncio
+import aiohttp
 
 from discord.ext import commands as comms
 import discord
@@ -28,13 +17,13 @@ import discord
 from handlers.modules.output import path, get_cogs, ds
 
 
-class Robot(comms.Bot, Requesters):
+class Robot(comms.Bot):
 
     def __init__(self, *args, **kwargs):
         super().__init__(command_prefix=comms.when_mentioned_or('.'))
 
         self.loop = asyncio.get_event_loop()
-        loop.run_until_complete(fetch_page(session, 'http://python.org'))
+        loop.run_until_complete(self.get_service_status())
 
         #:
 
