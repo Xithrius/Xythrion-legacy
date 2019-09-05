@@ -1,8 +1,0 @@
-discord.py[voice]
-datetime
-google-cloud-texttospeech
-aiohttp
-matplotlib
-youtube_dl
-asyncpg
-asyncpg

@@ -1,3 +1,0 @@
-Redo a large amount of the README
-Update requirements.txt to specific versions
-Automate JSON API requesters (after v1.0, very large project.)
