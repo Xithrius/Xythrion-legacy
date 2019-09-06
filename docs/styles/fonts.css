@@ -1,0 +1,4 @@
+@font-face {
+    font-family: 'crimson-text';
+    src: local('./fonts/Crimson_Text/CrimsonText-Regular.ttf') format('ttf')
+}
