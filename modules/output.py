@@ -12,7 +12,7 @@ import asyncio
 
 
 def path(*_items):
-    """ Gives a path relative to caller file location with added items.
+    """Gives a path relative to caller file location with added items.
 
     Args:
         objects: An amount of different items to path to as strings.
@@ -31,6 +31,16 @@ class ds:
     """A date that also includes the string passed through."""
 
     def insert_items(self, warning, string):
+        """
+
+        Args:
+            warning: string of what the warning should say
+            string: description of the warning
+
+        Returns:
+            A string with a date, warning, and string.
+
+        """
         return f'[{now}] [ {warning} ]: {string}'
 
     def w(self, string):
