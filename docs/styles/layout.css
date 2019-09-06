@@ -1,49 +1,21 @@
 /* Styling different headers */
-
-header {
-    padding: 30px;
+h1 {
+    padding: 10px;
     text-align: center;
     font-size: 35px;
 }
 
-
-/* Container for flexboxes */
-section {
-    display: -webkit-flex;
-    display: flex;
+/* Formatting tables */
+table {
+    width:100%;
 }
-
-/* Style the navigation menu */
-nav {
-    -webkit-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
-    background: #ccc;
-    padding: 20px;
-    align-content: center;
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
 }
-
-/* Style the list inside the menu */
-nav ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-/* Style the content */
-article {
-    -webkit-flex: 3;
-    -ms-flex: 3;
-    flex: 3;
-    background-color: #f1f1f1;
-    padding: 10px;
-}
-
-/* Style the footer */
-footer {
-    background-color: #777;
-    padding: 10px;
-    text-align: center;
-    color: white;
+th, td {
+    padding: 15px;
+    text-align: left;
 }
 
 /* Responsive layout - makes the menu and the content (inside the section) sit on top of each other instead of next to each other */
