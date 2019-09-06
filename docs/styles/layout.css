@@ -1,11 +1,6 @@
 /* Styling different headers */
 
-h1 {
-    font-family: sans-serif;
-}
-
 header {
-    font-family: 'Lucida Sans Unicode';
     padding: 30px;
     text-align: center;
     font-size: 35px;
