@@ -1,0 +1,37 @@
+{
+    "ytdl": {
+        "ytdlopts": {
+            "format": "bestaudio/best",
+            "restrictfilenames": true,
+            "noplaylist": true,
+            "nocheckcertificate": true,
+            "ignoreerrors": true,
+            "logtostderr": false,
+            "quiet": true,
+            "panic": false,
+            "fatal": false,
+            "error": false,
+            "no_warnings": true,
+            "default_search": "auto",
+            "source_address": "0.0.0.0"
+        },
+        "ffmpeg_options": {
+            "options": "-vn -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"
+        }
+    },
+    "urls": {
+        "reddit": {
+            "test_url": "https://www.reddit.com/r/pics/hot.json"
+        },
+        "weather": {
+            "test_url": "https://api.weatherbit.io/v2.0/forecast/daily?postal_code=12345&country=US&key=TOKEN"
+        },
+        "imgur": {
+            "test_url": "https://api.imgur.com/3/account/Xithrius",
+            "headers": {
+                "Authorization": "Client-ID TOKEN"
+            }
+        }
+    },
+    "db": "postgresql://user:password@host/"
+}
