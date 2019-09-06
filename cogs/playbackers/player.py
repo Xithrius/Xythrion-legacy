@@ -17,7 +17,7 @@ import os
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import path
+from modules.output import path
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''

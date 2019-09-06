@@ -17,7 +17,7 @@ from discord.ext import commands as comms
 from google.cloud import texttospeech
 import discord
 
-from handlers.modules.output import path
+from modules.output import path
 
 
 class TTS_Playbacker(comms.Cog):
