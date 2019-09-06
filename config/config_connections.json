@@ -33,5 +33,4 @@
             }
         }
     },
-    "db": "postgresql://user:password@host/"
 }

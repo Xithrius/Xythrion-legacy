@@ -1,6 +1,7 @@
 {
     "discord": "",
     "owners": [],
+    "db": "postgresql://user:password@host/",
     "services": {
         "weather": "",
         "imgur": ""

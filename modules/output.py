@@ -74,15 +74,15 @@ def get_cogs(blocked_cogs):
     return exts
 
 
-def get_filename(id, end=''):
+def get_filename(id, e=''):
     """Here's a specific, random file name.
 
     Args:
         id: The ID of a user
-        end: The format of the file
+        e: The format of the file
 
     Returns:
         A string with the current date, id of a user, and the format of the file (if any)
 
     """
-    return f'{int(datetime.datetime.timestamp((now())))}-{id}{end}'
+    return f'{int(datetime.datetime.timestamp((now())))}-{id}{e}'
