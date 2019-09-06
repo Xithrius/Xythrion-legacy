@@ -27,8 +27,6 @@ def path(*_items):
     return (os.sep).join(str(y) for y in newPath)
 
 
-# DON'T JUDGE ME THIS IS TEMPORARY AND MAY NOT MAKE SENSE (3AM PROGRAMMING)
-# I'LL AUTOMATE THE PROCESS OF DIFFERENT ERRORS SOON.
 class ds:
     """A date that also includes the string passed through."""
 
