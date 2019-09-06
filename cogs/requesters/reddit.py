@@ -18,7 +18,7 @@ import os
 from discord.ext import commands as comms
 import discord
 
-from handlers.modules.output import path, now
+from modules.output import path, now
 
 
 class Reddit_Requester(comms.Cog):
@@ -74,7 +74,7 @@ class Reddit_Requester(comms.Cog):
         """
         try:
             amount = int(amount)
-            if amount not in range(1, 26):
+            if amount not in range(1, 6):
                 raise ValueError
         except ValueError:
             await ctx.send('Amount can only be in between 1 and 25')
@@ -82,7 +82,7 @@ class Reddit_Requester(comms.Cog):
             assert r.status == 200
             info = await r.json()
             info = info['data']['children']
-            if amount in range(2, 26):
+            if amount in range(2, 6):
                 info = info[:amount]
                 embed = discord.Embed(title=f'**Top {amount} posts from r/{subreddit}**', colour=self.bot.ec)
                 e_info = [f'#{num + 1}: [{i["data"]["title"]}](https://reddit.com{i["data"]["permalink"]})' for num, i in enumerate(info)]
@@ -112,7 +112,7 @@ class Reddit_Requester(comms.Cog):
         """
         try:
             amount = int(amount)
-            if amount not in range(1, 26):
+            if amount not in range(1, 6):
                 raise ValueError
         except ValueError:
             await ctx.send('Amount can only be in between 1 and 25')
@@ -121,7 +121,7 @@ class Reddit_Requester(comms.Cog):
             info = await r.json()
             info = info['data']['children']
             info = sorted(info, key=lambda x: x['data']['ups'], reverse=True)
-            if amount in range(2, 26):
+            if amount in range(2, 6):
                 info = info[:amount]
                 embed = discord.Embed(title=f'**Top {amount} posts from r/{subreddit}**', colour=self.bot.ec)
                 e_info = [f'#{num + 1}: [{i["data"]["title"]}](https://reddit.com{i["data"]["permalink"]})' for num, i in enumerate(info)]
