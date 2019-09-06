@@ -45,16 +45,24 @@ class Robot(comms.Bot):
         #: Giving self.config recursive attributes from config.json
         self.config = json.loads(json.dumps(config), object_hook=lambda d: collections.namedtuple('config', d.keys())(*d.values()))
 
-        #: Create async loop for checking services
-        
+        #: Create async loop
+        self.loop = asyncio.get_event_loop()
+
+        #: Create tasks
+        self.loop.create_task(self.create_service_connections())
+        self.loop.create_task(self.create_service_connections())
+        self.service_loop_testing = self.loop.create_task(self.test_services())
 
     async def create_service_connections(self):
+        """ """
         pass
 
     async def create_database_connection(self):
+        """ """
         pass
 
     async def test_services(self):
+        """ """
         pass
 
 
