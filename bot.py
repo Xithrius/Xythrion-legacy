@@ -45,8 +45,17 @@ class Robot(comms.Bot):
         #: Giving self.config recursive attributes from config.json
         self.config = json.loads(json.dumps(config), object_hook=lambda d: collections.namedtuple('config', d.keys())(*d.values()))
 
-        #: Semaphore for giving service requesters rate limiters.
-        sem = asyncio.Semaphore()
+        #: Create async loop for checking services
+        
+
+    async def create_service_connections(self):
+        pass
+
+    async def create_database_connection(self):
+        pass
+
+    async def test_services(self):
+        pass
 
 
 class RobotCog(comms.Cog):
