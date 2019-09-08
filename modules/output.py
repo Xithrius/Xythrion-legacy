@@ -41,19 +41,21 @@ class ds:
             A string with a date, warning, and string.
 
         """
-        return f'[{now}] [ {warning} ]: {string}'
+        return f'[{now()}] [ {warning} ]: {string}'
 
-    def w(self, string):
+    @classmethod
+    def w(cls, string):
         """Returns a warning string."""
-        return self.insert_items('Warning', string)
+        print(cls.insert_items('Warning', string))
 
-    def f(self, string):
+    @classmethod
+    def f(cls, string):
         """Returns a fatal string."""
-        return self.insert_items('Fatal', string)
+        print(cls.insert_items('Fatal', string))
 
-    def s(self, string):
+    def s(cls, string):
         """Returns a success string."""
-        return self.insert_items('Success', string)
+        print(cls.insert_items('Success', string))
 
 
 def now():
@@ -66,11 +68,11 @@ def now():
     return datetime.datetime.now()
 
 
-def get_cogs(blocked_cogs):
-    """Gets cog filepaths within the 'cogs' folder
+def get_extensions(blocked_extensions):
+    """Gets extension filepaths within the 'cogs' folder
 
     Args:
-        blocked_cogs: A list of cogs that are not allowed to be loaded
+        blocked_cogs: A list of extensions that are not allowed to be loaded
 
     Returns:
         A list of strings with filepaths joined by a '.'
@@ -79,7 +81,7 @@ def get_cogs(blocked_cogs):
     folders = [folder for folder in os.listdir(path('cogs')) if folder != '__pycache__']
     exts = []
     for folder in folders:
-        folder_cogs = [f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if os.path.isfile(path('cogs', folder, cog)) and cog[:-3] not in blocked_cogs]
+        folder_cogs = [f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if os.path.isfile(path('cogs', folder, cog)) and cog[:-3] not in blocked_extensions]
         exts.extend(folder_cogs)
     return exts
 
