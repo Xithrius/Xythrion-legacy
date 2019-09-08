@@ -49,48 +49,61 @@ class Robot(comms.Bot):
         #: Create async loop
         self.loop = asyncio.get_event_loop()
 
+        future = asyncio.gather()
+        
         #: Create tasks
-        self.loop.create_task(self.create_conections())
-        self.loop.create_task(self.test_services())
+        self.loop.create_task(self.create_tasks())
+        self.loop.run_until_complete(future)
 
-        self.loop.run_forever()
+        # self.request_limiter = asyncio.new_event_loop()
+
+        ds.s('Got here too.')
 
     """ Bot-specific functions """
 
     async def load_extensions(self):
+        ds.w('Loading extensions...')
         broken_extensions = []
-        for extension in get_extensions():
+        for extension in get_extensions(self.config.blocked_extensions):
             try:
                 self.unload_extension(extension)
                 self.load_extension(extension)
             except Exception as e:
                 broken_extensions.append(f'{type(e).__name__}: {e}')
-        return broken_extensions
-
-    """ Tasks """
-    
-    async def create_conections(self):
-        """Create connections to sessions per database.
-        
-        """
-        self.s = aiohttp.ClientSession()
-
-    async def test_services(self):
-        """ """
-        while not self.is_closed():
-            for i in range(5):
-                print('test')
-                await asyncio.sleep(1)
-            break
-
-    """ Events """
-
-    async def on_ready(self):
-        ds.w('Loading extensions...')
         extension_status = await self.load_extensions()
         if extension_status:
             for extension in extension_status:
                 ds.w(extension_status)
+
+    """ Tasks """
+
+    async def create_tasks(self):
+        self.s = aiohttp.ClientSession()
+        ds.r('Connections established.')
+
+        self.connection_loop = asyncio.get_running_loop()
+        self.connection_loop.create_task(self.test_services())
+        result = await self.connection_loop.run_in_executor(None, self.test_services)
+
+    async def test_services(self):
+        """ """
+        while not self.is_closed():
+            await asyncio.sleep(60)
+            print('test_services')
+
+    """ Events """
+
+    async def on_ready(self):
+        ds.r('Startup completed.')
+
+    async def close(self):
+        """ Safely closes connections """
+        try:
+            await self.s.close()
+            self.c.close()
+        except Exception as e:
+            pass
+        await super().close()
 
 
 class RobotCog(comms.Cog):
@@ -100,7 +113,7 @@ class RobotCog(comms.Cog):
         #: Robot(comms.Bot) as a class attribute
         self.bot = bot
 
-    @comms.command(alias=['reload', 'r'])
+    @comms.command(alias=['reload', 'refresh', 'r'])
     async def reload(self, ctx):
         extension_status = await self.load_extensions()
         if extension_status:
@@ -117,8 +130,8 @@ class RobotCog(comms.Cog):
             A possible timeout error.
 
         """
+        ds.w('Logging out...')
         await ctx.bot.logout()
-        ds.w('Bot has logged out.')
 
 
 class InfoCog(comms.Cog):
