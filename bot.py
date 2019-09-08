@@ -122,7 +122,7 @@ class RobotCog(comms.Cog):
         else:
             ds.s('Reloaded all cogs.')
 
-    @comms.command()
+    @comms.command(alias=['disconnect', 'dc', 'exit'])
     async def exit(self, ctx):
         """Logs out the bot.
 
