@@ -22,10 +22,11 @@ Todo:
 import collections
 import json
 import asyncio
+import aiohttp
 
 from discord.ext import commands as comms
 
-from modules.output import path, ds
+from modules.output import path, ds, get_extensions
 
 
 class Robot(comms.Bot):
@@ -49,21 +50,47 @@ class Robot(comms.Bot):
         self.loop = asyncio.get_event_loop()
 
         #: Create tasks
-        self.loop.create_task(self.create_service_connections())
-        self.loop.create_task(self.create_service_connections())
-        self.service_loop_testing = self.loop.create_task(self.test_services())
+        self.loop.create_task(self.create_conections())
+        self.loop.create_task(self.test_services())
 
-    async def create_service_connections(self):
-        """ """
-        pass
+        self.loop.run_forever()
 
-    async def create_database_connection(self):
-        """ """
-        pass
+    """ Bot-specific functions """
+
+    async def load_extensions(self):
+        broken_extensions = []
+        for extension in get_extensions():
+            try:
+                self.unload_extension(extension)
+                self.load_extension(extension)
+            except Exception as e:
+                broken_extensions.append(f'{type(e).__name__}: {e}')
+        return broken_extensions
+
+    """ Tasks """
+    
+    async def create_conections(self):
+        """Create connections to sessions per database.
+        
+        """
+        self.s = aiohttp.ClientSession()
 
     async def test_services(self):
         """ """
-        pass
+        while not self.is_closed():
+            for i in range(5):
+                print('test')
+                await asyncio.sleep(1)
+            break
+
+    """ Events """
+
+    async def on_ready(self):
+        ds.w('Loading extensions...')
+        extension_status = await self.load_extensions()
+        if extension_status:
+            for extension in extension_status:
+                ds.w(extension_status)
 
 
 class RobotCog(comms.Cog):
@@ -73,10 +100,25 @@ class RobotCog(comms.Cog):
         #: Robot(comms.Bot) as a class attribute
         self.bot = bot
 
+    @comms.command(alias=['reload', 'r'])
+    async def reload(self, ctx):
+        extension_status = await self.load_extensions()
+        if extension_status:
+            for extension in extension_status:
+                ds.w(extension)
+        else:
+            ds.s('Reloaded all cogs.')
+
     @comms.command()
     async def exit(self, ctx):
-        ds.w('Logging out.')
+        """Logs out the bot.
+
+        Returns:
+            A possible timeout error.
+
+        """
         await ctx.bot.logout()
+        ds.w('Bot has logged out.')
 
 
 class InfoCog(comms.Cog):
