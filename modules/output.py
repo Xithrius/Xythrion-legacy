@@ -30,7 +30,8 @@ def path(*_items):
 class ds:
     """A date that also includes the string passed through."""
 
-    def insert_items(self, warning, string):
+    @classmethod
+    def insert_items(cls, warning, string):
         """
 
         Args:
@@ -41,7 +42,8 @@ class ds:
             A string with a date, warning, and string.
 
         """
-        return f'[{now()}] [ {warning} ]: {string}'
+        rn = now()
+        return f"[{rn.strftime('%a %I:%M:%S')}{rn.strftime('%p').lower()}] [ {warning} ]: {string}"
 
     @classmethod
     def w(cls, string):
@@ -53,10 +55,15 @@ class ds:
         """Returns a fatal string."""
         print(cls.insert_items('Fatal', string))
 
+    @classmethod
     def s(cls, string):
         """Returns a success string."""
         print(cls.insert_items('Success', string))
 
+    @classmethod
+    def r(cls, string):
+        """Returns a custom warning string."""
+        print(cls.insert_items('Ready', string))
 
 def now():
     """Returns the time depending on time zone from file
