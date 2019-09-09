@@ -106,9 +106,9 @@ venv.bak/
 # Sensitive folders/files
 config/gsc.json
 config/config.json
-repository/data/*
-repository/tmp/*
-repository/logs/*
+/data/*
+/tmp/*
+/logs/*
 
 # Visual Studio Code
 /.vscode
