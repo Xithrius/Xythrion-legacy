@@ -69,18 +69,6 @@ class Robot(comms.Bot):
 
     """ subclass-specific functions """
 
-    async def load_extensions(self):
-        ds.w('Loading extensions...')
-        broken_extensions = []
-        for extension in get_extensions(self.config.blocked_extensions):
-            try:
-                self.load_extension(extension)
-            except Exception as e:
-                broken_extensions.append(f'{type(e).__name__}: {e}')
-        for ext in broken_extensions:
-            ds.w(ext)
-        ds.r('Extensions finished loaded.')
-
     async def create_tasks(self):
         self.s = aiohttp.ClientSession()
         ds.r('Connections established.')
@@ -120,7 +108,17 @@ class Robot(comms.Bot):
     """ Events """
 
     async def on_ready(self):
-        await self.load_extensions()
+        """ """
+        ds.w('Loading extensions...')
+        broken_extensions = []
+        for extension in get_extensions(self.config.blocked_extensions):
+            try:
+                self.load_extension(extension)
+            except Exception as e:
+                broken_extensions.append(f'{type(e).__name__}: {e}')
+        for ext in broken_extensions:
+            ds.w(ext)
+        ds.r('Extensions finished loaded.')
         await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with user data'))
         ds.r('Startup completed.')
 
@@ -141,17 +139,22 @@ class RobotCog(comms.Cog):
         #: Robot(comms.Bot) as a class attribute
         self.bot = bot
 
-    @comms.command(alias=['reload', 'refresh', 'r'])
+    @comms.command(aliases=['refresh', 'r'])
     async def reload(self, ctx):
-        extension_status = await self.load_extensions()
-        if extension_status:
-            for extension in extension_status:
-                ds.w(extension)
+        broken_extensions = []
+        for ext in get_extensions(self.bot.config.blocked_extensions):
+            try:
+                self.bot.unload_extension(ext)
+                self.bot.load_extension(ext)
+            except Exception as e:
+                broken_extensions.append(e)
+        if broken_extensions:
+            info = '\n'.join(f'{type(y).__name__} - {y}' for y in broken_extensions)
+            await ctx.send(f'```\n{info}```', delete_after=15)
         else:
             await ctx.send('Reloaded all cogs.', delete_after=5)
-            'https://api.weatherbit.io/v2.0/current?postal_code=12345&country=US&key=TOKEN'
 
-    @comms.command(alias=['disconnect', 'dc', 'exit'])
+    @comms.command(aliases=['disconnect', 'dc'])
     async def exit(self, ctx):
         """Logs out the bot.
 
