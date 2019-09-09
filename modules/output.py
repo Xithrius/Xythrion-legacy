@@ -43,7 +43,7 @@ class ds:
 
         """
         rn = now()
-        return f"[{rn.strftime('%a %I:%M:%S')}{rn.strftime('%p').lower()}] [ {warning} ]: {string}"
+        return f"[{rn.strftime('%A %I:%M:%S')}{rn.strftime('%p').lower()}] [ {warning} ]: {string}"
 
     @classmethod
     def w(cls, string):

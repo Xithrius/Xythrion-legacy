@@ -109,7 +109,9 @@ class Robot(comms.Bot):
                         js = await r.json()
                         self.requester_status[k] = True
                     else:
-                        self.broken_services.append(f'[ {k.upper()} ]: {r.status} - {r}')
+                        broken = f'{k.title()} - {r.status}'
+                        if broken not in self.broken_services:
+                            self.broken_services.append(f'{k.title()} - {r.status}')
             if self.broken_services:
                 for broken_service in self.broken_services:
                     ds.f(broken_service)
@@ -146,7 +148,8 @@ class RobotCog(comms.Cog):
             for extension in extension_status:
                 ds.w(extension)
         else:
-            ds.s('Reloaded all cogs.')
+            await ctx.send('Reloaded all cogs.', delete_after=5)
+            'https://api.weatherbit.io/v2.0/current?postal_code=12345&country=US&key=TOKEN'
 
     @comms.command(alias=['disconnect', 'dc', 'exit'])
     async def exit(self, ctx):
