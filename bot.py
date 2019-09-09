@@ -23,8 +23,10 @@ import collections
 import json
 import asyncio
 import aiohttp
+import os
 
 from discord.ext import commands as comms
+import discord
 
 from modules.output import path, ds, get_extensions
 
@@ -41,10 +43,20 @@ class Robot(comms.Bot):
 
         #: Opening the config json file
         with open(path('config', 'config.json'), 'r', encoding='utf8') as f:
-            config = json.load(f)
+            data = json.load(f)
+
+        with open(path('config', 'config_connections.json'), 'r') as f:
+            self.testing_urls = json.load(f)['urls']
 
         #: Giving self.config recursive attributes from config.json
-        self.config = json.loads(json.dumps(config), object_hook=lambda d: collections.namedtuple('config', d.keys())(*d.values()))
+        self.config = json.loads(json.dumps(data), object_hook=lambda d: collections.namedtuple('config', d.keys())(*d.values()))
+
+        self.services = data['services']
+
+        self.owner_ids = set(self.config.owners)
+
+        #: All requesters must have one testing link to make sure a connection is possible to the API.
+        self.requester_status = {x[:-3]: False for x in os.listdir(path('cogs', 'requesters')) if x[-3:] == '.py'}
 
         #: Create async loop
         self.loop = asyncio.get_event_loop()
@@ -55,45 +67,59 @@ class Robot(comms.Bot):
         self.loop.create_task(self.create_tasks())
         self.loop.run_until_complete(future)
 
-        # self.request_limiter = asyncio.new_event_loop()
-
-        ds.s('Got here too.')
-
-    """ Bot-specific functions """
+    """ subclass-specific functions """
 
     async def load_extensions(self):
         ds.w('Loading extensions...')
         broken_extensions = []
         for extension in get_extensions(self.config.blocked_extensions):
             try:
-                self.unload_extension(extension)
                 self.load_extension(extension)
             except Exception as e:
                 broken_extensions.append(f'{type(e).__name__}: {e}')
-        extension_status = await self.load_extensions()
-        if extension_status:
-            for extension in extension_status:
-                ds.w(extension_status)
-
-    """ Tasks """
+        for ext in broken_extensions:
+            ds.w(ext)
+        ds.r('Extensions finished loaded.')
 
     async def create_tasks(self):
         self.s = aiohttp.ClientSession()
         ds.r('Connections established.')
 
         self.connection_loop = asyncio.get_running_loop()
-        self.connection_loop.create_task(self.test_services())
-        result = await self.connection_loop.run_in_executor(None, self.test_services)
+        await self.connection_loop.create_task(self.test_services())
+
+        # self.request_limiter = asyncio.new_event_loop()
 
     async def test_services(self):
         """ """
         while not self.is_closed():
+            self.broken_services = []
+            for k, v in self.testing_urls.items():
+                if k in self.config.blocked_extensions:
+                    continue
+                url = v['test_url']
+                if 'TOKEN' in url:
+                    url = url.replace('TOKEN', self.services[k])
+                if 'headers' in v.keys():
+                    headers = {k1: v1.replace('TOKEN', self.services[k]) for k1, v1 in v['headers'].items()}
+                else:
+                    headers = None
+                async with self.s.get(url, headers=headers) as r:
+                    if r.status == 200:
+                        js = await r.json()
+                        self.requester_status[k] = True
+                    else:
+                        self.broken_services.append(f'[ {k.upper()} ]: {r.status} - {r}')
+            if self.broken_services:
+                for broken_service in self.broken_services:
+                    ds.f(broken_service)
             await asyncio.sleep(60)
-            print('test_services')
 
     """ Events """
 
     async def on_ready(self):
+        await self.load_extensions()
+        await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with user data'))
         ds.r('Startup completed.')
 
     async def close(self):

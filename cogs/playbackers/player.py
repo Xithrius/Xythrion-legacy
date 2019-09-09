@@ -22,8 +22,8 @@ from modules.output import path
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
 
-with open(path('handlers', 'configuration', 'streamer.json')) as f:
-    info = json.load(f)
+with open(path('config', 'config_connections.json')) as f:
+    info = json.load(f)['ytdl']
 ytdl_format_options = info['ytdlopts']
 ffmpeg_options = info['ffmpeg_options']
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
