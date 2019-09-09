@@ -41,7 +41,7 @@ class Reddit_Requester(comms.Cog):
             True if user has permissions, False otherwise.
 
         """
-        return ctx.message.author.id in self.bot.owner_ids
+        return all((ctx.message.author.id in self.bot.owner_ids, self.bot.requester_status['reddit']))
 
     """ Commands """
 

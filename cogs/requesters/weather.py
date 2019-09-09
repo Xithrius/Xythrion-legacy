@@ -18,7 +18,7 @@ import datetime
 from discord.ext import commands as comms
 import discord
 
-from modules.output import path, get_filename
+from modules.output import path, get_filename, ds
 
 
 class Weather_Requester(comms.Cog):
@@ -41,7 +41,6 @@ class Weather_Requester(comms.Cog):
             Hopefully nothing unless an error occurs
 
         """
-        self.background_weather.cancel()
         try:
             self.c.close()
         except Exception:
@@ -56,8 +55,7 @@ class Weather_Requester(comms.Cog):
             True or False depending on the availability of the service
 
         """
-        return self.h
-
+        return self.bot.requester_status['weather']
 
     """ Commands """
 
@@ -112,10 +110,10 @@ class Weather_Requester(comms.Cog):
                 plt.title(f"Zip {zip_code}, {country}: High/low temperatures")
                 plt.gcf().autofmt_xdate()
                 filename = get_filename(ctx.message.author.id, '.png')
-                plt.savefig(path('repository', 'tmp', filename))
+                plt.savefig(path('tmp', filename))
                 plt.clf()
-                await ctx.send(file=discord.File(path('repository', 'tmp', filename)))
-                os.remove(path('repository', 'tmp', filename))
+                await ctx.send(file=discord.File(path('tmp', filename)))
+                os.remove(path('tmp', filename))
             else:
                 await ctx.send(f'Requester failed. Status code: **{r.status}**')
 
@@ -135,6 +133,7 @@ class Weather_Requester(comms.Cog):
         """
         if ctx.command.cog_name == self.__class__.__name__:
             await ctx.send('Requester failed to get subreddit information.')
+            ds.w(error)
 
 
 def setup(bot):
