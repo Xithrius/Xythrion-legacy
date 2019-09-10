@@ -116,7 +116,7 @@ class Robot(comms.Bot):
             try:
                 self.load_extension(extension)
             except Exception as e:
-                broken_extensions.append(f'{type(e).__name__}: {e}')
+                broken_extensions.append(e)
         for ext in broken_extensions:
             ds.w(ext)
         ds.r('Extensions finished loaded.')
@@ -137,14 +137,26 @@ class RobotCog(comms.Cog):
     """Essential commands for using the bot."""
 
     def __init__(self, bot):
-        #: Robot(comms.Bot) as a class attribute
+
+        #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
 
+    """ Checks """
+
     async def cog_check(self, ctx):
+        """Checks if the command caller is an owner.
+
+        Returns:
+            True or false, depending on the contents of config.json's owner data.
+
+        """
         return ctx.author.id in self.bot.owner_ids
 
     @comms.command(aliases=['refresh', 'r'])
     async def reload(self, ctx):
+        """
+
+        """
         broken_extensions = []
         for ext in get_extensions(self.bot.config.blocked_extensions):
             try:
@@ -153,7 +165,7 @@ class RobotCog(comms.Cog):
             except Exception as e:
                 broken_extensions.append(e)
         if broken_extensions:
-            info = '\n'.join(f'{type(y).__name__} - {y}' for y in broken_extensions)
+            info = '\n'.join(y for y in broken_extensions)
             await ctx.send(f'```\n{info}```', delete_after=15)
         else:
             await ctx.send('Reloaded all cogs.', delete_after=5)
@@ -174,7 +186,8 @@ class InfoCog(comms.Cog):
     """Cog is meant to give information about owner and bot interactions."""
 
     def __init__(self, bot):
-        #: Robot(comms.Bot) as a class attribute
+
+        #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
 
     @comms.command()
