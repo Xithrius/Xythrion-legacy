@@ -24,7 +24,7 @@
             "test_url": "https://www.reddit.com/r/pics/hot.json"
         },
         "weather": {
-            "test_url": "https://api.weatherbit.io/v2.0/forecast/daily?postal_code=12345&country=US&key=TOKEN"
+            "test_url": "https://api.openweathermap.org/data/2.5/forecast?zip=12345,US?appid=TOKEN"
         },
         "imgur": {
             "test_url": "https://api.imgur.com/3/account/Xithrius",

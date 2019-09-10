@@ -28,6 +28,7 @@ class Weather_Requester(comms.Cog):
 
         #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
+        self.token = self.bot.config.services.weather
 
     """ Permission checking """
 
@@ -54,49 +55,44 @@ class Weather_Requester(comms.Cog):
 
         """
         if ctx.invoked_subcommand is None:
-            await ctx.send(f'Type the command **.help {ctx.command}** for help')
+            await ctx.send(f'Type the command **;help {ctx.command}** for help')
 
     @weather.command()
-    async def daily(self, ctx, zip_code, amount=7, country='US'):
+    async def daily(self, ctx, location, amount=7, country='US'):
         """
 
         Args:
-            ctx: Context object where the command is called.
-            _zip (int): The zip code of a country.
-            amount (int): How many days ahead the graph should be (including today)
-            country (str): The country in which code the zip code is in.
-
-        Raises:
-            A possible error depending on service availability
+            location: The location, being a zip code or a city.
+            amount: How many days ahead the graph should be (including today)
+            country: The country in which code the zip code is in (defaults to US).
 
         Returns:
             A graph with a high and low temperatures for the days within the amount.
 
         """
-        async with self.bot.s.get(f'https://api.weatherbit.io/v2.0/forecast/daily?postal_code={zip_code},{country.upper()}&units=I&key={self.bot.config.services.weather}') as r:
+        if len(location) == 5 and all((isinstance(i, int) for i in list(location))):
+            location_type = 'postal_code'
+        else:
+            location_type = 'city'
+        async with self.bot.s.get() as r:
             if r.status == 200:
-                _json = await r.json()
-                info = _json['data'][:amount]
-                requests = ['valid_date', 'max_temp', 'min_temp']
-                dates = [[v for k, v in _dict.items() if k in requests] for _dict in info]
-                highs = [x[1] for x in dates]
-                lows = [x[2] for x in dates]
-                plt.plot([x[0] for x in dates], highs, linestyle='solid', label="high")
-                plt.plot([x[0] for x in dates], lows, linestyle='solid', label="low")
-                max_temp, min_temp = max(highs), min(lows)
-                plt.xticks(rotation='vertical')
-                plt.yticks(ticks=np.arange(min_temp, max_temp + 1, 5))
-                plt.legend()
-                plt.grid()
-                plt.xlabel("Date")
-                plt.ylabel("Temperature (°F)")
-                plt.title(f"Zip {zip_code}, {country}: High/low temperatures")
-                plt.gcf().autofmt_xdate()
-                filename = get_filename(ctx.message.author.id, '.png')
-                plt.savefig(path('tmp', filename))
-                plt.clf()
-                await ctx.send(file=discord.File(path('tmp', filename)))
-                os.remove(path('tmp', filename))
+                js = await r.json()
+            else:
+                await ctx.send(f'Requester failed. Status code: **{r.status}**')
+
+    @weather.command()
+    async def get_map(self, ctx, layer):
+        layer_types = {x: f'{x}_new' for x in ['clouds', 'percipitation', 'pressure', 'wind', 'temperature']}
+        if layer not in layer_types.keys():
+            await ctx.send('')
+            return
+        y = 1
+        x = 1
+        z = 0
+        async with self.bot.s.get(f'https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={self.token}'):
+            if r.status == 200:
+                js = await r.json()
+                ds.s(js)
             else:
                 await ctx.send(f'Requester failed. Status code: **{r.status}**')
 
