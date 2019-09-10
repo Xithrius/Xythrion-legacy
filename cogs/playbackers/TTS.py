@@ -34,6 +34,12 @@ class TTS_Playbacker(comms.Cog):
     """ Checks """
 
     async def cog_check(self, ctx):
+        """Checks if the command caller is an owner.
+
+        Returns:
+            True or false, depending on the contents of config.json's owner data.
+
+        """
         return ctx.author.id in self.bot.owner_ids
 
     """ Commands """
