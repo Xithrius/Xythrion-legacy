@@ -38,7 +38,7 @@ class Reddit_Requester(comms.Cog):
             ctx: Context object where the command is called.
 
         Returns:
-            True if user has permissions, False otherwise.
+            True if user is owner permissions and if the service is up, False otherwise.
 
         """
         return all((ctx.message.author.id in self.bot.owner_ids, self.bot.requester_status['reddit']))
@@ -135,22 +135,6 @@ class Reddit_Requester(comms.Cog):
                     f"`OP: u/{info['author_fullname']}, Upvotes: {info['ups']}`"
                 ]
                 await ctx.send('\n'.join(str(y) for y in temp_info))
-
-    """ Events """
-
-    @comms.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        """Catches errors specifically within this cog
-
-        Args:
-            ctx: Context object where the command is called.
-            error: Error object of what the command caused.
-
-        Returns:
-            A specific string depending on the error within the cog.
-
-        """
-        await ctx.send(error)
 
 
 def setup(bot):

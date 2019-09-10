@@ -29,23 +29,6 @@ class Weather_Requester(comms.Cog):
         #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
 
-    """ Cog events """
-
-    def cog_unload(self):
-        """Safely cancels background tasks and possible database connection.
-
-        Raises:
-            A very rare error when canceling the background task
-
-        Returns:
-            Hopefully nothing unless an error occurs
-
-        """
-        try:
-            self.c.close()
-        except Exception:
-            pass
-
     """ Permission checking """
 
     async def cog_check(self, ctx):
@@ -116,22 +99,6 @@ class Weather_Requester(comms.Cog):
                 os.remove(path('tmp', filename))
             else:
                 await ctx.send(f'Requester failed. Status code: **{r.status}**')
-
-    """ Events """
-
-    @comms.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        """Catches errors specifically within this cog
-
-        Args:
-            ctx: Context object where the command is called.
-            error: Error object of what the command caused.
-
-        Returns:
-            A specific string depending on the error within the cog.
-
-        """
-        await ctx.send(error)
 
 
 def setup(bot):
