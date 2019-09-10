@@ -131,9 +131,7 @@ class Weather_Requester(comms.Cog):
             A specific string depending on the error within the cog.
 
         """
-        if ctx.command.cog_name == self.__class__.__name__:
-            await ctx.send('Requester failed to get subreddit information.')
-            ds.w(error)
+        await ctx.send(error)
 
 
 def setup(bot):

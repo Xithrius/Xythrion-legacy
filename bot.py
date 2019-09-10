@@ -100,6 +100,7 @@ class Robot(comms.Bot):
                         broken = f'{k.title()} - {r.status}'
                         if broken not in self.broken_services:
                             self.broken_services.append(f'{k.title()} - {r.status}')
+                        ds.w(r)
             if self.broken_services:
                 for broken_service in self.broken_services:
                     ds.f(broken_service)
@@ -138,6 +139,9 @@ class RobotCog(comms.Cog):
     def __init__(self, bot):
         #: Robot(comms.Bot) as a class attribute
         self.bot = bot
+
+    async def cog_check(self, ctx):
+        return ctx.author.id in self.bot.owner_ids
 
     @comms.command(aliases=['refresh', 'r'])
     async def reload(self, ctx):
@@ -195,7 +199,7 @@ class InfoCog(comms.Cog):
             'Twitter': 'https://twitter.com/_Xithrius',
             'Github': 'https://github.com/Xithrius/Xythrion'
         }
-        embed = discord.Embed(title='Project creation date: March 30, 2019', description='\n'.join(f'[`{k}`]({v})' for k, v in info.items()), colour=self.bot.ec)
+        embed = discord.Embed(title='Project creation date: March 30, 2019', description='\n'.join(f'[`{k}`]({v})' for k, v in info.items()))
         await ctx.send(embed=embed)
 
     @comms.command()
@@ -211,7 +215,7 @@ class InfoCog(comms.Cog):
 
 
 if __name__ == "__main__":
-    bot = Robot(command_prefix=comms.when_mentioned_or('.'))
+    bot = Robot(command_prefix=comms.when_mentioned_or(';'))
     bot.add_cog(RobotCog(bot))
     bot.add_cog(InfoCog(bot))
     bot.run(bot.config.discord, bot=True, reconnect=True)
