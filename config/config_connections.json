@@ -21,10 +21,10 @@
     },
     "urls": {
         "reddit": {
-            "test_url": "https://www.reddit.com/r/pics/hot.json"
+            "test_url": "https://www.reddit.com/r/pics/top.json"
         },
         "weather": {
-            "test_url": "https://api.openweathermap.org/data/2.5/forecast?zip=12345,US?appid=TOKEN"
+            "test_url": "https://api.openweathermap.org/data/2.5/forecast?zip=12345&appid=TOKEN"
         },
         "imgur": {
             "test_url": "https://api.imgur.com/3/account/Xithrius",
