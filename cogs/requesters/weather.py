@@ -58,12 +58,11 @@ class Weather_Requester(comms.Cog):
             await ctx.send(f'Type the command **;help {ctx.command}** for help')
 
     @weather.command()
-    async def daily(self, ctx, location, amount=7, country='US'):
+    async def daily(self, ctx, location, country='US'):
         """
 
         Args:
             location: The location, being a zip code or a city.
-            amount: How many days ahead the graph should be (including today)
             country: The country in which code the zip code is in (defaults to US).
 
         Returns:
@@ -71,12 +70,14 @@ class Weather_Requester(comms.Cog):
 
         """
         if len(location) == 5 and all((isinstance(i, int) for i in list(location))):
-            location_type = 'postal_code'
+            location_type = 'zip'
         else:
-            location_type = 'city'
-        async with self.bot.s.get() as r:
+            location_type = 'q'
+        async with self.bot.s.get(f'https://api.openweathermap.org/data/2.5/forecast?{location_type}={location},{country}&appid={self.token}') as r:
             if r.status == 200:
                 js = await r.json()
+                js = js['list'][:7]
+                js = {k: v for k, v in js.items() if k == 'dt'}
             else:
                 await ctx.send(f'Requester failed. Status code: **{r.status}**')
 
