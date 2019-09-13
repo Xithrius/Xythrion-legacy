@@ -9,6 +9,9 @@ import __main__
 import datetime
 import os
 import asyncio
+import math
+
+from uszipcode import SearchEngine
 
 
 def path(*_items):
@@ -105,3 +108,29 @@ def get_filename(id, e=''):
 
     """
     return f'{int(datetime.datetime.timestamp((now())))}-{id}{e}'
+
+
+def convert_coords(postal_code, z):
+    """Converts postal code and zoom level to coordinates for the openweathermap API
+
+    Args:
+        postal_code: The postal code within the US
+        z: Zoom level into the map.
+
+    Returns:
+        List of arguments to be put into a map
+
+    Source:
+        https://developer.here.com/documentation/map-tile/common/map_tile/topics/mercator-projection.html
+
+    """
+    search = SearchEngine(simple_zipcode=True)
+    zipcode = search.by_zipcode(str(postal_code))
+    lat = zipcode.lat
+    lon = zipcode.lng
+    latRad = lat * math.pi / 180
+    n = math.pow(2, z)
+    xTile = round(n * ((lon + 180) / 360), 2)
+    yTile = round(n * (1 - (math.log(math.tan(latRad) + 1 / math.cos(latRad)) / math.pi)) / 2, 2)
+
+    return [round(i, 2) for i in (xTile, yTile)]
