@@ -14,11 +14,12 @@ import numpy as np
 import json
 import os
 import datetime
+import aiofiles
 
 from discord.ext import commands as comms
 import discord
 
-from modules.output import path, get_filename, ds
+from modules.output import path, get_filename, ds, convert_coords
 
 
 class Weather_Requester(comms.Cog):
@@ -82,18 +83,22 @@ class Weather_Requester(comms.Cog):
                 await ctx.send(f'Requester failed. Status code: **{r.status}**')
 
     @weather.command()
-    async def get_map(self, ctx, layer):
-        layer_types = {x: f'{x}_new' for x in ['clouds', 'percipitation', 'pressure', 'wind', 'temperature']}
+    async def get_map(self, ctx, postal_code, layer='temp', zoom=0):
+        layer_types = {
+            'clouds': 'clouds_new',
+            'rain': 'precipitation_new',
+            'pressure': 'pressure_new',
+            'wind': 'wind_new',
+            'temp': 'temp_new'
+        }
         if layer not in layer_types.keys():
-            await ctx.send('')
+            await ctx.send(f'Layer options: {", ".join(str(y) for y in layer_types.keys())}')
             return
-        y = 1
-        x = 1
-        z = 0
-        async with self.bot.s.get(f'https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={self.token}'):
+        lst = convert_coords(postal_code, zoom)
+        link = f'https://tile.openweathermap.org/map/{layer_types[layer]}/{zoom}/{lst[0]}/{lst[1]}.png?appid={self.token}'
+        async with self.bot.s.get(link):
             if r.status == 200:
-                js = await r.json()
-                ds.s(js)
+                embed = discord.embed().set_image(link)
             else:
                 await ctx.send(f'Requester failed. Status code: **{r.status}**')
 
