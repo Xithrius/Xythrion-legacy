@@ -1,0 +1,5 @@
+discord.py[voice]
+datetime
+uszipcode
+matplotlib
+aiofiles
