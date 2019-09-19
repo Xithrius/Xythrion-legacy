@@ -31,6 +31,13 @@ class Weather_Requester(comms.Cog):
         self.bot = bot
         self.token = self.bot.config.services.weather
 
+    """ Events """
+
+    async def cog_command_error(self, ctx, error):
+        print(error)
+        # return super().cog_command_error(ctx, error)
+        # await ctx.send(f'Requester failed. Status code: **{r.status}**')
+
     """ Permission checking """
 
     async def cog_check(self, ctx):
@@ -75,15 +82,13 @@ class Weather_Requester(comms.Cog):
         else:
             location_type = 'q'
         async with self.bot.s.get(f'https://api.openweathermap.org/data/2.5/forecast?{location_type}={location},{country}&appid={self.token}') as r:
-            if r.status == 200:
-                js = await r.json()
-                js = js['list'][:7]
-                js = {k: v for k, v in js.items() if k == 'dt'}
-            else:
-                await ctx.send(f'Requester failed. Status code: **{r.status}**')
+            assert r.status == 200
+            js = await r.json()
+            js = js['list'][:7]
+            js = {k: v for k, v in js.items() if k == 'dt'}
 
     @weather.command()
-    async def get_map(self, ctx, postal_code, layer='temp', zoom=0):
+    async def get_map(self, ctx, postal_code, zoom=5, layer='temp'):
         layer_types = {
             'clouds': 'clouds_new',
             'rain': 'precipitation_new',
@@ -96,11 +101,11 @@ class Weather_Requester(comms.Cog):
             return
         lst = convert_coords(postal_code, zoom)
         link = f'https://tile.openweathermap.org/map/{layer_types[layer]}/{zoom}/{lst[0]}/{lst[1]}.png?appid={self.token}'
-        async with self.bot.s.get(link):
-            if r.status == 200:
-                embed = discord.embed().set_image(link)
-            else:
-                await ctx.send(f'Requester failed. Status code: **{r.status}**')
+        async with self.bot.s.get(link) as r:
+            assert r.status == 200
+            e = discord.Embed(colour=discord.Color.orange())
+            e.set_image(url=link)
+            await ctx.send(embed=e)
 
 
 def setup(bot):

@@ -128,9 +128,18 @@ def convert_coords(postal_code, z):
     zipcode = search.by_zipcode(str(postal_code))
     lat = zipcode.lat
     lon = zipcode.lng
+
     latRad = lat * math.pi / 180
     n = math.pow(2, z)
-    xTile = round(n * ((lon + 180) / 360), 2)
-    yTile = round(n * (1 - (math.log(math.tan(latRad) + 1 / math.cos(latRad)) / math.pi)) / 2, 2)
 
-    return [round(i, 2) for i in (xTile, yTile)]
+    x = n * ((lon + 180) / 360)
+    y = n * (1 - (math.log(math.tan(latRad) + 1 / math.cos(latRad)) / math.pi)) / 2
+
+    return [x, y]
+
+    '''
+    latRad = lat * Math.PI / 180;
+    n = Math.pow(2, z);
+    xTile = n * ((lon + 180) / 360);
+    yTile = n * (1-(Math.log(Math.tan(latRad) + 1/Math.cos(latRad)) /Math.PI)) / 2;
+    '''
