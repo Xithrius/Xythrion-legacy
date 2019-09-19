@@ -24,6 +24,7 @@ import json
 import asyncio
 import aiohttp
 import os
+import sqlite3
 
 from discord.ext import commands as comms
 import discord
@@ -33,9 +34,9 @@ from modules.output import path, ds, get_extensions
 
 class Robot(comms.Bot):
     """Creating connections, attributes, and background tasks.
-    
+
     Preface: When ctx is args, it gives context on where the method was called, such as channel, member, and guild.
-    
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -52,6 +53,17 @@ class Robot(comms.Bot):
         self.config = json.loads(json.dumps(data), object_hook=lambda d: collections.namedtuple('config', d.keys())(*d.values()))
 
         self.services = data['services']
+
+        self.data_path = path('data', 'data.db')
+
+        #: Checking if the database exists, creating if not.
+        if not os.path.isfile(self.data_path):
+
+            #: Building file and connecting to the empty database file
+            self.c = sqlite3.connect(self.data_path)
+            # c = self.c.cursor()
+            # self.c.commit()
+            self.c.close()
 
         self.owner_ids = set(self.config.owners)
 
@@ -70,6 +82,12 @@ class Robot(comms.Bot):
     """ subclass-specific functions """
 
     async def create_tasks(self):
+        """Session and database connections while testing service status
+
+        Raises:
+            Errors depending on connection success/fail
+
+        """
         self.s = aiohttp.ClientSession()
         ds.r('Connections established.')
 
@@ -133,7 +151,7 @@ class Robot(comms.Bot):
         await super().close()
 
 
-class RobotCog(comms.Cog):
+class RobotCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)):
     """Essential commands for using the bot."""
 
     def __init__(self, bot):
@@ -154,7 +172,7 @@ class RobotCog(comms.Cog):
 
     @comms.command(aliases=['refresh', 'r'])
     async def reload(self, ctx):
-        """
+        """Finds all cogs within the 'cogs' directory then loads/unloads them.
 
         """
         broken_extensions = []
@@ -182,53 +200,7 @@ class RobotCog(comms.Cog):
         await ctx.bot.logout()
 
 
-class InfoCog(comms.Cog):
-    """Cog is meant to give information about owner and bot interactions."""
-
-    def __init__(self, bot):
-
-        #: Setting Robot(comms.Bot) as a class attribute
-        self.bot = bot
-
-    @comms.command()
-    async def invite(self, ctx):
-        """Gives the invite link of this bot. It is not 'essential', but it's still useful.
-        
-        Returns:
-            The invite link so the bot can be invited to a server.
-        
-        """
-        await ctx.send(f'https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=32885952')
-
-    @comms.command()
-    async def about(self, ctx):
-        """Returns information about this bot's origin
-        
-        Returns:
-            An embed object with links to creator's information and bot's repository.
-        
-        """
-        info = {
-            'Twitter': 'https://twitter.com/_Xithrius',
-            'Github': 'https://github.com/Xithrius/Xythrion'
-        }
-        embed = discord.Embed(title='Project creation date: March 30, 2019', description='\n'.join(f'[`{k}`]({v})' for k, v in info.items()))
-        await ctx.send(embed=embed)
-
-    @comms.command()
-    async def website(self, ctx):
-        """Returns website for the bot (this replaced the README).
-        
-        Returns:
-            An embed object containing the website link for the bot.
-        
-        """
-        embed = discord.Embed(description='`https://xithrius.github.io/Xythrion/`')
-        await ctx.send(embed=embed)
-
-
 if __name__ == "__main__":
     bot = Robot(command_prefix=comms.when_mentioned_or(';'))
     bot.add_cog(RobotCog(bot))
-    bot.add_cog(InfoCog(bot))
     bot.run(bot.config.discord, bot=True, reconnect=True)
