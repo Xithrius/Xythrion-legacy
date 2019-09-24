@@ -1,5 +1,7 @@
 discord.py[voice]
 datetime
-uszipcode
 matplotlib
-aiofiles
+collections
+aiohttp
+sqlite3
+logging
