@@ -59,8 +59,7 @@ class Weather_Requester(comms.Cog):
         self.h = self.bot.services[os.path.basename(__file__)[:-3]]
 
         #: Creation of background task for collecting weather initiated by requests of users
-        self.background_weather = self.bot.loop.create_task(
-            self.collect_weather())
+        self.background_weather = self.bot.loop.create_task(self.collect_weather())
 
     """ Cog events """
 
@@ -228,17 +227,16 @@ class Weather_Requester(comms.Cog):
                 _json = await r.json()
                 info = _json['data'][:amount]
                 requests = ['valid_date', 'max_temp', 'min_temp']
-                dates = [[v for k, v in _dict.items() if k in requests]
-                         for _dict in info]
+
+                dates = [[v for k, v in _dict.items() if k in requests] for _dict in info]
                 highs = [x[1] for x in dates]
                 lows = [x[2] for x in dates]
-                plt.plot([x[0] for x in dates], highs,
-                         linestyle='solid', label="high")
-                plt.plot([x[0] for x in dates], lows,
-                         linestyle='solid', label="low")
+                plt.plot([x[0] for x in dates], highs, linestyle='solid', label="high")
+                plt.plot([x[0] for x in dates], lows, linestyle='solid', label="low")
                 max_temp, min_temp = max(highs), min(lows)
                 plt.xticks(rotation='vertical')
                 plt.yticks(ticks=np.arange(min_temp, max_temp + 1, 5))
+
                 plt.legend()
                 plt.grid()
                 plt.xlabel("Date")
