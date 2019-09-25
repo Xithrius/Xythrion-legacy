@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="images/icon.png"/>
+    <img src="/images/icon.png"/>
 </p>
 <h1 align="center">Xythrion v1.2</h1>
 <h3 align="center">Databasing information from APIs</h3>
@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-    <a href="https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=53992512">Invite</a> -
+    <a href="https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=335400150">Invite</a> -
     <a href="#setup">Setup</a> -
     <a href="#commands">Commands</a> -
     <a href="#changelog">Changelog</a>
@@ -30,7 +30,7 @@
 
 ## Setup:
 ### Preface: 
-* Digital Ocean or AWS will be running this bot in the future, so there should be no need to create your own instance of the bot unless you're testing it. If you happen not to be testing it, you can invite the bot [here](https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=53992512)
+* Digital Ocean or AWS will be running this bot in the future, so there should be no need to create your own instance of the bot unless you're testing it. If you happen not to be testing it, you can invite the bot [here](https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=335400150)
 * If you want to test the bot, the instructions below will guide your way.
 
 
