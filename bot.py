@@ -25,11 +25,21 @@ import asyncio
 import aiohttp
 import os
 import sqlite3
+import logging
+import traceback
+import sys
 
 from discord.ext import commands as comms
 import discord
 
 from modules.output import path, ds, get_extensions
+
+
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 
 class Robot(comms.Bot):
@@ -134,10 +144,9 @@ class Robot(comms.Bot):
             try:
                 self.load_extension(extension)
             except Exception as e:
-                broken_extensions.append(e)
+                broken_extensions.append(f'{extension} - {e}')
         for ext in broken_extensions:
             ds.w(ext)
-        ds.r('Extensions finished loaded.')
         await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with user data'))
         ds.r('Startup completed.')
 
@@ -180,8 +189,10 @@ class RobotCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)
             try:
                 self.bot.unload_extension(ext)
                 self.bot.load_extension(ext)
+            except discord.ext.commands.ExtensionNotLoaded:
+                self.bot.load_extension(ext)
             except Exception as e:
-                broken_extensions.append(e)
+                broken_extensions.append(f'{ext} - {e}')
         if broken_extensions:
             info = '\n'.join(y for y in broken_extensions)
             await ctx.send(f'```\n{info}```', delete_after=15)
@@ -198,6 +209,31 @@ class RobotCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)
         """
         ds.w('Logging out...')
         await ctx.bot.logout()
+    
+    """ Events """
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        if hasattr(ctx.command, 'on_error'):
+            return
+
+        error = getattr(error, 'original', error)
+
+        if isinstance(error, commands.DisabledCommand):
+            return await ctx.send(f'{ctx.command} has been disabled.')
+
+        elif isinstance(error, commands.BadArgument):
+            if ctx.command.qualified_name == 'tag list':  # Check if the command being invoked is 'tag list'
+                return await ctx.send()
+
+        elif isinstance(error, commands.CommandNotFound):
+            pass
+        
+        elif isinstance(error, commands.UserInputError):
+            pass
+
+        print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
+        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
 if __name__ == "__main__":
