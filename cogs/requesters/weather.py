@@ -23,20 +23,13 @@ from modules.output import path, get_filename, ds, convert_coords
 
 
 class Weather_Requester(comms.Cog):
-    """Fetching weather information from WeatherBit.io"""
+    """Fetching weather information from the OpenWeatherMap API"""
 
     def __init__(self, bot):
 
         #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
         self.token = self.bot.config.services.weather
-
-    """ Events """
-
-    async def cog_command_error(self, ctx, error):
-        print(error)
-        # return super().cog_command_error(ctx, error)
-        # await ctx.send(f'Requester failed. Status code: **{r.status}**')
 
     """ Permission checking """
 
