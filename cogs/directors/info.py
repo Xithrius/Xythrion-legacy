@@ -5,6 +5,10 @@
 """
 
 
+from discord.ext import commands as comms
+import discord
+
+
 class Info_Director(comms.Cog):
     """Cog is meant to give information about owner and bot interactions."""
 
@@ -35,8 +39,8 @@ class Info_Director(comms.Cog):
             'Twitter': 'https://twitter.com/_Xithrius',
             'Github': 'https://github.com/Xithrius/Xythrion'
         }
-        em = discord.Embed(title='Project creation date: March 30, 2019', description='\n'.join(f'[`{k}`]({v})' for k, v in info.items()))
-        await ctx.send(embed=em)
+        embed = discord.Embed(title='Project creation date: March 30, 2019', description='\n'.join(f'[`{k}`]({v})' for k, v in info.items()))
+        await ctx.send(embed=embed)
 
     @comms.command()
     async def website(self, ctx):
@@ -46,8 +50,8 @@ class Info_Director(comms.Cog):
             An embed object containing the website link for the bot.
 
         """
-        em = discord.Embed(description='`https://xithrius.github.io/Xythrion/`')
-        await ctx.send(embed=em)
+        embed = discord.Embed(description='`https://xithrius.github.io/Xythrion/`')
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
