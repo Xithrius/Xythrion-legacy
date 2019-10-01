@@ -1,8 +1,11 @@
 <p align="center">
     <img src="/images/icon.png"/>
 </p>
+
 <h1 align="center">Xythrion v1.2</h1>
+
 <h3 align="center">Databasing information from APIs</h3>
+
 <p align="center">
     <img src="https://img.shields.io/apm/l/vim-mode.svg"/>
     <img src="https://img.shields.io/badge/python-3.7.4-green.svg">
@@ -16,21 +19,18 @@
     <a href="#changelog">Changelog</a>
 </p>
 
-
 ## Requestables:
 - [x] Reddit
-- [x] Weather*
+- [x] Weather
 - [ ] Imgur
 - [ ] Github
 - [ ] Twitter
 - [ ] Open Movie Database (OMDb)
 
-> *currently contains databasing capabilities
-
 
 ## Setup:
 ### Preface: 
-* Digital Ocean or AWS will be running this bot in the future, so there should be no need to create your own instance of the bot unless you're testing it. If you happen not to be testing it, you can invite the bot [here](https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=335400150)
+* Digital Ocean or AWS will be running this bot in the future, so there should be no need to create your own instance of the bot unless you're testing it. You can invite the bot [here](https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=335400150)
 * If you want to test the bot, the instructions below will guide your way.
 
 
