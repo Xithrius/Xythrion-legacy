@@ -10,25 +10,23 @@ Todo:
 
 
 import matplotlib.pyplot as plt
-import numpy as np
 import json
-import os
-import datetime
-import aiofiles
 
 from discord.ext import commands as comms
 import discord
 
-from modules.output import path, get_filename, ds, convert_coords
+from modules.output import path, get_filename
 
 
 class Weather_Requester(comms.Cog):
-    """Fetching weather information from the OpenWeatherMap API"""
+    """Fetching weather information from the OpenWeatherMap API."""
 
     def __init__(self, bot):
 
         #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
+
+        #: Setting the token so I don't have to keep referencing this large item
         self.token = self.bot.config.services.weather
 
     """ Permission checking """
@@ -79,26 +77,6 @@ class Weather_Requester(comms.Cog):
             js = await r.json()
             js = js['list'][:7]
             js = {k: v for k, v in js.items() if k == 'dt'}
-
-    @weather.command()
-    async def get_map(self, ctx, postal_code, zoom=5, layer='temp'):
-        layer_types = {
-            'clouds': 'clouds_new',
-            'rain': 'precipitation_new',
-            'pressure': 'pressure_new',
-            'wind': 'wind_new',
-            'temp': 'temp_new'
-        }
-        if layer not in layer_types.keys():
-            await ctx.send(f'Layer options: {", ".join(str(y) for y in layer_types.keys())}')
-            return
-        lst = convert_coords(postal_code, zoom)
-        link = f'https://tile.openweathermap.org/map/{layer_types[layer]}/{zoom}/{lst[0]}/{lst[1]}.png?appid={self.token}'
-        async with self.bot.s.get(link) as r:
-            assert r.status == 200
-            e = discord.Embed(colour=discord.Color.orange())
-            e.set_image(url=link)
-            await ctx.send(embed=e)
 
 
 def setup(bot):
