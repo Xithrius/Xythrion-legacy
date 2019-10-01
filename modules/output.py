@@ -30,8 +30,8 @@ def path(*_items):
     return (os.sep).join(str(y) for y in newPath)
 
 
-class ds:
-    """A date that also includes the string passed through."""
+class cs:
+    """A string including another thing, automated."""
 
     @classmethod
     def insert_items(cls, warning, string):
@@ -47,6 +47,10 @@ class ds:
         """
         rn = now()
         return f"[{rn.strftime('%A %I:%M:%S')}{rn.strftime('%p').lower()}] [ {warning} ]: {string}"
+
+    @classmethod
+    def insert_block(cls, language, warning, string):
+        return f'```{language}\n{warning} {string}\n```'
 
     @classmethod
     def w(cls, string):
@@ -67,6 +71,12 @@ class ds:
     def r(cls, string):
         """Returns a custom warning string."""
         print(cls.insert_items('Ready', string))
+
+    @classmethod
+    def css(cls, string):
+        """Returns a block quote containing css colour-coded words."""
+        return cls.insert_block('css', '--!>', string)
+
 
 def now():
     """Returns the time depending on time zone from file
