@@ -7,10 +7,10 @@
 This is the main Python file for the discord.py bot, as all important attributes,
 checks, and background tasks are created here.
 
-Example:
-    First time usage (do it every so often to keep updated packages):
+Running the bot:
+    First time usage:
         $ py -3 -m pip install --user -r requirements.txt
-    To run the bot:
+    Starting the bot:
         $ py -3 bot.py
 
 Todo:
@@ -35,7 +35,7 @@ import sys
 from discord.ext import commands as comms
 import discord
 
-from modules.output import path, ds, get_extensions
+from modules.output import path, cs, get_extensions
 
 
 logger = logging.getLogger('discord')
@@ -88,7 +88,7 @@ class Robot(comms.Bot):
         self.loop = asyncio.get_event_loop()
 
         future = asyncio.gather()
-        
+
         #: Create tasks
         self.loop.create_task(self.create_tasks())
         self.loop.run_until_complete(future)
@@ -103,7 +103,7 @@ class Robot(comms.Bot):
 
         """
         self.s = aiohttp.ClientSession()
-        ds.r('Connections established.')
+        cs.r('Connections established.')
 
         self.connection_loop = asyncio.get_running_loop()
         await self.connection_loop.create_task(self.test_services())
@@ -132,17 +132,17 @@ class Robot(comms.Bot):
                         broken = f'{k.title()} - {r.status}'
                         if broken not in self.broken_services:
                             self.broken_services.append(f'{k.title()} - {r.status}')
-                        ds.w(r)
+                        cs.w(r)
             if self.broken_services:
                 for broken_service in self.broken_services:
-                    ds.f(broken_service)
+                    cs.f(broken_service)
             await asyncio.sleep(60)
 
     """ Events """
 
     async def on_ready(self):
         """ """
-        ds.w('Loading extensions...')
+        cs.w('Loading extensions...')
         broken_extensions = []
         for extension in get_extensions(self.config.blocked_extensions):
             try:
@@ -150,9 +150,9 @@ class Robot(comms.Bot):
             except Exception as e:
                 broken_extensions.append(f'{extension} - {e}')
         for ext in broken_extensions:
-            ds.w(ext)
+            cs.w(ext)
         await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with user data'))
-        ds.r('Startup completed.')
+        cs.r('Startup completed.')
 
     async def close(self):
         """ Safely closes connections """
@@ -216,9 +216,9 @@ class RobotCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)
             A possible timeout error.
 
         """
-        ds.w('Logging out...')
+        cs.w('Logging out...')
         await ctx.bot.logout()
-    
+
     """ Events """
 
     @comms.Cog.listener()
@@ -233,7 +233,7 @@ class RobotCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)
 
         elif isinstance(error, comms.CommandNotFound):
             return await ctx.send(f'Command {ctx.command} not found.')
-        
+
         elif isinstance(error, comms.UserInputError):
             return await ctx.send(f'```css\n--!> Command {ctx.command} raised bad argument: {error}```')
 
