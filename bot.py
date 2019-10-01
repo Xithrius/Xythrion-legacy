@@ -14,7 +14,10 @@ Example:
         $ py -3 bot.py
 
 Todo:
-    * Literally rewrite the repository
+    * Redo items here to make everything clean and simple
+        * Ex. Iterate through bot.extensions to reload.
+    * Finish on_command_error in this cog
+    * bot_check: checks for authorization or owner status.
 
 """
 
@@ -76,6 +79,7 @@ class Robot(comms.Bot):
             self.c.close()
 
         self.owner_ids = set(self.config.owners)
+        self.ec = 0xe67e22
 
         #: All requesters must have one testing link to make sure a connection is possible to the API.
         self.requester_status = {x[:-3]: False for x in os.listdir(path('cogs', 'requesters')) if x[-3:] == '.py'}
@@ -199,6 +203,11 @@ class RobotCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)
         else:
             await ctx.send('Reloaded all cogs.', delete_after=5)
 
+    @comms.command()
+    async def loaded(self, ctx):
+        """ """
+        await ctx.send(self.bot.extensions)
+
     @comms.command(aliases=['disconnect', 'dc'])
     async def exit(self, ctx):
         """Logs out the bot.
@@ -212,28 +221,25 @@ class RobotCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)
     
     """ Events """
 
-    @commands.Cog.listener()
+    @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
         if hasattr(ctx.command, 'on_error'):
             return
 
         error = getattr(error, 'original', error)
 
-        if isinstance(error, commands.DisabledCommand):
-            return await ctx.send(f'{ctx.command} has been disabled.')
+        if isinstance(error, comms.DisabledCommand):
+            return await ctx.send(f'Command {ctx.command} not available.')
 
-        elif isinstance(error, commands.BadArgument):
-            if ctx.command.qualified_name == 'tag list':  # Check if the command being invoked is 'tag list'
-                return await ctx.send()
-
-        elif isinstance(error, commands.CommandNotFound):
-            pass
+        elif isinstance(error, comms.CommandNotFound):
+            return await ctx.send(f'Command {ctx.command} not found.')
         
-        elif isinstance(error, commands.UserInputError):
-            pass
+        elif isinstance(error, comms.UserInputError):
+            return await ctx.send(f'```css\n--!> Command {ctx.command} raised bad argument: {error}```')
 
-        print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
-        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+        else:
+            print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
 if __name__ == "__main__":
