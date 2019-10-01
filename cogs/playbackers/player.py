@@ -2,10 +2,6 @@
 >> Xythrion
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
-
-Todo:
-    * I think everything's done here.
-
 """
 
 
@@ -18,6 +14,7 @@ from discord.ext import commands as comms
 import discord
 
 from modules.output import path
+
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
