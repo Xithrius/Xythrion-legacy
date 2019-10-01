@@ -10,8 +10,6 @@ import random
 from discord.ext import commands as comms
 import discord
 
-from modules.output import ds
-
 
 class Misc_Director(comms.Cog):
     """ """
@@ -50,10 +48,12 @@ class Misc_Director(comms.Cog):
         await ctx.send(f'{user.mention} has sent {len(messages)} in {ctx.channel}')
 
     @comms.command()
-    async def scan_messages(self, ctx, item, limit=None):
-        messages = await ctx.channel.history(limit=limit).flatten()
-        messages = [x for x in messages if x.author.id == ctx.author.id and item in x.message.content]
-
+    async def stackoverflow(self, ctx, year: int):
+        """ """
+        if 2019 >= year >= 2015:
+            await ctx.send(f'https://insights.stackoverflow.com/survey/{year}') 
+        else:
+            raise comms.UserInputError('Year must be between 2019 and 2015')
 
 def setup(bot):
     bot.add_cog(Misc_Director(bot))
