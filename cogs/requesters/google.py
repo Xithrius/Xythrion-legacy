@@ -10,19 +10,13 @@ import json
 import asyncio
 
 from discord.ext import commands as comms
-from google.cloud import texttospeech
 import discord
 
-from modules.output import path, ds
-
-
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('config', 'gsc.json')
-with open(path('config', 'config_connections.json')) as f:
-    ffmpeg_options = json.load(f)['ytdl']['ffmpeg_options']
+from modules.output import path, cs
 
 
 class Google_Requester(comms.Cog):
-    """Fetching map information from Google."""
+    """Fetching information from Google: Youtube."""
 
     def __init__(self, bot):
 
@@ -31,7 +25,7 @@ class Google_Requester(comms.Cog):
 
     """ Commands """
 
-    @comms.group()
+    @comms.group(enabled=False)
     async def google(self, ctx):
         """The Google group command.
 
@@ -42,8 +36,8 @@ class Google_Requester(comms.Cog):
         if ctx.invoked_subcommand is None:
             await ctx.send(f'Type the command **;help {ctx.command}** for help')
 
-    @google.command()
-    async def youtube(self, ctx):
+    @comms.command()
+    async def yt(self, ctx):
         pass
 
 
