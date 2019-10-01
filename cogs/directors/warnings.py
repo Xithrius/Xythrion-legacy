@@ -2,16 +2,12 @@
 >> Xythrion
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
-
-Todo:
-    * More interactions to come in the future.
 """
 
 
 from discord.ext import commands as comms
-import discord
 
-from modules.output import ds
+from modules.output import cs
 
 
 class Interactions_Director(comms.Cog):
@@ -24,11 +20,11 @@ class Interactions_Director(comms.Cog):
 
     @comms.Cog.listener()
     async def on_guild_remove(self, guild):
-        ds.s(f'Bot has left guild {guild}')
+        cs.s(f'Bot has left guild {guild}')
 
     @comms.Cog.listener()
     async def on_guild_join(self, guild):
-        ds.s(f'Bot has joined guild {guild}')
+        cs.s(f'Bot has joined guild {guild}')
 
 
 def setup(bot):
