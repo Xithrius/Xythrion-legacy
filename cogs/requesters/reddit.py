@@ -12,8 +12,6 @@ Todo:
 import asyncio
 import json
 import aiohttp
-import random
-import os
 
 from discord.ext import commands as comms
 import discord
@@ -41,7 +39,7 @@ class Reddit_Requester(comms.Cog):
             True if user is owner permissions and if the service is up, False otherwise.
 
         """
-        return all((ctx.message.author.id in self.bot.owner_ids, self.bot.requester_status['reddit']))
+        return all((ctx.message.author.id in self.bot.config.authorized, self.bot.requester_status['reddit']))
 
     """ Commands """
 
@@ -72,12 +70,9 @@ class Reddit_Requester(comms.Cog):
            An embed with information or a list of link(s).
 
         """
-        try:
-            amount = int(amount)
-            if amount not in range(1, 6):
-                raise ValueError
-        except ValueError:
-            await ctx.send('Amount can only be in between 1 and 25')
+        amount = int(amount)
+        if amount not in range(1, 6):
+            raise comms.UserInputError('Amount can only be in between 1 and 5')
         async with self.bot.s.get(f'https://www.reddit.com/r/{subreddit}/top/.json?t=all') as r:
             assert r.status == 200
             info = await r.json()
@@ -110,12 +105,9 @@ class Reddit_Requester(comms.Cog):
             An embed with information or a list of link(s).
 
         """
-        try:
-            amount = int(amount)
-            if amount not in range(1, 6):
-                raise ValueError
-        except ValueError:
-            await ctx.send('Amount can only be in between 1 and 25')
+        amount = int(amount)
+        if amount not in range(1, 6):
+            raise comms.UserInputError('Amount can only be in between 1 and 5')
         async with self.bot.s.get(f'https://www.reddit.com/r/{subreddit}/hot.json') as r:
             assert r.status == 200
             info = await r.json()
@@ -123,18 +115,18 @@ class Reddit_Requester(comms.Cog):
             info = sorted(info, key=lambda x: x['data']['ups'], reverse=True)
             if amount in range(2, 6):
                 info = info[:amount]
-                embed = discord.Embed(title=f'**Top {amount} posts from r/{subreddit}**', colour=self.bot.ec)
+                embed = discord.Embed(title=f'**Hot {amount} posts from r/{subreddit}**', colour=self.bot.ec)
                 e_info = [f'#{num + 1}: [{i["data"]["title"]}](https://reddit.com{i["data"]["permalink"]})' for num, i in enumerate(info)]
                 embed.description = '\n'.join(str(y) for y in e_info)
                 await ctx.send(embed=embed)
             elif amount == 1:
                 info = info[0]['data']
                 temp_info = [
-                    info['url'],
-                    f"`#1 hot post from r/{subreddit}: '{info['title']}'`",
-                    f"`OP: u/{info['author_fullname']}, Upvotes: {info['ups']}`"
+                    f"#1 hot post from r/{subreddit}: '{info['title']}'",
+                    f"OP: u/{info['author_fullname']}, Upvotes: {info['ups']}"
                 ]
-                await ctx.send('\n'.join(str(y) for y in temp_info))
+                temp_info = '\n'.join(str(y) for y in temp_info)
+                await ctx.send(f'```\n{temp_info}```{info["url"]}')
 
 
 def setup(bot):
