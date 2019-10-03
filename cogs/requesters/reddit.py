@@ -39,7 +39,7 @@ class Reddit_Requester(comms.Cog):
             True if user is owner permissions and if the service is up, False otherwise.
 
         """
-        return all((ctx.message.author.id in self.bot.config.authorized, self.bot.requester_status['reddit']))
+        return self.bot.requester_status['reddit']
 
     """ Commands """
 
