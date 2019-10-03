@@ -85,7 +85,7 @@ class Player_Playbacker(comms.Cog):
 
     """ Commands """
 
-    @comms.command()
+    @comms.command(enabled=False)
     async def play(self, ctx, url):
         """Plays music from YouTube url
 
