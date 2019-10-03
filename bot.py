@@ -27,10 +27,11 @@ import json
 import asyncio
 import aiohttp
 import os
-import sqlite3
 import logging
 import traceback
 import sys
+import asyncpg
+import datetime
 
 from discord.ext import commands as comms
 import discord
@@ -67,17 +68,6 @@ class Robot(comms.Bot):
 
         self.services = data['services']
 
-        self.data_path = path('data', 'data.db')
-
-        #: Checking if the database exists, creating if not.
-        if not os.path.isfile(self.data_path):
-
-            #: Building file and connecting to the empty database file
-            self.c = sqlite3.connect(self.data_path)
-            # c = self.c.cursor()
-            # self.c.commit()
-            self.c.close()
-
         self.owner_ids = set(self.config.owners)
         self.ec = 0xe67e22
 
@@ -96,14 +86,18 @@ class Robot(comms.Bot):
     """ subclass-specific functions """
 
     async def create_tasks(self):
-        """Session and database connections while testing service status
+        """Session and database connections while testing service status.
 
         Raises:
             Errors depending on connection success/fail
 
         """
+        with open(path('config', 'config.json'), 'r') as f:
+            data = json.load(f)['db']
+            self.conn = await asyncpg.connect(**data)
+
         self.s = aiohttp.ClientSession()
-        cs.r('Connections established.')
+        cs.r('Session created established.')
 
         self.connection_loop = asyncio.get_running_loop()
         await self.connection_loop.create_task(self.test_services())
@@ -158,7 +152,7 @@ class Robot(comms.Bot):
         """ Safely closes connections """
         try:
             await self.s.close()
-            self.c.close()
+            await self.conn.close()
         except Exception as e:
             pass
         await super().close()
