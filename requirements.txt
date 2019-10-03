@@ -1,7 +1,5 @@
 discord.py[voice]
 datetime
 matplotlib
-collections
 aiohttp
-sqlite3
-logging
+asyncpg
