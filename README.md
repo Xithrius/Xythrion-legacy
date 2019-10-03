@@ -38,8 +38,8 @@
 * Run the command `py -3 -m pip install --user -r requirements.txt` to install packages that are required to run the bot.
 * Go to the [PortgreSQL](https://www.postgresql.org/) website, and install the latest version. 
     * When selecting components, just select all of them.
-    * Create the superuser. This will be the password that you will use in `config.json`.
     * `WARNING`: If you decide to use a different locale, it will be up to you to find out what the host is, which will most likely not be `localhost` or `127.0.0.1`.
+    * After setup, open the pgadmin application. You will be able to create a password for the databse. This will be the password that you will use in `config.json`.
 * After setting up these items.
 
 

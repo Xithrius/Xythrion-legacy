@@ -1,8 +1,14 @@
 {
-    "discord": "",
-    "owners": [],
+    "discord": "NTkxODg1MzQxODEyODUwNjk5.XW4ZVQ.ZDmBuNSl2VsllI8SNaxhzjsAVsE",
+    "owners": [196664644113268736],
     "blocked_extensions": [],
     "services": {
-        "weather": ""
+        "weather": "d38aeee6fba089e46a4a3bd3124126b8"
+    },
+    "db": {
+        "user": "postgres",
+        "password": "",
+        "database": "postgres",
+        "host": "localhost"
     }
 }
