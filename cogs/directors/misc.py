@@ -6,9 +6,13 @@
 
 
 import random
+import datetime
+import numpy
 
 from discord.ext import commands as comms
 import discord
+
+from modules.output import now
 
 
 class Misc_Director(comms.Cog):
@@ -51,9 +55,25 @@ class Misc_Director(comms.Cog):
     async def stackoverflow(self, ctx, year: int):
         """ """
         if 2019 >= year >= 2015:
-            await ctx.send(f'https://insights.stackoverflow.com/survey/{year}') 
+            await ctx.send(f'https://insights.stackoverflow.com/survey/{year}')
         else:
             raise comms.UserInputError('Year must be between 2019 and 2015')
+
+    @comms.command()
+    async def uptime(self, ctx):
+        running_time = datetime.datetime.now() - self.bot.login_time
+        delta = str((datetime.datetime.min + running_time).time()).split(':')
+        timestamps = ['Hours', 'Minutes', 'Seconds']
+        running_time_delta = ', '.join(f'{int(float(delta[i]))} {timestamps[i]}' for i in range(len(timestamps)) if float(delta[i]) != 0.0)
+        times = await self.bot.conn.fetch('''SELECT login, logout FROM Runtime''')
+        a_u = [str((datetime.datetime.min + (t['logout'] - t['login'])).time()).split(':') for t in times]
+        a_u = numpy.array([[float(y) for y in x] for x in a_u])
+        a_u = [round(sum(a_u[:,x]) / len(times), 1) for x in range(3)]
+        embed = discord.Embed(title=f"Running since {self.bot.login_time.strftime('%A %I:%M:%S%p').lower().capitalize()}; Total uptime {running_time_delta}",
+                              description=f'Average uptime: {", ".join(f"{a_u[i]} {timestamps[i]}" for i in range(len(a_u)) if a_u[i] != 0)}\nTotal logins: {len(times)}', 
+                              timestamp=now(), colour=self.bot.ec)
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Misc_Director(bot))
