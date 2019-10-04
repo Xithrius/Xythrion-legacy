@@ -92,17 +92,23 @@ class Robot(comms.Bot):
             Errors depending on connection success/fail
 
         """
-        with open(path('config', 'config.json'), 'r') as f:
-            data = json.load(f)['db']
-            self.conn = await asyncpg.connect(**data)
+        await self.check_database()
 
         self.s = aiohttp.ClientSession()
-        cs.r('Session created established.')
+        cs.r('Session established successfully.')
 
         self.connection_loop = asyncio.get_running_loop()
         await self.connection_loop.create_task(self.test_services())
 
         # self.request_limiter = asyncio.new_event_loop()
+
+    async def check_database(self):
+        with open(path('config', 'config.json'), 'r') as f:
+            data = json.load(f)['db']
+            self.conn = await asyncpg.connect(**data)
+
+        await self.conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(id serial PRIMARY KEY, login TIMESTAMP, logout TIMESTAMP)''')
+        await self.conn.execute('''CREATE TABLE IF NOT EXISTS Messages(id serial PRIMARY KEY, identification BIGINT, messages INTEGER, images INTEGER, embeds INTEGER)''')
 
     async def test_services(self):
         """ """
@@ -136,6 +142,7 @@ class Robot(comms.Bot):
 
     async def on_ready(self):
         """ """
+        self.login_time = datetime.datetime.now()
         cs.w('Loading extensions...')
         broken_extensions = []
         for extension in get_extensions(self.config.blocked_extensions):
@@ -210,6 +217,7 @@ class RobotCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)
             A possible timeout error.
 
         """
+        await self.bot.conn.execute('''INSERT INTO Runtime(login, logout) VALUES($1, $2)''', self.bot.login_time, datetime.datetime.now())
         cs.w('Logging out...')
         await ctx.bot.logout()
 
