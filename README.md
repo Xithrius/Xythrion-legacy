@@ -22,7 +22,7 @@
 
 ## Requestables:
 - [x] Reddit
-- [x] Weather
+- [ ] Weather
 - [ ] Imgur
 - [ ] Github
 - [ ] Twitter
@@ -39,8 +39,10 @@
 * Go to the [PortgreSQL](https://www.postgresql.org/) website, and install the latest version. 
     * When selecting components, just select all of them.
     * `WARNING`: If you decide to use a different locale, it will be up to you to find out what the host is, which will most likely not be `localhost` or `127.0.0.1`.
-    * After setup, open the pgadmin application. You will be able to create a password for the databse. This will be the password that you will use in `config.json`.
-* After setting up these items.
+    * After setup, open the pgadmin application. You will be able to create a password for the database. This will be the password that you will use in `config.json`.
+
+#### Configuration:
+* Copy the file `config.txt` from the config directory and put it in a new file called `config.json`.
 
 
 ## Commands:
@@ -53,19 +55,15 @@
 
 Example: `.reddit hot python`
 
-### Weather:
-|  Command  |  Argument(s)  |  Output  |
-| ------------- | ------------- | ------------- |
-|  daily  |  `<zip code> <amount> <country (default US)>`  |  A graph with high and low temperatures for today and the next amount of days  |
-|  init  |  `<zip code> <country (default US)>`  |  Records weather information in a database once a day, forever.  |
-
-Example: `weather zip 12345 US`
+### Under development:
+* Weather, Imgur, Github, Twitter, OMDb.
 
 
 ## Changelog:
 
 ### v1.2
-* Bot now uses asyncpg (asynchronous PortgreSQL) to access the database without having to hold everything up after a command is ran. This is what sqlite3 would do, since it is synchronous. 
+* Bot now uses asyncpg (asynchronous PortgreSQL) to access the database without having to hold everything up after a command is ran. This is what sqlite3 would do, since it is synchronous.
+* Google Cloud Text To Speech has been removed until I can figure out how to stream it.
 
 ### v1.1:
 * Reddit command is finally stable, with some changes to how commands interact with users
