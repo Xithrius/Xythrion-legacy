@@ -26,11 +26,11 @@ import collections
 import json
 import asyncio
 import aiohttp
+import asyncpg
 import os
 import logging
 import traceback
 import sys
-import asyncpg
 import datetime
 
 from discord.ext import commands as comms
@@ -46,7 +46,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 
-class Robot(comms.Bot):
+class Xythrion(comms.Bot):
     """Creating connections, attributes, and background tasks.
 
     Preface: When ctx is args, it gives context on where the method was called, such as channel, member, and guild.
@@ -108,7 +108,8 @@ class Robot(comms.Bot):
             self.conn = await asyncpg.connect(**data)
 
         await self.conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(id serial PRIMARY KEY, login TIMESTAMP, logout TIMESTAMP)''')
-        await self.conn.execute('''CREATE TABLE IF NOT EXISTS Messages(id serial PRIMARY KEY, identification BIGINT, messages INTEGER, images INTEGER, embeds INTEGER)''')
+        await self.conn.execute('''CREATE TABLE IF NOT EXISTS Messages(id serial PRIMARY KEY, identification BIGINT, messages INTEGER, images INTEGER, videos INTEGER, audios INTEGER)''')
+        # await self.conn.execute('''CREATE TABLE IF NOT EXISTS Users(id serial PRIMARY KEY, identification BIGINT)''')
 
     async def test_services(self):
         """ """
@@ -165,12 +166,12 @@ class Robot(comms.Bot):
         await super().close()
 
 
-class RobotCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)):
+class ModCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)):
     """Essential commands for using the bot."""
 
     def __init__(self, bot):
 
-        #: Setting Robot(comms.Bot) as a class attribute
+        #: Setting Xythrion(comms.Bot) as a class attribute
         self.bot = bot
 
     """ Checks """
@@ -245,6 +246,6 @@ class RobotCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)
 
 
 if __name__ == "__main__":
-    bot = Robot(command_prefix=comms.when_mentioned_or(';'))
-    bot.add_cog(RobotCog(bot))
+    bot = Xythrion(command_prefix=comms.when_mentioned_or(';'))
+    bot.add_cog(ModCog(bot))
     bot.run(bot.config.discord, bot=True, reconnect=True)
