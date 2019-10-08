@@ -57,6 +57,17 @@ class Message_Recorder(comms.Cog):
         for user_id, records in self.user_records.items():
             await self.bot.conn.execute('''INSERT INTO Messages(identification, messages, images, videos, audios) VALUES($1, $2, $3, $4, $5)''', user_id, *records)
 
+    @comms.Cog.listener()
+    async def on_message(self, message):
+        await self.bot.conn.fetch('''SELECT messages, images, videos, audios FROM Messages WHERE identification=$1''', message.author.id)
+        selections = {"image": ['.jpg', '.png'],
+                      "video": ['.gif', '.mp4'],
+                      "audio": ['.mp3', '.flv']}
+        for f in message.attachments:
+            pass
+        # await self.bot.conn.execute('''UPDATE Messages SET item=$2 WHERE identification=$1''', message.author.id, item+=1)
+        await self.bot.process_commands(message)
+
 
 def setup(bot):
     bot.add_cog(Message_Recorder(bot))
