@@ -12,7 +12,7 @@ import json
 from discord.ext import commands as comms
 import discord
 
-from modules.output import path
+from modules.output import now
 
 
 class Message_Recorder(comms.Cog):
@@ -57,6 +57,13 @@ class Message_Recorder(comms.Cog):
         for user_id, records in self.user_records.items():
             await self.bot.conn.execute('''INSERT INTO Messages(identification, messages, images, videos, audios) VALUES($1, $2, $3, $4, $5)''', user_id, *records)
 
+    @comms.command()
+    async def messages(self, ctx):
+        info = await self.bot.conn.fetch('''SELECT messages, images, videos, audios FROM Messages WHERE identification=$1''', ctx.author.id)
+        embed = discord.Embed(title=f'Items sent by {ctx.author.id}', colour=self.bot.ec, timestamp=now())
+        embed.description = '\n'.join(f'{k}: {v}' for k, v in info[0].items())
+        await ctx.send(embed=embed)
+
     @comms.Cog.listener()
     async def on_message(self, message):
         await self.bot.conn.fetch('''SELECT messages, images, videos, audios FROM Messages WHERE identification=$1''', message.author.id)
@@ -65,7 +72,7 @@ class Message_Recorder(comms.Cog):
                       "audio": ['.mp3', '.flv']}
         for f in message.attachments:
             pass
-        # await self.bot.conn.execute('''UPDATE Messages SET item=$2 WHERE identification=$1''', message.author.id, item+=1)
+        await self.bot.conn.execute('''UPDATE Messages SET item=$2 WHERE identification=$1''', message.author.id, item += 1)
         await self.bot.process_commands(message)
 
 
