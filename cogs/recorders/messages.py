@@ -63,18 +63,21 @@ class Message_Recorder(comms.Cog):
         embed = discord.Embed(title=f'Items sent by {ctx.author.id}', colour=self.bot.ec, timestamp=now())
         embed.description = '\n'.join(f'{k}: {v}' for k, v in info[0].items())
         await ctx.send(embed=embed)
-
+    """
     @comms.Cog.listener()
     async def on_message(self, message):
         await self.bot.conn.fetch('''SELECT messages, images, videos, audios FROM Messages WHERE identification=$1''', message.author.id)
         selections = {"image": ['.jpg', '.png'],
                       "video": ['.gif', '.mp4'],
                       "audio": ['.mp3', '.flv']}
-        for f in message.attachments:
+        if message.attachments:
+            for f in message.attachments:
+                pass
+        else:
             pass
-        await self.bot.conn.execute('''UPDATE Messages SET item=$2 WHERE identification=$1''', message.author.id, item += 1)
+        # await self.bot.conn.execute('''UPDATE Messages SET item=$2 WHERE identification=$1''', message.author.id, item)
         await self.bot.process_commands(message)
-
+    """
 
 def setup(bot):
     bot.add_cog(Message_Recorder(bot))

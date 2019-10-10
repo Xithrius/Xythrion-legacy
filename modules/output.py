@@ -80,7 +80,7 @@ def now():
     """Returns the time depending on time zone from file
 
     Returns:
-        The current date down to the milisecond.
+        The current date down to the millisecond.
 
     """
     return datetime.datetime.now()
