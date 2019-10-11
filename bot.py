@@ -102,6 +102,8 @@ class Xythrion(comms.Bot):
 
         # self.request_limiter = asyncio.new_event_loop()
 
+        # await self.loop.run_in_executor(None, self.tts)  <-- sync to async
+
     async def check_database(self):
         with open(path('config', 'config.json'), 'r') as f:
             data = json.load(f)['db']
@@ -127,7 +129,6 @@ class Xythrion(comms.Bot):
                     headers = None
                 async with self.s.get(url, headers=headers) as r:
                     if r.status == 200:
-                        js = await r.json()
                         self.requester_status[k] = True
                     else:
                         broken = f'{k.title()} - {r.status}'
@@ -161,7 +162,7 @@ class Xythrion(comms.Bot):
         try:
             await self.s.close()
             await self.conn.close()
-        except Exception as e:
+        except Exception:
             pass
         await super().close()
 
