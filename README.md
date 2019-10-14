@@ -2,7 +2,7 @@
     <img src="/images/icon.png"/>
 </p>
 
-<h1 align="center">Xythrion v1.2</h1>
+<h1 align="center">Xythrion v1.1</h1>
 
 <h3 align="center">Databasing information from APIs</h3>
 
@@ -47,26 +47,24 @@
 
 ## Commands:
 
-### Reddit:
+### Voice interactions:
 |  Command  |  Argument(s)  |  Output  |
 | ------------- | ------------- | ------------- |
-|  hot  |  `<subreddit>`  |  See a singular post from what's hot in a subreddit  |
-|  top  |  `<subreddit>`  |  See a singular post from the top of a subreddit  |
+|  in_channel  |  None  |  Tells you who's in the voice channel with you  |
+|  Play  |  url  |  .  |
+|  Stop  |  None  |  .  |
+|  Pause  |  url  |  .  |
+|  Leave  |  url  |  .  |
+|  Play  |  url  |  .  |
+|  Play  |  url  |  .  |
 
-Example: `.reddit hot python`
 
-### Under development:
-* Weather, Imgur, Github, Twitter, OMDb.
 
 
 ## Changelog:
 
-### v1.2
-* Bot now uses asyncpg (asynchronous PortgreSQL) to access the database without having to hold everything up after a command is ran. This is what sqlite3 would do, since it is synchronous.
-* Google Cloud Text To Speech has been removed until I can figure out how to stream it.
-
 ### v1.1:
-* Reddit command is finally stable, with some changes to how commands interact with users
+* Bot now uses asyncpg (asynchronous PortgreSQL) to access the database without having to hold everything up after a command is ran. This is what sqlite3 would do, since it is synchronous.
 
 ### v1.0:
 * Permission loading and service checks are now automated before bot is available for use.
