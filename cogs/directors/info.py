@@ -50,7 +50,7 @@ class Info_Director(comms.Cog):
             An embed object containing the website link for the bot.
 
         """
-        embed = discord.Embed(description='`https://xithrius.github.io/Xythrion/`')
+        embed = discord.Embed(description='`https://github.com/Xithrius/Xythrion`')
         await ctx.send(embed=embed)
 
 
