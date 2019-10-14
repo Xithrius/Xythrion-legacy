@@ -9,6 +9,7 @@ import asyncio
 import youtube_dl
 import json
 import os
+import sys
 
 from discord.ext import commands as comms
 import discord
@@ -19,8 +20,25 @@ from modules.output import path
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
 
-with open(path('config', 'config_connections.json')) as f:
-    info = json.load(f)['ytdl']
+info = {"ytdlopts": {
+        "format": "bestaudio/best",
+        "restrictfilenames": True,
+        "noplaylist": True,
+        "nocheckcertificate": True,
+        "ignoreerrors": True,
+        "logtostderr": False,
+        "quiet": True,
+        "panic": False,
+        "fatal": False,
+        "error": False,
+        "no_warnings": True,
+        "default_search": "auto",
+        "source_address": "0.0.0.0"
+    },
+    "ffmpeg_options": {
+        "options": "-vn -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"
+    }
+}
 ytdl_format_options = info['ytdlopts']
 ffmpeg_options = info['ffmpeg_options']
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
@@ -81,11 +99,11 @@ class Player_Playbacker(comms.Cog):
             True if user has permissions, False otherwise.
 
         """
-        return ctx.message.author.id in self.bot.owner_ids
+        return await self.bot.is_owner(ctx.author)
 
     """ Commands """
 
-    @comms.command(enabled=False)
+    @comms.command()
     async def play(self, ctx, url):
         """Plays music from YouTube url
 

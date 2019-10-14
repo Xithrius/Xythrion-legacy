@@ -60,6 +60,12 @@ class Message_Recorder(comms.Cog):
         embed.description = '\n'.join(f'{k}: {v}' for k, v in info[0].items())
         await ctx.send(embed=embed)
 
+
+def setup(bot):
+    bot.add_cog(Message_Recorder(bot))
+
+
+"""
     @comms.Cog.listener()
     async def on_message(self, message):
         record = await self.bot.conn.fetch('''SELECT messages, images, videos, audios FROM Messages WHERE identification=$1''', message.author.id)
@@ -75,7 +81,4 @@ class Message_Recorder(comms.Cog):
         elif message.content:
             await self.bot.conn.execute('''UPDATE Messages SET messages=$2 WHERE identification=$1''', message.author.id, record['messages'] + 1)
         await self.bot.process_commands(message)
-
-
-def setup(bot):
-    bot.add_cog(Message_Recorder(bot))
+"""
