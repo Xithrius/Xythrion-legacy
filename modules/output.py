@@ -4,15 +4,19 @@
 > MIT license, Refer to LICENSE for more info
 """
 
+"""
+>> Xythrion
+> Copyright (c) 2019 Xithrius
+> MIT license, Refer to LICENSE for more info
+"""
 
-import __main__
+
+import sys
 import datetime
 import os
-import asyncio
-import math
 
 
-def path(*_items):
+def path(*filepath):
     """Gives a path relative to caller file location with added items.
 
     Args:
@@ -22,10 +26,7 @@ def path(*_items):
         A Path joined by the operating system's seperator.
 
     """
-    newPath = ((__main__.__file__).split(os.sep))[:-1]
-    for i in _items:
-        newPath.append(i)
-    return (os.sep).join(str(y) for y in newPath)
+    return f'{os.path.abspath(os.path.dirname(sys.argv[0]))}{os.sep}{(os.sep).join(str(y) for y in filepath)}'
 
 
 class cs:
@@ -86,7 +87,7 @@ def now():
     return datetime.datetime.now()
 
 
-def get_extensions(blocked_extensions):
+def get_extensions():
     """Gets extension filepaths within the 'cogs' folder
 
     Args:
@@ -99,7 +100,7 @@ def get_extensions(blocked_extensions):
     folders = [folder for folder in os.listdir(path('cogs')) if folder != '__pycache__']
     exts = []
     for folder in folders:
-        folder_cogs = [f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if os.path.isfile(path('cogs', folder, cog)) and cog[:-3] not in blocked_extensions]
+        folder_cogs = [f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if os.path.isfile(path('cogs', folder, cog))]
         exts.extend(folder_cogs)
     return exts
 
