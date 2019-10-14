@@ -203,6 +203,7 @@ class Player_Playbacker(comms.Cog):
             else:
                 await ctx.send(f'{ctx.message.author.mention} You are not in a voice chat')
         else:
+            await ctx.voice_client.disconnect()
             await ctx.author.voice.channel.connect()
 
     """ Checks """
