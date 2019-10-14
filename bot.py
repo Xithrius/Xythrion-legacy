@@ -3,7 +3,6 @@
 > Copyright (c) 2019 Xithrius
 > MIT license, Refer to LICENSE for more info
 
-
 This is the main Python file for the discord.py bot, as all important attributes,
 checks, and background tasks are created here.
 
@@ -15,23 +14,22 @@ Running the bot:
 
 Todo:
     * Redo items here to make everything clean and simple
-        * Ex. Iterate through bot.extensions to reload.
-    * Finish on_command_error in this cog
-    * bot_check: checks for authorization or owner status.
-
+    * Make bot available for everyone (exception is reload and exit commands)
+    * Request pool
 """
 
 
-import collections
-import json
-import asyncio
-import aiohttp
-import asyncpg
-import os
+import click
 import logging
-import traceback
-import sys
+import json
+import collections
+import os
+import asyncio
 import datetime
+import sys
+import traceback
+import asyncpg
+import aiohttp
 
 from discord.ext import commands as comms
 import discord
@@ -41,7 +39,7 @@ from modules.output import path, cs, get_extensions
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
-handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler = logging.FileHandler(filename=path('tmp', 'discord.log'), encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
@@ -60,28 +58,18 @@ class Xythrion(comms.Bot):
         with open(path('config', 'config.json'), 'r', encoding='utf8') as f:
             data = json.load(f)
 
-        with open(path('config', 'config_connections.json'), 'r') as f:
-            self.testing_urls = json.load(f)['urls']
-
         #: Giving self.config recursive attributes from config.json
         self.config = json.loads(json.dumps(data), object_hook=lambda d: collections.namedtuple('config', d.keys())(*d.values()))
 
-        self.services = data['services']
-
-        self.owner_ids = set(self.config.owners)
         self.ec = 0xe67e22
-
-        #: All requesters must have one testing link to make sure a connection is possible to the API.
-        self.requester_status = {x[:-3]: False for x in os.listdir(path('cogs', 'requesters')) if x[-3:] == '.py'}
 
         #: Create async loop
         self.loop = asyncio.get_event_loop()
 
         future = asyncio.gather()
-
-        #: Create tasks
         self.loop.create_task(self.create_tasks())
         self.loop.run_until_complete(future)
+
 
     """ subclass-specific functions """
 
@@ -97,12 +85,8 @@ class Xythrion(comms.Bot):
         self.s = aiohttp.ClientSession()
         cs.r('Session established successfully.')
 
-        self.connection_loop = asyncio.get_running_loop()
-        await self.connection_loop.create_task(self.test_services())
-
-        # self.request_limiter = asyncio.new_event_loop()
-
-        # await self.loop.run_in_executor(None, self.tts)  <-- sync to async
+        self.db_connection = asyncio.get_running_loop()
+        await self.db_connection.create_task(self.check_database())
 
     async def check_database(self):
         with open(path('config', 'config.json'), 'r') as f:
@@ -113,41 +97,22 @@ class Xythrion(comms.Bot):
         await self.conn.execute('''CREATE TABLE IF NOT EXISTS Messages(id serial PRIMARY KEY, identification BIGINT, messages INTEGER, images INTEGER, videos INTEGER, audios INTEGER)''')
         # await self.conn.execute('''CREATE TABLE IF NOT EXISTS Users(id serial PRIMARY KEY, identification BIGINT)''')
 
-    async def test_services(self):
-        """ """
-        while not self.is_closed():
-            self.broken_services = []
-            for k, v in self.testing_urls.items():
-                if k in self.config.blocked_extensions:
-                    continue
-                url = v['test_url']
-                if 'TOKEN' in url:
-                    url = url.replace('TOKEN', self.services[k])
-                if 'headers' in v.keys():
-                    headers = {k1: v1.replace('TOKEN', self.services[k]) for k1, v1 in v['headers'].items()}
-                else:
-                    headers = None
-                async with self.s.get(url, headers=headers) as r:
-                    if r.status == 200:
-                        self.requester_status[k] = True
-                    else:
-                        broken = f'{k.title()} - {r.status}'
-                        if broken not in self.broken_services:
-                            self.broken_services.append(f'{k.title()} - {r.status}')
-                        cs.w(r)
-            if self.broken_services:
-                for broken_service in self.broken_services:
-                    cs.f(broken_service)
-            await asyncio.sleep(60)
-
     """ Events """
 
     async def on_ready(self):
-        """ """
+        """Bot event is activated once login is successful.
+        
+        Returns:
+            Success or failure message(s)
+
+        Raises:
+            An exception as e if something went wrong while loading extensions.
+
+        """
         self.login_time = datetime.datetime.now()
         cs.w('Loading extensions...')
         broken_extensions = []
-        for extension in get_extensions(self.config.blocked_extensions):
+        for extension in get_extensions():
             try:
                 self.load_extension(extension)
             except Exception as e:
@@ -158,7 +123,12 @@ class Xythrion(comms.Bot):
         cs.r('Startup completed.')
 
     async def close(self):
-        """ Safely closes connections """
+        """ Safely closes connections
+
+        Returns & Raises:
+            Nothing since they're all passed.
+        
+        """
         try:
             await self.s.close()
             await self.conn.close()
@@ -167,7 +137,7 @@ class Xythrion(comms.Bot):
         await super().close()
 
 
-class ModCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)):
+class MainCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)):
     """Essential commands for using the bot."""
 
     def __init__(self, bot):
@@ -184,15 +154,18 @@ class ModCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)):
             True or false, depending on the contents of config.json's owner data.
 
         """
-        return ctx.author.id in self.bot.owner_ids
+        return await self.bot.is_owner(ctx.author)
 
     @comms.command(aliases=['refresh', 'r'])
     async def reload(self, ctx):
         """Finds all cogs within the 'cogs' directory then loads/unloads them.
 
+        Returns:
+            Success or faliure message depending on extension loading
+
         """
         broken_extensions = []
-        for ext in get_extensions(self.bot.config.blocked_extensions):
+        for ext in get_extensions():
             try:
                 self.bot.unload_extension(ext)
                 self.bot.load_extension(ext)
@@ -204,12 +177,7 @@ class ModCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)):
             info = '\n'.join(y for y in broken_extensions)
             await ctx.send(f'```\n{info}```', delete_after=15)
         else:
-            await ctx.send('Reloaded all cogs.', delete_after=5)
-
-    @comms.command()
-    async def loaded(self, ctx):
-        """ """
-        await ctx.send(self.bot.extensions)
+            await ctx.send('Reloaded all extensions.', delete_after=5)
 
     @comms.command(aliases=['disconnect', 'dc'])
     async def exit(self, ctx):
@@ -227,19 +195,31 @@ class ModCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)):
 
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
+        """Catches errors caused by users
+
+        Returns:
+            An error message only if the error is caused by a user, and not the bot.
+
+        Raises:
+            A traceback message if there's an internal error
+
+        """
         if hasattr(ctx.command, 'on_error'):
             return
 
         error = getattr(error, 'original', error)
 
         if isinstance(error, comms.DisabledCommand):
-            return await ctx.send(f'Command {ctx.command} not available.')
+            return await ctx.send(cs.css(f'Command {ctx.command} not available.'))
 
         elif isinstance(error, comms.CommandNotFound):
-            return await ctx.send(f'Command {ctx.command} not found.')
+            return await ctx.send(cs.css(f'Command {ctx.command} not found.'))
 
         elif isinstance(error, comms.UserInputError):
-            return await ctx.send(f'```css\n--!> Command {ctx.command} raised bad argument: {error}```')
+            return await ctx.send(cs.css(f'Command {ctx.command} raised bad argument: {error}'))
+        
+        elif isinstance(error, comms.NotOwner):
+            return await ctx.send(cs.css('You do not own enough permissions to do this command.'))
 
         else:
             print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
@@ -248,5 +228,5 @@ class ModCog(comms.Cog, command_attrs=dict(hidden=True, case_insensitive=True)):
 
 if __name__ == "__main__":
     bot = Xythrion(command_prefix=comms.when_mentioned_or(';'))
-    bot.add_cog(ModCog(bot))
+    bot.add_cog(MainCog(bot))
     bot.run(bot.config.discord, bot=True, reconnect=True)
