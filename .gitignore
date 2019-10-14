@@ -104,11 +104,8 @@ venv.bak/
 .mypy_cache/
 
 # Sensitive folders/files
-config/gsc.json
-config/config.json
-/data/*
+config/*.json
 /tmp/*
-/logs/*
 
 # Visual Studio Code
 /.vscode
