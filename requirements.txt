@@ -1,5 +1,5 @@
 discord.py[voice]
 datetime
-matplotlib
-aiohttp
 asyncpg
+aiohttp
+rq
