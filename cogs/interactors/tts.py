@@ -30,8 +30,7 @@ class TTS_Playbacker(comms.Cog):
     def create_tts(self, string):
         client = texttospeech.TextToSpeechClient()
         synthesis_input = texttospeech.types.SynthesisInput(text=string)
-        voice = texttospeech.types.VoiceSelectionParams(
-            language_code='en-US', ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
+        voice = texttospeech.types.VoiceSelectionParams(language_code='en-US', ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
         audio_config = texttospeech.types.AudioConfig(audio_encoding=texttospeech.enums.AudioEncoding.MP3)
         response = client.synthesize_speech(synthesis_input, voice, audio_config)
         return response
