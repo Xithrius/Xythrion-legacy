@@ -12,8 +12,6 @@ import numpy
 from discord.ext import commands as comms
 import discord
 
-from modules.output import now
-
 
 class Misc_Director(comms.Cog):
     """ """
@@ -49,7 +47,8 @@ class Misc_Director(comms.Cog):
         async with ctx.typing():
             messages = await ctx.channel.history(limit=limit).flatten()
             messages = [x for x in messages if x.author.id == user.id]
-        await ctx.send(f'{user.mention} has sent {len(messages)} in {ctx.channel}')
+        await ctx.send(
+            f'{user.mention} has sent {len(messages)} in {ctx.channel}')
 
     @comms.command()
     async def stackoverflow(self, ctx, year: int):
@@ -61,12 +60,29 @@ class Misc_Director(comms.Cog):
 
     @comms.command()
     async def uptime(self, ctx):
+        """Giving average and current uptime from the database.
+
+        Args:
+            None
+
+        Raises:
+            None
+
+        Returns:
+            A nice embed from this pile of spaghetti.
+
+        """
         running_time = datetime.datetime.now() - self.bot.login_time
         delta = str((datetime.datetime.min + running_time).time()).split(':')
         timestamps = ['Hours', 'Minutes', 'Seconds']
-        running_time_delta = ', '.join(f'{int(float(delta[i]))} {timestamps[i]}' for i in range(len(timestamps)) if float(delta[i]) != 0.0)
-        times = await self.bot.conn.fetch('''SELECT login, logout FROM Runtime''')
-        a_u = [str((datetime.datetime.min + (t['logout'] - t['login'])).time()).split(':') for t in times]
+        running_time_delta = ', '.join(
+            f'{int(float(delta[i]))} {timestamps[i]}' for i in range(len(
+                timestamps)) if float(delta[i]) != 0.0)
+        async with self.bot.pool.acquire() as conn:
+            times = await conn.fetch(
+                '''SELECT login, logout FROM Runtime''')
+        a_u = [str((datetime.datetime.min + (
+            t['logout'] - t['login'])).time()).split(':') for t in times]
         a_u = numpy.array([[float(y) for y in x] for x in a_u])
         a_u = [round(sum(a_u[:, x]) / len(times), 1) for x in range(3)]
 
@@ -77,7 +93,7 @@ class Misc_Director(comms.Cog):
         au = ", ".join(f"{a_u[i]} {timestamps[i]}" for i in range(
             len(a_u)) if a_u[i] != 0)
         d = f'Average uptime: {au}\nTotal logins: {len(times)}'
-        e = await self.bot.embed(t, d)
+        e = self.bot.embed(t, d)
         await ctx.send(embed=e)
 
 

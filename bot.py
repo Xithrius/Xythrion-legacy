@@ -24,15 +24,15 @@ import json
 import collections
 import asyncio
 import datetime
-import sys
-import traceback
 import asyncpg
 import aiohttp
+import traceback
+import sys
 
 from discord.ext import commands as comms
 import discord
 
-from modules.output import path, cs, get_extensions
+from modules.output import path, cs, get_extensions, now
 
 
 logger = logging.getLogger('discord')
@@ -64,16 +64,40 @@ class Xythrion(comms.Bot):
                                  collections.namedtuple('config',
                                                         d.keys())(*d.values()))
 
-        self.ec = 0xe67e22
-
         #: Create async loop
         self.loop = asyncio.get_event_loop()
 
         future = asyncio.gather()
+
+        #: Create tasks
         self.loop.create_task(self.create_tasks())
+
+        #: Run tasks
         self.loop.run_until_complete(future)
 
-    """ subclass-specific functions """
+        #: Adding the main cog
+        self.add_cog(Main_Cog(self))
+
+    """ Subclass-specific functions """
+
+    def embed(self, title, desc, url=False):
+        """Automating the creation of a discord.Embed with modifications.
+
+        Returns:
+            An embed object.
+
+        """
+        if url:
+            desc.append(f'[`link`]({url})')
+        if isinstance(desc, list):
+            desc = '\n'.join(y for y in desc)
+        e = discord.Embed(title=title, description=desc,
+                          timestamp=now(), colour=0xc27c0e)
+        e.set_footer(text=f'discord.py v{discord.__version__}',
+                     icon_url='https://i.imgur.com/RPrw70n.png')
+        return e
+
+    """ Subclass-specific tasks """
 
     async def create_tasks(self):
         """Session and database connections while testing service status.
@@ -93,27 +117,28 @@ class Xythrion(comms.Bot):
     async def check_database(self):
         with open(path('config', 'config.json'), 'r') as f:
             data = json.load(f)['db']
-            self.conn = await asyncpg.connect(**data)
 
-        await self.conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
-                                id serial PRIMARY KEY,
-                                login TIMESTAMP,
-                                logout TIMESTAMP)''')
-        await self.conn.execute('''CREATE TABLE IF NOT EXISTS Messages
-                                id serial PRIMARY KEY,
-                                identification BIGINT,
-                                messages INTEGER,
-                                images INTEGER,
-                                videos INTEGER,
-                                audios INTEGER)''')
-        await self.conn.execute('''CREATE TABLE IF NOT EXISTS Users
-                                id serial PRIMARY KEY,
-                                identification BIGINT)''')
+            #: Connecting to the database with config.json data.
+            self.pool = await asyncpg.create_pool(**data, command_timeout=60)
+
+        async with self.pool.acquire() as conn:
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
+                                    id serial PRIMARY KEY,
+                                    login TIMESTAMP,
+                                    logout TIMESTAMP)''')
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Messages(
+                                    id serial PRIMARY KEY,
+                                    identification BIGINT,
+                                    messages INTEGER)''')
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Users(
+                                    id serial PRIMARY KEY,
+                                    identification BIGINT,
+                                    punishment_level INTEGER)''')
 
     """ Events """
 
     async def on_ready(self):
-        """Bot event is activated once login is successful.
+        """Bot event is triggered once login is successful.
 
         Returns:
             Success or failure message(s)
@@ -124,14 +149,12 @@ class Xythrion(comms.Bot):
         """
         self.login_time = datetime.datetime.now()
         cs.w('Loading extensions...')
-        broken_extensions = []
         for extension in get_extensions():
             try:
                 self.load_extension(extension)
             except Exception as e:
-                broken_extensions.append(f'{extension} - {e}')
-        for ext in broken_extensions:
-            cs.w(ext)
+                traceback.print_exception(type(e), e, e.__traceback__,
+                                          file=sys.stderr)
         await self.change_presence(status=discord.ActivityType.playing,
                                    activity=discord.Game('with user data'))
         cs.r('Startup completed.')
@@ -139,24 +162,33 @@ class Xythrion(comms.Bot):
     async def close(self):
         """ Safely closes connections
 
-        Returns & Raises:
+        Args:
+            None
+
+        Raises:
+            None, since everything is passed.
+
+        Returns:
             Nothing since they're all passed.
 
         """
+        async with self.bot.pool.acquire() as conn:
+            conn.execute('''INSERT INTO Runtime
+                         (login, logout) VALUES($1, $2)''',
+                         self.bot.login_time,
+                         datetime.datetime.now())
         try:
             await self.s.close()
-            await self.conn.close()
+            await self.pool.close()
         except Exception:
             pass
         await super().close()
 
 
-class MainCog(comms.Cog):
-    """Essential commands for using the bot."""
+class Main_Cog(comms.Cog):
+    """Cog needed for essential commands"""
 
     def __init__(self, bot):
-
-        #: Setting Xythrion(comms.Bot) as a class attribute
         self.bot = bot
 
     """ Checks """
@@ -165,10 +197,12 @@ class MainCog(comms.Cog):
         """Checks if the command caller is an owner.
 
         Returns:
-            True or false, on config.json's 'owner' contents.
+            True or false, depending on if the user is an owner.
 
         """
         return await self.bot.is_owner(ctx.author)
+
+    """ Commands """
 
     @comms.command(aliases=['refresh', 'r'])
     async def reload(self, ctx):
@@ -178,7 +212,6 @@ class MainCog(comms.Cog):
             Success or faliure message depending on extension loading
 
         """
-        broken_extensions = []
         for ext in get_extensions():
             try:
                 self.bot.unload_extension(ext)
@@ -186,12 +219,9 @@ class MainCog(comms.Cog):
             except discord.ext.commands.ExtensionNotLoaded:
                 self.bot.load_extension(ext)
             except Exception as e:
-                broken_extensions.append(f'{ext} - {e}')
-        if broken_extensions:
-            info = '\n'.join(y for y in broken_extensions)
-            await ctx.send(f'```\n{info}```', delete_after=15)
-        else:
-            await ctx.send('Reloaded all extensions.', delete_after=5)
+                traceback.print_exception(type(e), e, e.__traceback__,
+                                          file=sys.stderr)
+        await ctx.send('Reloaded extensions.', delete_after=5)
 
     @comms.command(aliases=['disconnect', 'dc'])
     async def exit(self, ctx):
@@ -201,56 +231,13 @@ class MainCog(comms.Cog):
             A possible timeout error.
 
         """
-        await self.bot.conn.execute('''INSERT INTO Runtime
-                                    (login, logout) VALUES($1, $2)''',
-                                    self.bot.login_time,
-                                    datetime.datetime.now())
         cs.w('Logging out...')
         await ctx.bot.logout()
 
-    """ Events """
-
-    @comms.Cog.listener()
-    async def on_command_error(self, ctx, error):
-        """Catches errors caused by users
-
-        Returns:
-            An error message only if the error is caused by a user.
-
-        Raises:
-            A traceback message if there's an internal error.
-
-        """
-        if hasattr(ctx.command, 'on_error'):
-            return
-
-        error = getattr(error, 'original', error)
-
-        if isinstance(error, comms.DisabledCommand):
-            return await ctx.send(
-                cs.css(f'Command {ctx.command} not available.'))
-
-        elif isinstance(error, comms.CommandNotFound):
-            return await ctx.send(
-                cs.css(f'Command {ctx.command} not found.'))
-
-        elif isinstance(error, comms.UserInputError):
-            return await ctx.send(
-                cs.css(f'Command {ctx.command} raised bad argument: {error}'))
-
-        elif isinstance(error, comms.NotOwner):
-            return await ctx.send(
-                cs.css('You do not have enough permissions for this command.'))
-
-        else:
-            print(f'Ignoring exception in command {ctx.command}:',
-                  file=sys.stderr)
-            traceback.print_exception(
-                type(error), error, error.__traceback__, file=sys.stderr)
-
 
 if __name__ == "__main__":
+
+    #: Running the bot
     bot = Xythrion(command_prefix=comms.when_mentioned_or(';'),
                    case_insensitive=True)
-    bot.add_cog(MainCog(bot))
     bot.run(bot.config.discord, bot=True, reconnect=True)
