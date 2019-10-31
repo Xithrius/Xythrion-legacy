@@ -5,14 +5,12 @@
 """
 
 
-import datetime
 import sys
 import traceback
 
 from discord.ext import commands as comms
-import discord
 
-from modules.output import cs, get_extensions
+from modules.output import cs
 
 
 class Warnings_Director(comms.Cog):
@@ -33,46 +31,6 @@ class Warnings_Director(comms.Cog):
 
         """
         return await self.bot.is_owner(ctx.author)
-
-    """ Commands """
-
-    @comms.command(aliases=['refresh', 'r'])
-    async def reload(self, ctx):
-        """Finds all cogs within the 'cogs' directory then loads/unloads them.
-
-        Returns:
-            Success or faliure message depending on extension loading
-
-        """
-        broken_extensions = []
-        for ext in get_extensions():
-            try:
-                self.bot.unload_extension(ext)
-                self.bot.load_extension(ext)
-            except discord.ext.commands.ExtensionNotLoaded:
-                self.bot.load_extension(ext)
-            except Exception as e:
-                broken_extensions.append(f'{ext} - {e}')
-        if broken_extensions:
-            info = '\n'.join(y for y in broken_extensions)
-            await ctx.send(f'```\n{info}```', delete_after=15)
-        else:
-            await ctx.send('Reloaded all extensions.', delete_after=5)
-
-    @comms.command(aliases=['disconnect', 'dc'])
-    async def exit(self, ctx):
-        """Logs out the bot.
-
-        Returns:
-            A possible timeout error.
-
-        """
-        await self.bot.conn.execute('''INSERT INTO Runtime
-                                    (login, logout) VALUES($1, $2)''',
-                                    self.bot.login_time,
-                                    datetime.datetime.now())
-        cs.w('Logging out...')
-        await ctx.bot.logout()
 
     """ Events """
 
