@@ -68,11 +68,17 @@ class Misc_Director(comms.Cog):
         times = await self.bot.conn.fetch('''SELECT login, logout FROM Runtime''')
         a_u = [str((datetime.datetime.min + (t['logout'] - t['login'])).time()).split(':') for t in times]
         a_u = numpy.array([[float(y) for y in x] for x in a_u])
-        a_u = [round(sum(a_u[:,x]) / len(times), 1) for x in range(3)]
-        embed = discord.Embed(title=f"Running since {self.bot.login_time.strftime('%A %I:%M:%S%p').lower().capitalize()}; Total uptime {running_time_delta}",
-                              description=f'Average uptime: {", ".join(f"{a_u[i]} {timestamps[i]}" for i in range(len(a_u)) if a_u[i] != 0)}\nTotal logins: {len(times)}', 
-                              timestamp=now(), colour=self.bot.ec)
-        await ctx.send(embed=embed)
+        a_u = [round(sum(a_u[:, x]) / len(times), 1) for x in range(3)]
+
+        #: Prepping everything for the embed
+        login_time = self.bot.login_time.strftime(
+            '%A %I:%M:%S%p').lower().capitalize()
+        t = f"Running since {login_time}; Total uptime {running_time_delta}"
+        au = ", ".join(f"{a_u[i]} {timestamps[i]}" for i in range(
+            len(a_u)) if a_u[i] != 0)
+        d = f'Average uptime: {au}\nTotal logins: {len(times)}'
+        e = await self.bot.embed(t, d)
+        await ctx.send(embed=e)
 
 
 def setup(bot):
