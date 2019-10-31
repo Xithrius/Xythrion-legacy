@@ -30,9 +30,13 @@ class TTS_Playbacker(comms.Cog):
     def create_tts(self, string):
         client = texttospeech.TextToSpeechClient()
         synthesis_input = texttospeech.types.SynthesisInput(text=string)
-        voice = texttospeech.types.VoiceSelectionParams(language_code='en-US', ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
-        audio_config = texttospeech.types.AudioConfig(audio_encoding=texttospeech.enums.AudioEncoding.MP3)
-        response = client.synthesize_speech(synthesis_input, voice, audio_config)
+        voice = texttospeech.types.VoiceSelectionParams(
+            language_code='en-US',
+            ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
+        audio_config = texttospeech.types.AudioConfig(
+            audio_encoding=texttospeech.enums.AudioEncoding.MP3)
+        response = client.synthesize_speech(
+            synthesis_input, voice, audio_config)
         return response
 
     """ Commands """
@@ -48,7 +52,8 @@ class TTS_Playbacker(comms.Cog):
         vc = ctx.guild.voice_client
         if not vc:
             vc = await ctx.author.voice.channel.connect()
-        vc.play(discord.FFmpegPCMAudio(source=path('tmp', 'tts.mp3'), options='-loglevel fatal'))
+        vc.play(discord.FFmpegPCMAudio(source=path(
+            'tmp', 'tts.mp3'), options='-loglevel fatal'))
         vc.source = discord.PCMVolumeTransformer(vc.source)
         vc.source.volume = 1
         while vc.is_playing():
@@ -57,26 +62,27 @@ class TTS_Playbacker(comms.Cog):
 
     @comms.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        print(before)
-        print(after)
-        print()
-        #vc = ctx.guild.voice_client
-        #vc = ctx.guild.voice_client
-        #vc = before.channel.guild.voice_client
-        #while vc.is_playing():
-        #    await asyncio.sleep(1)
-        #vc.stop()
         return
+        # vc = ctx.guild.voice_client
+        # vc = ctx.guild.voice_client
+        # vc = before.channel.guild.voice_client
+        # while vc.is_playing():
+        #     await asyncio.sleep(1)
+        # vc.stop()
         if before.channel is None:  # User connected
-            func = functools.partial(self.create_tts, f'{member.name} has connected.')
-        elif after.channel is None: # User disconnected
-            func = functools.partial(self.create_tts, f'{member.name} has disconnected.')
-        elif before.channel.id != after.channel.id: # User moved channels
-            func = functools.partial(self.create_tts, f'{member.name} has moved channels.')
+            func = functools.partial(
+                self.create_tts, f'{member.name} has connected.')
+        elif after.channel is None:  # User disconnected
+            func = functools.partial(
+                self.create_tts, f'{member.name} has disconnected.')
+        elif before.channel.id != after.channel.id:  # User moved channels
+            func = functools.partial(
+                self.create_tts, f'{member.name} has moved channels.')
         response = await self.bot.loop.run_in_executor(None, func)
         with open(path('tmp', 'vc_change.mp3'), 'wb') as out:
             out.write(response.audio_content)
-        vc.play(discord.FFmpegPCMAudio(source=path('tmp', 'vc_change.mp3'), options='-loglevel fatal'))
+        # vc.play(discord.FFmpegPCMAudio(source=path(
+        #        'tmp', 'vc_change.mp3'), options='-loglevel fatal'))
 
 
 def setup(bot):

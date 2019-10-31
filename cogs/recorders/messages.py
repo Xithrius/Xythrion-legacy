@@ -51,12 +51,18 @@ class Message_Recorder(comms.Cog):
                 y[0] += 1
             self.user_records[message.author.id] = y
         for user_id, records in self.user_records.items():
-            await self.bot.conn.execute('''INSERT INTO Messages(identification, messages, images, videos, audios) VALUES($1, $2, $3, $4, $5)''', user_id, *records)
+            await self.bot.conn.execute('''INSERT INTO Messages(identification,
+                                            messages, images, videos, audios)
+                                            VALUES($1, $2, $3, $4, $5)''',
+                                        user_id, *records)
 
     @comms.command()
     async def messages(self, ctx):
-        info = await self.bot.conn.fetch('''SELECT * FROM Messages WHERE identification=$1''', ctx.author.id)
-        embed = discord.Embed(title=f'Items sent by {ctx.author.id}', colour=self.bot.ec, timestamp=now())
+        info = await self.bot.conn.fetch(
+            '''SELECT * FROM Messages WHERE identification=$1''',
+            ctx.author.id)
+        embed = discord.Embed(title=f'Items sent by {ctx.author.id}',
+                              colour=self.bot.ec, timestamp=now())
         embed.description = '\n'.join(f'{k}: {v}' for k, v in info[0].items())
         await ctx.send(embed=embed)
 
