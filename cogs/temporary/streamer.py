@@ -7,37 +7,33 @@
 
 import asyncio
 import youtube_dl
-import json
-import os
-import sys
 
 from discord.ext import commands as comms
 import discord
-
-from modules.output import path
 
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
 
-info = {"ytdlopts": {
-        "format": "bestaudio/best",
-        "restrictfilenames": True,
-        "noplaylist": True,
-        "nocheckcertificate": True,
-        "ignoreerrors": True,
-        "logtostderr": False,
-        "quiet": True,
-        "panic": False,
-        "fatal": False,
-        "error": False,
-        "no_warnings": True,
-        "default_search": "auto",
-        "source_address": "0.0.0.0"
-    },
-    "ffmpeg_options": {
-        "options": "-vn -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"
-    }
+info = {
+ "ytdlopts": {
+    "format": "bestaudio/best",
+    "restrictfilenames": True,
+    "noplaylist": True,
+    "nocheckcertificate": True,
+    "ignoreerrors": True,
+    "logtostderr": False,
+    "quiet": True,
+    "panic": False,
+    "fatal": False,
+    "error": False,
+    "no_warnings": True,
+    "default_search": "auto",
+    "source_address": "0.0.0.0"
+ },
+ "ffmpeg_options": {
+    "options": "-vn -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"
+ }
 }
 ytdl_format_options = info['ytdlopts']
 ffmpeg_options = info['ffmpeg_options']
@@ -64,19 +60,21 @@ class YTDLSource(discord.PCMVolumeTransformer):
         """Setting up player and data from Youtube url.
 
         Args:
-            url (str): YouTube video url for extracting information and audio stream
-            loop (bool): If there's a different loop to check on the player, it is passed.
+            url (str): YouTube video url
+            loop (bool): The bot's asyncio loop
 
         """
         loop = loop or asyncio.get_event_loop()
-        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=False))
+        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url,
+                                          download=False))
 
         if 'entries' in data:
             # take first item from a playlist
             data = data['entries'][0]
 
         #: Returning the source for the player
-        return cls(discord.FFmpegPCMAudio(source=data['url'], before_options=ffmpeg_options['options']), data=data)
+        return cls(discord.FFmpegPCMAudio(source=data['url'],
+                   before_options=ffmpeg_options['options']), data=data)
 
 
 class Player_Playbacker(comms.Cog):
@@ -116,7 +114,9 @@ class Player_Playbacker(comms.Cog):
         """
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=self.bot.loop)
-            ctx.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else None)
+            ctx.voice_client.play(player,
+                                  after=lambda e: print(f'Player error: {e}')
+                                  if e else None)
         await ctx.send(f'Now playing: {player.title}')
 
     @comms.command()
@@ -175,7 +175,7 @@ class Player_Playbacker(comms.Cog):
 
     @comms.command()
     async def stop(self, ctx):
-        """Stops the current audio stream from continuing until another one is requested
+        """Stops the current audio stream
 
         Args:
             ctx: Context object where the command is called.
@@ -201,7 +201,8 @@ class Player_Playbacker(comms.Cog):
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
             else:
-                await ctx.send(f'{ctx.message.author.mention} You are not in a voice chat')
+                await ctx.send(
+                    f'{ctx.message.author.mention} is not in a voice chat')
         else:
             await ctx.voice_client.disconnect()
             await ctx.author.voice.channel.connect()
@@ -216,16 +217,18 @@ class Player_Playbacker(comms.Cog):
             ctx: Context object where the command is called.
 
         Returns:
-            Join if the bot isn't in the caller's voice channel, and/or audio stream when in the voice channel.
+            Join if the bot isn't in the caller's voice channel
 
         """
         if ctx.voice_client is None:
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
             else:
-                await ctx.send(f'{ctx.message.author.mention} You are not in a voice chat')
+                await ctx.send(
+                    f'{ctx.message.author.mention} is not in a voice chat.')
         elif ctx.voice_client.is_playing():
-            await ctx.send(f"Stopping Audio to prioritize {ctx.message.author.mention}'s request")
+            await ctx.send(
+                f"Prioritizing {ctx.message.author.mention}'s request.")
             ctx.voice_client.stop()
 
     @volume.before_invoke
@@ -239,11 +242,11 @@ class Player_Playbacker(comms.Cog):
             ctx: Context object where the command is called.
 
         Returns:
-            A bot that is now in the voice channel that the caller is in. There is no escape.
+            A bot that is now in the voice channel that the caller is in.
 
         """
         if ctx.voice_client is None:
-            await ctx.send(f'Cannot preform the {ctx.command.name} action for a voice chat')
+            await ctx.send(f'Cannot preform command {ctx.command.name}.')
 
 
 def setup(bot):
