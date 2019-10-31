@@ -15,6 +15,7 @@ Running the bot:
 Todo:
     * Redo items here to make everything clean and simple (flake8 standards)
     * Make bot available for everyone
+    * https://github.com/3b1b/manim for graphs
     * Request pool
 """
 
@@ -172,10 +173,10 @@ class Xythrion(comms.Bot):
             Nothing since they're all passed.
 
         """
-        async with self.bot.pool.acquire() as conn:
+        async with self.pool.acquire() as conn:
             conn.execute('''INSERT INTO Runtime
                          (login, logout) VALUES($1, $2)''',
-                         self.bot.login_time,
+                         self.login_time,
                          datetime.datetime.now())
         try:
             await self.s.close()
