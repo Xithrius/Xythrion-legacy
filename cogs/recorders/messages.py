@@ -32,24 +32,21 @@ class Messages_Recorder(comms.Cog):
 
     @comms.Cog.listener()
     async def on_message(self, message):
-        async with self.bot.pool.acquire() as conn:
-            info = await conn.fetch(
-                '''SELECT messages FROM Messages WHERE identification=$1''',
-                message.author.id)
-
-            cs.s(info)
-
-            if info:
-                await conn.execute(
-                    '''UPDATE Messages SET messages=$2 WHERE
-                    identification=$1''',
-                    message.author.id, info[0]['messages'] + 1)
-            if not info:
-                await conn.execute(
-                    '''INSERT INTO Messages(
-                        identification, messages) VALUES ($1, $2)''',
-                    message.author.id, 1)
-        await self.bot.process_commands(message)
+        if not message.author.bot:
+            async with self.bot.pool.acquire() as conn:
+                info = await conn.fetch(
+                 '''SELECT messages FROM Messages WHERE identification=$1''',
+                 message.author.id)
+                if info:
+                    await conn.execute(
+                        '''UPDATE Messages SET messages=$2 WHERE
+                        identification=$1''',
+                        message.author.id, info[0]['messages'] + 1)
+                if not info:
+                    await conn.execute(
+                        '''INSERT INTO Messages(
+                            identification, messages) VALUES ($1, $2)''',
+                        message.author.id, 1)
 
 
 def setup(bot):
