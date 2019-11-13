@@ -5,8 +5,8 @@
 """
 
 
-import sys
 import datetime
+import sys
 import os
 
 
@@ -20,7 +20,11 @@ def path(*filepath):
         A Path joined by the operating system's seperator.
 
     """
-    return f'{os.path.abspath(os.path.dirname(sys.argv[0]))}{os.sep}{(os.sep).join(str(y) for y in filepath)}'
+    lst = [
+        os.path.abspath(os.path.dirname(sys.argv[0])),
+        (os.sep).join(str(y) for y in filepath)
+    ]
+    return (os.sep).join(str(s) for s in lst)
 
 
 class cs:
@@ -39,31 +43,36 @@ class cs:
 
         """
         rn = now()
-        return f"[{rn.strftime('%A %I:%M:%S')}{rn.strftime('%p').lower()}] [ {warning} ]: {string}"
+        s = [
+            f"[{rn.strftime('%A %I:%M:%S')}{rn.strftime('%p').lower()}]",
+            f'[ {warning} ]:',
+            f'{string} '
+        ]
+        return ' '.join(str(y) for y in s)
 
     @classmethod
     def insert_block(cls, language, warning, string):
         return f'```{language}\n{warning} {string}\n```'
 
     @classmethod
-    def w(cls, string):
+    def w(cls, *string):
         """Returns a warning string."""
-        print(cls.insert_items('Warning', string))
+        print(cls.insert_items('Warning', ' '.join(string)))
 
     @classmethod
-    def f(cls, string):
+    def f(cls, *string):
         """Returns a fatal string."""
-        print(cls.insert_items('Fatal', string))
+        print(cls.insert_items('Fatal', ' '.join(string)))
 
     @classmethod
-    def s(cls, string):
+    def s(cls, *string):
         """Returns a success string."""
-        print(cls.insert_items('Success', string))
+        print(cls.insert_items('Success', ' '.join(string)))
 
     @classmethod
-    def r(cls, string):
+    def r(cls, *string):
         """Returns a custom warning string."""
-        print(cls.insert_items('Ready', string))
+        print(cls.insert_items('Ready', ' '.join(string)))
 
     @classmethod
     def css(cls, string):

@@ -2,4 +2,6 @@ discord.py[voice]
 datetime
 asyncpg
 aiohttp
-rq
+bs4
+google-cloud-texttospeech
+youtube_dl

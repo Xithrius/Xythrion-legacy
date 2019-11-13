@@ -45,7 +45,7 @@ handler.setFormatter(logging.Formatter(
 logger.addHandler(handler)
 
 
-class Xythrion(comms.Bot):
+class Robot(comms.Bot):
     """Creating connections, attributes, and background tasks.
 
     Preface: When ctx is the context for the event, such as channel or member.
@@ -78,25 +78,6 @@ class Xythrion(comms.Bot):
 
         #: Adding the main cog
         self.add_cog(Main_Cog(self))
-
-    """ Subclass-specific functions """
-
-    def embed(self, title, desc, url=False):
-        """Automating the creation of a discord.Embed with modifications.
-
-        Returns:
-            An embed object.
-
-        """
-        if url:
-            desc.append(f'[`link`]({url})')
-        if isinstance(desc, list):
-            desc = '\n'.join(y for y in desc)
-        e = discord.Embed(title=title, description=desc,
-                          timestamp=now(), colour=0xc27c0e)
-        e.set_footer(text=f'discord.py v{discord.__version__}',
-                     icon_url='https://i.imgur.com/RPrw70n.png')
-        return e
 
     """ Subclass-specific tasks """
 
@@ -239,6 +220,6 @@ class Main_Cog(comms.Cog):
 if __name__ == "__main__":
 
     #: Running the bot
-    bot = Xythrion(command_prefix=comms.when_mentioned_or(';'),
+    bot = Robot(command_prefix=comms.when_mentioned_or(';'),
                    case_insensitive=True)
     bot.run(bot.config.discord, bot=True, reconnect=True)
