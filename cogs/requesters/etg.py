@@ -19,53 +19,7 @@ class ETG_Requester(comms.Cog):
         #: Setting Xythrion(comms.Bot) as a class attribute
         self.bot = bot
 
-    """ Checks """
-
-    async def cog_check(self, ctx):
-        """Checks if the command caller is an owner.
-
-        Returns:
-            True or false, on config.json's 'owner' contents.
-
-        """
-        # return await self.bot.is_owner(ctx.author)
-        return True
-
     """ Commands """
-
-    @comms.command()
-    async def a_command(self, ctx):
-        """Description
-
-        Args:
-            None
-
-        Raises:
-            None
-
-        Returns:
-            None
-
-        """
-        pass
-
-    """ Events """
-
-    @comms.Cog.listener()
-    async def on_something(self):
-        """Description
-
-        Args:
-            None
-
-        Raises:
-            None
-
-        Returns:
-            None
-
-        """
-        pass
 
 
 def setup(bot):

@@ -12,7 +12,7 @@ import discord
 from modules.output import now
 
 
-def embed(self, title, url, desc):
+def embed(self, title, desc, fields, url=None):
     """Automating the creation of a discord.Embed with modifications.
 
     Returns:
@@ -20,11 +20,13 @@ def embed(self, title, url, desc):
 
     """
     if isinstance(desc, dict):
-        desc = [f'[`{k}`]({v}' for k, v in desc.items()]
+        desc = [f'[`{k}`]({v})' for k, v in desc.items()]
     else:
         desc.append(f'[`link`]({url})')
     e = discord.Embed(title='', description='\n'.join(y for y in desc),
                         timestamp=now(), colour=0xc27c0e)
+    for k, v in fields.items():
+        e.add_field(name=k, value=v)
     e.set_footer(text=f'discord.py v{discord.__version__}',
                     icon_url='https://i.imgur.com/RPrw70n.png')
     return e

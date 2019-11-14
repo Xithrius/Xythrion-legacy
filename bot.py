@@ -45,7 +45,7 @@ handler.setFormatter(logging.Formatter(
 logger.addHandler(handler)
 
 
-class Robot(comms.Bot):
+class Xythrion(comms.Bot):
     """Creating connections, attributes, and background tasks.
 
     Preface: When ctx is the context for the event, such as channel or member.
@@ -220,6 +220,6 @@ class Main_Cog(comms.Cog):
 if __name__ == "__main__":
 
     #: Running the bot
-    bot = Robot(command_prefix=comms.when_mentioned_or(';'),
+    bot = Xythrion(command_prefix=comms.when_mentioned_or(';'),
                    case_insensitive=True)
     bot.run(bot.config.discord, bot=True, reconnect=True)
