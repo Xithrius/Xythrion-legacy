@@ -81,6 +81,21 @@ class Reddit_Requester(comms.Cog):
         # https://www.reddit.com/r/hentai/comments/dvr5vh/dva/
         # https://www.reddit.com/r/cosplaygirls/top/?t=week
 
+    """ Events """
+
+    @comms.Cog.listener()
+    async def on_message(self, message):
+        """Checks if message has reddit link, if so, gives information
+
+        Args:
+            message (message): Object with message information
+
+        Returns:
+            Embed object with information about Reddit post, user, or subreddit
+
+        """
+        pass
+
 
 
 def setup(bot):
