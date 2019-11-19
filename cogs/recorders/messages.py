@@ -6,8 +6,9 @@
 
 
 from discord.ext import commands as comms
+import discord
 
-from modules.output import cs
+from modules.shortcuts import embed
 
 
 class Messages_Recorder(comms.Cog):
@@ -21,12 +22,19 @@ class Messages_Recorder(comms.Cog):
     """ Commands """
 
     @comms.command()
-    async def rank(self, ctx):
+    async def rank(self, ctx, user: discord.User=False):
+        """
+
+        """
+        if not user:
+            user = ctx.author
         async with self.bot.pool.acquire() as conn:
             info = await conn.fetch(
                 '''SELECT messages from Messages WHERE identification=$1''',
-                ctx.author.id)
-        await ctx.send(info)
+                user.id)
+        e = embed(title=f"{user.name}'s total messages:",
+                  desc=f'{info[0]["messages"]}')
+        await ctx.send(embed=e)
 
     """ Events """
 
