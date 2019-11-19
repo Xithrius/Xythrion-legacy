@@ -7,10 +7,11 @@
 
 import random
 import datetime
-import numpy
 
 from discord.ext import commands as comms
 import discord
+
+from modules.shortcuts import embed
 
 
 class Misc_Director(comms.Cog):
@@ -59,43 +60,36 @@ class Misc_Director(comms.Cog):
             raise comms.UserInputError('Year must be between 2019 and 2015')
 
     @comms.command()
-    async def uptime(self, ctx):
-        """Giving average and current uptime from the database.
-
-        Args:
-            None
-
-        Raises:
-            None
-
-        Returns:
-            A nice embed from this pile of spaghetti.
-
-        """
-        running_time = datetime.datetime.now() - self.bot.login_time
-        delta = str((datetime.datetime.min + running_time).time()).split(':')
-        timestamps = ['Hours', 'Minutes', 'Seconds']
-        running_time_delta = ', '.join(
-            f'{int(float(delta[i]))} {timestamps[i]}' for i in range(len(
-                timestamps)) if float(delta[i]) != 0.0)
+    async def runtime(self, ctx):
         async with self.bot.pool.acquire() as conn:
-            times = await conn.fetch(
-                '''SELECT login, logout FROM Runtime''')
-        a_u = [str((datetime.datetime.min + (
-            t['logout'] - t['login'])).time()).split(':') for t in times]
-        a_u = numpy.array([[float(y) for y in x] for x in a_u])
-        a_u = [round(sum(a_u[:, x]) / len(times), 1) for x in range(3)]
+            t = await conn.fetch(
+                '''SELECT avg(logout - login) avg_uptime,
+                          max(logout - login) max_uptime FROM Runtime''')
 
-        #: Prepping everything for the embed
+        avg = str((datetime.datetime.min + t[0]['avg_uptime']).time()).split(':')
+        _max = str((datetime.datetime.min + t[0]['max_uptime']).time()).split(':')
+
+        timestamps = ['Hours', 'Minutes', 'Seconds']
+        avg_str = ', '.join(
+            f'{int(float(avg[i]))} {timestamps[i]}' for i in range(len(
+                timestamps)) if float(avg[i]) != 0.0)
+        max_str = ', '.join(
+            f'{int(float(_max[i]))} {timestamps[i]}' for i in range(len(
+                timestamps)) if float(_max[i]) != 0.0)
+        
         login_time = self.bot.login_time.strftime(
-            '%A %I:%M:%S%p').lower().capitalize()
-        t = f"Running since {login_time}; Total uptime {running_time_delta}"
-        au = ", ".join(f"{a_u[i]} {timestamps[i]}" for i in range(
-            len(a_u)) if a_u[i] != 0)
-        d = f'Average uptime: {au}\nTotal logins: {len(times)}'
-        e = self.bot.embed(t, d)
-        await ctx.send(embed=e)
+            '%A %I:%M:%S%p'
+            ).lower().capitalize().replace(" ", " at ")
 
+        desc = [
+            f'Login time was `{login_time}`',
+            f'Average uptime is `{avg_str}`',
+            f'Longest uptime was `{max_str}`'
+        ]
+        e = embed(title='Bot runtime information',
+                  desc=desc)
+        await ctx.send(embed=e)
+        
 
 def setup(bot):
     bot.add_cog(Misc_Director(bot))
