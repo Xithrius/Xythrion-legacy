@@ -34,6 +34,7 @@ from discord.ext import commands as comms
 import discord
 
 from modules.output import path, cs, get_extensions, now
+from modules.shortcuts import partial_function
 
 
 logger = logging.getLogger('discord')
@@ -55,6 +56,7 @@ class Xythrion(comms.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        cs.w('Starting up...')
         #: Opening the config json file
         with open(path('config', 'config.json'), 'r', encoding='utf8') as f:
             data = json.load(f)
@@ -91,7 +93,7 @@ class Xythrion(comms.Bot):
         await self.check_database()
 
         self.s = aiohttp.ClientSession()
-        cs.r('Session established successfully.')
+        # cs.r('Session established successfully.')
 
         self.db_connection = asyncio.get_running_loop()
         await self.db_connection.create_task(self.check_database())
@@ -107,7 +109,8 @@ class Xythrion(comms.Bot):
             await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
                                     id serial PRIMARY KEY,
                                     login TIMESTAMP,
-                                    logout TIMESTAMP)''')
+                                    logout TIMESTAMP,
+                                    uptime INTERVAL)''')
             await conn.execute('''CREATE TABLE IF NOT EXISTS Messages(
                                     id serial PRIMARY KEY,
                                     identification BIGINT,
@@ -130,7 +133,7 @@ class Xythrion(comms.Bot):
 
         """
         self.login_time = datetime.datetime.now()
-        cs.w('Loading extensions...')
+        # cs.w('Loading extensions...')
         for extension in get_extensions():
             try:
                 self.load_extension(extension)
@@ -138,7 +141,7 @@ class Xythrion(comms.Bot):
                 traceback.print_exception(type(e), e, e.__traceback__,
                                           file=sys.stderr)
         await self.change_presence(status=discord.ActivityType.playing,
-                                   activity=discord.Game('with user data'))
+                                   activity=discord.Game('with data'))
         cs.r('Startup completed.')
 
     async def close(self):
@@ -154,16 +157,12 @@ class Xythrion(comms.Bot):
             Nothing since they're all passed.
 
         """
-        async with self.pool.acquire() as conn:
-            conn.execute('''INSERT INTO Runtime
-                         (login, logout) VALUES($1, $2)''',
-                         self.login_time,
-                         datetime.datetime.now())
         try:
-            await self.s.close()
             await self.pool.close()
-        except Exception:
-            pass
+            await self.s.close()
+        except Exception as e:
+            traceback.print_exception(type(e), e, e.__traceback__,
+                                    file=sys.stderr)
         await super().close()
 
 
@@ -213,6 +212,13 @@ class Main_Cog(comms.Cog):
             A possible timeout error.
 
         """
+        logout_time = datetime.datetime.now()
+        async with self.bot.pool.acquire() as conn:
+            await conn.execute('''INSERT INTO Runtime
+                               (login, logout, uptime) VALUES($1, $2, $3)''',
+                               self.bot.login_time,
+                               logout_time,
+                               logout_time - self.bot.login_time)
         cs.w('Logging out...')
         await ctx.bot.logout()
 
