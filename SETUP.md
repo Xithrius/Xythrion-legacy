@@ -1,3 +1,23 @@
+## Setup:
+
+### Create virtual environment:
+|  Operating system  |  Command  |
+| ------------- | ------------- |
+|  Windows  |  .  |
+|  Linux/Mac  |  .  |
+
+### Items that require configuration:
+
+|  Item  |  Link to instructions  |
+| ------------- | ------------- |
+| Python  |  .  |
+| Config file  |  .  |
+| Discord  |  .  |
+| Weather  |  .  |
+| TTS  |  .  |
+
+
+
 # Python
 1. Check your Python install:
 |  Operating system  |  Command  |
