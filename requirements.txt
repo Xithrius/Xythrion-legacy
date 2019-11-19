@@ -4,5 +4,4 @@ asyncpg
 aiohttp
 bs4
 google-cloud-texttospeech
-youtube_dl
 numpy
