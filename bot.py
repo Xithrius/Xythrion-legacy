@@ -108,9 +108,8 @@ class Xythrion(comms.Bot):
         async with self.pool.acquire() as conn:
             await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
                                     id serial PRIMARY KEY,
-                                    login TIMESTAMP,
-                                    logout TIMESTAMP,
-                                    uptime INTERVAL)''')
+                                    login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                                    logout TIMESTAMP WITHOUT TIME ZONE NOT NULL)''')
             await conn.execute('''CREATE TABLE IF NOT EXISTS Messages(
                                     id serial PRIMARY KEY,
                                     identification BIGINT,
@@ -214,11 +213,9 @@ class Main_Cog(comms.Cog):
         """
         logout_time = datetime.datetime.now()
         async with self.bot.pool.acquire() as conn:
-            await conn.execute('''INSERT INTO Runtime
-                               (login, logout, uptime) VALUES($1, $2, $3)''',
-                               self.bot.login_time,
-                               logout_time,
-                               logout_time - self.bot.login_time)
+            await conn.execute('''INSERT INTO Runtime(
+                login, logout) VALUES($1, $2)''',
+                self.bot.login_time, logout_time)
         cs.w('Logging out...')
         await ctx.bot.logout()
 
