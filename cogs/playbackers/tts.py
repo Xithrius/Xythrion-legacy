@@ -41,7 +41,7 @@ class TTS_Playbacker(comms.Cog):
 
     """ Commands """
 
-    @comms.command()
+    @comms.command(enabled=False)
     @comms.is_owner()
     async def tts(self, ctx, *, message: str):
         """ Text to speech through the bot's mic """
