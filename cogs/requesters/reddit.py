@@ -42,10 +42,11 @@ class Reddit_Requester(comms.Cog):
 
         """
         statuses = ['hot', 'new', 'controversial', 'top', 'rising']
-        
+
         if status.lower() not in statuses:
+            stat_err = ", ".join(str(y) for y in statuses)
             raise ValueError(
-                f'Set status is not in options of {", ".join(str(y) for y in statuses)}.')
+                f'Set status is not in options of {stat_err}.')
             return
 
         if status.lower() in ['hot', 'new', 'rising']:
@@ -53,8 +54,9 @@ class Reddit_Requester(comms.Cog):
         else:
             intervals = ['hour', 'day', 'week', 'month', 'year', 'all']
             if interval.lower() not in intervals:
+                interval_err = ", ".join(str(y) for y in intervals)
                 raise ValueError(
-                    f'Set interval is not in options of {", ".join(str(y) for y in intervals)}')
+                    f'Set interval is not in options of {interval_err}')
                 return
 
         if ['r/', '/r/'] in subreddit:
@@ -67,16 +69,16 @@ class Reddit_Requester(comms.Cog):
 
         async with self.bot.session.get(url) as r:
             assert r.status == 200
-            I = await r.json()
-            I = I['data']['children'][random.randint(0, 25)]['data']
+            i = await r.json()
+            i = i['data']['children'][random.randint(0, 25)]['data']
 
         desc = {
-            'Author': I['author'],
-            'Upvotes': I['ups']
+            'Author': i['author'],
+            'Upvotes': i['ups']
         }
 
-        e = embed(I['title'], desc, {'url': I['permalink']})
-        await ctx.send(content=I['url'], embed=e)
+        e = embed(i['title'], desc, {'url': i['permalink']})
+        await ctx.send(content=i['url'], embed=e)
 
         # https://www.reddit.com/r/hentai/comments/dvr5vh/dva/
         # https://www.reddit.com/r/cosplaygirls/top/?t=week
@@ -95,7 +97,6 @@ class Reddit_Requester(comms.Cog):
 
         """
         pass
-
 
 
 def setup(bot):

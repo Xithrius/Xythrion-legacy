@@ -22,7 +22,7 @@ class Messages_Recorder(comms.Cog):
     """ Commands """
 
     @comms.command()
-    async def rank(self, ctx, user: discord.User=False):
+    async def rank(self, ctx, user: discord.User = False):
         """
 
         """

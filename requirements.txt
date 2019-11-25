@@ -1,7 +1,6 @@
 discord.py[voice]
 datetime
 asyncpg
-aiohttp
 bs4
 google-cloud-texttospeech
 numpy

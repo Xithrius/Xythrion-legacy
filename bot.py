@@ -33,8 +33,7 @@ import sys
 from discord.ext import commands as comms
 import discord
 
-from modules.output import path, cs, get_extensions, now
-from modules.shortcuts import partial_function
+from modules.output import path, cs, get_extensions
 
 
 logger = logging.getLogger('discord')
@@ -109,7 +108,8 @@ class Xythrion(comms.Bot):
             await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
                                     id serial PRIMARY KEY,
                                     login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                                    logout TIMESTAMP WITHOUT TIME ZONE NOT NULL)''')
+                                    logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
+                                    )''')
             await conn.execute('''CREATE TABLE IF NOT EXISTS Messages(
                                     id serial PRIMARY KEY,
                                     identification BIGINT,
@@ -150,7 +150,7 @@ class Xythrion(comms.Bot):
             None
 
         Raises:
-            None, since everything is passed.
+            Some error items cannot be closed properly.
 
         Returns:
             Nothing since they're all passed.
@@ -161,7 +161,7 @@ class Xythrion(comms.Bot):
             await self.s.close()
         except Exception as e:
             traceback.print_exception(type(e), e, e.__traceback__,
-                                    file=sys.stderr)
+                                      file=sys.stderr)
         await super().close()
 
 
@@ -214,8 +214,8 @@ class Main_Cog(comms.Cog):
         logout_time = datetime.datetime.now()
         async with self.bot.pool.acquire() as conn:
             await conn.execute('''INSERT INTO Runtime(
-                login, logout) VALUES($1, $2)''',
-                self.bot.login_time, logout_time)
+                               login, logout) VALUES($1, $2)''',
+                               self.bot.login_time, logout_time)
         cs.w('Logging out...')
         await ctx.bot.logout()
 

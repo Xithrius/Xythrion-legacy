@@ -66,8 +66,10 @@ class Misc_Director(comms.Cog):
                 '''SELECT avg(logout - login) avg_uptime,
                           max(logout - login) max_uptime FROM Runtime''')
 
-        avg = str((datetime.datetime.min + t[0]['avg_uptime']).time()).split(':')
-        _max = str((datetime.datetime.min + t[0]['max_uptime']).time()).split(':')
+        avg = str((
+            datetime.datetime.min + t[0]['avg_uptime']).time()).split(':')
+        _max = str((
+            datetime.datetime.min + t[0]['max_uptime']).time()).split(':')
 
         timestamps = ['Hours', 'Minutes', 'Seconds']
         avg_str = ', '.join(
@@ -76,7 +78,7 @@ class Misc_Director(comms.Cog):
         max_str = ', '.join(
             f'{int(float(_max[i]))} {timestamps[i]}' for i in range(len(
                 timestamps)) if float(_max[i]) != 0.0)
-        
+
         login_time = self.bot.login_time.strftime(
             '%A %I:%M:%S%p'
             ).lower().capitalize().replace(" ", " at ")
@@ -89,7 +91,7 @@ class Misc_Director(comms.Cog):
         e = embed(title='Bot runtime information',
                   desc=desc)
         await ctx.send(embed=e)
-        
+
 
 def setup(bot):
     bot.add_cog(Misc_Director(bot))
