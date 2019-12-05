@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 """
 >> Xythrion
 > Copyright (c) 2019 Xithrius
