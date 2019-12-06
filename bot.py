@@ -15,10 +15,9 @@ Running the bot:
         $ py -3 bot.py
 
 Todo:
-    * Redo items here to make everything clean and simple (flake8 standards)
     * Make bot available for everyone
-    * https://github.com/3b1b/manim for graphs
-    * Request pool
+    * https://github.com/3b1b/manim for animations
+    * Image stuff
 """
 
 
