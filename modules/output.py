@@ -100,12 +100,8 @@ def get_extensions():
         A list of strings with filepaths joined by a '.'
 
     """
-    folders = [folder for folder in os.listdir(path('cogs')) if folder != '__pycache__']
-    exts = []
-    for folder in folders:
-        folder_cogs = [f'cogs.{folder}.{cog[:-3]}' for cog in os.listdir(path('cogs', folder)) if os.path.isfile(path('cogs', folder, cog))]
-        exts.extend(folder_cogs)
-    return exts
+    return [f'cogs.{item[:-3]}' for item in os.listdir(path('cogs')) if item[-3:] == '.py']
+    
 
 
 def get_filename(id, e=''):
