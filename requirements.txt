@@ -1,6 +1,0 @@
-discord.py[voice]
-datetime
-asyncpg
-bs4
-google-cloud-texttospeech
-numpy

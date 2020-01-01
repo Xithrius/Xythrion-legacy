@@ -110,6 +110,3 @@ config/*.json
 # Visual Studio Code
 /.vscode
 *.code-workspace
-
-# Pycharm
-/.idea

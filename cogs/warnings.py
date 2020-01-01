@@ -1,6 +1,6 @@
 """
->> Xythrion
-> Copyright (c) 2019 Xithrius
+> Xythrion
+> Copyright (c) 2020 Xithrius
 > MIT license, Refer to LICENSE for more info
 """
 
@@ -14,37 +14,19 @@ from modules.output import cs
 
 
 class Warnings_Director(comms.Cog):
-    """ """
 
     def __init__(self, bot):
-
-        #: Setting Xythrion(comms.Bot) as a class attribute
         self.bot = bot
 
     """ Checks """
 
     async def cog_check(self, ctx):
-        """Checks if the command caller is an owner.
-
-        Returns:
-            True or false, depending on if the user is an owner.
-
-        """
         return await self.bot.is_owner(ctx.author)
 
     """ Events """
 
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
-        """Catches errors caused by users
-
-        Returns:
-            An error message only if the error is caused by a user.
-
-        Raises:
-            A traceback message if there's an internal error.
-
-        """
         if hasattr(ctx.command, 'on_error'):
             return
 

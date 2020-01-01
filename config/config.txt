@@ -1,9 +1,0 @@
-{
-    "discord": "",
-    "db": {
-        "user": "postgres",
-        "password": "",
-        "database": "postgres",
-        "host": "localhost"
-    }
-}
