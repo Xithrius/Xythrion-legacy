@@ -9,7 +9,7 @@ from discord.ext import commands as comms
 import discord
 
 
-class Info_Director(comms.Cog):
+class Info(comms.Cog):
     """Cog is meant to give information about owner and bot interactions."""
 
     def __init__(self, bot):
@@ -51,4 +51,4 @@ class Info_Director(comms.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Info_Director(bot))
+    bot.add_cog(Info(bot))

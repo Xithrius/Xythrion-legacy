@@ -13,7 +13,7 @@ from discord.ext import commands as comms
 from modules.output import cs
 
 
-class Warnings_Director(comms.Cog):
+class Warnings(comms.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -56,4 +56,4 @@ class Warnings_Director(comms.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Warnings_Director(bot))
+    bot.add_cog(Warnings(bot))

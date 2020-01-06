@@ -104,7 +104,7 @@ venv.bak/
 .mypy_cache/
 
 # Sensitive folders/files
-config/*.json
+*.json
 /tmp/*
 
 # Visual Studio Code
