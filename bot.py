@@ -36,10 +36,11 @@ Todo:
 
 
 import json
+import os
 
 from discord.ext import commands as comms
 
-from modules.output import path
+from modules.output import path, sp, get_extensions
 
 
 class Xythrion(comms.Bot):
@@ -47,13 +48,21 @@ class Xythrion(comms.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        with open(path('config', 'config.json'), ) as f:
-            self.token = json.load(f)['discord']
+        try:
+            with open(path('config', 'config.json')) as f:
+                self.token = json.load(f)['discord']
+        except FileNotFoundError:
+
 
         self.add_cog(Main_Cog(self))
 
     async def on_ready(self):
-        pass
+        cogs = [cog for cog in ]
+        for cog in cogs:
+            try:
+                self.load_extension(cog)
+            except Exception as e:
+                print(f'Something happened!\n{e}')
 
     async def close(self):
         await super().close()
@@ -66,6 +75,10 @@ class Main_Cog(comms.Cog):
 
     async def cog_check(self, ctx):
         return await self.bot.is_owner(ctx.author)
+
+    @comms.command()
+    async def reload(self, ctx):
+        await 
 
     @comms.command()
     async def exit(self, ctx):
