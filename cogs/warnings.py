@@ -10,18 +10,13 @@ import traceback
 
 from discord.ext import commands as comms
 
-from modules.output import cs
+from modules.output import sp
 
 
 class Warnings(comms.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-
-    """ Checks """
-
-    async def cog_check(self, ctx):
-        return await self.bot.is_owner(ctx.author)
 
     """ Events """
 
@@ -33,20 +28,16 @@ class Warnings(comms.Cog):
         error = getattr(error, 'original', error)
 
         if isinstance(error, comms.DisabledCommand):
-            return await ctx.send(
-                cs.css(f'Command {ctx.command} not available.'))
+            return await ctx.send(f'`Command {ctx.command} not available.`')
 
         elif isinstance(error, comms.CommandNotFound):
-            return await ctx.send(
-                cs.css(f'Command {ctx.command} not found.'))
+            return await ctx.send(f'`Command {ctx.command} not found.`')
 
         elif isinstance(error, comms.UserInputError):
-            return await ctx.send(
-                cs.css(f'Command {ctx.command} raised bad argument: {error}'))
+            return await ctx.send(f'`Command {ctx.command} raised bad argument: {error}`')
 
         elif isinstance(error, comms.NotOwner):
-            return await ctx.send(
-                cs.css('You do not have enough permissions for this command.'))
+            return await ctx.send('`You do not have enough permissions for this command.`')
 
         else:
             print(f'Ignoring exception in command {ctx.command}:',

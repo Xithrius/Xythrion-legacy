@@ -8,6 +8,7 @@
 import sys
 import os
 import datetime
+import random
 
 
 def path(*filepath) -> str:
@@ -32,11 +33,16 @@ class sp:
         """
         rn = datetime.datetime.now()
         s = [
-            f"[{rn.strftime('%A %I:%M:%S')}{rn.strftime('%p').lower()}]",
-            f'[ {warning} ]:',
+            f"[{rn.strftime('%A %I:%M:%S')}{rn.strftime('%p').lower()}]{':' if not warning else ''}",
+            f'[ {warning} ]:' if warning else False,
             f'{string} '
         ]
-        return ' '.join(str(y) for y in s)
+        return ' '.join(str(y) for y in s if y)
+
+    @classmethod
+    def c(cls, *string):
+        "Returns a custom warning with a string,"
+        print(cls.insert_items(False, ' '.join(string)))
 
     @classmethod
     def w(cls, *string):
@@ -60,5 +66,8 @@ class sp:
 
 
 def get_extensions() -> list:
-    return [f'cogs.{i}' for i in os.listdir(path('cogs')) if i[-3:] == '.py']
+    return [f'cogs.{i[:-3]}' for i in os.listdir(path('cogs')) if i[-3:] == '.py']
 
+
+def file_name() -> int:
+    return int(datetime.datetime.timestamp(datetime.datetime.now()))

@@ -5,6 +5,8 @@
 """
 
 
+import datetime
+
 from discord.ext import commands as comms
 import discord
 
@@ -13,8 +15,6 @@ class Info(comms.Cog):
     """Cog is meant to give information about owner and bot interactions."""
 
     def __init__(self, bot):
-
-        #: Setting Robot(comms.Bot) as a class attribute
         self.bot = bot
 
     @comms.command()
@@ -25,28 +25,26 @@ class Info(comms.Cog):
             The invite link so the bot can be invited to a server.
 
         """
-        info = [
-            'https://discordapp.com/oauth2/authorize?client_id=',
-            self.bot.user.id,
-            '&scope=bot&permissions=32885952'
-        ]
-        await ctx.send(''.join(str(y) for y in info))
+        url = f'https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=32885952'
+        embed = discord.Embed(description=f'[`Xythrion invite url`]({url})')
+        await ctx.send(embed=embed)
 
     @comms.command()
-    async def about(self, ctx):
+    async def info(self, ctx):
         """Returns information about this bot's origin
 
         Returns:
             An embed object with links to creator's information.
 
         """
+        d = abs(datetime.datetime(year=2019, month=3, day=13) - datetime.datetime.now()).days
         info = {
-            'Twitter': 'https://twitter.com/_Xithrius',
-            'Github': 'https://github.com/Xithrius/Xythrion'
+            f'Project created {d} days ago, on March 13, 2019': 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e',
+            'Xythrion Github repository': 'https://github.com/Xithrius/Xythrion',
+            "Xithrius' Twitter": 'https://twitter.com/_Xithrius',
+            "Xithrius' Github": 'https://github.com/Xithrius'
         }
-        embed = discord.Embed(title='Project creation date: March 30, 2019',
-                              description='\n'.join(
-                                  f'[`{k}`]({v})' for k, v in info.items()))
+        embed = discord.Embed(description='\n'.join(f'[`{k}`]({v})' for k, v in info.items()))
         await ctx.send(embed=embed)
 
 
