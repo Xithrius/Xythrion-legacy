@@ -25,7 +25,7 @@ class Info(comms.Cog):
             The invite link so the bot can be invited to a server.
 
         """
-        url = f'https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=32885952'
+        url = f'https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=969920'
         embed = discord.Embed(description=f'[`Xythrion invite url`]({url})')
         await ctx.send(embed=embed)
 

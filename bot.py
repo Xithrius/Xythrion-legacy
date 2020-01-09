@@ -89,9 +89,6 @@ class Xythrion(comms.Bot):
         await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with graphs'))
         status.r('Awaiting...')
 
-    #async def close(self):
-    #    await super().close()
-
 
 class Main_Cog(comms.Cog):
 
@@ -131,8 +128,10 @@ if __name__ == "__main__":
     # Creating the bot object
     bot = Xythrion(command_prefix=comms.when_mentioned_or(';'),
                    case_insensitive=True)
+    # Checking important attribute before running
+    # assert hasattr(bot, 'token'), 'Token '
+
     # Running the bot
-    # bot has attribute thingy
     bot.run(bot.token, bot=True, reconnect=True)
 
     # Cleaning up the tmp directory
