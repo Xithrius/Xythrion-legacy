@@ -8,10 +8,13 @@
 import functools
 import re
 
-from discord.ext import commands as comms
 import discord
+import matplotlib.pyplot as plt
+import sympy as sp
+from discord.ext import commands as comms
+from PIL import Image
 
-from modules.output import path, file_name
+from modules.output import file_name, path
 
 
 class Graphing(comms.Cog):
@@ -19,21 +22,21 @@ class Graphing(comms.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        
+        sp.init_printing()
 
     """ Cog-specific functions """
 
-    def create_latex_polynomial():
+    def create_polynomial_info(self) -> str:
         pass
 
     """ Commands """
 
     @comms.command()
     async def graph(self, ctx, *, eq: str):
-        pass
+        func = functools.partial(self.create_polynomial_info)
+        image_path = await self.bot.loop.run_in_executor(None, func)
 
-        # func = functools.partial(parse_polynomial, one, two, three=3)
-        # some_stuff = await bot.loop.run_in_executor(None, thing)
-        # from PIL import Image
 
         # im = Image.open('dead_parrot.jpg') # Can be many different formats.
         # pix = im.load()

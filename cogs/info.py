@@ -7,8 +7,8 @@
 
 import datetime
 
-from discord.ext import commands as comms
 import discord
+from discord.ext import commands as comms
 
 
 class Info(comms.Cog):
@@ -45,6 +45,16 @@ class Info(comms.Cog):
             "Xithrius' Github": 'https://github.com/Xithrius'
         }
         embed = discord.Embed(description='\n'.join(f'[`{k}`]({v})' for k, v in info.items()))
+        await ctx.send(embed=embed)
+
+    @comms.command(aliases=['runtime'])
+    async def uptime(self, ctx):
+        d = abs(self.bot.startup_time - datetime.datetime.now())
+        info = {
+            'Date of startup:': self.bot.startup_time,
+            'Time since startup': d
+        }
+        embed = discord.Embed(description=f'Up since `{self.bot.startup_time}` (`{d}`)')
         await ctx.send(embed=embed)
 
 

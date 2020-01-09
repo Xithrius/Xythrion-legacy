@@ -21,17 +21,18 @@ Running the bot (python 3.8+):
 """
 
 
-import json
-import os
-import traceback
-import logging
-import sys
 import asyncio
+import datetime
+import json
+import logging
+import os
+import sys
+import traceback
 
-from discord.ext import commands as comms
 import discord
+from discord.ext import commands as comms
 
-from modules.output import path, sp, get_extensions
+from modules.output import get_extensions, path, status
 
 
 def _logger():
@@ -58,7 +59,7 @@ class Xythrion(comms.Bot):
             with open(path('config.json')) as f:
                 self.token = json.load(f)['discord']
         except (FileNotFoundError, IndexError):
-            sp.f('Config could not be found or read properly.')
+            status.f('Config could not be found or read properly.')
 
         # Create asyncio loop
         self.loop = asyncio.get_event_loop()
@@ -84,8 +85,9 @@ class Xythrion(comms.Bot):
         self.loop.run_until_complete(future)
 
     async def on_ready(self):
+        self.startup_time = datetime.datetime.now()
         await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with graphs'))
-        sp.r('Awaiting...')
+        status.r('Awaiting...')
 
     #async def close(self):
     #    await super().close()
@@ -108,13 +110,13 @@ class Main_Cog(comms.Cog):
             except discord.ext.commands.ExtensionNotLoaded:
                 self.bot.load_extension(cog)
             except Exception as e:
-                sp.f(f'Loading {cog} error:')
+                status.f(f'Loading {cog} error:')
                 traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
         await ctx.send('Reloaded extensions.', delete_after=5)
 
     @comms.command(aliases=['logout'])
     async def exit(self, ctx):
-        sp.c('Logging out...')
+        status.c('Logging out...')
         await ctx.bot.logout()
 
 
@@ -130,6 +132,7 @@ if __name__ == "__main__":
     bot = Xythrion(command_prefix=comms.when_mentioned_or(';'),
                    case_insensitive=True)
     # Running the bot
+    # bot has attribute thingy
     bot.run(bot.token, bot=True, reconnect=True)
 
     # Cleaning up the tmp directory

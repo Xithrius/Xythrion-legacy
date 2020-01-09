@@ -10,7 +10,7 @@ import traceback
 
 from discord.ext import commands as comms
 
-from modules.output import sp
+from modules.output import status
 
 
 class Warnings(comms.Cog):

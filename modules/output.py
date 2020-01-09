@@ -19,7 +19,7 @@ def path(*filepath) -> str:
     return (os.sep).join(str(s) for s in lst)
 
 
-class sp:
+class status:
     """Status Print outputs date, status, and maybe a custom string."""
 
     @classmethod
