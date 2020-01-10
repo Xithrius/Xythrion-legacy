@@ -29,6 +29,12 @@ class Graphing(comms.Cog):
 
         sp.init_printing()
 
+        self.equations = {
+            'sin' = np.sin,
+            'cos' = np.cos,
+            'tan' = np.tan
+        }
+
     """ Checks """
 
     async def cog_check(self, ctx):
@@ -36,11 +42,15 @@ class Graphing(comms.Cog):
 
     """ Cog-specific functions """
 
-    def create_image(self, eq) -> str:
+    def create_image(self, eq, r=[int]) -> str:
         for i, e in enumerate(eq, 1):
             if len(eq) > 1:
                 plt.subplot(2, 1, i)
-            plt.plot(np.sin(np.linspace(0, 2 * np.pi)), markevery=1)
+
+            # plt.plot(np.sin(np.linspace(0, 2 * np.pi)), markevery=1)
+            arr = np.linspace(0, 5) # get this to work
+            plt.plot(((arr ** 2) + arr))
+
             plt.xticks(rotation='vertical')
             plt.grid()
             plt.xlabel('x')
