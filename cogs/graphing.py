@@ -6,15 +6,19 @@
 
 
 import functools
-import re
+import os
+# import re
 
 import discord
 import matplotlib.pyplot as plt
+import numpy as np
 import sympy as sp
 from discord.ext import commands as comms
-from PIL import Image
+# from PIL import Image
 
 from modules.output import file_name, path
+
+plt.style.use('fast')
 
 
 class Graphing(comms.Cog):
@@ -22,21 +26,42 @@ class Graphing(comms.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        
+
         sp.init_printing()
+
+    """ Checks """
+
+    async def cog_check(self, ctx):
+        return await self.bot.is_owner(ctx.author)
 
     """ Cog-specific functions """
 
-    def create_polynomial_info(self) -> str:
-        pass
+    def create_image(self, eq) -> str:
+        for i, e in enumerate(eq, 1):
+            if len(eq) > 1:
+                plt.subplot(2, 1, i)
+            plt.plot(np.sin(np.linspace(0, 2 * np.pi)), markevery=1)
+            plt.xticks(rotation='vertical')
+            plt.grid()
+            plt.xlabel('x')
+            plt.ylabel('y', rotation='horizontal')
+            plt.title(e)
+            plt.gcf().autofmt_xdate()
+
+        p = path('tmp', f'{file_name()}.png')
+        plt.savefig(p)
+        plt.clf()
+
+        return p
 
     """ Commands """
 
     @comms.command()
     async def graph(self, ctx, *, eq: str):
-        func = functools.partial(self.create_polynomial_info)
-        image_path = await self.bot.loop.run_in_executor(None, func)
-
+        func = functools.partial(self.create_image, eq.split())
+        p = await self.bot.loop.run_in_executor(None, func)
+        await ctx.send(file=discord.File(p))
+        os.remove(p)
 
         # im = Image.open('dead_parrot.jpg') # Can be many different formats.
         # pix = im.load()

@@ -64,20 +64,12 @@ class Xythrion(comms.Bot):
         # Create asyncio loop
         self.loop = asyncio.get_event_loop()
 
-        # Creating objects before loading cogs
-        self.create_items()
         # self.create_courtines()
 
         self.add_cog(Main_Cog(self))
 
         for cog in get_extensions():
             self.load_extension(cog)
-
-    def create_items(self):
-        try:
-            os.mkdir(path('tmp'))
-        except FileExistsError:
-            pass
 
     def create_courtines(self):
         future = asyncio.gather()

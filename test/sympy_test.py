@@ -1,8 +1,6 @@
 import sympy as sp
 sp.init_printing()
 
-from modules.output import path
-
 """
 x, y, z = sympy.symbols('xyz')
 p = sympy.Plot(x * y ** 3 - y * x ** 3)
