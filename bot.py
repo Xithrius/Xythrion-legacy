@@ -38,15 +38,18 @@ from modules.output import get_extensions, path, status
 def _logger():
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
+    if not os.path.isdir(path(f'tmp{os.sep}')):
+        os.mkdir(path('tmp'))
     handler = logging.FileHandler(filename=path('tmp', 'discord.log'), encoding='utf-8', mode='w')
-    handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+    handler.setFormatter(logging.Formatter('%(asctime)s  :  %(levelname)s  :  %(name)s  :  %(message)s'))
     logger.addHandler(handler)
 
 
-def cleanup():
-    for item in os.listdir(path('tmp')):
-        if item[-4:] != '.log':
-            os.remove(path('tmp', item))
+def _cleanup():
+    if os.path.isdir(path('tmp')):
+        for item in os.listdir(path('tmp')):
+            if item[-4:] != '.log':
+                os.remove(path('tmp', item))
 
 
 class Xythrion(comms.Bot):
@@ -105,7 +108,7 @@ class Main_Cog(comms.Cog):
 
     @comms.command(aliases=['logout'])
     async def exit(self, ctx):
-        status.c('Logging out...')
+        status.w('Logging out...')
         await ctx.bot.logout()
 
 
@@ -127,4 +130,4 @@ if __name__ == "__main__":
     bot.run(bot.token, bot=True, reconnect=True)
 
     # Cleaning up the tmp directory
-    cleanup()
+    _cleanup()

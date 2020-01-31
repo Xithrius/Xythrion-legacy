@@ -1,5 +1,5 @@
 matplotlib
-sympy
 pillow
 datetime
+aiohttp
 discord.py

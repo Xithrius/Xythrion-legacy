@@ -40,10 +40,8 @@ class Warnings(comms.Cog):
             return await ctx.send('`You do not have enough permissions for this command.`')
 
         else:
-            print(f'Ignoring exception in command {ctx.command}:',
-                  file=sys.stderr)
-            traceback.print_exception(
-                type(error), error, error.__traceback__, file=sys.stderr)
+            print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 
 def setup(bot):
