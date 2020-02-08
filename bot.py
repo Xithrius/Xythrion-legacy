@@ -31,8 +31,10 @@ import traceback
 
 import discord
 from discord.ext import commands as comms
+from hyper_status.status import Status
 
-from modules.output import get_extensions, path, status
+from modules.output import get_extensions, path
+
 
 
 def _logger():
@@ -62,7 +64,7 @@ class Xythrion(comms.Bot):
             with open(path('config.json')) as f:
                 self.token = json.load(f)['discord']
         except (FileNotFoundError, IndexError):
-            status.f('Config could not be found or read properly.')
+            Status('Config could not be found or read properly.', 'fail')
 
         # Create asyncio loop
         self.loop = asyncio.get_event_loop()
@@ -82,7 +84,7 @@ class Xythrion(comms.Bot):
     async def on_ready(self):
         self.startup_time = datetime.datetime.now()
         await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with graphs'))
-        status.r('Awaiting...')
+        Status('Awaiting...', 'ok')
 
 
 class Main_Cog(comms.Cog):
@@ -102,13 +104,13 @@ class Main_Cog(comms.Cog):
             except discord.ext.commands.ExtensionNotLoaded:
                 self.bot.load_extension(cog)
             except Exception as e:
-                status.f(f'Loading {cog} error:')
+                Status(f'Loading {cog} error:', 'fail')
                 traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
         await ctx.send('Reloaded extensions.', delete_after=5)
 
     @comms.command(aliases=['logout'])
     async def exit(self, ctx):
-        status.w('Logging out...')
+        Status('Logging out...', 'warn')
         await ctx.bot.logout()
 
 

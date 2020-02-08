@@ -10,15 +10,11 @@ import traceback
 
 from discord.ext import commands as comms
 
-from modules.output import status
-
 
 class Warnings(comms.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-
-    """ Events """
 
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
