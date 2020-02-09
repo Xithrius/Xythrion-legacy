@@ -28,6 +28,7 @@ import logging
 import os
 import sys
 import traceback
+import aiohttp
 
 import discord
 from discord.ext import commands as comms
@@ -61,25 +62,25 @@ class Xythrion(comms.Bot):
 
         # Open config
         try:
-            with open(path('config.json')) as f:
+            with open(path('config', 'config.json')) as f:
                 self.token = json.load(f)['discord']
         except (FileNotFoundError, IndexError):
             Status('Config could not be found or read properly.', 'fail')
 
         # Create asyncio loop
         self.loop = asyncio.get_event_loop()
-
-        # self.create_courtines()
+        self.loop.run_until_complete(self.create_sessions())
 
         self.add_cog(Main_Cog(self))
 
         for cog in get_extensions():
             self.load_extension(cog)
 
-    def create_courtines(self):
-        future = asyncio.gather()
-        # self.loop.create_task(func)
-        self.loop.run_until_complete(future)
+    async def create_sessions(self):
+        self.session = aiohttp.ClientSession()
+
+    async def close_ClientSession(self):
+        await self.session.close()
 
     async def on_ready(self):
         self.startup_time = datetime.datetime.now()
@@ -110,6 +111,7 @@ class Main_Cog(comms.Cog):
 
     @comms.command(aliases=['logout'])
     async def exit(self, ctx):
+        self.bot.loop.run_until_complete(self.bot.close_ClientSession())
         Status('Logging out...', 'warn')
         await ctx.bot.logout()
 

@@ -1,5 +1,2 @@
-matplotlib
-pillow
 datetime
-aiohttp
 discord.py
