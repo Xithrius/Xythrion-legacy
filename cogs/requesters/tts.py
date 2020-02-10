@@ -13,7 +13,7 @@ from discord.ext.commands.cooldowns import BucketType
 import discord
 from google.cloud import texttospeech
 
-from modules.output import path
+from modules import path
 
 
 class TTS(comms.Cog):
@@ -21,7 +21,6 @@ class TTS(comms.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('config', 'gsc.json')
 
     async def cog_check(self, ctx):
         return await self.bot.is_owner(ctx.author)

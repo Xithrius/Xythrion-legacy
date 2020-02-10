@@ -34,7 +34,7 @@ import discord
 from discord.ext import commands as comms
 from hyper_status import Status
 
-from modules.output import get_extensions, path
+from modules import get_extensions, path
 
 
 
@@ -73,7 +73,15 @@ class Xythrion(comms.Bot):
 
         self.add_cog(Main_Cog(self))
 
-        for cog in get_extensions():
+        __cogs = get_extensions()
+
+        try:
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('config', 'gsc.json')
+        except FileNotFoundError:
+            Status('Google Service Token .json file could not be found or opened. TTS is disabled.', 'fail')
+            __cogs.remove('cogs.requesters.tts')
+
+        for cog in __cogs:
             self.load_extension(cog)
 
     async def create_sessions(self):
