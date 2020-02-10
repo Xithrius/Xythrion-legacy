@@ -1,2 +1,4 @@
 datetime
 discord.py
+hyper_status
+google-cloud-texttospeech

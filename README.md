@@ -2,7 +2,7 @@
     <img src="/images/icon.png"/>
 </p>
 
-<h1 align="center">Xythrion v1.1</h1>
+<h1 align="center">Xythrion v2.0</h1>
 
 <h3 align="center">Graphing information from APIs</h3>
 

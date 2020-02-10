@@ -32,7 +32,7 @@ import aiohttp
 
 import discord
 from discord.ext import commands as comms
-from hyper_status.status import Status
+from hyper_status import Status
 
 from modules.output import get_extensions, path
 

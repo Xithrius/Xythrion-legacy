@@ -39,11 +39,11 @@ class TTS(comms.Cog):
     @comms.cooldown(60, 60, BucketType.default)
     async def tts(self, ctx, *, message: str):
         vc = ctx.guild.voice_client
-        if vc.is_playing():
+        if vc and vc.is_playing():
             await ctx.send('Cannot play anything since some audio is currently running.', delete_after=10)
-        await self.bot.loop.run_in_executor(None, self.tts_creation)
         if not vc:
             vc = await ctx.author.voice.channel.connect()
+        await self.bot.loop.run_in_executor(None, self.tts_creation)
         vc.play(discord.FFmpegPCMAudio(source=path('tmp', 'tts.mp3'), options='-loglevel fatal'))
         vc.source = discord.PCMVolumeTransformer(vc.source)
         vc.source.volume = 1

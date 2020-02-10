@@ -39,7 +39,7 @@ class Reddit(comms.Cog):
             assert r.status == 200
             js = await r.json()
 
-    @reddit.command(aliases=['user'])
+    @reddit.command(aliases=['user'], enabled=False)
     async def u(self, ctx, *, user: str):
         pass
 
