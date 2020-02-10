@@ -43,7 +43,7 @@ def get_extensions() -> list:
     return c
 
 
-def file_name() -> str:
+def filename() -> str:
     """Generates a filename.
     
     Returns:
