@@ -7,6 +7,7 @@
 
 import os
 import asyncio
+import functools
 
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
@@ -25,9 +26,9 @@ class TTS(comms.Cog):
     async def cog_check(self, ctx):
         return await self.bot.is_owner(ctx.author)
 
-    def tts_creation(self):
+    def tts_creation(self, message):
         client = texttospeech.TextToSpeechClient()
-        synthesis_input = texttospeech.types.SynthesisInput(text=(ctx.message.content)[5:])
+        synthesis_input = texttospeech.types.SynthesisInput(text=message)
         voice = texttospeech.types.VoiceSelectionParams(language_code='en-US-Wavenet-D', ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
         audio_config = texttospeech.types.AudioConfig(audio_encoding=texttospeech.enums.AudioEncoding.MP3)
         response = client.synthesize_speech(synthesis_input, voice, audio_config)
@@ -42,10 +43,15 @@ class TTS(comms.Cog):
             await ctx.send('Cannot play anything since some audio is currently running.', delete_after=10)
         if not vc:
             vc = await ctx.author.voice.channel.connect()
-        await self.bot.loop.run_in_executor(None, self.tts_creation)
+
+        func = functools.partial(self.tts_creation, message)
+
+        await self.bot.loop.run_in_executor(None, func)
+
         vc.play(discord.FFmpegPCMAudio(source=path('tmp', 'tts.mp3'), options='-loglevel fatal'))
         vc.source = discord.PCMVolumeTransformer(vc.source)
         vc.source.volume = 1
+
         while vc.is_playing():
             await asyncio.sleep(1)
         vc.stop()

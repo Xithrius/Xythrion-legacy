@@ -87,13 +87,14 @@ class Xythrion(comms.Bot):
     async def create_sessions(self):
         self.session = aiohttp.ClientSession()
 
-    async def close_ClientSession(self):
-        await self.session.close()
-
     async def on_ready(self):
         self.startup_time = datetime.datetime.now()
         await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with graphs'))
         Status('Awaiting...', 'ok')
+
+    async def logout(self):
+        await self.session.close()
+        return await super().logout()
 
 
 class Main_Cog(comms.Cog):
@@ -119,7 +120,6 @@ class Main_Cog(comms.Cog):
 
     @comms.command(aliases=['logout'])
     async def exit(self, ctx):
-        self.bot.loop.run_until_complete(self.bot.close_ClientSession())
         Status('Logging out...', 'warn')
         await ctx.bot.logout()
 

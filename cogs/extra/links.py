@@ -17,6 +17,13 @@ class Links(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @comms.command(aliases=['lemme_google'])
+    async def lmgtfy(self, ctx, *, search_term: str):
+        search = search_term.replace(' ', '+')
+        url = f'https://lmgtfy.com/?q={search}&iie=1'
+        embed = discord.Embed(description=f'[`{search_term}`]({url})')
+        await ctx.send(embed=embed)
+
     @comms.command()
     async def doom(self, ctx):
         """Gives the best song for doom, at the perfect time
