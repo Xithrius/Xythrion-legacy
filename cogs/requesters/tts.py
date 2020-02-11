@@ -35,8 +35,8 @@ class TTS(comms.Cog):
         with open(path('tmp', 'tts.mp3'), 'wb') as out:
             out.write(response.audio_content)
 
-    @comms.command()
-    @comms.cooldown(60, 60, BucketType.default)
+    @comms.command(enabled=False)
+    @comms.cooldown(20, 60, BucketType.default)
     async def tts(self, ctx, *, message: str):
         vc = ctx.guild.voice_client
         if vc and vc.is_playing():
@@ -55,6 +55,10 @@ class TTS(comms.Cog):
         while vc.is_playing():
             await asyncio.sleep(1)
         vc.stop()
+
+    @comms.Cog.listener()
+    async def on_voice_state_change(self, before, after):
+        pass
 
 
 def setup(bot):

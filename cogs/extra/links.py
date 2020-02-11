@@ -12,13 +12,22 @@ from discord.ext import commands as comms
 
 
 class Links(comms.Cog):
-    """Cog is meant to give information about owner and bot interactions."""
+    """Many useful links are given by this cog."""
 
     def __init__(self, bot):
         self.bot = bot
 
-    @comms.command(aliases=['lemme_google'])
+    @comms.command(aliases=['google'])
     async def lmgtfy(self, ctx, *, search_term: str):
+        """Gives a link of the 'let me google that for you' website.
+
+        Args:
+            search_term (str): A string of whatever the user wants the link to contain.
+
+        Returns:
+            A link of https://lmgtfy.com with custom arguments (internet explainer always included) 
+
+        """
         search = search_term.replace(' ', '+')
         url = f'https://lmgtfy.com/?q={search}&iie=1'
         embed = discord.Embed(description=f'[`{search_term}`]({url})')
@@ -45,7 +54,7 @@ class Links(comms.Cog):
 
         """
         d = abs(datetime.datetime(year=2020, month=3, day=20) - datetime.datetime.now()).days
-        embed = discord.Embed(title='Raze Hell.', description=f'`{d}` days remaining until release on March 20, 2020')
+        embed = discord.Embed(description=f'`{d}` days remaining until release on March 20, 2020')
         embed.set_thumbnail(url='https://i.imgur.com/Y57XrCu.png')
         await ctx.send(embed=embed)
 
