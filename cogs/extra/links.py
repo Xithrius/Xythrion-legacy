@@ -64,7 +64,7 @@ class Links(comms.Cog):
         """
         d = abs(datetime.datetime(year=2019, month=3, day=13) - datetime.datetime.now()).days
         info = {
-            f'Project created `{d}` days ago, on `March 13, 2019`': 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e',
+            f'Project created {d} days ago, on March 13, 2019': 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e',
             'Xythrion Github repository': 'https://github.com/Xithrius/Xythrion',
             "Xithrius' Twitter": 'https://twitter.com/_Xithrius',
             "Xithrius' Github": 'https://github.com/Xithrius'
