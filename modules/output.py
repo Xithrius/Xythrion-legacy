@@ -51,3 +51,22 @@ def filename() -> str:
 
     """
     return str(datetime.datetime.timestamp(datetime.datetime.now()))
+
+
+def cut_down(s) -> str:
+    """Cuts down a string to a specific length and adds '...'
+
+    Args:
+        s (str): The input string
+        _len (int): The desired limit for length
+
+    Returns:
+        A string cut down to a specific length.
+
+    """
+    _len = 10
+    if len(s) <= _len:
+        return s
+
+    s_len = len(s)
+    s = s.split()
