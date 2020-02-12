@@ -15,6 +15,7 @@ class Links(comms.Cog):
     """Many useful links are given by this cog."""
 
     def __init__(self, bot):
+        """ """
         self.bot = bot
 
     @comms.command(aliases=['google'])

@@ -10,13 +10,15 @@ from discord.ext import commands as comms
 
 
 class Weather(comms.Cog):
-    """"""
+    """ """
 
     def __init__(self, bot):
+        """ """
         self.bot = bot
 
     @comms.command(enabled=False)
     async def weather(self, ctx, zip: int):
+        """ """
         url = ''
         async with self.bot.session.get(url) as r:
             assert r.status == 200

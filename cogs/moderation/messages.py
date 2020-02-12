@@ -12,13 +12,15 @@ from discord.ext import commands as comms
 
 
 class Messages(comms.Cog):
-    """"""
+    """ """
 
     def __init__(self, bot):
+        """ """
         self.bot = bot
 
     @comms.command(enabled=False)
     async def remove_messages(self, ctx, amount: int=None):
+        """ """
         messages = await channel.history(limit=amount).flatten()
 
 

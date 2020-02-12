@@ -12,12 +12,15 @@ from discord.ext import commands as comms
 
 
 class Warnings(comms.Cog):
+    """ """
 
     def __init__(self, bot):
+        """ """
         self.bot = bot
 
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
+        """ """
         if hasattr(ctx.command, 'on_error'):
             return
 

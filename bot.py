@@ -29,6 +29,7 @@ import os
 import sys
 import traceback
 import aiohttp
+import asyncpg
 
 import discord
 from discord.ext import commands as comms
@@ -39,6 +40,7 @@ from modules import get_extensions, path
 
 
 def _logger():
+    """ """
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
     if not os.path.isdir(path(f'tmp{os.sep}')):
@@ -49,6 +51,7 @@ def _logger():
 
 
 def _cleanup():
+    """ """
     if os.path.isdir(path('tmp')):
         for item in os.listdir(path('tmp')):
             if item[-4:] != '.log':
@@ -56,20 +59,22 @@ def _cleanup():
 
 
 class Xythrion(comms.Bot):
+    """ """
 
     def __init__(self, *args, **kwargs):
+        """ """
         super().__init__(*args, **kwargs)
 
         # Open config
         try:
             with open(path('config', 'config.json')) as f:
-                self.token = json.load(f)['discord']
+                self.config = json.load(f)
         except (FileNotFoundError, IndexError):
             Status('Config could not be found or read properly.', 'fail')
 
         # Create asyncio loop
         self.loop = asyncio.get_event_loop()
-        self.loop.run_until_complete(self.create_sessions())
+        self.loop.run_until_complete(self.create_courtines())
 
         self.add_cog(Main_Cog(self))
 
@@ -84,29 +89,60 @@ class Xythrion(comms.Bot):
         for cog in __cogs:
             self.load_extension(cog)
 
-    async def create_sessions(self):
+    async def create_courtines(self):
+        """ """
+        try:
+            self.pool = await asyncpg.create_pool(self.config['db'], command_timeout=60)
+        except IndexError:
+            Status('Could not create connection to database. Please check config file credentials.', 'fail')
+        except Exception as e:
+            Status(f'Fatal error while creating connection to database.\n{e}', 'fail')
+
         self.session = aiohttp.ClientSession()
 
+    async def check_database(self):
+        """ """
+        async with self.pool.acquire() as conn:
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
+                                    id serial PRIMARY KEY,
+                                    login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                                    logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
+                                    )''')
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Messages(
+                                    id serial PRIMARY KEY,
+                                    identification BIGINT,
+                                    messages INTEGER)''')
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Users(
+                                    id serial PRIMARY KEY,
+                                    identification BIGINT,
+                                    punishment_level INTEGER)''')
+
     async def on_ready(self):
+        """ """
         self.startup_time = datetime.datetime.now()
         await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with graphs'))
         Status('Awaiting...', 'ok')
 
     async def logout(self):
+        """ """
         await self.session.close()
         return await super().logout()
 
 
 class Main_Cog(comms.Cog):
+    """ """
 
     def __init__(self, bot):
+        """ """
         self.bot = bot
 
     async def cog_check(self, ctx):
+        """ """
         return await self.bot.is_owner(ctx.author)
 
     @comms.command(aliases=['refresh', 'r'])
     async def reload(self, ctx):
+        """ """
         for cog in get_extensions():
             try:
                 self.bot.unload_extension(cog)
@@ -120,11 +156,21 @@ class Main_Cog(comms.Cog):
 
     @comms.command(aliases=['logout'])
     async def exit(self, ctx):
+        """ """
+        async with self.bot.pool.acquire() as conn:
+            await conn.execute('''INSERT INTO Runtime(
+                                login, logout) VALUES($1, $2)''',
+                               self.bot.startup_time, datetime.datetime.now())
+        
         Status('Logging out...', 'warn')
         await ctx.bot.logout()
 
 
 if __name__ == "__main__":
+    # Adding the temp folder if it doesn't exist.
+    if not os.path.isdir(path('tmp')):
+        os.mkdir(path('tmp'))
+
     # Starting the logger, if requested from the command line.
     try:
         if sys.argv[1] == 'log':
@@ -139,7 +185,7 @@ if __name__ == "__main__":
     # assert hasattr(bot, 'token'), 'Token '
 
     # Running the bot
-    bot.run(bot.token, bot=True, reconnect=True)
+    bot.run(bot.token['discord'], bot=True, reconnect=True)
 
     # Cleaning up the tmp directory
     _cleanup()

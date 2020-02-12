@@ -17,10 +17,12 @@ class Reddit(comms.Cog):
     """ """
 
     def __init__(self, bot):
+        """ """
         self.bot = bot
 
     @comms.command(aliases=['sub', 'subreddit'])
     async def reddit(self, ctx, subreddit, status='hot', timeframe='day', posts: int=1):
+        """ """
         status, timeframe = status.lower(), timeframe.lower()
         statuses = ['top', 'hot', 'controvertial', 'new', 'guilded']
         timeframes = ['hour', 'day', 'week', 'month', 'year', 'all']

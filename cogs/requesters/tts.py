@@ -21,12 +21,15 @@ class TTS(comms.Cog):
     """Using Google Cloud's Text-To-Speech API to speak through the bot's microphone."""
 
     def __init__(self, bot):
+        """ """
         self.bot = bot
 
     async def cog_check(self, ctx):
+        """ """
         return await self.bot.is_owner(ctx.author)
 
     def tts_creation(self, message):
+        """ """
         client = texttospeech.TextToSpeechClient()
         synthesis_input = texttospeech.types.SynthesisInput(text=message)
         voice = texttospeech.types.VoiceSelectionParams(language_code='en-US-Wavenet-D', ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
@@ -38,6 +41,7 @@ class TTS(comms.Cog):
     @comms.command()
     @comms.cooldown(12, 60, BucketType.default)
     async def tts(self, ctx, *, message: str):
+        """ """
         vc = ctx.guild.voice_client
         if vc and vc.is_playing():
             return await ctx.send('`Cannot play anything since some audio is currently running.`')
@@ -58,6 +62,7 @@ class TTS(comms.Cog):
 
     @comms.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
+        """ """
         _owner = await self.bot.is_owner(member)
 
 
