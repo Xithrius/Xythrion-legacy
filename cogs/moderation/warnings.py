@@ -35,6 +35,9 @@ class Warnings(comms.Cog):
         elif isinstance(error, comms.NotOwner):
             return await ctx.send('`You do not have enough permissions for this command.`')
 
+        elif isinstance(error, comms.CommandOnCooldown):
+            return await ctx.send(f'`{error}`')
+
         else:
             print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)

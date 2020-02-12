@@ -35,12 +35,12 @@ class TTS(comms.Cog):
         with open(path('tmp', 'tts.mp3'), 'wb') as out:
             out.write(response.audio_content)
 
-    @comms.command(enabled=False)
-    @comms.cooldown(20, 60, BucketType.default)
+    @comms.command()
+    @comms.cooldown(12, 60, BucketType.default)
     async def tts(self, ctx, *, message: str):
         vc = ctx.guild.voice_client
         if vc and vc.is_playing():
-            await ctx.send('Cannot play anything since some audio is currently running.', delete_after=10)
+            return await ctx.send('`Cannot play anything since some audio is currently running.`')
         if not vc:
             vc = await ctx.author.voice.channel.connect()
 
@@ -57,9 +57,29 @@ class TTS(comms.Cog):
         vc.stop()
 
     @comms.Cog.listener()
-    async def on_voice_state_change(self, before, after):
-        pass
+    async def on_voice_state_update(self, member, before, after):
+        _owner = await self.bot.is_owner(member)
 
 
 def setup(bot):
     bot.add_cog(TTS(bot))
+
+"""
+        # NOTE: Joining channel
+        # NOTE: member.id, int(time.time()), after.channel.id)
+        if before.channel is None:
+            pass
+
+        # NOTE: Leaving channel
+        # NOTE: member.id, int(time.time()), before.channel.id)
+        elif after.channel is None:
+            pass
+
+        # NOTE: Changing channel
+        # NOTE: member.id, int(time.time()), before.channel.id, after.channel.id)
+        elif before.channel.id != after.channel.id:
+            pass
+
+        # NOTE: Changing voice state
+        # NOTE: member.id, int(time.time()), after.self_mute, after.self_deaf, after.mute, after.deaf)
+"""
