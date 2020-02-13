@@ -85,7 +85,10 @@ class TTS(comms.Cog):
                 except discord.ClientException:
                     pass
             if vc.guild.voice_client and member.id != self.bot.user.id:
-                await self.tts_status(vc.guild.voice_client, f'{member.name} has connected.')
+                try:
+                    await self.tts_status(vc.guild.voice_client, f'{member.name} has connected.')
+                except discord.ClientException:
+                    pass
 
         if hasattr(before.channel, 'members'):
             amount = len(before.channel.members)
@@ -94,8 +97,10 @@ class TTS(comms.Cog):
             else:
                 vc = before.channel.guild.voice_client
                 if vc:
-                    await self.tts_status(vc, f'{member.name} has disconnected.')
-
+                    try:
+                        await self.tts_status(vc, f'{member.name} has disconnected.')
+                    except discord.ClientException:
+                        pass
 
     @comms.command()
     async def leave(self, ctx):
@@ -104,23 +109,3 @@ class TTS(comms.Cog):
 
 def setup(bot):
     bot.add_cog(TTS(bot))
-
-"""
-        # NOTE: Joining channel
-        # NOTE: member.id, int(time.time()), after.channel.id)
-        if before.channel is None:
-            pass
-
-        # NOTE: Leaving channel
-        # NOTE: member.id, int(time.time()), before.channel.id)
-        elif after.channel is None:
-            pass
-
-        # NOTE: Changing channel
-        # NOTE: member.id, int(time.time()), before.channel.id, after.channel.id)
-        elif before.channel.id != after.channel.id:
-            pass
-
-        # NOTE: Changing voice state
-        # NOTE: member.id, int(time.time()), after.self_mute, after.self_deaf, after.mute, after.deaf)
-"""
