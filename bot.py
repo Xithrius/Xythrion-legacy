@@ -93,10 +93,11 @@ class Xythrion(comms.Bot):
         """ """
         try:
             self.pool = await asyncpg.create_pool(self.config['db'], command_timeout=60)
+            await self.check_database()
         except IndexError:
             Status('Could not create connection to database. Please check config file credentials.', 'fail')
         except Exception as e:
-            Status(f'Fatal error while creating connection to database.\n{e}', 'fail')
+            Status(f'Fatal error while creating connection to database: {e}', 'fail')
 
         self.session = aiohttp.ClientSession()
 
@@ -157,11 +158,13 @@ class Main_Cog(comms.Cog):
     @comms.command(aliases=['logout'])
     async def exit(self, ctx):
         """ """
-        async with self.bot.pool.acquire() as conn:
-            await conn.execute('''INSERT INTO Runtime(
-                                login, logout) VALUES($1, $2)''',
-                               self.bot.startup_time, datetime.datetime.now())
-        
+        try:
+            async with self.bot.pool.acquire() as conn:
+                await conn.execute('''INSERT INTO Runtime(
+                                    login, logout) VALUES($1, $2)''',
+                                self.bot.startup_time, datetime.datetime.now())
+        except AttributeError:
+            pass
         Status('Logging out...', 'warn')
         await ctx.bot.logout()
 
@@ -185,7 +188,7 @@ if __name__ == "__main__":
     # assert hasattr(bot, 'token'), 'Token '
 
     # Running the bot
-    bot.run(bot.token['discord'], bot=True, reconnect=True)
+    bot.run(bot.config['discord'], bot=True, reconnect=True)
 
     # Cleaning up the tmp directory
     _cleanup()
