@@ -86,7 +86,8 @@ class TTS(comms.Cog):
                     pass
             if vc.guild.voice_client and member.id != self.bot.user.id:
                 try:
-                    await self.tts_status(vc.guild.voice_client, f'{member.name} has connected.')
+                    if after.channel is None:
+                        await self.tts_status(vc.guild.voice_client, f'{member.name} joined.')
                 except discord.ClientException:
                     pass
 
@@ -95,12 +96,13 @@ class TTS(comms.Cog):
             if amount == 1 and before.channel.members[0].id == self.bot.user.id:
                 await before.channel.guild.voice_client.disconnect()
             else:
-                vc = before.channel.guild.voice_client
-                if vc:
-                    try:
-                        await self.tts_status(vc, f'{member.name} has disconnected.')
-                    except discord.ClientException:
-                        pass
+                if before.channel is None:
+                    vc = before.channel.guild.voice_client
+                    if vc:
+                        try:
+                            await self.tts_status(vc, f'{member.name} left.')
+                        except discord.ClientException:
+                            pass
 
     @comms.command()
     async def leave(self, ctx):
