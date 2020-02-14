@@ -24,7 +24,12 @@ class TTS(comms.Cog):
         self.bot = bot
 
     async def cog_check(self, ctx):
-        """Checking if the user is the owner when using the TTS command."""
+        """Checks if user if owner.
+        
+        Returns:
+            True or false based off of if user is an owner of the bot.
+        
+        """
         return await self.bot.is_owner(ctx.author)
 
     def tts_creation(self, message: str):

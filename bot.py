@@ -39,7 +39,7 @@ from modules import get_extensions, path
 
 
 def _logger():
-    """ """
+    """Logs information specifically for the discord package."""
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
     if not os.path.isdir(path(f'tmp{os.sep}')):
@@ -50,7 +50,7 @@ def _logger():
 
 
 def _cleanup():
-    """ """
+    """Cleans up tmp/ after bot is logged out and shut down."""
     if os.path.isdir(path('tmp')):
         for item in os.listdir(path('tmp')):
             if item[-4:] != '.log':
@@ -58,10 +58,9 @@ def _cleanup():
 
 
 class Xythrion(comms.Bot):
-    """ """
+    """The main class where all important attributes are set and tasks are ran."""
 
     def __init__(self, *args, **kwargs):
-        """ """
         super().__init__(*args, **kwargs)
 
         # Open config
@@ -75,21 +74,30 @@ class Xythrion(comms.Bot):
         self.loop = asyncio.get_event_loop()
         self.loop.run_until_complete(self.create_courtines())
 
+        # Add the main cog required for development and control.
         self.add_cog(Main_Cog(self))
 
+        # Getting cogs ready to be laoded in.
         __cogs = get_extensions()
 
+        # Attempt to set TTS environment. If there's a failiure, the TTS cog isn't loaded.
         try:
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('config', 'gsc.json')
         except FileNotFoundError:
             Status('Google Service Token .json file could not be found or opened. TTS is disabled.', 'fail')
             __cogs.remove('cogs.requesters.tts')
 
+        # Loading the cogs in, one by one.
         for cog in __cogs:
             self.load_extension(cog)
 
     async def create_courtines(self):
-        """ """
+        """Creates asynchronous database and session connection.
+        
+        Raises:
+            Possible errors describing why connections could not be etablished.
+        
+        """
         try:
             self.pool = await asyncpg.create_pool(self.config['db'], command_timeout=60)
             await self.check_database()
@@ -101,7 +109,7 @@ class Xythrion(comms.Bot):
         self.session = aiohttp.ClientSession()
 
     async def check_database(self):
-        """ """
+        """Checks if the database has the correct tables before starting the bot up."""
         async with self.pool.acquire() as conn:
             await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
                                     id serial PRIMARY KEY,
@@ -118,26 +126,30 @@ class Xythrion(comms.Bot):
                                     punishment_level INTEGER)''')
 
     async def on_ready(self):
-        """ """
+        """Updates the bot status when logged in successfully."""
         self.startup_time = datetime.datetime.now()
         await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with graphs'))
         Status('Awaiting...', 'ok')
 
     async def logout(self):
-        """ """
+        """Subclassing the logout command to make sure connections are closed properly."""
         await self.session.close()
         return await super().logout()
 
 
 class Main_Cog(comms.Cog):
-    """ """
+    """Cog required for development and control."""
 
     def __init__(self, bot):
-        """ """
         self.bot = bot
 
     async def cog_check(self, ctx):
-        """ """
+        """Checks if user if owner.
+        
+        Returns:
+            True or false based off of if user is an owner of the bot.
+        
+        """
         return await self.bot.is_owner(ctx.author)
 
     @comms.command(aliases=['refresh', 'r'])
