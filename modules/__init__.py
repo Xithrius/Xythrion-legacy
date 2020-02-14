@@ -5,7 +5,7 @@
 """
 
 
-from .output import path, get_extensions, filename
+from .output import path, get_extensions, filename, shorten
 
 
-__all__ = ['path', 'get_extensions', 'filename']
+__all__ = ['path', 'get_extensions', 'filename', 'shorten']

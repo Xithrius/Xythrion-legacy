@@ -13,7 +13,7 @@ import discord
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 
-from modules.output import shorten
+from modules import shorten
 
 
 class Reddit(comms.Cog):
