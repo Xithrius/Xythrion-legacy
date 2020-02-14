@@ -1,0 +1,24 @@
+- Cogs:
+    - In general:
+        - Make sure that all commands that need limiting have rate limiters.
+    - Requesters:
+        - Weather: Using OpenWeatherMap, make graphs and stuff from it.
+        - Graphing: Make a wrapper so graphing is easier and code isn't repeated.
+    - Moderation:
+        - Make sure warnings can warn user of anything.
+        - Set up messages for moderation/safety.
+    - Extra:
+        - Polish up info for more info.
+        - Make links accessable via database (make sure you can't lose the database either).
+
+- Website:
+    - Start/finish? (idk might not since there isn't a real purpose for it.)
+
+- README:
+    - Add all the commands, stick with v2.0. The version will not change from here.
+    - Make sure that the changelog is actually documented and learn systematic versioning.
+    - Maybe in the future tell people how to set up this bot? (probably not for a while)
+
+- Overall:
+    - Comment everything, everywhere. Make sure everything is documented. There's literally a google-formatting file that's there for a purpose.
+    - No backdoors.
