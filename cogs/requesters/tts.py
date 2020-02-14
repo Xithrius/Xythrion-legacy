@@ -21,15 +21,19 @@ class TTS(comms.Cog):
     """Using Google Cloud's Text-To-Speech API to speak through the bot's microphone."""
 
     def __init__(self, bot):
-        """ """
         self.bot = bot
 
     async def cog_check(self, ctx):
-        """ """
+        """Checking if the user is the owner when using the TTS command."""
         return await self.bot.is_owner(ctx.author)
 
-    def tts_creation(self, message):
-        """ """
+    def tts_creation(self, message: str):
+        """Creating the audio file for TTS.
+        
+        Args:
+            message (str): The text that will be converted to speech in audio.
+        
+        """
         client = texttospeech.TextToSpeechClient()
         synthesis_input = texttospeech.types.SynthesisInput(text=message)
         voice = texttospeech.types.VoiceSelectionParams(language_code='en-US-Wavenet-D', ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
@@ -38,29 +42,10 @@ class TTS(comms.Cog):
         with open(path('tmp', 'tts.mp3'), 'wb') as out:
             out.write(response.audio_content)
 
-    @comms.command(enabled=False)
-    @comms.cooldown(12, 60, BucketType.default)
-    async def tts(self, ctx, *, message: str):
-        """ """
-        vc = ctx.guild.voice_client
-        if vc and vc.is_playing():
-            return await ctx.send('`Cannot play anything since some audio is currently running.`')
-        if not vc:
-            vc = await ctx.author.voice.channel.connect()
-
-        func = functools.partial(self.tts_creation, message)
-
-        await self.bot.loop.run_in_executor(None, func)
-
-        vc.play(discord.FFmpegPCMAudio(source=path('tmp', 'tts.mp3'), options='-loglevel fatal'))
-        vc.source = discord.PCMVolumeTransformer(vc.source)
-        vc.source.volume = 1
-
-        while vc.is_playing():
-            await asyncio.sleep(1)
-        vc.stop()
-
     async def tts_status(self, vc, message):
+        """
+
+        """
         func = functools.partial(self.tts_creation, message)
 
         await self.bot.loop.run_in_executor(None, func)
@@ -76,6 +61,13 @@ class TTS(comms.Cog):
     @comms.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         """Holy MOTHER it finally works."""
+        after_ignore = [after.self_mute, after.self_deaf, after.mute, after.deaf, after.self_stream]
+        before_ignore = [before.self_mute, before.self_deaf, before.mute, before.deaf, before.self_stream]
+
+        if after_ignore != before_ignore:
+            return
+
+        name = member.name if not member.nick else member.nick
         if hasattr(after.channel, 'members'):
             amount = len(after.channel.members)
             vc = after.channel
@@ -86,8 +78,7 @@ class TTS(comms.Cog):
                     pass
             if vc.guild.voice_client and member.id != self.bot.user.id:
                 try:
-                    if after.channel is None:
-                        await self.tts_status(vc.guild.voice_client, f'{member.name} joined.')
+                    await self.tts_status(vc.guild.voice_client, f'{name} joined.')
                 except discord.ClientException:
                     pass
 
@@ -96,17 +87,12 @@ class TTS(comms.Cog):
             if amount == 1 and before.channel.members[0].id == self.bot.user.id:
                 await before.channel.guild.voice_client.disconnect()
             else:
-                if before.channel is None:
-                    vc = before.channel.guild.voice_client
-                    if vc:
-                        try:
-                            await self.tts_status(vc, f'{member.name} left.')
-                        except discord.ClientException:
-                            pass
-
-    @comms.command()
-    async def leave(self, ctx):
-        await ctx.voice_client.disconnect()
+                vc = before.channel.guild.voice_client
+                if vc:
+                    try:
+                        await self.tts_status(vc, f'{name} left.')
+                    except discord.ClientException:
+                        pass
 
 
 def setup(bot):
