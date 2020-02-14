@@ -38,7 +38,6 @@ from hyper_status import Status
 from modules import get_extensions, path
 
 
-
 def _logger():
     """ """
     logger = logging.getLogger('discord')

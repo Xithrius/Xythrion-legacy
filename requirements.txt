@@ -3,3 +3,4 @@ discord.py
 hyper_status
 google-cloud-texttospeech
 asyncpg
+youtube_dl
