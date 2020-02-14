@@ -53,7 +53,7 @@ def filename() -> str:
     return str(datetime.datetime.timestamp(datetime.datetime.now()))
 
 
-def cut_down(s) -> str:
+def shorten(s: str, char_limit=50) -> str:
     """Cuts down a string to a specific length and adds '...'
 
     Args:
@@ -64,9 +64,12 @@ def cut_down(s) -> str:
         A string cut down to a specific length.
 
     """
-    _len = 10
-    if len(s) <= _len:
-        return s
+    new_str = []
+    for word in s.strip().split():
+        if len(' '.join(str(y) for y in new_str)) < char_limit:
+            new_str.append(word)
+        else:
+            break
 
-    s_len = len(s)
-    s = s.split()
+    new_str = ' '.join(str(y) for y in new_str).strip()
+    return new_str + '...' if len(new_str) >= char_limit else new_str
