@@ -17,15 +17,25 @@ from modules import shorten
 
 
 class Reddit(comms.Cog):
-    """ """
+    """The Reddit cog that sends Reddit information in the form of an embed."""
 
     def __init__(self, bot):
-        """ """
         self.bot = bot
 
     @comms.command(aliases=['sub', 'subreddit'])
     async def reddit(self, ctx, subreddit, status='hot', timeframe='day', amount: typing.Optional[int]=1):
-        """ """
+        """Getting arguments from the user to make a Reddit request and giving an embed.
+        
+        Args:
+            subreddit (str): The name of the subreddit.
+            status (str): The current status of posts.
+            timeframe (str): The interval which the subreddit posts should be picked from.
+            amount (Optional[int]): An optional amount of posts from 1 to 10.
+
+        Raises:
+            AssertionError: Invalid parameters have been given to the command.
+        
+        """
         status, timeframe = status.lower(), timeframe.lower()
         statuses = ['top', 'hot', 'controvertial', 'new', 'guilded']
         timeframes = ['hour', 'day', 'week', 'month', 'year', 'all']

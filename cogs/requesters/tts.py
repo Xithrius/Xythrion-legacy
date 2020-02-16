@@ -5,7 +5,6 @@
 """
 
 
-import os
 import asyncio
 import functools
 
@@ -48,7 +47,11 @@ class TTS(comms.Cog):
             out.write(response.audio_content)
 
     async def tts_status(self, vc, message):
-        """
+        """Calling tts_creation after joining a channel to play audio.
+
+        Args:
+            vc (voice_client): The current voice channel a caller is in.
+            message (str): The message to be converted to audio.
 
         """
         func = functools.partial(self.tts_creation, message)
@@ -65,7 +68,14 @@ class TTS(comms.Cog):
 
     @comms.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        """Holy MOTHER it finally works."""
+        """Joins and leaves voice channels to announce who has left and who has joined.
+        
+        Args:
+            member (member): The member who had their voice state changed.
+            beore (VoiceState): The state of the user before this event was triggered.
+            after (VoiceState): The state of the user after this event was triggered.
+
+        """
         after_ignore = [after.self_mute, after.self_deaf, after.mute, after.deaf, after.self_stream]
         before_ignore = [before.self_mute, before.self_deaf, before.mute, before.deaf, before.self_stream]
 
@@ -98,6 +108,28 @@ class TTS(comms.Cog):
                         await self.tts_status(vc, f'{name} left.')
                     except discord.ClientException:
                         pass
+
+    @comms.command()
+    async def join(self, ctx):
+        """Joins the channel the caller is currently in."""
+        if ctx.voice_client is None:
+            if ctx.author.voice:
+                await ctx.author.voice.channel.connect()
+            else:
+                await ctx.send(f'{ctx.message.author.mention} is not in a voice chat')
+        else:
+            await ctx.voice_client.disconnect()
+            await ctx.author.voice.channel.connect()
+
+    @comms.command()
+    async def leave(self, ctx):
+        """Leaves voice channel, if the bot is even in one."""
+        await ctx.voice_client.disconnect()
+
+    @comms.command()
+    async def stop(self, ctx):
+        """Stops the current audio stream."""
+        ctx.voice_client.stop()
 
 
 def setup(bot):
