@@ -99,10 +99,8 @@ class Xythrion(comms.Bot):
         
         """
         try:
-            self.pool = await asyncpg.create_pool(self.config['db'], command_timeout=60)
+            self.pool = await asyncpg.create_pool(**self.config['db'], command_timeout=60)
             await self.check_database()
-        except IndexError:
-            Status('Could not create connection to database. Please check config file credentials.', 'fail')
         except Exception as e:
             Status(f'Fatal error while creating connection to database: {e}', 'fail')
 
@@ -111,19 +109,16 @@ class Xythrion(comms.Bot):
     async def check_database(self):
         """Checks if the database has the correct tables before starting the bot up."""
         async with self.pool.acquire() as conn:
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Messages(
+                                    id serial PRIMARY KEY,
+                                    identification BIGINT,
+                                    message_date TIMESTAMP WITHOUT TIME ZONE NOT NULL
+                                    )''')
             await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
                                     id serial PRIMARY KEY,
                                     login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                                     logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
                                     )''')
-            await conn.execute('''CREATE TABLE IF NOT EXISTS Messages(
-                                    id serial PRIMARY KEY,
-                                    identification BIGINT,
-                                    messages INTEGER)''')
-            await conn.execute('''CREATE TABLE IF NOT EXISTS Users(
-                                    id serial PRIMARY KEY,
-                                    identification BIGINT,
-                                    punishment_level INTEGER)''')
 
     async def on_ready(self):
         """Updates the bot status when logged in successfully."""
@@ -133,7 +128,12 @@ class Xythrion(comms.Bot):
 
     async def logout(self):
         """Subclassing the logout command to make sure connections are closed properly."""
-        await self.session.close()
+        try:
+            await self.session.close()
+            await self.pool.close()
+        except Exception:
+            pass
+
         return await super().logout()
 
 

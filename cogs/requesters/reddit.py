@@ -22,6 +22,7 @@ class Reddit(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @comms.cooldown(30, 60, BucketType.default)
     @comms.command(aliases=['sub', 'subreddit'])
     async def reddit(self, ctx, subreddit, status='hot', timeframe='day', amount: typing.Optional[int]=1):
         """Getting arguments from the user to make a Reddit request and giving an embed.
@@ -66,7 +67,8 @@ class Reddit(comms.Cog):
             embed = discord.Embed(title=f'*r/{subreddit}*',
                                   description='\n'.join(f'[`{y[0]}`]({y[1]})' for y in lst))
             if single:
-                embed.set_image(url=single[0])
+                if single[0]:
+                    embed.set_image(url=single[0])
                 embed.set_footer(text=f'Upvotes: {single[1]}\nAuthor: u/{single[2]}')
             await ctx.send(embed=embed)
 
