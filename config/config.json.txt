@@ -1,0 +1,9 @@
+{
+    "discord": "",
+    "db": {
+        "user": "",
+        "password": "",
+        "database": "",
+        "host": ""
+    }
+}
