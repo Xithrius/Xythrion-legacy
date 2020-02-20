@@ -21,4 +21,9 @@
 
 - Overall:
     - Comment everything, everywhere. Make sure everything is documented. There's literally a google-formatting file that's there for a purpose.
-    - No backdoors.
+
+- Cogs to add:
+    - conversion
+    - pokemon
+    - graphing, using the full functionality of plotly
+    - weather
