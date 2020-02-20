@@ -1,6 +1,8 @@
 datetime
-discord.py
+discord.py[voice]
 hyper_status
 google-cloud-texttospeech
 asyncpg
-youtube_dl
+plotly
+pandas
+numpy
