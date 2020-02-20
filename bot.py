@@ -119,6 +119,13 @@ class Xythrion(comms.Bot):
                                     login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                                     logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
                                     )''')
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Punished(
+                                    id serial PRIMARY KEY,
+                                    identification BIGINT,
+                                    reason TEXT,
+                                    punishment TEXT,
+                                    time TIMESTAMP WITHOUT TIME ZONE NOT NULL
+                                    )''')
 
     async def on_ready(self):
         """Updates the bot status when logged in successfully."""

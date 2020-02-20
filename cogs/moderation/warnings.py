@@ -41,8 +41,11 @@ class Warnings(comms.Cog):
         elif isinstance(error, comms.CommandOnCooldown):
             return await ctx.send(f'`{error}`')
 
-        elif isinstance(error, (comms.ExtensionFailed, comms.ExtensionError)):
-            return await ctx.send(f'Cog failed: {e}')
+        elif isinstance(error, comms.CheckFailure):
+            return await ctx.send(f'`You do not have enough permissions to run this command.`')
+
+        elif isinstance(error, AssertionError):
+            return await ctx.send(f'`Command failed. {error}`')
 
         else:
             print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)

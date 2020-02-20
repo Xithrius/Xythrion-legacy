@@ -22,7 +22,7 @@ class Reddit(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @comms.cooldown(30, 60, BucketType.default)
+    @comms.cooldown(1, 5, BucketType.default)
     @comms.command(aliases=['sub', 'subreddit'])
     async def reddit(self, ctx, subreddit, status='hot', timeframe='day', amount: typing.Optional[int]=1):
         """Getting arguments from the user to make a Reddit request and giving an embed.
@@ -44,13 +44,13 @@ class Reddit(comms.Cog):
         if int(amount) not in range(1, 11):
             return await ctx.send(f'Please pick an amount of posts between 1 and 10')
         if status not in statuses:
-            return await ctx.send(f'Please pick a status within {", ".join(str(y) for y in status)}')
+            return await ctx.send(f'Please pick a status within `{", ".join(str(y) for y in statuses)}`')
         if timeframe not in timeframes:
-            return await ctx.send(f'Please pick a timeframe within {", ".join(str(y) for y in timeframes)}')
+            return await ctx.send(f'Please pick a timeframe within `{", ".join(str(y) for y in timeframes)}`')
         
         url = f'https://reddit.com/r/{subreddit}/{status}.json?limit=100&t={timeframe}'
         async with self.bot.session.get(url) as r:
-            assert r.status == 200
+            assert r.status == 200, f'Status Code: {r.status}.'
             js = await r.json()
             js = js['data']['children']
             single = False
