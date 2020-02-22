@@ -80,12 +80,14 @@ class TTS(comms.Cog):
             after (VoiceState): The state of the user after this event was triggered.
 
         """
+        """
         async with self.bot.pool.acquire() as conn:
             found = await conn.fetch(
                 '''SELECT identification from Punished WHERE identification=$1''',
                 member.id)
             if len(found):
                 return
+        """
         after_ignore = [after.self_mute, after.self_deaf, after.mute, after.deaf, after.self_stream]
         before_ignore = [before.self_mute, before.self_deaf, before.mute, before.deaf, before.self_stream]
 

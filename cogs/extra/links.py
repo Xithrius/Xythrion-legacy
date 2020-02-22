@@ -15,7 +15,6 @@ class Links(comms.Cog):
     """Many useful links are given by this cog."""
 
     def __init__(self, bot):
-        """ """
         self.bot = bot
 
     @comms.command(aliases=['google'])
@@ -35,18 +34,6 @@ class Links(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command()
-    async def doom(self, ctx):
-        """Gives the best song for doom, at the perfect time
-        
-        Returns:
-            An embed with a youtube link containing the best drop in the best game.
-
-        """
-        url = 'https://youtu.be/LGNc5azoizI?t=353'
-        embed = discord.Embed(description=f'[`Raze hell`]({url})')
-        await ctx.send(embed=embed)
-
-    @comms.command()
     async def eternal(self, ctx):
         """Gives release information for Doom Eternal.
 
@@ -55,8 +42,9 @@ class Links(comms.Cog):
 
         """
         d = abs(datetime.datetime(year=2020, month=3, day=20) - datetime.datetime.now()).days
-        embed = discord.Embed(description=f'`{d}` days remaining until release on March 20, 2020')
+        embed = discord.Embed(description=f'Raze hell in `{d}` days.')
         embed.set_thumbnail(url='https://i.imgur.com/Y57XrCu.png')
+        embed.set_footer(text=f'(Doom eternal is released in {d} days from now.)')
         await ctx.send(embed=embed)
 
     @comms.command()

@@ -18,7 +18,16 @@ class Users(comms.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @comms.command()
+    async def cog_check(self, ctx):
+        """Checks if user if owner.
+        
+        Returns:
+            True or false based off of if user is an owner of the bot.
+        
+        """
+        return await self.bot.is_owner(ctx.author)
+
+    @comms.command(enabled=False)
     async def punish(self, ctx, user: discord.User, *, reason: str):
         async with self.bot.pool.acquire() as conn:
             found = await conn.fetch(
@@ -33,27 +42,23 @@ class Users(comms.Cog):
                 await ctx.send('`User has already been ignored.`')
 
     @comms.command()
-    async def cleanse(self, ctx, user: discord.User):
+    async def ignore(self, ctx, user_id: int, *, reason: str):
+        """ """
         async with self.bot.pool.acquire() as conn:
-            found = await conn.fetch(
-                '''SELECT identification FROM Punished WHERE identification=$1''',
-                user.id)
+            found = await conn.fetch('''SELECT identification FROM Users WHERE identification=$1,''',
+                                     user_id
+            )
             print(found)
-            if len(found):
-                await conn.execute(
-                    '''DELETE FROM Punished WHERE identification=$1''',
-                    user.id)
-            else:
-                await ctx.send(f'`User {user} with id {user.id} has been unignored.`')
+            # if len(found):
 
     @comms.command()
-    async def block_commands(self, ctx, user_id: int, *, reason: str):
+    async def unignore(self, ctx, user_id: int):
+        """ """
         async with self.bot.pool.acquire() as conn:
-            found = await conn.fetch(
-                '''SELECT identification FROM Punished WHERE identification=$1''',
-                user_id
+            found = await conn.fetch('''SELECT identification FROM Users WHERE identification=$1,''',
+                                     user_id
             )
-            if not len()
+
 
 
 def setup(bot):

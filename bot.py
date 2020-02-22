@@ -45,7 +45,7 @@ def _logger():
     if not os.path.isdir(path(f'tmp{os.sep}')):
         os.mkdir(path('tmp'))
     handler = logging.FileHandler(filename=path('tmp', 'discord.log'), encoding='utf-8', mode='w')
-    handler.setFormatter(logging.Formatter('%(asctime)s  :  %(levelname)s  :  %(name)s  :  %(message)s'))
+    handler.setFormatter(logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s'))
     logger.addHandler(handler)
 
 
@@ -109,22 +109,21 @@ class Xythrion(comms.Bot):
     async def check_database(self):
         """Checks if the database has the correct tables before starting the bot up."""
         async with self.pool.acquire() as conn:
-            await conn.execute('''CREATE TABLE IF NOT EXISTS Messages(
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Users(
                                     id serial PRIMARY KEY,
                                     identification BIGINT,
+                                    ignored BOOL,
+                                    reason TEXT
+                                    )''')
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Messages(
+                                    id serial PRIMARY KEY,
+                                    identification BINGINT,
                                     message_date TIMESTAMP WITHOUT TIME ZONE NOT NULL
                                     )''')
             await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
                                     id serial PRIMARY KEY,
                                     login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                                     logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
-                                    )''')
-            await conn.execute('''CREATE TABLE IF NOT EXISTS Punished(
-                                    id serial PRIMARY KEY,
-                                    identification BIGINT,
-                                    reason TEXT,
-                                    punishment TEXT,
-                                    time TIMESTAMP WITHOUT TIME ZONE NOT NULL
                                     )''')
 
     async def on_ready(self):
@@ -202,8 +201,6 @@ if __name__ == "__main__":
     # Creating the bot object
     bot = Xythrion(command_prefix=comms.when_mentioned_or(';'),
                    case_insensitive=True)
-    # Checking important attribute before running
-    # assert hasattr(bot, 'token'), 'Token '
 
     # Running the bot
     bot.run(bot.config['discord'], bot=True, reconnect=True)
