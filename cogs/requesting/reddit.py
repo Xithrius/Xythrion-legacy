@@ -24,14 +24,13 @@ class Reddit(comms.Cog):
 
     @comms.cooldown(1, 5, BucketType.default)
     @comms.command(aliases=['sub', 'subreddit'])
-    async def reddit(self, ctx, subreddit, status='hot', timeframe='day', amount: typing.Optional[int]=1):
+    async def reddit(self, ctx, subreddit, status='hot', timeframe='day'):
         """Getting arguments from the user to make a Reddit request and giving an embed.
         
         Args:
             subreddit (str): The name of the subreddit.
             status (str): The current status of posts.
             timeframe (str): The interval which the subreddit posts should be picked from.
-            amount (Optional[int]): An optional amount of posts from 1 to 10.
 
         Raises:
             AssertionError: Invalid parameters have been given to the command.
@@ -41,35 +40,27 @@ class Reddit(comms.Cog):
         statuses = ['top', 'hot', 'controvertial', 'new', 'guilded']
         timeframes = ['hour', 'day', 'week', 'month', 'year', 'all']
 
-        if int(amount) not in range(1, 11):
-            return await ctx.send(f'Please pick an amount of posts between 1 and 10')
         if status not in statuses:
             return await ctx.send(f'Please pick a status within `{", ".join(str(y) for y in statuses)}`')
         if timeframe not in timeframes:
             return await ctx.send(f'Please pick a timeframe within `{", ".join(str(y) for y in timeframes)}`')
         
+        lst = []
         url = f'https://reddit.com/r/{subreddit}/{status}.json?limit=100&t={timeframe}'
         async with self.bot.session.get(url) as r:
-            assert r.status == 200, f'Status Code: {r.status}.'
+            assert r.status == 200
             js = await r.json()
             js = js['data']['children']
-            single = False
-
-            if amount == 1:
-                post = [js[random.randint(0, len(js))]['data']]
-                if post[0]['url'][-4:] in ('.jpg', 'jpeg', '.png'):
-                    single = post[0]['url'], post[0]['ups'], post[0]['author']
-            else:
-                pick = random.randint(0, len(js)) - amount
-                post = [post['data'] for post in js[pick:pick + amount]]
+            p = js[random.randint(0, len(js))]['data']
             
-            lst = [(shorten(item['title']), f"https://reddit.com{item['permalink']}") for item in post]
-            embed = discord.Embed(title=f'*r/{subreddit}*',
-                                  description='\n'.join(f'[`{y[0]}`]({y[1]})' for y in lst))
-            if single:
-                if single[0]:
-                    embed.set_image(url=single[0])
-                embed.set_footer(text=f'Upvotes: {single[1]}\nAuthor: u/{single[2]}')
+            image = False
+            if p['url'][-4:] in ('.jpg', 'jpeg', '.png'):
+                image = p['url']
+
+            embed = discord.Embed(title=f'*r/{subreddit}*', description=f'[`{shorten(p["title"])}`](https://reddit.com{p["permalink"]})')
+            embed.set_footer(text=f'Upvotes: {p["ups"]}\nAuthor: u/{p["author"]}')
+            if image:
+                embed.set_image(url=image)
             await ctx.send(embed=embed)
 
 
