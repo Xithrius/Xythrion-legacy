@@ -60,6 +60,5 @@ class Users(comms.Cog):
             )
 
 
-
 def setup(bot):
     bot.add_cog(Users(bot))

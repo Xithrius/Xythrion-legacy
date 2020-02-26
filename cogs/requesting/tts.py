@@ -68,6 +68,12 @@ class TTS(comms.Cog):
 
     @comms.command(enabled=False)
     async def tts(self, ctx, *, message: str):
+        """Plays message in a voice channel.
+
+        Args:
+            message (str): The phrase(s) that the user wants the bot to say.
+
+        """
         await self.tts_status(ctx.guild.voice_client, message)
 
     @comms.Cog.listener()
@@ -79,14 +85,6 @@ class TTS(comms.Cog):
             beore (VoiceState): The state of the user before this event was triggered.
             after (VoiceState): The state of the user after this event was triggered.
 
-        """
-        """
-        async with self.bot.pool.acquire() as conn:
-            found = await conn.fetch(
-                '''SELECT identification from Punished WHERE identification=$1''',
-                member.id)
-            if len(found):
-                return
         """
         after_ignore = [after.self_mute, after.self_deaf, after.mute, after.deaf, after.self_stream]
         before_ignore = [before.self_mute, before.self_deaf, before.mute, before.deaf, before.self_stream]

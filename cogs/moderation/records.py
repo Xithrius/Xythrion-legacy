@@ -19,23 +19,26 @@ class Records(comms.Cog):
 
     @comms.Cog.listener()
     async def on_message(self, message):
+        """ """
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
                 '''INSERT INTO Messages(identification, message_date) VALUES ($1, $2)''',
                 message.author.id, datetime.datetime.now())
 
 
+    # async def rank(self, ctx, user_id: int = ):
     @comms.command(enabled=False)
-    async def rank(self, ctx):
-
+    async def rank(self, ctx, user_id):
+        """ """
         async with self.bot.pool.acquire() as conn:
             info = await conn.fetch(
                 '''SELECT message_date from Messages WHERE identification=$1''',
                 ctx.author.id)
-            # NOTE: Finish command
+            return await ctx.send(len(info))
 
     @comms.command()
     async def uptime(self, ctx):
+        """ """
         async with self.bot.pool.acquire() as conn:
             t = await conn.fetch(
                 '''SELECT avg(logout - login) avg_uptime,
