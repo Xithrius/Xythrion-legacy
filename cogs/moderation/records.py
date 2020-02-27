@@ -25,16 +25,17 @@ class Records(comms.Cog):
                 '''INSERT INTO Messages(identification, message_date) VALUES ($1, $2)''',
                 message.author.id, datetime.datetime.now())
 
-
-    # async def rank(self, ctx, user_id: int = ):
-    @comms.command(enabled=False)
-    async def rank(self, ctx, user_id):
+    @comms.command()
+    async def rank(self, ctx, user: discord.User = None):
         """ """
+        user = user if user is not None else ctx.author
         async with self.bot.pool.acquire() as conn:
             info = await conn.fetch(
                 '''SELECT message_date from Messages WHERE identification=$1''',
-                ctx.author.id)
-            return await ctx.send(len(info))
+                user.id)
+            embed = discord.Embed(title=f'Calculated rank for "{user.name}":',
+                                description=f'`{len(info)} messages sent.`')
+            await ctx.send(embed=embed)
 
     @comms.command()
     async def uptime(self, ctx):
