@@ -104,7 +104,7 @@ class Xythrion(comms.Bot):
         except Exception as e:
             Status(f'Fatal error while creating connection to database: {e}', 'fail')
 
-        self.session = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession(loop=self.loop)
 
     async def check_database(self):
         """Checks if the database has the correct tables before starting the bot up."""

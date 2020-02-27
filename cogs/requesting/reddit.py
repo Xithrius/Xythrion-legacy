@@ -48,7 +48,7 @@ class Reddit(comms.Cog):
         lst = []
         url = f'https://reddit.com/r/{subreddit}/{status}.json?limit=100&t={timeframe}'
         async with self.bot.session.get(url) as r:
-            assert r.status == 200
+            assert r.status == 200, r.status
             js = await r.json()
             js = js['data']['children']
             p = js[random.randint(0, len(js))]['data']

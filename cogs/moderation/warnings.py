@@ -27,13 +27,13 @@ class Warnings(comms.Cog):
         error = getattr(error, 'original', error)
 
         if isinstance(error, comms.DisabledCommand):
-            return await ctx.send(f'`Command "{ctx.command}" not available.`')
+            return await ctx.send(f'`Command not available.`')
 
         elif isinstance(error, comms.CommandNotFound):
-            return await ctx.send(f'`Command "{ctx.command}" not found.`')
+            return await ctx.send(f'`Command not found.`')
 
         elif isinstance(error, comms.UserInputError):
-            return await ctx.send(f'`Command "{ctx.command}" raised bad argument: {error}`')
+            return await ctx.send(f'`Command raised bad argument: {error}`')
 
         elif isinstance(error, comms.NotOwner):
             return await ctx.send('`You do not have enough permissions for this command.`')
@@ -45,7 +45,7 @@ class Warnings(comms.Cog):
             return await ctx.send(f'`You do not have enough permissions to run this command.`')
 
         elif isinstance(error, AssertionError):
-            return await ctx.send(f'`Command failed. {error}`')
+            return await ctx.send(f'`Command request failed. {error}`')
 
         else:
             print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)

@@ -42,14 +42,14 @@ def get_extensions() -> list:
     return c
 
 
-def filename() -> str:
+def gen_filename() -> str:
     """Generates a filename.
     
     Returns:
         A string with the current date for filename usage.
 
     """
-    return str(datetime.datetime.timestamp(datetime.datetime.now()))
+    return str(datetime.datetime.timestamp(datetime.datetime.now())).replace('.', '')
 
 
 def shorten(s: str, char_limit=50) -> str:
