@@ -5,7 +5,11 @@
 """
 
 
-from .output import path, get_extensions, filename, shorten
+from .output import path, get_extensions, gen_filename, shorten
+from .conversion import kelvin_to_fahrenheit, kelvin_to_celcius
 
 
-__all__ = ['path', 'get_extensions', 'filename', 'shorten']
+__all__ = [
+    'path', 'get_extensions', 'gen_filename', 'shorten',
+    'kelvin_to_fahrenheit', 'kelvin_to_celcius'
+]
