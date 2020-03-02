@@ -9,12 +9,13 @@ import functools
 import os
 import typing
 import datetime
+import json
+import collections
 
 import discord
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 from matplotlib import pyplot as plt
-import matplotlib.gridspec as gridspec
 
 from modules import gen_filename, kelvin_to_celcius, kelvin_to_fahrenheit, path
 
@@ -59,24 +60,6 @@ class Weather(comms.Cog):
 
         return f
 
-    async def extract_info(self, weather_info) -> list:
-        lst = []
-
-        for day in weather_info:
-            n = datetime.datetime.fromtimestamp(day['dt'])
-            d = day['main']
-            temps = d['temp'], d['temp_min'], d['temp_max']
-            lst.append([
-                f'{n.strftime("%A")} {n.strftime("%I:%M")}{n.strftime("%p").lower()},\n{n.date()}',
-                [
-                    list(map(kelvin_to_celcius, temps)),
-                    list(map(kelvin_to_fahrenheit, temps)),
-                    d['pressure'], d['humidity']
-                ]
-            ])
-
-        return lst
-
     @comms.cooldown(1, 1, BucketType.default)
     @comms.command()
     async def weather(self, ctx, zip_code: int, country_code: str = 'US'):
@@ -94,8 +77,24 @@ class Weather(comms.Cog):
             assert r.status == 200, r.status
             js = await r.json()
             info = js['list']
-            info = await self.extract_info(info)
+            lst = {}
 
+            for I in info:
+                lst[I['dt']] = {
+                    **{k:v for k, v in I['main'].items() if k in ['temp', 'temp_min', 'temp_max', 'humidity']},
+                    'weather': I['weather'][0]['description'],
+                    **I['wind']
+                }
+            lst = collections.OrderedDict(sorted(lst.items()))
+            with open(path('tmp.json'), 'w') as f:
+                json.dump(lst, f, indent=3)
+
+
+def setup(bot):
+    bot.add_cog(Weather(bot))
+
+
+"""
             fig = plt.figure(constrained_layout=True)
             area = gridspec.GridSpec(ncols=2, nrows=2, figure=fig)
             ax1 = fig.add_subplot(area[0, 0])
@@ -120,7 +119,4 @@ class Weather(comms.Cog):
             embed.set_image(url=f'attachment://{f}')
             await ctx.send(file=file, embed=embed)
             os.remove(path('tmp', f))
-
-
-def setup(bot):
-    bot.add_cog(Weather(bot))
+"""
