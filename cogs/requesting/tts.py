@@ -92,7 +92,8 @@ class TTS(comms.Cog):
         if after_ignore != before_ignore:
             return
 
-        name = member.name if not member.nick else member.nick
+        # name = member.name if not member.nick else member.nick
+        name = member.name
         if hasattr(after.channel, 'members'):
             amount = len(after.channel.members)
             vc = after.channel
