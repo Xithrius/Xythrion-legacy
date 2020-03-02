@@ -45,14 +45,15 @@ class Reddit(comms.Cog):
         if timeframe not in timeframes:
             return await ctx.send(f'Please pick a timeframe within `{", ".join(str(y) for y in timeframes)}`')
         
-        lst = []
         url = f'https://reddit.com/r/{subreddit}/{status}.json?limit=100&t={timeframe}'
         async with self.bot.session.get(url) as r:
             assert r.status == 200, r.status
             js = await r.json()
             js = js['data']['children']
-            p = js[random.randint(0, len(js))]['data']
-            
+            p = js[random.randint(0, len(js) - 1)]['data']
+            if p['over_18'] and not ctx.message.channel.is_nsfw():
+                raise comms.CheckFailure(message='NSFW')
+
             image = False
             if p['url'][-4:] in ('.jpg', 'jpeg', '.png'):
                 image = p['url']
