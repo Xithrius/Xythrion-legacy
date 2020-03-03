@@ -130,6 +130,8 @@ class Xythrion(comms.Bot):
         """Updates the bot status when logged in successfully."""
         self.startup_time = datetime.datetime.now()
         await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with graphs'))
+        with open(path('fonts', 'title.txt'), 'r') as f:
+            Status(f'\n\n\033[1m{"".join(str(y) for y in f.readlines())}\033[0m\n')
         Status('Awaiting...', 'ok')
 
     async def logout(self):
