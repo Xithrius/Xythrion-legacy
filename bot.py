@@ -81,11 +81,14 @@ class Xythrion(comms.Bot):
         __cogs = get_extensions()
 
         # Attempt to set TTS environment. If there's a failiure, the TTS cog isn't loaded.
-        try:
+        if os.path.isfile(path('config', 'gsc.json')):
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('config', 'gsc.json')
-        except FileNotFoundError:
-            Status('Google Service Token .json file could not be found or opened. TTS is disabled.', 'fail')
-            __cogs.remove('cogs.requesters.tts')
+        else:
+            Status('Google Service Token JSON file could not be found or opened within /config. TTS is disabled.', 'fail')
+            try:
+                __cogs.remove('cogs.requesters.tts')
+            except ValueError:
+                pass
 
         # Loading the cogs in, one by one.
         for cog in __cogs:
@@ -235,7 +238,10 @@ if __name__ == "__main__":
                    case_insensitive=True)
 
     # Running the bot
-    bot.run(bot.config['discord'], bot=True, reconnect=True)
+    try:
+        bot.run(bot.config['discord'], bot=True, reconnect=True)
+    except (discord.errors.HTTPException, discord.errors.LoginFailure):
+        Status('Improper token has been passed.', 'fail')
 
     # Cleaning up the tmp directory
     _cleanup()
