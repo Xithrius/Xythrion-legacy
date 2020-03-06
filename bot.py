@@ -10,8 +10,6 @@ Running the bot (python 3.8+):
     Installing requirements:
         $ python -m pip install --user -r requirements.txt
 
-        Go to https://miktex.org/download and pick the item for your OS (200mb+).
-
     Starting the bot:
         Without logging:
             $ python bot.py
@@ -58,9 +56,20 @@ def _cleanup():
 
 
 class Xythrion(comms.Bot):
-    """The main class where all important attributes are set and tasks are ran."""
+    """The main class where all important attributes are set and tasks are ran.
+
+    Attributes:
+        bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+    """
 
     def __init__(self, *args, **kwargs):
+        """Creating important attributes for this class.
+
+        Args:
+            Template: bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+        """
         super().__init__(*args, **kwargs)
 
         # Open config
@@ -75,7 +84,7 @@ class Xythrion(comms.Bot):
         self.loop.run_until_complete(self.create_courtines())
 
         # Add the main cog required for development and control.
-        self.add_cog(Main_Cog(self))
+        self.add_cog(Development(self))
 
         # Getting cogs ready to be laoded in.
         __cogs = get_extensions()
@@ -113,28 +122,26 @@ class Xythrion(comms.Bot):
         """Checks if the database has the correct tables before starting the bot up."""
         async with self.pool.acquire() as conn:
             await conn.execute('''CREATE TABLE IF NOT EXISTS Users(
-                                    id serial PRIMARY KEY,
-                                    identification BIGINT,
-                                    ignored BOOL,
-                                    reason TEXT
-                                    )''')
+                                id serial PRIMARY KEY,
+                                identification BIGINT,
+                                ignored BOOL,
+                                reason TEXT
+                                )''')
             await conn.execute('''CREATE TABLE IF NOT EXISTS Messages(
-                                    id serial PRIMARY KEY,
-                                    identification BINGINT,
-                                    message_date TIMESTAMP WITHOUT TIME ZONE NOT NULL
-                                    )''')
+                                id serial PRIMARY KEY,
+                                identification BINGINT,
+                                message_date TIMESTAMP WITHOUT TIME ZONE NOT NULL
+                                )''')
             await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
-                                    id serial PRIMARY KEY,
-                                    login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                                    logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
-                                    )''')
+                                id serial PRIMARY KEY,
+                                login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                                logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
+                                )''')
 
     async def on_ready(self):
         """Updates the bot status when logged in successfully."""
         self.startup_time = datetime.datetime.now()
-        await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with graphs'))
-        with open(path('fonts', 'title.txt'), 'r') as f:
-            Status(f'\n\n\033[1m{"".join(str(y) for y in f.readlines())}\033[0m\n')
+        await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with information'))
         Status('Awaiting...', 'ok')
 
     async def logout(self):
@@ -148,15 +155,29 @@ class Xythrion(comms.Bot):
         return await super().logout()
 
 
-class Main_Cog(comms.Cog):
-    """Cog required for development and control, along with some extras."""
+class Development(comms.Cog):
+    """Cog required for development and control, along with some extras.
+
+    Attributes:
+        bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+    """
 
     def __init__(self, bot):
+        """Creating important attributes for this class.
+
+        Args:
+            bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+        """
         self.bot = bot
 
     async def cog_check(self, ctx):
         """Checks if user if owner.
         
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+
         Returns:
             True or false based off of if user is an owner of the bot.
         
@@ -165,60 +186,56 @@ class Main_Cog(comms.Cog):
 
     @comms.command(aliases=['refresh', 'r'])
     async def reload(self, ctx):
-        """ """
+        """Gets the cogs within folders and loads them into the bot after unloading current cogs.
+        
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+
+        Raises:
+            Anything besides comms.ExtensionNotLoaded when loading cogs.
+
+        """
         for cog in get_extensions():
             try:
                 self.bot.unload_extension(cog)
                 self.bot.load_extension(cog)
-            except discord.ext.commands.ExtensionNotLoaded:
+            except comms.ExtensionNotLoaded:
                 self.bot.load_extension(cog)
             except Exception as e:
                 Status(f'Loading {cog} error:', 'fail')
                 traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
         await ctx.send('Reloaded extensions.', delete_after=5)
 
+    @comms.command(name='loaded')
+    async def loaded_extension(self, ctx):
+        """Gives the currently loaded cogs.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+
+        """
+        lst = [f'{str(i).zfill(3)} | {k}' for i, k in enumerate(self.bot.cogs.keys())]
+        c = '\n'.join(str(y) for y in lst)
+        embed = discord.Embed(title='*Currently loaded cogs:*', description=f'```py\n{c}\n```')
+        await ctx.send(embed=embed)
+
     @comms.command(aliases=['logout'])
     async def exit(self, ctx):
-        """ """
+        """Makes the bot logout after completing some last-second tasks.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+        
+        """
         try:
             async with self.bot.pool.acquire() as conn:
-                await conn.execute('''INSERT INTO Runtime(
-                                    login, logout) VALUES($1, $2)''',
-                                self.bot.startup_time, datetime.datetime.now())
+                await conn.execute(
+                    '''INSERT INTO Runtime(login, logout) VALUES($1, $2)''',
+                    self.bot.startup_time, datetime.datetime.now())
         except AttributeError:
             pass
         Status('Logging out...', 'warn')
         await ctx.bot.logout()
-
-    @comms.command()
-    async def invite(self, ctx):
-        """Gives the invite link of this bot.
-
-        Returns:
-            The invite link so the bot can be invited to a server.
-
-        """
-        url = f'https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=37604544'
-        embed = discord.Embed(description=f'[`Xythrion invite url`]({url})')
-        await ctx.send(embed=embed)
-
-    @comms.command()
-    async def info(self, ctx):
-        """Returns information about this bot's origin
-
-        Returns:
-            An embed object with links to creator's information.
-
-        """
-        d = abs(datetime.datetime(year=2019, month=3, day=13) - datetime.datetime.now()).days
-        info = {
-            f'Project created {d} days ago, on March 13, 2019': 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e',
-            'Xythrion Github repository': 'https://github.com/Xithrius/Xythrion',
-            "Xithrius' Twitter": 'https://twitter.com/_Xithrius',
-            "Xithrius' Github": 'https://github.com/Xithrius'
-        }
-        embed = discord.Embed(description='\n'.join(f'[`{k}`]({v})' for k, v in info.items()))
-        await ctx.send(embed=embed)
 
 
 if __name__ == "__main__":
