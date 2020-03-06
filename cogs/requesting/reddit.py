@@ -28,6 +28,7 @@ class Reddit(comms.Cog):
         """Getting arguments from the user to make a Reddit request and giving an embed.
         
         Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
             subreddit (str): The name of the subreddit.
             status (str): The current status of posts.
             timeframe (str): The interval which the subreddit posts should be picked from.

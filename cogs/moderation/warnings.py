@@ -42,7 +42,7 @@ class Warnings(comms.Cog):
             return await ctx.send(f'`{error}`')
 
         elif isinstance(error, comms.CheckFailure):
-            if error == 'NSFW':
+            if str(error).strip() == 'NSFW':
                 return await ctx.send('`NSFW in SFW channels are not allowed.`')
             return await ctx.send(f'`You do not have enough permissions to run this command.`')
         

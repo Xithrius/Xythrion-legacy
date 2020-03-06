@@ -24,7 +24,10 @@ class TTS(comms.Cog):
 
     async def cog_check(self, ctx):
         """Checks if user if owner.
-        
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+
         Returns:
             True or false based off of if user is an owner of the bot.
         
@@ -71,10 +74,12 @@ class TTS(comms.Cog):
         """Plays message in a voice channel.
 
         Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
             message (str): The phrase(s) that the user wants the bot to say.
 
         """
         await self.tts_status(ctx.guild.voice_client, message)
+
 
     @comms.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -86,12 +91,13 @@ class TTS(comms.Cog):
             after (VoiceState): The state of the user after this event was triggered.
 
         """
-        after_ignore = [after.self_mute, after.self_deaf, after.mute, after.deaf, after.self_stream]
-        before_ignore = [before.self_mute, before.self_deaf, before.mute, before.deaf, before.self_stream]
+        after_ignore = [after.deaf, after.mute, after.self_mute, after.self_deaf, after.self_stream, after.self_video, after.afk]
+        before_ignore = [before.deaf, before.mute, before.self_mute, before.self_deaf, before.self_stream, before.self_video, before.afk]
 
         if after_ignore != before_ignore:
             return
 
+        # Removed temporarily until records are up. This function was abused way too much.
         # name = member.name if not member.nick else member.nick
         name = member.name
         if hasattr(after.channel, 'members'):
@@ -102,6 +108,8 @@ class TTS(comms.Cog):
                     await vc.connect()
                 except discord.ClientException:
                     pass
+                except asyncio.exceptions.TimeoutError:
+                    Status(f'Voice channel {vc} timed out while connecting.', 'fail')
             if vc.guild.voice_client and member.id != self.bot.user.id:
                 try:
                     await self.tts_status(vc.guild.voice_client, f'{name} joined.')
@@ -121,8 +129,14 @@ class TTS(comms.Cog):
                         pass
 
     @comms.command()
+    @comms.cooldown(1, 8, BucketType.guild)
     async def join(self, ctx):
-        """Joins the channel the caller is currently in."""
+        """Joins the channel the caller is currently in.
+        
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+        
+        """
         if ctx.voice_client is None:
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
@@ -133,13 +147,25 @@ class TTS(comms.Cog):
             await ctx.author.voice.channel.connect()
 
     @comms.command()
+    @comms.cooldown(1, 8, BucketType.guild)
     async def leave(self, ctx):
-        """Leaves voice channel, if the bot is even in one."""
+        """Leaves voice channel, if the bot is even in one.
+        
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+
+        """
         await ctx.voice_client.disconnect()
 
     @comms.command()
+    @comms.cooldown(1, 8, BucketType.guild)
     async def stop(self, ctx):
-        """Stops the current audio stream."""
+        """Stops the current audio stream.
+        
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+        
+        """
         ctx.voice_client.stop()
 
 
