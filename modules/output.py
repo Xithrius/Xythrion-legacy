@@ -52,7 +52,7 @@ def gen_filename() -> str:
     return str(datetime.datetime.timestamp(datetime.datetime.now())).replace('.', '')
 
 
-def shorten(s: str, char_limit=50) -> str:
+def shorten(s: str, char_limit: int = 50) -> str:
     """Cuts down a string to a specific length and adds '...'
 
     Args:
@@ -72,3 +72,27 @@ def shorten(s: str, char_limit=50) -> str:
 
     new_str = ' '.join(str(y) for y in new_str).strip()
     return new_str + '...' if len(new_str) >= char_limit else new_str
+
+
+def create_title(self):
+    """Creates a fancy title"""
+    # Colors
+    r, d, b, e = '\033[91m', '\033[93m', '\033[1m', '\033[0m'
+    
+    with open(path('fonts', 'title.txt'), 'r') as f:
+        titles = [y[:-1] if '\n' in y else y for y in f.readlines()]
+
+        # Formatting date
+        n = datetime.datetime.now()
+        t = ':'.join(y for y in n.strftime('%I %M %S').split())
+        n = f"{n.strftime('%b %d %Y, %A')} {t}{n.strftime('%p').lower()}"        
+        n = f'~> {b}[{e} {d}{n}{e} {b}]{e} >'
+        
+        print()
+        for i, title in enumerate(titles):
+            # title = f'{b}{r}{title}{e}{e}'
+            if i != 1:
+                print(title.rjust(len(n) + 2, ' '))
+            else:
+                print(n + title.rjust(2, ' '))
+        print()

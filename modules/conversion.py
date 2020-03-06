@@ -5,9 +5,9 @@
 """
 
 
-def kelvin_to_fahrenheit(k, _round=2) -> float:
+def kelvin_to_fahrenheit(k, _round: int = 2) -> float:
     return round(((k - 273.15) * (9 / 5)) + 32, _round)
 
 
-def kelvin_to_celcius(k, _round=2) -> float:
+def kelvin_to_celcius(k, _round: int = 2) -> float:
     return round(k - 273.15, _round)
