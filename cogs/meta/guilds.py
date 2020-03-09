@@ -9,11 +9,12 @@ from discord.ext import commands as comms
 import discord
 
 
-class Guild(comms.Cog):
-    """Getting information about a guild.
+class Guilds(comms.Cog):
+    """Getting information about guilds.
 
     Attributes:
         bot (:obj:`comms.Bot`): Represents a Discord bot.
+        guild_attributes (list): All information ever wanted about a guild.
 
     """
 
@@ -56,6 +57,19 @@ class Guild(comms.Cog):
         embed = discord.Embed(title='*Guild information:*', description=f'```py\n{lst}\n```')
         await ctx.send(embed=embed)
 
+    @comms.command(enabled=False)
+    @comms.is_owner()
+    async def generate_guild(self, ctx, *, name: str):
+        """Creates a guild and returns the invite to the owner.
+
+        Args:
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            name (str): The name of the guild.
+
+        """
+        # NOTE: Bot accounts in more than 10 guilds are not allowed to create guilds. 
+        pass
+
 
 def setup(bot):
-    bot.add_cog(Guild(bot))
+    bot.add_cog(Guilds(bot))
