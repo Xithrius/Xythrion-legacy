@@ -28,6 +28,12 @@ class Records(comms.Cog):
 
         """
         self.bot = bot
+        """
+                t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                id BIGINT,
+                command TEXT
+        """
+
 
     @comms.Cog.listener()
     async def on_message(self, message):
@@ -39,7 +45,7 @@ class Records(comms.Cog):
         """
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
-                '''INSERT INTO Messages(identification, message_date) VALUES ($1, $2)''',
+                '''INSERT INTO Messages(t, id, ) VALUES ($1, $2)''',
                 message.author.id, datetime.datetime.now())
 
     @comms.command()
@@ -86,6 +92,7 @@ class Records(comms.Cog):
 
         # Inserting the login time for the bot.
         login = self.bot.startup_time.strftime('%A %I:%M:%S%p').lower().capitalize().replace(" ", " at ")
+        
         t = {'login_time': login, **t}
         
         # Putting everything together for formatting.

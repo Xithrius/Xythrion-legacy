@@ -122,21 +122,37 @@ class Xythrion(comms.Bot):
         """Checks if the database has the correct tables before starting the bot up."""
         async with self.pool.acquire() as conn:
             await conn.execute('''CREATE TABLE IF NOT EXISTS Users(
-                                id serial PRIMARY KEY,
-                                identification BIGINT,
-                                ignored BOOL,
-                                reason TEXT
-                                )''')
+                identification serial PRIMARY KEY,
+                t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                id BIGINT,
+                ignored BOOL,
+                reason TEXT
+            )''')
             await conn.execute('''CREATE TABLE IF NOT EXISTS Messages(
-                                id serial PRIMARY KEY,
-                                identification BINGINT,
-                                message_date TIMESTAMP WITHOUT TIME ZONE NOT NULL
-                                )''')
+                identification serial PRIMARY KEY,
+                t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                id BIGINT,
+                message TEXT
+            )''')
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Commands(
+                identification serial PRIMARY KEY,
+                t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                id BIGINT,
+                command TEXT,
+                arguments TEXT
+            )''')
             await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
-                                id serial PRIMARY KEY,
-                                login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                                logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
-                                )''')
+                identification serial PRIMARY KEY,
+                t_login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                t_logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
+            )''')
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Notes(
+                identification serial PRIMARY KEY,
+                t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                id TEXT,
+                name TEXT,
+                content TEXT
+            )''')
 
     async def on_ready(self):
         """Updates the bot status when logged in successfully."""
@@ -155,6 +171,18 @@ class Xythrion(comms.Bot):
         return await super().logout()
 
 
+class MyHelpCommand(comms.MinimalHelpCommand):
+    def get_command_signature(self, command):
+        return '{0.clean_prefix}{1.qualified_name} {1.signature}'.format(self, command)
+        """
+        paginator = commands.Paginator()
+        paginator.add_line('some line')
+        paginator.add_line('some other line')
+
+        for page in paginator.pages:
+            await ctx.send(page)
+        """
+
 class Development(comms.Cog):
     """Cog required for development and control, along with some extras.
 
@@ -171,6 +199,12 @@ class Development(comms.Cog):
 
         """
         self.bot = bot
+        self._original_help_command = bot.help_command
+        bot.help_command = MyHelpCommand()
+        bot.help_command.cog = self
+
+    def cog_unload(self):
+        self.bot.help_command = self._original_help_command
 
     async def cog_check(self, ctx):
         """Checks if user if owner.
