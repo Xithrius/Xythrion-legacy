@@ -52,7 +52,14 @@ class Reddit(comms.Cog):
             js = await r.json()
             js = js['data']['children']
             p = js[random.randint(0, len(js) - 1)]['data']
-            if p['over_18'] and not ctx.message.channel.is_nsfw():
+            fail = False
+            try:
+                if p['over_18'] and not ctx.message.channel.is_nsfw():
+                    fail = True
+            except AttributeError:
+                fail = True
+            
+            if fail:
                 raise comms.CheckFailure(message='NSFW')
 
             image = False

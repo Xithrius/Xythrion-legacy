@@ -15,7 +15,6 @@ import collections
 import discord
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
-from matplotlib import pyplot as plt
 
 from modules import gen_filename, kelvin_to_celcius, kelvin_to_fahrenheit, path
 
@@ -27,8 +26,8 @@ class Weather(comms.Cog):
         self.bot = bot
 
     @comms.cooldown(1, 10, BucketType.user)
-    @comms.command(enabled=False)
-    async def weather(self, ctx, zip_code: int, country_code: str = 'US'):
+    @comms.command()
+    async def weather(self, ctx, zip_code: int, option: typing.Optional[str] = 'F', *, country_code='US'):
         """Takes zip code and graph options and returns a plot.
 
         Args:
@@ -53,7 +52,7 @@ class Weather(comms.Cog):
                     **I['wind']
                 }
             lst = collections.OrderedDict(sorted(lst.items()))
-            with open(path('tmp.json'), 'w') as f:
+            with open(path('tmp', 'tmp.json'), 'w') as f:
                 json.dump(lst, f, indent=3)
 
 
