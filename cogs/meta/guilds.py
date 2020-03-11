@@ -6,6 +6,7 @@
 
 
 from discord.ext import commands as comms
+from discord.ext.commands.cooldowns import BucketType
 import discord
 
 
@@ -69,6 +70,20 @@ class Guilds(comms.Cog):
         """
         # NOTE: Bot accounts in more than 10 guilds are not allowed to create guilds. 
         pass
+
+    @comms.cooldown(1, 60, BucketType.default)
+    @comms.command(enabled=False)
+    @comms.is_owner()
+    async def message_owners(self, ctx, *, message: str):
+        """Messages owners of all guilds that the bot is in a specific message.
+
+        Args:
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            message (str): The name of the guild.
+
+        """
+        pass
+        # NOTE: Must iterate through guilds to make sure that rate limit is not passed, and all owners get the message.
 
 
 def setup(bot):

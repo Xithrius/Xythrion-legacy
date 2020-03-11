@@ -28,12 +28,6 @@ class Records(comms.Cog):
 
         """
         self.bot = bot
-        """
-                t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                id BIGINT,
-                command TEXT
-        """
-
 
     @comms.Cog.listener()
     async def on_message(self, message):
@@ -43,13 +37,32 @@ class Records(comms.Cog):
             message (discord.Message): Represents a message from Discord 
 
         """
+        ctx = await self.bot.get_context(message)
+        is_message = ctx.valid
+        if is_message:
+            async with self.bot.pool.acquire() as conn:
+                await conn.execute(
+                    '''INSERT INTO Messages(t, id, jump) VALUES ($1, $2, $3)''',
+                    message.created_at, message.author.id, message.jump_url
+                )
+
+    @comms.Cog.listener()
+    async def on_command(self, ctx):
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
-                '''INSERT INTO Messages(t, id, ) VALUES ($1, $2)''',
-                message.author.id, datetime.datetime.now())
+                '''INSERT INTO Commands(t, id, jump, command) VALUES ($1, $2, $3, $4)''',
+                datetime.datetime.now(), ctx.author.id, ctx.message.jump_url, str(ctx.command)
+            )
 
-    @comms.command()
-    @comms.cooldown(1, 5, BucketType.user)
+    @comms.Cog.listener()
+    async def on_command_completion(self, ctx):
+        async with self.bot.pool.acquire() as conn:
+            await conn.execute(
+                '''UPDATE Commands SET completed=$2 WHERE jump=$1''',
+                ctx.message.jump_url, datetime.datetime.now()
+            )
+
+    @comms.command(enabled=False)
     async def rank(self, ctx, user: discord.User = None):
         """Gets rank information about the user.
 
@@ -58,17 +71,9 @@ class Records(comms.Cog):
             user (discord.User): The user that will have their information retrieved (defaulted to None).
 
         """
-        user = user if user is not None else ctx.author
-        async with self.bot.pool.acquire() as conn:
-            info = await conn.fetch(
-                '''SELECT message_date from Messages WHERE identification=$1''',
-                user.id)
-            embed = discord.Embed(title=f'Calculated rank for "{user.name}":',
-                                description=f'`{len(info)} messages sent.`')
-            await ctx.send(embed=embed)
+        user = user.id if user is not None else ctx.author.id
 
     @comms.command()
-    @comms.cooldown(1, 5, BucketType.user)
     async def uptime(self, ctx):
         """Gives uptime information about the bot.
 
@@ -78,9 +83,9 @@ class Records(comms.Cog):
         """
         async with self.bot.pool.acquire() as conn:
             t = await conn.fetch(
-                '''SELECT avg(logout - login) avg_uptime,
-                          max(logout - login) max_uptime,
-                          min(logout - login) min_uptime FROM Runtime''')
+                '''SELECT avg(t_logout - t_login) avg_uptime,
+                          max(t_logout - t_login) max_uptime,
+                          min(t_logout - t_login) min_uptime FROM Runtime''')
             t = dict(t[0])
 
         timestamps = ['Hours', 'Minutes', 'Seconds']

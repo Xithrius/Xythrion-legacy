@@ -121,6 +121,11 @@ class Xythrion(comms.Bot):
     async def check_database(self):
         """Checks if the database has the correct tables before starting the bot up."""
         async with self.pool.acquire() as conn:
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
+                identification serial PRIMARY KEY,
+                t_login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                t_logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
+            )''')
             await conn.execute('''CREATE TABLE IF NOT EXISTS Users(
                 identification serial PRIMARY KEY,
                 t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
@@ -132,26 +137,22 @@ class Xythrion(comms.Bot):
                 identification serial PRIMARY KEY,
                 t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                 id BIGINT,
-                message TEXT
+                jump TEXT
             )''')
             await conn.execute('''CREATE TABLE IF NOT EXISTS Commands(
                 identification serial PRIMARY KEY,
                 t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                 id BIGINT,
+                jump TEXT,
                 command TEXT,
-                arguments TEXT
+                completed TIMESTAMP WITHOUT TIME ZONE
             )''')
-            await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
-                identification serial PRIMARY KEY,
-                t_login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                t_logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
-            )''')
-            await conn.execute('''CREATE TABLE IF NOT EXISTS Notes(
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Links(
                 identification serial PRIMARY KEY,
                 t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                 id TEXT,
                 name TEXT,
-                content TEXT
+                link TEXT
             )''')
 
     async def on_ready(self):
@@ -264,7 +265,7 @@ class Development(comms.Cog):
         try:
             async with self.bot.pool.acquire() as conn:
                 await conn.execute(
-                    '''INSERT INTO Runtime(login, logout) VALUES($1, $2)''',
+                    '''INSERT INTO Runtime(t_login, t_logout) VALUES($1, $2)''',
                     self.bot.startup_time, datetime.datetime.now())
         except AttributeError:
             pass
