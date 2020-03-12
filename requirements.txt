@@ -3,6 +3,5 @@ discord.py[voice]
 hyper_status
 google-cloud-texttospeech
 asyncpg
-plotly
-pandas
 numpy
+matplotlib

@@ -65,20 +65,21 @@ class Weather(comms.Cog):
             # Overwriting in the dictionary
             d[k] = lst
 
-        print('\n'.join(str(y) for y in d.items()))
+        labels = list(d.keys())
+        values = np.array(list(d.values()))
 
-        labels = d.keys()
         width = 0.6
-        widths = [0.15, -0.15, 0.3, -0.3]
         x = np.arange(len(labels))
         # values = np.arange(np.min([v for v in d.values()]), np.max([v for v in d.values()]), 15)
         columns = ['avg temp (°F)', 'low temp (°F)', 'high temp (°F)', 'humidity (%)', 'wind speed (mph)']
         fig, ax = plt.subplots()
         rects = []
-        for i, w, label in enumerate(labels):
-            reacts.append(ax.bar(x + w, d[label][:, i], w, label=l))
+        # reacts.append(ax.bar(x + w[0], d.values()[:, 0], w[0], label=labels[0]))
+        for i in range(4):
+            rects.append(ax.bar(x + (width * (-1 ** i)) / 2, values[:, i], width, label=labels[i]))
         
         for rect in rects:
+            break
             height = rect.get_height()
             ax.annotate('{}'.format(height),
                         xy=(rect.get_x() + rect.get_width() / 2, height),
@@ -87,10 +88,10 @@ class Weather(comms.Cog):
                         ha='center', va='bottom')
 
         fig.subplots_adjust(left=0.2, bottom=0.2)
-        ax.xlabel('Day')
-        ax.suptitle('Forecast Information')
-        ax.title(f'{zip_code}, {country_code}')
-        ax.legend()
+        plt.xlabel('Day')
+        plt.suptitle('Forecast Information')
+        plt.title(f'{zip_code}, {country_code}')
+        plt.legend()
 
         f = f'{gen_filename()}.png'
         plt.savefig(path('tmp', f))
@@ -121,7 +122,6 @@ class Weather(comms.Cog):
         async with lock:
             func = functools.partial(self.create_plot, _json, zip_code, country_code)
             f = await self.bot.loop.run_in_executor(None, func)
-            return
             # File object for graph
             file = discord.File(path('tmp', f), filename=f)
 
