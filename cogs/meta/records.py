@@ -72,6 +72,16 @@ class Records(comms.Cog):
 
         """
         user = user.id if user is not None else ctx.author.id
+        async with self.bot.pool.acquire() as conn:
+            messages = await conn.fetch(
+                '''SELECT jump FROM Messages WHERE id = $1''',
+                user
+            )
+            commands = await conn.fetch(
+                '''SELECT jump FROM Commands WHERE id = $1''',
+                user
+            )
+            # NOTE: first message recorded - messages[0]['jump']
 
     @comms.command()
     async def uptime(self, ctx):
