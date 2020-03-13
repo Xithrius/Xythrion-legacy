@@ -41,7 +41,7 @@ class Graphing(comms.Cog):
         plt.savefig(path('tmp', f))
         return f
 
-    @comms.command()
+    @comms.command(enabled=False)
     async def graph(self, ctx):
         """
 

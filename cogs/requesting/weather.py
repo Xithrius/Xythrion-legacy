@@ -81,7 +81,7 @@ class Weather(comms.Cog):
         return f
 
     @comms.cooldown(1, 1, BucketType.user)
-    @comms.command()
+    @comms.command(enabled=False)
     async def weather(self, ctx, zip_code: int, option: typing.Optional[str] = 'F', *, country_code='US'):
         """Takes zip code and graph options and returns a plot.
 

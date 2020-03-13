@@ -27,7 +27,7 @@ class Calculator(comms.Cog):
         """
         self.bot = bot
 
-    @comms.command()
+    @comms.command(enabled=False)
     async def zeroes(self, ctx, *, eq: str):
         """Find the zeroes of a polynomial
 
