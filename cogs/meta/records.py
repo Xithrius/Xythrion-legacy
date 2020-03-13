@@ -62,7 +62,7 @@ class Records(comms.Cog):
                 ctx.message.jump_url, datetime.datetime.now()
             )
 
-    @comms.command(enabled=False)
+    @comms.command()
     async def rank(self, ctx, user: discord.User = None):
         """Gets rank information about the user.
 
@@ -71,17 +71,19 @@ class Records(comms.Cog):
             user (discord.User): The user that will have their information retrieved (defaulted to None).
 
         """
-        user = user.id if user is not None else ctx.author.id
+        user = user if user is not None else ctx.author
         async with self.bot.pool.acquire() as conn:
             messages = await conn.fetch(
                 '''SELECT jump FROM Messages WHERE id = $1''',
-                user
+                user.id
             )
             commands = await conn.fetch(
                 '''SELECT jump FROM Commands WHERE id = $1''',
-                user
+                user.id
             )
-            # NOTE: first message recorded - messages[0]['jump']
+        embed = discord.Embed(title=f'***Calculated rank for {user.name}:***')
+        embed.description = f'```py\nTotal commands executed: {len(commands)}\nTotal messages: {len(messages)}\n```'
+        await ctx.send(embed=embed)
 
     @comms.command()
     async def uptime(self, ctx):
