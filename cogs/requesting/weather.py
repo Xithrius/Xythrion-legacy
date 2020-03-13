@@ -64,30 +64,12 @@ class Weather(comms.Cog):
             
             # Overwriting in the dictionary
             d[k] = lst
-
-        labels = list(d.keys())
-        values = np.array(list(d.values()))
-
-        width = 0.6
-        x = np.arange(len(labels))
-        # values = np.arange(np.min([v for v in d.values()]), np.max([v for v in d.values()]), 15)
-        columns = ['avg temp (°F)', 'low temp (°F)', 'high temp (°F)', 'humidity (%)', 'wind speed (mph)']
-        fig, ax = plt.subplots()
-        rects = []
-        # reacts.append(ax.bar(x + w[0], d.values()[:, 0], w[0], label=labels[0]))
-        for i in range(4):
-            rects.append(ax.bar(x + (width * (-1 ** i)) / 2, values[:, i], width, label=labels[i]))
         
-        for rect in rects:
-            break
-            height = rect.get_height()
-            ax.annotate('{}'.format(height),
-                        xy=(rect.get_x() + rect.get_width() / 2, height),
-                        xytext=(0, 3),
-                        textcoords="offset points",
-                        ha='center', va='bottom')
+        labels = ['avg temp (°F)', 'low temp (°F)', 'high temp (°F)', 'humidity (%)', 'wind speed (mph)']
+        values = np.array(list(d.values()))
+        for i, day in enumerate(list(d.keys())):
+            plt.plot(values[:, i], label=labels[i])
 
-        fig.subplots_adjust(left=0.2, bottom=0.2)
         plt.xlabel('Day')
         plt.suptitle('Forecast Information')
         plt.title(f'{zip_code}, {country_code}')
@@ -97,9 +79,8 @@ class Weather(comms.Cog):
         plt.savefig(path('tmp', f))
         
         return f
-        # NOTE: before - https://github.com/Xithrius/Xythrion/blob/1df02a1199f90fa364309e4c07e54d3fe68c1a8c/cogs/requesters/weather.py
 
-    @comms.cooldown(1, 10, BucketType.user)
+    @comms.cooldown(1, 1, BucketType.user)
     @comms.command()
     async def weather(self, ctx, zip_code: int, option: typing.Optional[str] = 'F', *, country_code='US'):
         """Takes zip code and graph options and returns a plot.
@@ -107,7 +88,7 @@ class Weather(comms.Cog):
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
             zip_code (int): The zip code for the weather.
-            amount (int): Optional argument for days, default to 7.
+            option (typing.Optional[str]): Farenheight or Celcius abbreviations.
             country_code (str): The code of a country
 
         """
