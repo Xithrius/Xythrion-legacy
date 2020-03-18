@@ -7,9 +7,8 @@
 
 import datetime
 
-from discord.ext import commands as comms
-from discord.ext.commands.cooldowns import BucketType
 import discord
+from discord.ext import commands as comms
 
 
 class Records(comms.Cog):
@@ -32,9 +31,9 @@ class Records(comms.Cog):
     @comms.Cog.listener()
     async def on_message(self, message):
         """Records every single message sent by users for ranking.
-        
+
         Args:
-            message (discord.Message): Represents a message from Discord 
+            message (discord.Message): Represents a message from Discord.
 
         """
         ctx = await self.bot.get_context(message)
@@ -101,7 +100,7 @@ class Records(comms.Cog):
             t = dict(t[0])
 
         timestamps = ['Hours', 'Minutes', 'Seconds']
-        
+
         for k, v in t.items():
             # datetime.timedelta to formatted datetime.datetime
             tmp = str((datetime.datetime.min + v).time()).split(':')
@@ -109,14 +108,14 @@ class Records(comms.Cog):
 
         # Inserting the login time for the bot.
         login = self.bot.startup_time.strftime('%A %I:%M:%S%p').lower().capitalize().replace(" ", " at ")
-        
+
         t = {'login_time': login, **t}
-        
+
         # Putting everything together for formatting.
-        lst = [f'Login time', f'Average uptime', f'Longest uptime', f'Shortest uptime' ]
+        lst = [f'Login time', f'Average uptime', f'Longest uptime', f'Shortest uptime']
         lst = [f'{y[0]}: {y[1]}' for y in zip(lst, t.values())]
         lst = '\n'.join(str(y) for y in lst)
-        
+
         embed = discord.Embed(title='*Bot uptime information:*', description=f'```py\n{lst}\n```')
         await ctx.send(embed=embed)
 

@@ -45,7 +45,7 @@ class Warnings(comms.Cog):
             if str(error).strip() == 'NSFW':
                 return await ctx.send('`NSFW in SFW channels are not allowed.`')
             return await ctx.send(f'`You do not have enough permissions to run this command.`')
-        
+
         elif isinstance(error, AssertionError):
             return await ctx.send(f'`Command request failed. {error}`')
 

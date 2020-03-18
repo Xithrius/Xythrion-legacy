@@ -5,9 +5,7 @@
 """
 
 
-import aiohttp
 import random
-import typing
 
 import discord
 from discord.ext import commands as comms
@@ -26,7 +24,7 @@ class Reddit(comms.Cog):
     @comms.command(aliases=['sub', 'subreddit'])
     async def reddit(self, ctx, subreddit, status='hot', timeframe='day'):
         """Getting arguments from the user to make a Reddit request and giving an embed.
-        
+
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
             subreddit (str): The name of the subreddit.
@@ -35,7 +33,7 @@ class Reddit(comms.Cog):
 
         Raises:
             AssertionError: Invalid parameters have been given to the command.
-        
+
         """
         status, timeframe = status.lower(), timeframe.lower()
         statuses = ['top', 'hot', 'controvertial', 'new', 'guilded']
@@ -45,7 +43,7 @@ class Reddit(comms.Cog):
             return await ctx.send(f'Please pick a status within `{", ".join(str(y) for y in statuses)}`')
         if timeframe not in timeframes:
             return await ctx.send(f'Please pick a timeframe within `{", ".join(str(y) for y in timeframes)}`')
-        
+
         url = f'https://reddit.com/r/{subreddit}/{status}.json?limit=100&t={timeframe}'
         async with self.bot.session.get(url) as r:
             assert r.status == 200, r.status
@@ -58,7 +56,7 @@ class Reddit(comms.Cog):
                     fail = True
             except AttributeError:
                 fail = True
-            
+
             if fail:
                 raise comms.CheckFailure(message='NSFW')
 
@@ -66,7 +64,8 @@ class Reddit(comms.Cog):
             if p['url'][-4:] in ('.jpg', 'jpeg', '.png'):
                 image = p['url']
 
-            embed = discord.Embed(title=f'*r/{subreddit}*', description=f'[`{shorten(p["title"])}`](https://reddit.com{p["permalink"]})')
+            embed = discord.Embed(title=f'*r/{subreddit}*',
+                                  description=f'[`{shorten(p["title"])}`](https://reddit.com{p["permalink"]})')
             embed.set_footer(text=f'Upvotes: {p["ups"]}\nAuthor: u/{p["author"]}')
             if image:
                 embed.set_image(url=image)

@@ -1,6 +1,6 @@
 datetime
 discord.py[voice]
-hyper_status
+hyper-status
 google-cloud-texttospeech
 asyncpg
 numpy

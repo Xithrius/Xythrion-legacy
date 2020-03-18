@@ -1,13 +1,12 @@
 - Cogs:
     - Weather: Use OpenWeatherMap forecasting to create graphs and maybe tables.
     - Math: Convert between units and solve equations for user.
-    - Graphing: Use Plotly to create graphs after parsing input with regex. 
-    - Admin: Make sure automation of punishment is easier, and scan messages for bad words.
+    - Graphing: Use matplotlib to create graphs after parsing input with regex. 
+    - Admin: Make sure automation of punishment is easier
 
 - Cog ideas:
     - Pokemon: Using equations, calculate chances of things.
     - Minecraft: Get images of crafting, and chances of stuff.
-    - 
 
 - Website:
     - Start/finish? (idk might not since there isn't a real purpose for it.)
