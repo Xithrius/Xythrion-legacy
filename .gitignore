@@ -108,5 +108,4 @@ config/*.json
 /tmp/*
 
 # Visual Studio Code
-*.code-workspace
 /.vscode

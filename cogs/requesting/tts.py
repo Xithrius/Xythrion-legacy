@@ -8,10 +8,11 @@
 import asyncio
 import functools
 
+import discord
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
-import discord
 from google.cloud import texttospeech
+from hyper_status import Status
 
 from modules import path
 
@@ -30,20 +31,21 @@ class TTS(comms.Cog):
 
         Returns:
             True or false based off of if user is an owner of the bot.
-        
+
         """
         return await self.bot.is_owner(ctx.author)
 
     def tts_creation(self, message: str):
         """Creating the audio file for TTS.
-        
+
         Args:
             message (str): The text that will be converted to speech in audio.
-        
+
         """
         client = texttospeech.TextToSpeechClient()
         synthesis_input = texttospeech.types.SynthesisInput(text=message)
-        voice = texttospeech.types.VoiceSelectionParams(language_code='en-US-Wavenet-D', ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
+        voice = texttospeech.types.VoiceSelectionParams(language_code='en-US-Wavenet-D',
+                                                        ssml_gender=texttospeech.enums.SsmlVoiceGender.MALE)
         audio_config = texttospeech.types.AudioConfig(audio_encoding=texttospeech.enums.AudioEncoding.MP3)
         response = client.synthesize_speech(synthesis_input, voice, audio_config)
         with open(path('tmp', 'tts.mp3'), 'wb') as out:
@@ -80,19 +82,22 @@ class TTS(comms.Cog):
         """
         await self.tts_status(ctx.guild.voice_client, message)
 
-
     @comms.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         """Joins and leaves voice channels to announce who has left and who has joined.
-        
+
         Args:
             member (member): The member who had their voice state changed.
             beore (VoiceState): The state of the user before this event was triggered.
             after (VoiceState): The state of the user after this event was triggered.
 
         """
-        after_ignore = [after.deaf, after.mute, after.self_mute, after.self_deaf, after.self_stream, after.self_video, after.afk]
-        before_ignore = [before.deaf, before.mute, before.self_mute, before.self_deaf, before.self_stream, before.self_video, before.afk]
+        after_ignore = [
+            after.deaf, after.mute, after.self_mute, after.self_deaf, after.self_stream, after.self_video, after.afk
+        ]
+        before_ignore = [
+            before.deaf, before.mute, before.self_mute, before.self_deaf, before.self_stream, before.self_video, before.afk
+        ]
 
         if after_ignore != before_ignore:
             return
@@ -132,10 +137,10 @@ class TTS(comms.Cog):
     @comms.cooldown(1, 8, BucketType.guild)
     async def join(self, ctx):
         """Joins the channel the caller is currently in.
-        
+
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
-        
+
         """
         if ctx.voice_client is None:
             if ctx.author.voice:
@@ -150,7 +155,7 @@ class TTS(comms.Cog):
     @comms.cooldown(1, 8, BucketType.guild)
     async def leave(self, ctx):
         """Leaves voice channel, if the bot is even in one.
-        
+
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
 
@@ -161,10 +166,10 @@ class TTS(comms.Cog):
     @comms.cooldown(1, 8, BucketType.guild)
     async def stop(self, ctx):
         """Stops the current audio stream.
-        
+
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
-        
+
         """
         ctx.voice_client.stop()
 

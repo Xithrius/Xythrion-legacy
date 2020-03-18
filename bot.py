@@ -6,7 +6,7 @@
 The main file for the graphing bot.
 
 Running the bot (python 3.8+):
-    
+
     Installing requirements:
         $ python -m pip install --user -r requirements.txt
 
@@ -26,9 +26,9 @@ import logging
 import os
 import sys
 import traceback
+
 import aiohttp
 import asyncpg
-
 import discord
 from discord.ext import commands as comms
 from hyper_status import Status
@@ -105,10 +105,10 @@ class Xythrion(comms.Bot):
 
     async def create_courtines(self):
         """Creates asynchronous database and session connection.
-        
+
         Raises:
             Possible errors describing why connections could not be etablished.
-        
+
         """
         try:
             self.pool = await asyncpg.create_pool(**self.config['db'], command_timeout=60)
@@ -184,6 +184,7 @@ class MyHelpCommand(comms.MinimalHelpCommand):
             await ctx.send(page)
         """
 
+
 class Development(comms.Cog):
     """Cog required for development and control, along with some extras.
 
@@ -209,20 +210,20 @@ class Development(comms.Cog):
 
     async def cog_check(self, ctx):
         """Checks if user if owner.
-        
+
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
 
         Returns:
             True or false based off of if user is an owner of the bot.
-        
+
         """
         return await self.bot.is_owner(ctx.author)
 
     @comms.command(aliases=['refresh', 'r'])
     async def reload(self, ctx):
         """Gets the cogs within folders and loads them into the bot after unloading current cogs.
-        
+
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
 
@@ -260,7 +261,7 @@ class Development(comms.Cog):
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
-        
+
         """
         try:
             async with self.bot.pool.acquire() as conn:

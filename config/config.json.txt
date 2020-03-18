@@ -1,6 +1,7 @@
 {
     "discord": "",
-    "weather": "",
+    "OpenWeatherMap": "",
+    "Nasa": "",
     "db": {
         "user": "",
         "password": "",

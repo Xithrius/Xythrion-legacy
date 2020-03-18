@@ -5,25 +5,38 @@
 """
 
 
-import typing
-import datetime
+from typing import Union
 
-from discord.ext import commands as comms
 import discord
+from discord.ext import commands as comms
 
 
-class Users(comms.Cog):
-    """Moderating people in servers and bot commands."""
+class Admin(comms.Cog):
+    """Summary for Admin
+
+    Attributes:
+        bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+    """
 
     def __init__(self, bot):
+        """Creating important attributes for this class.
+
+        Args:
+            bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+        """
         self.bot = bot
 
     async def cog_check(self, ctx):
         """Checks if user if owner.
-        
+
+        Args:
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+
         Returns:
             True or false based off of if user is an owner of the bot.
-        
+
         """
         return await self.bot.is_owner(ctx.author)
 
@@ -32,9 +45,9 @@ class Users(comms.Cog):
         pass
 
     @comms.command()
-    async def unignore(self, ctx, user: typing.Union[discord.User, int] = None):
+    async def unignore(self, ctx, user: Union[discord.User, int] = None):
         pass
 
 
 def setup(bot):
-    bot.add_cog(Users(bot))
+    bot.add_cog(Admin(bot))

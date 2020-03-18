@@ -8,10 +8,9 @@
 import asyncio
 import os
 
-from discord.ext import commands as comms
-from discord.ext.commands.cooldowns import BucketType
 import discord
 import matplotlib.pyplot as plt
+from discord.ext import commands as comms
 
 from modules import gen_filename, path
 

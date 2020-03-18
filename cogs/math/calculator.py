@@ -6,8 +6,6 @@
 
 
 from discord.ext import commands as comms
-from discord.ext.commands.cooldowns import BucketType
-import discord
 
 
 class Calculator(comms.Cog):
@@ -27,9 +25,9 @@ class Calculator(comms.Cog):
         """
         self.bot = bot
 
-    @comms.command(enabled=False)
-    async def zeroes(self, ctx, *, eq: str):
-        """Find the zeroes of a polynomial
+    @comms.command()
+    async def multiply(self, ctx, *, eq: str):
+        """Multiplies two items together.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.

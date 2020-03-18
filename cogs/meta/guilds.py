@@ -5,9 +5,9 @@
 """
 
 
+import discord
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
-import discord
 
 
 class Guilds(comms.Cog):
@@ -68,7 +68,7 @@ class Guilds(comms.Cog):
             name (str): The name of the guild.
 
         """
-        # NOTE: Bot accounts in more than 10 guilds are not allowed to create guilds. 
+        # NOTE: Bot accounts in more than 10 guilds are not allowed to create guilds.
         pass
 
     @comms.cooldown(1, 60, BucketType.default)
