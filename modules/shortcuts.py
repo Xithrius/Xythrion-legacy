@@ -6,19 +6,21 @@
 
 
 import json
-from asyncio import AbstractEventLoop
-from typing import Optional, Union
+from http.client import responses
+from typing import Union
 
 from aiohttp import ClientSession
 
 
-def gen_block(content: Union[str, list, dict], *, lang: str = 'py', lines: bool = False) -> str:
+def gen_block(content: Union[str, list, dict], *,
+              lang: str = 'py', lines: bool = False, separator: str = '|') -> str:
     """Generates a Discord markdown block.
 
     Args:
         content (:obj:`typing.Union[str, list, dict]`): What will be converted into a block.
         language (str, optional): The markdown language.
         lines (bool, optional): The option to insert line numbers at the start of every line.
+        separator (str, optional): The separator between the line number and information
 
     Returns:
         A string containing a programming language block for Discord.
@@ -30,7 +32,7 @@ def gen_block(content: Union[str, list, dict], *, lang: str = 'py', lines: bool 
         another item
         ```
 
-        >>> print(gen_block('item', 'css'))
+        >>> print(gen_block('item', lang='css'))
         ```css
         item
         ```
@@ -49,19 +51,20 @@ def gen_block(content: Union[str, list, dict], *, lang: str = 'py', lines: bool 
     if isinstance(content, dict):
         content = json.dumps(content, indent=3, sort_keys=True).split('\n')
 
-    if isinstance(content, list):
-        content = '\n'.join(f'{str(i).zfill(3)} | {str(y)}' if lines else (str(y)) for i, y in enumerate(content))
+    content = '\n'.join(
+        f'{str(i).zfill(3)} {separator} {str(y)}' if lines else (str(y)) for i, y in enumerate(content)
+    )
 
     return f'```{lang}\n{content}\n```'
 
 
-async def http_get(url: str, *, session: ClientSession = None, loop: Optional[AbstractEventLoop] = None, block: bool = False) -> Union[dict, str]:
+async def http_get(url: str, *, session: ClientSession = None, block: bool = False) -> Union[dict, str]:
     """Gets information from a http request.
 
     Args:
         url (str): The url that the service is located at.
         session (aiohttp.ClientSession, optional): The session that will be used for the request.
-        loop (:obj:`Optional[asyncio.AbstractEventLoop]`, optional): The loop that will be used for the session.
+        loop (:obj:`asyncio.AbstractEventLoop`, optional): The loop that will be used for the session.
         block (bool, optional): if you want the response to be inserted into a Discord markdown block.
 
     Returns:
@@ -102,9 +105,9 @@ async def http_get(url: str, *, session: ClientSession = None, loop: Optional[Ab
         ```
 
     """
-    session = ClientSession(loop=loop) if not session else session
+    session = ClientSession() if not session else session
     async with session.get(url) as r:
-        assert r.status == 200, r.status
+        assert r.status == 200, f'Status code: {r.status}, {responses[r.status]}.'
         content_type = r.content_type.split('/')[1]
 
         try:

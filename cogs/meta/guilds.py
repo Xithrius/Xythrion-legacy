@@ -83,7 +83,8 @@ class Guilds(comms.Cog):
 
         """
         pass
-        # NOTE: Must iterate through guilds to make sure that rate limit is not passed, and all owners get the message.
+        # NOTE: Must iterate through guilds to make sure that rate limit is not passed,
+        #       and all owners get the message.
 
 
 def setup(bot):

@@ -93,7 +93,8 @@ class Xythrion(comms.Bot):
         if os.path.isfile(path('config', 'gsc.json')):
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('config', 'gsc.json')
         else:
-            Status('Google Service Token JSON file could not be found or opened within /config. TTS is disabled.', 'fail')
+            Status(
+                'Google Service Token .json could not be opened properly. TTS is disabled.', 'fail')
             try:
                 __cogs.remove('cogs.requesters.tts')
             except ValueError:
@@ -158,7 +159,8 @@ class Xythrion(comms.Bot):
     async def on_ready(self):
         """Updates the bot status when logged in successfully."""
         self.startup_time = datetime.datetime.now()
-        await self.change_presence(status=discord.ActivityType.playing, activity=discord.Game('with information'))
+        await self.change_presence(status=discord.ActivityType.playing,
+                                   activity=discord.Game('with information'))
         Status('Awaiting...', 'ok')
 
     async def logout(self):
@@ -170,19 +172,6 @@ class Xythrion(comms.Bot):
             pass
 
         return await super().logout()
-
-
-class MyHelpCommand(comms.MinimalHelpCommand):
-    def get_command_signature(self, command):
-        return '{0.clean_prefix}{1.qualified_name} {1.signature}'.format(self, command)
-        """
-        paginator = commands.Paginator()
-        paginator.add_line('some line')
-        paginator.add_line('some other line')
-
-        for page in paginator.pages:
-            await ctx.send(page)
-        """
 
 
 class Development(comms.Cog):
@@ -201,12 +190,6 @@ class Development(comms.Cog):
 
         """
         self.bot = bot
-        self._original_help_command = bot.help_command
-        bot.help_command = MyHelpCommand()
-        bot.help_command.cog = self
-
-    def cog_unload(self):
-        self.bot.help_command = self._original_help_command
 
     async def cog_check(self, ctx):
         """Checks if user if owner.
@@ -230,6 +213,13 @@ class Development(comms.Cog):
         Raises:
             Anything besides comms.ExtensionNotLoaded when loading cogs.
 
+        Examples:
+            >>> (ctx.prefix)r
+            Reloaded extensions.
+
+            >>> (ctx.prefix)refresh
+            Reloaded extensions.
+
         """
         for cog in get_extensions():
             try:
@@ -244,10 +234,26 @@ class Development(comms.Cog):
 
     @comms.command(name='loaded')
     async def loaded_extension(self, ctx):
-        """Gives the currently loaded cogs.
+        """Gives a list of the currently loaded cogs.
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
+
+        Examples:
+            >>> (ctx.prefix)loaded
+            000 | Development
+            001 | Calculator
+            002 | Graphing
+            003 | Custom
+            004 | Guilds
+            005 | Links
+            006 | Records
+            007 | Admin
+            008 | Warnings
+            009 | Reddit
+            010 | TTS
+            011 | Warframe
+            012 | Weather
 
         """
         lst = [f'{str(i).zfill(3)} | {k}' for i, k in enumerate(self.bot.cogs.keys())]
@@ -255,12 +261,16 @@ class Development(comms.Cog):
         embed = discord.Embed(title='*Currently loaded cogs:*', description=f'```py\n{c}\n```')
         await ctx.send(embed=embed)
 
-    @comms.command(aliases=['logout'])
+    @comms.command()
     async def exit(self, ctx):
         """Makes the bot logout after completing some last-second tasks.
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
+
+        Examples:
+            >>> (ctx.prefix)exit
+            ~> [ Mar 20 2020, Friday 11:57:00pm ] > [   Warn   ]: Logging out...
 
         """
         try:

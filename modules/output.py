@@ -19,6 +19,10 @@ def path(*filepath) -> str:
     Returns:
         String of filepath with OS based seperator.
 
+    Examples:
+        >>> print(path('tmp', 'image.png'))
+        C:\\Users\\Xithr\\Documents\\Repositories\\Xythrion\\tmp\\image.png
+
     """
     lst = [
         os.path.abspath(os.path.dirname(sys.argv[0])),
@@ -32,6 +36,10 @@ def get_extensions() -> list:
 
     Returns:
         a list of cogs starting with cogs.<folder if any>.<filename without .py>.
+
+    Examples:
+        >>> print(get_extensions())
+        ['cogs.math.calculator', 'cogs.math.graphing', 'cogs.meta.custom']
 
     """
     c = []
@@ -48,6 +56,13 @@ def gen_filename() -> str:
     Returns:
         A string with the current date for filename usage.
 
+    Examples:
+        >>> print(gen_filename())
+        1584774125328021
+
+        >>> print(f'{gen_filename()}.png')
+        1584774141733494.png
+
     """
     return str(datetime.datetime.timestamp(datetime.datetime.now())).replace('.', '')
 
@@ -57,10 +72,17 @@ def shorten(s: str, char_limit: int = 50) -> str:
 
     Args:
         s (str): The input string
-        _len (int): The desired limit for length
+        char_limit (int): The desired limit for length
 
     Returns:
         A string cut down to a specific length.
+
+    Examples:
+        >>> print(shorten("A large string that's very very very long and pretty much never ending until now"))
+        A large string that's very very very long and pretty...
+
+        >>> print(shorten("A large string that's very very very long."))
+        A large string that's very very very long.
 
     """
     new_str = []
