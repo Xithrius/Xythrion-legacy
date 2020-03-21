@@ -10,6 +10,8 @@ import datetime
 import discord
 from discord.ext import commands as comms
 
+from modules import gen_block
+
 
 class Records(comms.Cog):
     """Recording and outputting information based on users, by users.
@@ -37,8 +39,7 @@ class Records(comms.Cog):
 
         """
         ctx = await self.bot.get_context(message)
-        is_message = ctx.valid
-        if is_message:
+        if not ctx.valid:
             async with self.bot.pool.acquire() as conn:
                 await conn.execute(
                     '''INSERT INTO Messages(t, id, jump) VALUES ($1, $2, $3)''',
@@ -81,7 +82,11 @@ class Records(comms.Cog):
                 user.id
             )
         embed = discord.Embed(title=f'***Calculated rank for {user.name}:***')
-        embed.description = f'```py\nTotal commands executed: {len(commands)}\nTotal messages: {len(messages)}\n```'
+        desc_lst = [
+            f'Total commands executed: {len(commands)}',
+            f'Total messages: {len(messages)}'
+        ]
+        embed.description = gen_block(desc_lst, lines=True)
         await ctx.send(embed=embed)
 
     @comms.command()
@@ -104,7 +109,8 @@ class Records(comms.Cog):
         for k, v in t.items():
             # datetime.timedelta to formatted datetime.datetime
             tmp = str((datetime.datetime.min + v).time()).split(':')
-            t[k] = ', '.join(f'{int(float(tmp[i]))} {timestamps[i]}' for i in range(len(timestamps)) if float(tmp[i]) != 0.0)
+            t[k] = ', '.join(f'{int(float(tmp[i]))} {timestamps[i]}' for i in range(
+                len(timestamps)) if float(tmp[i]) != 0.0)
 
         # Inserting the login time for the bot.
         login = self.bot.startup_time.strftime('%A %I:%M:%S%p').lower().capitalize().replace(" ", " at ")
