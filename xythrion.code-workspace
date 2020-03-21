@@ -10,7 +10,7 @@
         "editor.autoClosingQuotes": "always",
         "editor.tabCompletion": "on",
         "python.linting.flake8Args": [
-            "--max-line-length=150"
+            "--max-line-length=110"
         ],
     }
 }
