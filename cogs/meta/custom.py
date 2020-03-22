@@ -49,7 +49,7 @@ class Custom(comms.Cog):
 
         """
         info = await http_get(url, session=self.bot.session, block=True)
-        await ctx.author.send(info, delete_after=10)
+        await ctx.author.send(info, delete_after=15)
 
 
 def setup(bot):

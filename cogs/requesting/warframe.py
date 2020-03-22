@@ -35,7 +35,7 @@ class Warframe(comms.Cog):
             'vallisCycle'
         ]
 
-    @comms.cooldown(1, 5, BucketType.user)
+    @comms.cooldown(1, 3, BucketType.user)
     @comms.command()
     async def warframe(self, ctx, item: str, platform: str = 'pc'):
         """Gets Warframe information.
