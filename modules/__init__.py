@@ -5,13 +5,17 @@
 """
 
 
-from .output import path, get_extensions, gen_filename, shorten
 from .conversion import kelvin_to_fahrenheit, kelvin_to_celcius
-from .shortcuts import gen_block, http_get
+from .shortcuts import (
+    path, get_extensions, shorten,
+    gen_block, http_get, gen_filename,
+    gen_table
+)
 
 
 __all__ = [
-    'path', 'get_extensions', 'gen_filename', 'shorten',
+    'path', 'get_extensions', 'shorten',
     'kelvin_to_fahrenheit', 'kelvin_to_celcius',
-    'gen_block', 'http_get'
+    'gen_block', 'http_get', 'gen_filename',
+    'gen_table'
 ]
