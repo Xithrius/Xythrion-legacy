@@ -64,8 +64,9 @@ class Reddit(comms.Cog):
             if p['url'][-4:] in ('.jpg', 'jpeg', '.png'):
                 image = p['url']
 
+            desc = f'[`{shorten(p["title"])}`](https://reddit.com{p["permalink"]})'
             embed = discord.Embed(title=f'*r/{subreddit}*',
-                                  description=f'[`{shorten(p["title"])}`](https://reddit.com{p["permalink"]})')
+                                  description=desc)
             embed.set_footer(text=f'Upvotes: {p["ups"]}\nAuthor: u/{p["author"]}')
             if image:
                 embed.set_image(url=image)

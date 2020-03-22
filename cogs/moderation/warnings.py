@@ -12,10 +12,20 @@ from discord.ext import commands as comms
 
 
 class Warnings(comms.Cog):
-    """ """
+    """Warning the user about specific actions taken.
+
+    Attributes:
+        bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+    """
 
     def __init__(self, bot):
-        """ """
+        """Creating important attributes for this class.
+
+        Args:
+            bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+        """
         self.bot = bot
 
     @comms.Cog.listener()

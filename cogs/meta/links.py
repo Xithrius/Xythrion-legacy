@@ -36,7 +36,8 @@ class Links(comms.Cog):
             ctx (comms.Context): Represents the context in which a command is being invoked under.
 
         """
-        url = f'https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot&permissions=37604544'
+        _id = self.bot.user.id
+        url = f'https://discordapp.com/oauth2/authorize?client_id={_id}&scope=bot&permissions=37604544'
         embed = discord.Embed(description=f'[`Xythrion invite url`]({url})')
         await ctx.send(embed=embed)
 
