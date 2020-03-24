@@ -5,9 +5,11 @@
 """
 
 
+import asyncio
 import sys
 import traceback
 
+import discord
 from discord.ext import commands as comms
 
 
@@ -29,12 +31,23 @@ class Warnings(comms.Cog):
         self.bot = bot
 
     @comms.Cog.listener()
+    async def on_command_completion(self, ctx):
+        await ctx.message.add_reaction('\U00002705')
+        await asyncio.sleep(7)
+        try:
+            await ctx.message.delete()
+        except discord.Forbidden:
+            pass
+
+    @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
         """ """
         if hasattr(ctx.command, 'on_error'):
             return
 
         error = getattr(error, 'original', error)
+
+        await ctx.message.add_reaction('\U0000274c')
 
         if isinstance(error, comms.DisabledCommand):
             return await ctx.send(f'`Command not available.`')

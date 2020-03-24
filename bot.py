@@ -236,7 +236,7 @@ class Development(comms.Cog):
             except Exception as e:
                 Status(f'Loading {cog} error:', 'fail')
                 traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
-        await ctx.send('Reloaded extensions.', delete_after=5)
+        await ctx.send('Reloaded extensions.', delete_after=7)
 
     @comms.command(name='loaded')
     async def loaded_extension(self, ctx):

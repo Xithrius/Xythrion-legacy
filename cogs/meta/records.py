@@ -10,7 +10,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands as comms
 
-from modules import gen_block
+from modules import gen_block, describe_date
 
 
 class Records(comms.Cog):
@@ -133,7 +133,9 @@ class Records(comms.Cog):
             )
             if len(d):
                 delta = datetime.now() - d[0]['t']
-                await ctx.send(f'{delta} since "{name}", {d}')
+                embed = discord.Embed(title=f'"{name}":')
+                embed.description = gen_block([f'{describe_date(delta)} ago.'])
+                await ctx.send(embed=embed)
             else:
                 await ctx.send(f'Could not find dated named "{name}"')
 
