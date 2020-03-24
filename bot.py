@@ -151,9 +151,15 @@ class Xythrion(comms.Bot):
             await conn.execute('''CREATE TABLE IF NOT EXISTS Links(
                 identification serial PRIMARY KEY,
                 t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                id TEXT,
+                id BIGINT,
                 name TEXT,
                 link TEXT
+            )''')
+            await conn.execute('''CREATE TABLE IF NOT EXISTS Dates(
+                identification serial PRIMARY KEY,
+                t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                id BIGINT,
+                name TEXT
             )''')
 
     async def on_ready(self):

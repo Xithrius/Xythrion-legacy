@@ -5,7 +5,7 @@
 """
 
 
-import datetime
+from datetime import datetime
 
 import discord
 from discord.ext import commands as comms
@@ -51,7 +51,7 @@ class Records(comms.Cog):
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
                 '''INSERT INTO Commands(t, id, jump, command) VALUES ($1, $2, $3, $4)''',
-                datetime.datetime.now(), ctx.author.id, ctx.message.jump_url, str(ctx.command)
+                datetime.now(), ctx.author.id, ctx.message.jump_url, str(ctx.command)
             )
 
     @comms.Cog.listener()
@@ -59,7 +59,7 @@ class Records(comms.Cog):
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
                 '''UPDATE Commands SET completed=$2 WHERE jump=$1''',
-                ctx.message.jump_url, datetime.datetime.now()
+                ctx.message.jump_url, datetime.now()
             )
 
     @comms.command()
@@ -108,7 +108,7 @@ class Records(comms.Cog):
 
         for k, v in t.items():
             # datetime.timedelta to formatted datetime.datetime
-            tmp = str((datetime.datetime.min + v).time()).split(':')
+            tmp = str((datetime.min + v).time()).split(':')
             t[k] = ', '.join(f'{int(float(tmp[i]))} {timestamps[i]}' for i in range(
                 len(timestamps)) if float(tmp[i]) != 0.0)
 
@@ -124,6 +124,28 @@ class Records(comms.Cog):
 
         embed = discord.Embed(title='*Bot uptime information:*', description=f'```py\n{lst}\n```')
         await ctx.send(embed=embed)
+
+    @comms.command()
+    async def since(self, ctx, *, name: str):
+        async with self.bot.pool.acquire() as conn:
+            d = await conn.fetch(
+                '''SELECT t FROM Dates WHERE name = $1''', name
+            )
+            if len(d):
+                delta = datetime.now() - d[0]['t']
+                await ctx.send(f'{delta} since "{name}", {d}')
+            else:
+                await ctx.send(f'Could not find dated named "{name}"')
+
+    @comms.command()
+    @comms.is_owner()
+    async def create_date(self, ctx, name, *, d: str = None):
+        async with self.bot.pool.acquire() as conn:
+            await conn.execute(
+                '''INSERT INTO Dates(t, id, name) VALUES ($1, $2, $3)''',
+                datetime.now() if not d else datetime(*[int(x) for x in d.split()]),
+                ctx.author.id, name
+            )
 
 
 def setup(bot):
