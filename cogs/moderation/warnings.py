@@ -33,11 +33,11 @@ class Warnings(comms.Cog):
     @comms.Cog.listener()
     async def on_command_completion(self, ctx):
         await ctx.message.add_reaction('\U00002705')
-        await asyncio.sleep(7)
-        try:
-            await ctx.message.delete()
-        except discord.Forbidden:
-            pass
+        # await asyncio.sleep(7)
+        # try:
+        #     await ctx.message.delete()
+        # except discord.Forbidden:
+        #     pass
 
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
