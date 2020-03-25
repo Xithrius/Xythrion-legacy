@@ -1,7 +1,7 @@
-datetime
 discord.py[voice]
+qrcode[pil]
+datetime
 hyper-status
 google-cloud-texttospeech
 asyncpg
 numpy
-matplotlib
