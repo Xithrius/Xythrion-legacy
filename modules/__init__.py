@@ -9,7 +9,7 @@ from .conversion import kelvin_to_fahrenheit, kelvin_to_celcius
 from .shortcuts import (
     path, get_extensions, shorten,
     gen_block, http_get, gen_filename,
-    gen_table
+    gen_table, describe_date, lock_executor
 )
 
 
@@ -17,5 +17,5 @@ __all__ = [
     'path', 'get_extensions', 'shorten',
     'kelvin_to_fahrenheit', 'kelvin_to_celcius',
     'gen_block', 'http_get', 'gen_filename',
-    'gen_table'
+    'gen_table', 'describe_date', 'lock_executor'
 ]

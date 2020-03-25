@@ -11,6 +11,8 @@ import sys
 import typing as t
 from datetime import datetime
 from http.client import responses
+import asyncio
+import functools
 
 import numpy as np
 from aiohttp import ClientSession
@@ -211,9 +213,15 @@ def shorten(s: str, char_limit: int = 50) -> str:
     return new_str + '...' if len(new_str) >= char_limit else new_str
 
 
-def gen_table(lst: t.List[list], *, vertical_sep: str = '|', horizontal_sep: str = '-',
-              title_data_gap: t.Union[str, bool] = '-',
-              boxed: bool = False) -> t.Union[str, list]:
+def describe_date(d: datetime) -> str:
+    ts = ['hours', 'minutes', 'seconds']
+    days, d = str(d).split(', ')
+    d = [f'{int(float(t))} {ts[i]}' for i, t in enumerate(d.split(':')) if float(t)]
+    return ', '.join(str(y) for y in [days] + d)
+
+
+def gen_table(internal_data: t.List[list], *, columns: str, rows: str = False,
+              block: bool = False) -> t.Union[str, list]:
     """Generating a table for data.
 
     Args:
@@ -223,17 +231,62 @@ def gen_table(lst: t.List[list], *, vertical_sep: str = '|', horizontal_sep: str
 
     Examples:
         >>> lst = [['column', 'column 2', 'column 3'], [1, 1, 1], [2, 2, 2], [3, 3, 3]]
-        >>> print(gen_table(lst))
-        column
-             1
-             2
-             3
+        >>> print(gen_table(lst, vertical_sep='', horizontal_sep=''))
+        column  column 2  column 3
+             1         1         1
+             2         2         2
+             3         3         3
 
-        >>> print()
+        >>> print(gen_table(lst))
         column | column 2 | column 3
         -------|----------|---------
+             1 |        1 |        1
+             2 |        2 |        2
+             3 |        3 |        3
+
+        >>> print(gen_table(lst))
+                   | column | column 2
+     --------------|--------|---------
+         something |      1 |        1
+     another thing |      2 |        2
+             thing |      3 |        3
 
     """
-    lst = np.array(lst)
-    lst = [list(lst[:, i]) for i in range(np.shape(lst)[1])]
-    return [[y.rjust(max(map(len, x))) for y in x] for x in lst]
+    lst = np.array(internal_data)
+    if rows:
+        m = max(map(len, [str(s) for s in rows]))
+        rows = np.insert(np.array([x.rjust(m) for x in rows]), 0, '-' * m)
+
+    '''
+    if columns:
+        if rows:
+            columns = np.array([(' ' * m)] + columns)
+        else:
+            columns = np.array(columns)
+    '''
+    print(columns)
+
+    # lst = np.insert(lst, 0, columns)
+
+    # lst = [[str(y).rjust(max(map(len, [str(s) for s in lst[:, i]]))) for i, y in enumerate(x)] for x in lst]
+    # lst = [f' | '.join(x) for x in lst] if columns else lst
+    return lst
+
+
+async def lock_executor(func: t.Union[functools.partial, callable], *,
+                        loop: asyncio.AbstractEventLoop = None):
+    """Uses an asyncio lock to run an synchronous function asynchronously.
+
+    Args:
+
+    Returns:
+
+    Examples:
+
+    """
+    lock = asyncio.Lock()
+
+    loop = asyncio.get_running_loop() if not loop else loop
+
+    async with lock:
+        return await loop.run_in_executor(None, func)
