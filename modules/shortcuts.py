@@ -9,10 +9,11 @@ import json
 import os
 import sys
 import typing as t
-from datetime import datetime
+from datetime import datetime, timedelta
 from http.client import responses
 import asyncio
 import functools
+import discord
 
 import numpy as np
 from aiohttp import ClientSession
@@ -213,7 +214,21 @@ def shorten(s: str, char_limit: int = 50) -> str:
     return new_str + '...' if len(new_str) >= char_limit else new_str
 
 
-def describe_date(d: datetime) -> str:
+def describe_date(d: timedelta) -> str:
+    """Gives hours, minutes, and seconds of a date.
+
+    Args:
+        d (:obj:`datetime.timedelta`): The amount of time between two dates.
+
+    Returns:
+        A string with an explained timedelta.
+
+    Examples:
+        >>> d = datetime(2020, 3, 16, 11, 59)
+        >>> print(describe_date(datetime.now() - d))
+        10 days, 1 hours, 49 minutes, 19 seconds
+
+    """
     ts = ['hours', 'minutes', 'seconds']
     days, d = str(d).split(', ')
     d = [f'{int(float(t))} {ts[i]}' for i, t in enumerate(d.split(':')) if float(t)]
@@ -273,7 +288,8 @@ def gen_table(internal_data: t.List[list], *, columns: str, rows: str = False,
     return lst
 
 
-async def lock_executor(func: t.Union[functools.partial, callable], *,
+async def lock_executor(func: t.Union[functools.partial, callable],
+                        args: list = None, *,
                         loop: asyncio.AbstractEventLoop = None):
     """Uses an asyncio lock to run an synchronous function asynchronously.
 
@@ -289,4 +305,24 @@ async def lock_executor(func: t.Union[functools.partial, callable], *,
     loop = asyncio.get_running_loop() if not loop else loop
 
     async with lock:
-        return await loop.run_in_executor(None, func)
+        if isinstance(func, functools.partial):
+            return await loop.run_in_executor(None, func)
+        else:
+            return await loop.run_in_executor(None, func, *args)
+
+
+def embed_attachment(p: str) -> t.Tuple[discord.File, discord.Embed]:
+    """
+
+    Args:
+
+    Returns:
+
+    Examples:
+
+    """
+    f = p.split(os.sep)[-1]
+    file = discord.File(p, filename=f)
+    embed = discord.Embed()
+    embed.set_image(url=f'attachment://{f}')
+    return file, embed

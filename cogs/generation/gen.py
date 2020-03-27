@@ -5,15 +5,13 @@
 """
 
 
-import asyncio
 import os
 
 import qrcode
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
-import discord
 
-from modules import gen_filename, path
+from modules import gen_filename, path, lock_executor, embed_attachment
 
 
 class Gen(comms.Cog):
@@ -34,7 +32,6 @@ class Gen(comms.Cog):
         self.bot = bot
 
     def create_qr_code(self, msg: str):
-        # img = qrcode.make(msg)
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -53,13 +50,11 @@ class Gen(comms.Cog):
     @comms.cooldown(1, 10, BucketType.user)
     @comms.command()
     async def qr(self, ctx, *, msg: str):
-        lock = asyncio.Lock()
 
-        async with lock:
-            f = await self.bot.loop.run_in_executor(None, self.create_qr_code, msg)
-            file = discord.File(path('tmp', f), filename=f)
+        f = await lock_executor(self.create_qr_code, [msg], loop=self.bot.loop)
+        file, embed = embed_attachment(path('tmp', f))
 
-        await ctx.send(file=file)
+        await ctx.send(file=file, embed=embed)
         os.remove(path('tmp', f))
 
 
