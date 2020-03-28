@@ -48,6 +48,14 @@ class Admin(comms.Cog):
     async def unignore(self, ctx, user: Union[discord.User, int] = None):
         pass
 
+    @comms.command()
+    async def ban(self, ctx, user: int):
+        try:
+            await ctx.message.guild.ban(discord.Object(id=user))
+            await ctx.send(f'<@{user}> with id {user} has been successfully banned.')
+        except discord.Forbidden:
+            await ctx.send('`This bot does not have enough permissions to ban someone.`')
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))
