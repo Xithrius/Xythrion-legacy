@@ -61,7 +61,7 @@ class RockPaperScissors(comms.Cog):
             m = max(map(len, list(self.options.keys())))
             block = gen_block(
                 content=[str(k).rjust(m) + ' : ' + ', '.join(
-                    str(y) for y in v) for k, v in {'[ choice ]': ['[ wins ]'], **self.options}.items()],
+                    str(y) for y in v) for k, v in {'[ choice ]': ['[ beats ]'], **self.options}.items()],
                 lines=True
             )
             block = '`Possible options for RPS-15:`\n' + block
@@ -71,12 +71,10 @@ class RockPaperScissors(comms.Cog):
             lst.remove(option)
             computer_choice = choice(lst)
 
-            if computer_choice in self.options[option]:
-                computer = 'lost'
-            else:
-                computer = 'won'
-            embed = discord.Embed(title=f'**Computer {computer}**')
-            embed.description = f'`Computer picked {computer_choice}, and you picked {option}.`'
+            embed = discord.Embed(
+                title=f'**Computer {"lost" if computer_choice in self.options[option] else "won"}**',
+                description=f'`Computer picked {computer_choice}, and you picked {option}.`'
+            )
             await ctx.send(embed=embed)
 
 

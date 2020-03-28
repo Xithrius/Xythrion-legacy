@@ -1,12 +1,14 @@
 - Cogs:
+    - Admin: Make sure automation of punishment is easier.
     - Weather: Use OpenWeatherMap forecasting to create graphs and maybe tables.
+    - Pokemon: Using equations, calculate chances of things.
+    - Minecraft: Get images of crafting, chances of drops, and status' of servers.
+    - UNO: Oh dear god this is going to take a while.
     - Math: Convert between units and solve equations for user.
     - Graphing: Use matplotlib to create graphs after parsing input with regex. 
-    - Admin: Make sure automation of punishment is easier
 
-- Cog ideas:
-    - Pokemon: Using equations, calculate chances of things.
-    - Minecraft: Get images of crafting, and chances of stuff.
+Cog ideas:
+    - Steam: Haven't looked into any API. Just an idea.
 
 - Website:
     - Start/finish? (idk might not since there isn't a real purpose for it.)

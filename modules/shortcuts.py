@@ -305,7 +305,7 @@ async def lock_executor(func: t.Union[functools.partial, callable],
     loop = asyncio.get_running_loop() if not loop else loop
 
     async with lock:
-        if isinstance(func, functools.partial):
+        if isinstance(func, functools.partial) or args is None:
             return await loop.run_in_executor(None, func)
         else:
             return await loop.run_in_executor(None, func, *args)
