@@ -5,7 +5,6 @@
 """
 
 
-import time
 from http.client import responses
 
 from discord.ext import commands as comms
@@ -38,14 +37,6 @@ class Connections(comms.Cog):
 
         """
         await ctx.send(f'{code} means {responses[int(code)]}')
-
-    @comms.command()
-    async def ping(self, ctx):
-        timeStart = time.time()
-        # await ctx.trigger_typing()
-        timeEnd = time.time()
-        timeTaken = timeEnd - timeStart
-        await ctx.send(f'How long it takes for this bot to respond: `{timeTaken}ms`')
 
 
 def setup(bot):

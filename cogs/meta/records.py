@@ -86,43 +86,7 @@ class Records(comms.Cog):
             f'Total commands executed: {len(commands)}',
             f'Total messages: {len(messages)}'
         ]
-        embed.description = gen_block(desc_lst, lines=True)
-        await ctx.send(embed=embed)
-
-    @comms.command()
-    async def uptime(self, ctx):
-        """Gives uptime information about the bot.
-
-        Args:
-            ctx (comms.Context): Represents the context in which a command is being invoked under.
-
-        """
-        async with self.bot.pool.acquire() as conn:
-            t = await conn.fetch(
-                '''SELECT avg(t_logout - t_login) avg_uptime,
-                          max(t_logout - t_login) max_uptime,
-                          min(t_logout - t_login) min_uptime FROM Runtime''')
-            t = dict(t[0])
-
-        timestamps = ['Hours', 'Minutes', 'Seconds']
-
-        for k, v in t.items():
-            # datetime.timedelta to formatted datetime.datetime
-            tmp = str((datetime.min + v).time()).split(':')
-            t[k] = ', '.join(f'{int(float(tmp[i]))} {timestamps[i]}' for i in range(
-                len(timestamps)) if float(tmp[i]) != 0.0)
-
-        # Inserting the login time for the bot.
-        login = self.bot.startup_time.strftime('%A %I:%M:%S%p').lower().capitalize().replace(" ", " at ")
-
-        t = {'login_time': login, **t}
-
-        # Putting everything together for formatting.
-        lst = [f'Login time', f'Average uptime', f'Longest uptime', f'Shortest uptime']
-        lst = [f'{y[0]}: {y[1]}' for y in zip(lst, t.values())]
-        lst = '\n'.join(str(y) for y in lst)
-
-        embed = discord.Embed(title='*Bot uptime information:*', description=f'```py\n{lst}\n```')
+        embed.description = gen_block(desc_lst)
         await ctx.send(embed=embed)
 
     @comms.command()

@@ -50,14 +50,34 @@ class Links(comms.Cog):
 
         return amount
 
-    @comms.command(aliases=['about', 'links'])
-    async def info(self, ctx):
-        """Returns information about this bot's origin along with usage statistics.
+    async def calculate_uptime(self):
+        async with self.bot.pool.acquire() as conn:
+            t = await conn.fetch(
+                '''SELECT avg(t_logout - t_login) avg_uptime,
+                          max(t_logout - t_login) max_uptime,
+                          min(t_logout - t_login) min_uptime FROM Runtime''')
+            t = dict(t[0])
 
-        Args:
-            ctx (comms.Context): Represents the context in which a command is being invoked under.
+        timestamps = ['Hours', 'Minutes', 'Seconds']
 
-        """
+        for k, v in t.items():
+            # datetime.timedelta to formatted datetime.datetime
+            tmp = str((datetime.min + v).time()).split(':')
+            t[k] = ', '.join(f'{int(float(tmp[i]))} {timestamps[i]}' for i in range(
+                len(timestamps)) if float(tmp[i]) != 0.0)
+
+        # Inserting the login time for the bot.
+        login = self.bot.startup_time.strftime('%A %I:%M:%S%p').lower().capitalize().replace(" ", " at ")
+
+        t = {'login_time': login, **t}
+
+        # Putting everything together for formatting.
+        lst = [f'Login time', f'Average uptime', f'Longest uptime', f'Shortest uptime']
+        lst = ['UPTIME:'] + [f'{" " * 5}{y[0]}: {y[1]}' for y in zip(lst, t.values())]
+
+        return lst
+
+    async def get_usage(self):
         d = describe_date(datetime.now() - datetime(year=2019, month=3, day=13, hour=17, minute=16))
 
         mem = psutil.virtual_memory()
@@ -76,19 +96,27 @@ class Links(comms.Cog):
         ]
         ram = [f'{t.capitalize()}: {r}' for t, r in zip(tags, ram)]
 
+        lines = await lock_executor(self.calculate_lines)
+        users = sum([len(guild.members) for guild in self.bot.guilds])
+        info = [
+            f'Project created {d} ago, on March 13, 2019, 5:19pm PDT.',
+            f'Bot currently contains {lines} lines of Python code.',
+            f'Running on {len(self.bot.guilds)} servers ({users} users).'
+        ]
+
+        info = '\n'.join(' ' * 5 + y for y in info)
         cpu = '\n'.join(' ' * 5 + y for y in cpu)
         ram = '\n'.join(' ' * 5 + y for y in ram)
 
-        lines = await lock_executor(self.calculate_lines)
-        users = sum([len(guild.members) for guild in self.bot.guilds])
         lst = [
-            f'Project created {d} ago, on March 13, 2019, 5:19pm PDT.',
-            f'Bot currently contains {lines} lines of python code.',
-            f'Running on {len(self.bot.guilds)} servers ({users} users).',
-            f'CPU:\n{cpu}',
+            f'INFORMATION:\n{info}\n',
+            f'CPU:\n{cpu}\n',
             f'RAM:\n{ram}'
         ]
 
+        return lst
+
+    async def get_links(self):
         branch_link = 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e'
         info = {
             'Xythrion Github repository': 'https://github.com/Xithrius/Xythrion',
@@ -103,6 +131,20 @@ class Links(comms.Cog):
             title='**Links:**',
             description=info
         )
+
+        return embed
+
+    @comms.command(aliases=['about', 'links', 'usage', 'ping', 'latency', 'information'])
+    async def info(self, ctx):
+        """Returns information about this bot's origin along with usage statistics.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+
+        """
+        lst = await self.calculate_uptime() + [''] + await self.get_usage()
+        embed = await self.get_links()
+
         await ctx.send(content=gen_block(lst), embed=embed)
 
     @comms.command()
