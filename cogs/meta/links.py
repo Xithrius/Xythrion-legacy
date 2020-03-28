@@ -7,6 +7,7 @@
 
 import asyncio
 import os
+import time
 import typing as t
 from datetime import datetime
 
@@ -116,6 +117,26 @@ class Links(comms.Cog):
 
         return lst
 
+    async def calculate_latency(self):
+        start = time.perf_counter()
+        end = time.perf_counter()
+        calculated_ping = (end - start) * 1000
+
+        timeStart = time.time()
+        timeEnd = time.time()
+        timeTaken = timeEnd - timeStart
+
+        lst = [
+            f'Response time: {timeTaken}ms',
+            f'Calculated ping: {calculated_ping}',
+            f'Discord WebSocket protocol latency: {self.bot.latency}'
+        ]
+
+        lst = '\n'.join(' ' * 5 + y for y in lst)
+        lst = [f'LATENCY:\n{lst}']
+
+        return lst
+
     async def get_links(self):
         branch_link = 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e'
         info = {
@@ -142,10 +163,14 @@ class Links(comms.Cog):
             ctx (comms.Context): Represents the context in which a command is being invoked under.
 
         """
-        lst = await self.calculate_uptime() + [''] + await self.get_usage()
+        tmp = [await self.get_usage(), await self.calculate_uptime(), await self.calculate_latency()]
+        lst = []
+        for i in tmp:
+            lst.extend(i + [''])
+
         embed = await self.get_links()
 
-        await ctx.send(content=gen_block(lst), embed=embed)
+        await ctx.send(content=gen_block(lst).strip(), embed=embed)
 
     @comms.command()
     async def invite(self, ctx):
