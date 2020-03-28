@@ -5,3 +5,4 @@ hyper-status
 google-cloud-texttospeech
 asyncpg
 numpy
+psutil
