@@ -75,6 +75,7 @@ def gen_block(content: t.Union[str, list, dict], *,
         002 |     'another key': 'wow another value'
         003 | }
         ```
+
     """
     if isinstance(content, dict):
         content = json.dumps(content, indent=3, sort_keys=True).split('\n')
@@ -235,56 +236,82 @@ def describe_date(d: timedelta) -> str:
     return ', '.join(str(y) for y in [days] + d)
 
 
-def gen_table(internal_data: t.List[list], *, columns: str, rows: str = False,
-              block: bool = False) -> t.Union[str, list]:
+def gen_table(lst: t.List[list], *, columns: list = None, rows: list = None,
+              s: str = ' | ', block: bool = False) -> t.Union[str, list]:
     """Generating a table for data.
 
     Args:
-        lst (:obj:`typing.List[list]`): A 2D list containing table information.
+        internal_data (:obj:`typing.List[list]`): A 2D list containing table information.
+        columns (list, optional): The column titles.
+        rows (list, optional): The row titles.
+        s (str, optional): The seperator between columns.
+        block (bool, optional): Converting this table into a Discord code block with function gen_block.
 
     Returns:
+        A table with column and/or row titles of data, adjusted right to the longest column string.
 
     Examples:
-        >>> lst = [['column', 'column 2', 'column 3'], [1, 1, 1], [2, 2, 2], [3, 3, 3]]
-        >>> print(gen_table(lst, vertical_sep='', horizontal_sep=''))
-        column  column 2  column 3
-             1         1         1
-             2         2         2
-             3         3         3
+        >>> print('\n'.join(str(y) for y in gen_table(
+                [[1, 1, 1], [2, 2, 2], [3, 3, 3], [4, 4, 4]]
+            )))
+        1 1 1
+        2 2 2
+        3 3 3
+        4 4 4
 
-        >>> print(gen_table(lst))
-        column | column 2 | column 3
-        -------|----------|---------
-             1 |        1 |        1
-             2 |        2 |        2
-             3 |        3 |        3
+        >>> print('\n'.join(str(y) for y in gen_table(
+                [[1, 1, 1], [2, 2, 2], [3, 3, 3], [4, 4, 4]],
+                columns=['column', 'columnn 2', 'column 3']
+            )))
+        column | columnn 2 | column 3
+        ------ | --------- | --------
+             1 |         1 |        1
+             2 |         2 |        2
+             3 |         3 |        3
+             4 |         4 |        4
 
-        >>> print(gen_table(lst))
-                   | column | column 2
-     --------------|--------|---------
-         something |      1 |        1
-     another thing |      2 |        2
-             thing |      3 |        3
+        >>> print('\n'.join(str(y) for y in gen_table(
+                [[1, 1, 1], [2, 2, 2], [3, 3, 3], [4, 4, 4]],
+                rows=['column', 'columnn 2', 'column 3'],
+                columns=['column', 'columnn 2', 'column 3']
+            )))
+                  | column | columnn 2 | column 3
+        --------- | ------ | --------- | --------
+           column |      1 |         1 |        1
+        columnn 2 |      2 |         2 |        2
+         column 3 |      3 |         3 |        3
 
     """
-    lst = np.array(internal_data)
-    if rows:
-        m = max(map(len, [str(s) for s in rows]))
-        rows = np.insert(np.array([x.rjust(m) for x in rows]), 0, '-' * m)
+    lst = np.array([columns] + lst if columns else lst)
+    # print(lst, '\n', lst.shape)
+    m = [max(map(len, [str(y) for y in lst[:, i]])) for i in range(lst.shape[1])]
 
-    '''
     if columns:
-        if rows:
-            columns = np.array([(' ' * m)] + columns)
-        else:
-            columns = np.array(columns)
-    '''
-    print(columns)
+        lst = [[str(y).rjust(m[i]) for i, y in enumerate(x)] for x in lst]
+        lst = np.array(lst)
 
-    # lst = np.insert(lst, 0, columns)
+        sep = ['-' * m[i] for i in range(lst.shape[1])]
 
-    # lst = [[str(y).rjust(max(map(len, [str(s) for s in lst[:, i]]))) for i, y in enumerate(x)] for x in lst]
-    # lst = [f' | '.join(x) for x in lst] if columns else lst
+        lst = list(lst)
+        lst.insert(1, sep)
+        if not rows:
+            lst = [s.join(str(y) for y in x) for x in lst]
+
+    if rows:
+        m_rows = max(map(len, [str(y) for y in rows]))
+        rows = [str(x).rjust(m_rows) for x in rows]
+        if columns:
+            rows = [' ' * m_rows, '-' * m_rows] + rows
+            tmp = np.array(lst)
+            m = [max(map(len, [str(y) for y in tmp[:, i]])) for i in range(tmp.shape[1])]
+
+        lst = [[f'{y}{" |" if i != len(x) - 1 else ""}'.rjust(m[i]) for i, y in enumerate(x)] for x in lst]
+        lst = [y + s + ' '.join(x) for x, y in zip(lst, rows)]
+
+    if not rows and not columns:
+        lst = [[str(y).rjust(m[i]) for i, y in enumerate(x)] for x in lst]
+        lst = [f' '.join(x) for x in lst]
+
     return lst
 
 
@@ -294,10 +321,31 @@ async def lock_executor(func: t.Union[functools.partial, callable],
     """Uses an asyncio lock to run an synchronous function asynchronously.
 
     Args:
+        func (:obj:`t.Union[functools.partial, callable]`): Either a partial function or a callable.
+        args (list, optional): Arguments for the function if not a callable.
+        loop (:obj:`asyncio.AbstractEventLoop`, optional): The loop to be used for the executor.
 
     Returns:
+        Whatever the function returns.
 
     Examples:
+        >>> import requests
+        >>> url = 'https://httpbin.org/get
+        >>> print(
+                await lock_executor(requests.get(url).json())
+            )
+        {
+        "args": {},
+        "headers": {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate",
+            "Host": "httpbin.org",
+            "User-Agent": "Python/3.8 aiohttp/3.6.2",
+            "X-Amzn-Trace-Id": "██████████████████████████████████ (Just in case)"
+        },
+        "origin": "██████████████████████ (it's your ip)",
+        "url": "https://httpbin.org/get"
+        }
 
     """
     lock = asyncio.Lock()
@@ -311,14 +359,17 @@ async def lock_executor(func: t.Union[functools.partial, callable],
             return await loop.run_in_executor(None, func, *args)
 
 
-def embed_attachment(p: str) -> t.Tuple[discord.File, discord.Embed]:
-    """
+def embed_attachment(p: str) -> tuple:
+    """Creating an embed and adding a local image to it.
 
     Args:
+        p (str): The absolute path for the file of the image.
 
     Returns:
+        a file and embed object.
 
     Examples:
+        >>> embed_attachment(path('tmp', 'image.png'))
 
     """
     f = p.split(os.sep)[-1]
