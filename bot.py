@@ -122,45 +122,57 @@ class Xythrion(comms.Bot):
     async def check_database(self):
         """Checks if the database has the correct tables before starting the bot up."""
         async with self.pool.acquire() as conn:
-            await conn.execute('''CREATE TABLE IF NOT EXISTS Runtime(
-                identification serial PRIMARY KEY,
-                t_login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                t_logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
-            )''')
-            await conn.execute('''CREATE TABLE IF NOT EXISTS Users(
-                identification serial PRIMARY KEY,
-                t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                id BIGINT,
-                ignored BOOL,
-                reason TEXT
-            )''')
-            await conn.execute('''CREATE TABLE IF NOT EXISTS Messages(
-                identification serial PRIMARY KEY,
-                t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                id BIGINT,
-                jump TEXT
-            )''')
-            await conn.execute('''CREATE TABLE IF NOT EXISTS Commands(
-                identification serial PRIMARY KEY,
-                t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                id BIGINT,
-                jump TEXT,
-                command TEXT,
-                completed TIMESTAMP WITHOUT TIME ZONE
-            )''')
-            await conn.execute('''CREATE TABLE IF NOT EXISTS Links(
-                identification serial PRIMARY KEY,
-                t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                id BIGINT,
-                name TEXT,
-                link TEXT
-            )''')
-            await conn.execute('''CREATE TABLE IF NOT EXISTS Dates(
-                identification serial PRIMARY KEY,
-                t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                id BIGINT,
-                name TEXT
-            )''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS Runtime(
+                    identification serial PRIMARY KEY,
+                    t_login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                    t_logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
+                )
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS Users(
+                    identification serial PRIMARY KEY,
+                    t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                    id BIGINT,
+                    ignored BOOL,
+                    reason TEXT
+                )
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS Messages(
+                    identification serial PRIMARY KEY,
+                    t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                    id BIGINT,
+                    jump TEXT
+                )
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS Commands(
+                    identification serial PRIMARY KEY,
+                    t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                    id BIGINT,
+                    jump TEXT,
+                    command TEXT,
+                    completed TIMESTAMP WITHOUT TIME ZONE
+                )
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS Links(
+                    identification serial PRIMARY KEY,
+                    t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                    id BIGINT,
+                    name TEXT,
+                    link TEXT
+                )
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS Dates(
+                    identification serial PRIMARY KEY,
+                    t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                    id BIGINT,
+                    name TEXT
+                )
+            ''')
 
     async def on_ready(self):
         """Updates the bot status when logged in successfully."""
