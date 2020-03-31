@@ -5,9 +5,13 @@
 """
 
 
+import asyncio
+
 import discord
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
+
+from modules import gen_block
 
 
 class Guilds(comms.Cog):
@@ -35,6 +39,8 @@ class Guilds(comms.Cog):
             'preferred_locale', 'large', 'system_channel', 'rules_channel'
         ]
 
+    """ Commands """
+
     @comms.command()
     async def guild_info(self, ctx):
         """Get a really large amount of information about a guild.
@@ -54,8 +60,8 @@ class Guilds(comms.Cog):
         lst.append(('bots', bots))
         lst.append(('members', members))
 
-        lst = '\n'.join(f'{y[0]} : {y[1]}' for y in lst)
-        embed = discord.Embed(title='*Guild information:*', description=f'```py\n{lst}\n```')
+        lst = [f'{y[0]} : {y[1]}' for y in lst]
+        embed = discord.Embed(title='*Guild information:*', description=gen_block(lst))
         await ctx.send(embed=embed)
 
     @comms.command(enabled=False)
@@ -72,7 +78,7 @@ class Guilds(comms.Cog):
         pass
 
     @comms.cooldown(1, 60, BucketType.default)
-    @comms.command(enabled=False)
+    @comms.command()
     @comms.is_owner()
     async def message_owners(self, ctx, *, message: str):
         """Messages owners of all guilds that the bot is in a specific message.
@@ -82,9 +88,24 @@ class Guilds(comms.Cog):
             message (str): The name of the guild.
 
         """
-        pass
-        # NOTE: Must iterate through guilds to make sure that rate limit is not passed,
-        #       and all owners get the message.
+        owners = [guild.owner for guild in self.bot.guilds]
+        embed = discord.Embed(description=f'`Messaging {len(owners)} owners...`')
+        msg = await ctx.send(embed=embed)
+
+        owner_embed = discord.Embed(title=f'**Message from bot creator `(Xithrius#1318)`:**')
+        owner_embed.description = message
+
+        for guild in self.bot.guilds:
+            await guild.owner.send(embed=owner_embed)
+            await asyncio.sleep(1)
+
+        embed.set_footer(text='Done.')
+        await msg.edit(embed=embed)
+
+    @comms.command()
+    async def icon(self, ctx, user: discord.User = None):
+        user = user if user else ctx.author
+        await ctx.send(user.avatar_url)
 
 
 def setup(bot):
