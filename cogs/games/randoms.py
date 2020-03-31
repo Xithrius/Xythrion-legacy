@@ -33,6 +33,8 @@ class Randoms(comms.Cog):
         self.card_values = [*range(2, 11), 'Jack', 'Queen', 'King', 'Ace']
         self.card_suites = ['Hearts', 'Clubs', 'Diamonds', 'Spades']
 
+    """ Commands """
+
     @comms.command()
     async def dice(self, ctx, rolls: int = 1):
         """Rolls a die as many times as you want.

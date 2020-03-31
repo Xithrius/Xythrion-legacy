@@ -28,6 +28,8 @@ class Warnings(comms.Cog):
         """
         self.bot = bot
 
+    """ Events """
+
     @comms.Cog.listener()
     async def on_command_completion(self, ctx):
         await ctx.message.add_reaction('\U00002705')

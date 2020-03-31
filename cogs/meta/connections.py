@@ -27,6 +27,8 @@ class Connections(comms.Cog):
         """
         self.bot = bot
 
+    """ Commands """
+
     @comms.command(aliases=['status', 'response', 'code'])
     async def http_code(self, ctx, code: int):
         """Gets the http status code information.

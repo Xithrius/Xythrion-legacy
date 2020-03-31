@@ -28,6 +28,8 @@ class Admin(comms.Cog):
         """
         self.bot = bot
 
+    """ Cog-specific checks """
+
     async def cog_check(self, ctx):
         """Checks if user if owner.
 
@@ -39,6 +41,8 @@ class Admin(comms.Cog):
 
         """
         return await self.bot.is_owner(ctx.author)
+
+    """ Commands """
 
     @comms.command()
     async def ignore(self, ctx, user: discord.User = None):

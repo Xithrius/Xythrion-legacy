@@ -15,10 +15,23 @@ from modules import shorten
 
 
 class Reddit(comms.Cog):
-    """The Reddit cog that sends Reddit information in the form of an embed."""
+    """The Reddit cog that sends Reddit information in the form of an embed.
+
+    Attributes:
+        bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+    """
 
     def __init__(self, bot):
+        """Creating important attributes for this class.
+
+        Args:
+            bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+        """
         self.bot = bot
+
+    """ Commands """
 
     @comms.cooldown(1, 5, BucketType.default)
     @comms.command(aliases=['sub', 'subreddit'])

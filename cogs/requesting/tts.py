@@ -18,10 +18,23 @@ from modules import path
 
 
 class TTS(comms.Cog):
-    """Using Google Cloud's Text-To-Speech API to speak through the bot's microphone."""
+    """Using Google Cloud's Text-To-Speech API to speak through the bot's microphone.
+
+    Attributes:
+        bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+    """
 
     def __init__(self, bot):
+        """Creating important attributes for this class.
+
+        Args:
+            bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+        """
         self.bot = bot
+
+    """ Cog-specific checks """
 
     async def cog_check(self, ctx):
         """Checks if user if owner.
@@ -34,6 +47,8 @@ class TTS(comms.Cog):
 
         """
         return await self.bot.is_owner(ctx.author)
+
+    """ Cog-specific functions """
 
     def tts_creation(self, message: str):
         """Creating the audio file for TTS.
@@ -71,6 +86,8 @@ class TTS(comms.Cog):
             await asyncio.sleep(1)
         vc.stop()
 
+    """ Commands """
+
     @comms.command(enabled=False)
     async def tts(self, ctx, *, message: str):
         """Plays message in a voice channel.
@@ -82,6 +99,8 @@ class TTS(comms.Cog):
         """
         await self.tts_status(ctx.guild.voice_client, message)
 
+    """ Events """
+
     @comms.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         """Joins and leaves voice channels to announce who has left and who has joined.
@@ -92,11 +111,14 @@ class TTS(comms.Cog):
             after (VoiceState): The state of the user after this event was triggered.
 
         """
+        return
         after_ignore = [
-            after.deaf, after.mute, after.self_mute, after.self_deaf, after.self_stream, after.self_video, after.afk
+            after.deaf, after.mute, after.self_mute, after.self_deaf,
+            after.self_stream, after.self_video, after.afk
         ]
         before_ignore = [
-            before.deaf, before.mute, before.self_mute, before.self_deaf, before.self_stream, before.self_video, before.afk
+            before.deaf, before.mute, before.self_mute, before.self_deaf,
+            before.self_stream, before.self_video, before.afk
         ]
 
         if after_ignore != before_ignore:
@@ -132,6 +154,8 @@ class TTS(comms.Cog):
                         await self.tts_status(vc, f'{name} left.')
                     except discord.ClientException:
                         pass
+
+    """ Commands """
 
     @comms.command()
     @comms.cooldown(1, 8, BucketType.guild)

@@ -47,6 +47,8 @@ class RockPaperScissors(comms.Cog):
             'tree': ['wolf', 'dragon', 'sponge', 'paper', 'air', 'water', 'devil']
         }
 
+    """ Commands """
+
     @comms.command(aliases=['rockpaperscissors'])
     async def RPS(self, ctx, option: str):
         """Plays a game of rock paper sissors against the bot.

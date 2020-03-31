@@ -30,6 +30,8 @@ class Records(comms.Cog):
         """
         self.bot = bot
 
+    """ Events """
+
     @comms.Cog.listener()
     async def on_message(self, message):
         """Records every single message sent by users for ranking.
@@ -61,6 +63,8 @@ class Records(comms.Cog):
                 '''UPDATE Commands SET completed=$2 WHERE jump=$1''',
                 ctx.message.jump_url, datetime.now()
             )
+
+    """ Commands """
 
     @comms.command()
     async def rank(self, ctx, user: discord.User = None):

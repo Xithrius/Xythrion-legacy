@@ -25,6 +25,8 @@ class UNO(comms.Cog):
         """
         self.bot = bot
 
+    """ Commands """
+
     @comms.command()
     async def uno(self, ctx):
         """Plays a move in uno
@@ -33,6 +35,7 @@ class UNO(comms.Cog):
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
 
         """
+        pass
 
 
 def setup(bot):

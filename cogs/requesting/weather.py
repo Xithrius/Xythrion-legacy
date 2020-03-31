@@ -31,6 +31,16 @@ class Weather(comms.Cog):
         """
         self.bot = bot
 
+    """ Cog-specific functions """
+
+    def parse_Earth(self):
+        pass
+
+    def parse_Mars(self):
+        pass
+
+    """ Commands """
+
     @comms.cooldown(1, 1, BucketType.user)
     @comms.command()
     async def weather(self, ctx, area: Union[str, int], country: str = 'US'):

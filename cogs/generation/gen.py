@@ -31,6 +31,8 @@ class Gen(comms.Cog):
         """
         self.bot = bot
 
+    """ Cog-specific functions """
+
     def create_qr_code(self, msg: str):
         qr = qrcode.QRCode(
             version=1,
@@ -46,6 +48,8 @@ class Gen(comms.Cog):
         f = f'{gen_filename()}.png'
         img.save(path('tmp', f))
         return f
+
+    """ Commands """
 
     @comms.cooldown(1, 10, BucketType.user)
     @comms.command()

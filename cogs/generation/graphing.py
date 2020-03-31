@@ -32,6 +32,8 @@ class Graphing(comms.Cog):
         """
         self.bot = bot
 
+    """ Cog-specific functions """
+
     def create_plot(self) -> str:
         plt.clf()
         plt.plot([1, 2, 3, 4])
@@ -39,6 +41,8 @@ class Graphing(comms.Cog):
         f = f'{gen_filename()}.png'
         plt.savefig(path('tmp', f))
         return f
+
+    """ Commands """
 
     @comms.command(enabled=False)
     async def graph(self, ctx):
