@@ -5,7 +5,6 @@
 """
 
 
-import asyncio
 import os
 import time
 import typing as t
@@ -14,6 +13,7 @@ from datetime import datetime
 import discord
 import psutil
 from discord.ext import commands as comms
+from discord.ext.commands.cooldowns import BucketType
 from psutil._common import bytes2human as b2h
 
 from modules import describe_date, gen_block, lock_executor, path
@@ -35,6 +35,8 @@ class Links(comms.Cog):
 
         """
         self.bot = bot
+
+    """ Cog-specific functions """
 
     def calculate_lines(self):
         """ """
@@ -155,7 +157,9 @@ class Links(comms.Cog):
 
         return embed
 
-    @comms.command(aliases=['about', 'links', 'usage', 'ping', 'latency', 'information'])
+    """ Commands """
+
+    @comms.command(aliases=['about', 'usage', 'ping', 'latency', 'information'])
     async def info(self, ctx):
         """Returns information about this bot's origin along with usage statistics.
 
@@ -185,8 +189,9 @@ class Links(comms.Cog):
         embed = discord.Embed(description=f'[`Xythrion invite url`]({url})')
         await ctx.send(embed=embed)
 
+    @comms.cooldown(1, 5, BucketType.user)
     @comms.command()
-    async def link(self, ctx, name: str, *, content: t.Optional[str] = None):
+    async def link(self, ctx, name: str, delete: t.Optional[int] = 0, content: str = None):
         async with self.bot.pool.acquire() as conn:
             info = await conn.fetch(
                 '''SELECT link, t, id FROM Links WHERE name = $1''',
@@ -194,29 +199,31 @@ class Links(comms.Cog):
             )
             if len(info):
                 if content:
+                    if delete and await self.bot.is_owner(ctx.author):
+                        await conn.execute(
+                            '''DELETE FROM links WHERE name = $1''',
+                            name
+                        )
+                        return await ctx.send('`Record has been deleted.`')
                     return await ctx.send('`Sorry, that link already exists.`')
                 else:
                     # All users can access links, but none can create except the owner of the bot.
-                    info = info[0]
-                    embed = discord.Embed(
-                        description=f'[`{name}`]({info["link"]})'
-                    )
-                    if info['link'][-4:] in ('.jpg', 'jpeg', '.png'):
-                        embed.set_image(url=info['link'])
+                    _link = info[0]['link']
 
-                    msg = await ctx.send(embed=embed)
-                    await msg.add_reaction('\U00002754')
+                    lst = [
+                        'https://media.tenor.com/',
+                        'https://tenor.com'
+                    ]
 
-                    def check(reaction, user):
-                        return user == ctx.message.author and str(reaction.emoji) == '\U00002754'
+                    gif = any([x in _link for x in lst])
 
-                    try:
-                        reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
-                    except asyncio.TimeoutError:
-                        pass
-                    else:
-                        embed.set_footer(text=f'Full link: {info["link"]}')
-                        await msg.edit(embed=embed)
+                    embed = discord.Embed(description=f'[`{name}`]({_link})')
+                    embed.set_footer(text=f'Full link: {_link}')
+                    if gif:
+                        return await ctx.send(_link)
+                    elif _link[-4:] in ('.jpg', 'jpeg', '.png'):
+                        embed.set_image(url=_link)
+                    await ctx.send(embed=embed)
 
             else:
                 # Only the owner of the bot can create new links.
@@ -229,6 +236,17 @@ class Links(comms.Cog):
 
                 else:
                     await ctx.send('`Sorry, could not find any link with that name.`')
+
+    @comms.command()
+    async def links(self, ctx):
+        async with self.bot.pool.acquire() as conn:
+            info = await conn.fetch(
+                '''SELECT name FROM Links''',
+            )
+            info = [i['name'] for i in info]
+            embed = discord.Embed(title='**All link names:**',
+                                  description=gen_block(info, lines=True))
+            await ctx.send(embed=embed)
 
 
 def setup(bot):
