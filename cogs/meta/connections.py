@@ -5,13 +5,16 @@
 """
 
 
-from http.client import responses
+# from http.client import responses
 
+import discord
 from discord.ext import commands as comms
+
+from modules import ast
 
 
 class Connections(comms.Cog):
-    """Summary for Connections
+    """Giving information about response codes.
 
     Attributes:
         bot (:obj:`comms.Bot`): Represents a Discord bot.
@@ -30,15 +33,25 @@ class Connections(comms.Cog):
     """ Commands """
 
     @comms.command(aliases=['status', 'response', 'code'])
-    async def http_code(self, ctx, code: int):
+    async def response_code(self, ctx, code: int):
         """Gets the http status code information.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
             code (int): The status code that is wanted.
 
+        Command examples:
+            >>> [prefix]status 200
+            >>> [prefix]response_code 400
+
         """
-        await ctx.send(f'{code} means {responses[int(code)]}')
+        embed = discord.Embed(
+            title=ast(f'Status {code}:')
+            # description=f'`{responses[int(code)]}`' <- if http.cat ever dies (hopefully never).
+        )
+        embed.set_image(url=f'https://http.cat/{code}.jpg')
+        embed.set_footer(text=f'Taken from https://http.cat/')
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

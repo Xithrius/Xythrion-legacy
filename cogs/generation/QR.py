@@ -7,14 +7,15 @@
 
 import os
 
+import discord
 import qrcode
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 
-from modules import gen_filename, path, lock_executor, embed_attachment
+from modules import embed_attachment, gen_filename, lock_executor, path, ast
 
 
-class Gen(comms.Cog):
+class QR(comms.Cog):
     """Summary for Gen
 
     Attributes:
@@ -54,13 +55,24 @@ class Gen(comms.Cog):
     @comms.cooldown(1, 10, BucketType.user)
     @comms.command()
     async def qr(self, ctx, *, msg: str):
+        """Generates a Quick Response code for a string.
 
+        Args:
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            msg (str): The message to be converted into a QR code.
+
+        Command examples:
+            >>> [prefix]something
+            >>> [prefix]another thing
+
+        """
         f = await lock_executor(self.create_qr_code, [msg], loop=self.bot.loop)
-        file, embed = embed_attachment(path('tmp', f))
+        embed = discord.Embed(title=ast(f'QR code for "{msg}":'))
+        file, embed = embed_attachment(path('tmp', f), embed)
 
         await ctx.send(file=file, embed=embed)
         os.remove(path('tmp', f))
 
 
 def setup(bot):
-    bot.add_cog(Gen(bot))
+    bot.add_cog(QR(bot))

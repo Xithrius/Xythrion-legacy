@@ -35,7 +35,9 @@ class UNO(comms.Cog):
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
 
         """
-        pass
+        await ctx.send(
+            '`Feature will be implimented be in later versions, I promise (Unless it is impossible).`'
+        )
 
 
 def setup(bot):

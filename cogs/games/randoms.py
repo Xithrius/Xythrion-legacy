@@ -11,14 +11,16 @@ from random import choice, randint
 import discord
 from discord.ext import commands as comms
 
-from modules import gen_block
+from modules import gen_block, ast
 
 
 class Randoms(comms.Cog):
-    """Picking dice numbers and cards out of lists at random.
+    """Picking a bunch of different things at random.
 
     Attributes:
         bot (:obj:`comms.Bot`): Represents a Discord bot.
+        card_values (list): All possible values for a card
+        card_suites (list): All possible suites for a card
 
     """
 
@@ -41,18 +43,21 @@ class Randoms(comms.Cog):
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
-            rolls (int): The amount of times the die will be rolled.
+            rolls (int, optional): The amount of times the die will be rolled.
+
+        Command examples:
+            >>> [prefix]dice
+            >>> [prefix]dice 100
 
         """
-        if 1000 < rolls < 0:
-            return await ctx.send('`Rolls must be between 1 and 1000.`')
-
-        s = sum([randint(1, 6) for x in range(rolls)]) / rolls
+        if rolls > 10 or rolls < 0:
+            return await ctx.send('`Rolls must be between 1 and 10.`')
 
         if rolls > 1:
+            s = sum([randint(1, 6) for x in range(rolls)]) / rolls
             avg = f'`Die was rolled {rolls} times. Average output: {round(s, 2)}`'
         else:
-            avg = f'`Die was rolled once. Output: {s}`'
+            avg = f'`Die was rolled once. Output: {randint(1, 6)}`'
 
         embed = discord.Embed(description=avg)
 
@@ -64,11 +69,15 @@ class Randoms(comms.Cog):
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
-            amount (int): The amount of cards that will be picked.
+            amount (int, optional): The amount of cards that will be picked.
+
+        Command examples:
+            >>> [prefix]card
+            >>> [prefix]card 10
 
         """
-        if 250 < amount < 0:
-            return await ctx.send('`Rolls must be between 1 and 250.`')
+        if amount > 10 or amount < 0:
+            return await ctx.send('`Rolls must be between 1 and 10.`')
 
         d = defaultdict(int)
         for _ in range(amount):
@@ -77,7 +86,30 @@ class Randoms(comms.Cog):
         lst = OrderedDict(sorted(d.items()))
         lst = [f'({v}) {k}' for k, v in d.items()]
 
-        await ctx.send(gen_block(lst))
+        embed = discord.Embed(
+            title=ast(f'Results from {amount} randomly chosen cards:'),
+            description=gen_block(lst)
+        )
+
+        await ctx.send(embed=embed)
+
+    @comms.command(aliases=['flip'])
+    async def coin(self, ctx):
+        """Flips a coin and tells you which side it landed on.
+
+        Args:
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+
+        Command examples:
+            >>> [prefix]coin
+            >>> [prefix]flip
+
+        """
+        embed = discord.Embed(
+            title=ast('Tossed a coin to your Witcher.'),
+            description=f'`Landed {choice(["heads", "tails"])} facing up.`'
+        )
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

@@ -11,7 +11,7 @@ import discord
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 
-from modules import gen_block
+from modules import gen_block, ast, markdown_link
 
 
 class Guilds(comms.Cog):
@@ -48,9 +48,11 @@ class Guilds(comms.Cog):
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
 
+        Command examples:
+            >>> [prefix]guild_info
+
         """
         g = ctx.channel.guild
-        # print(dir(g)) to get all attribute names of a guild.
         m = g.__getattribute__('members')
         members = len([y for y in m if not y.bot])
         bots = len(m) - members
@@ -61,20 +63,28 @@ class Guilds(comms.Cog):
         lst.append(('members', members))
 
         lst = [f'{y[0]} : {y[1]}' for y in lst]
-        embed = discord.Embed(title='*Guild information:*', description=gen_block(lst))
+
+        embed = discord.Embed(
+            title=ast('Guild information:'),
+            description=gen_block(lst)
+        )
         await ctx.send(embed=embed)
 
     @comms.command(enabled=False)
     @comms.is_owner()
-    async def generate_guild(self, ctx, *, name: str):
-        """Creates a guild and returns the invite to the owner.
+    async def generate_server(self, ctx, *, name: str):
+        """Creates a guild (server) and returns the invite to the owner.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
-            name (str): The name of the guild.
+            name (str): The name of the guild (server).
+
+        Command examples:
+            >>> [prefix]generate_guild a really stupid server name
 
         """
         # NOTE: Bot accounts in more than 10 guilds are not allowed to create guilds.
+        # TODO: Saving this functionality for a later release (I may or may not do this for v2.0)
         pass
 
     @comms.cooldown(1, 60, BucketType.default)
@@ -85,14 +95,17 @@ class Guilds(comms.Cog):
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
-            message (str): The name of the guild.
+            message (str): The message to be sent to all owners of the guilds.
+
+        Command examples:
+            >>> [prefix]message_owners test
 
         """
         owners = [guild.owner for guild in self.bot.guilds]
         embed = discord.Embed(description=f'`Messaging {len(owners)} owners...`')
         msg = await ctx.send(embed=embed)
 
-        owner_embed = discord.Embed(title=f'**Message from bot creator `(Xithrius#1318)`:**')
+        owner_embed = discord.Embed(title=ast('Message from bot creator:'))
         owner_embed.description = message
 
         for guild in self.bot.guilds:
@@ -104,8 +117,42 @@ class Guilds(comms.Cog):
 
     @comms.command()
     async def icon(self, ctx, user: discord.User = None):
+        """Shows the icon of a user.
+
+        Args:
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            user (discord.User, optional): The user to get the icon url from.
+
+        Command examples:
+            >>> [prefix]icon @Xithrius
+
+        """
         user = user if user else ctx.author
-        await ctx.send(user.avatar_url)
+        embed = discord.Embed(
+            title=ast(f'Icon for user {user}:'),
+            description=markdown_link('icon url', user.avatar_url)
+        )
+        embed.set_image(url=user.avatar_url)
+        await ctx.send(embed=embed)
+
+    @comms.command()
+    async def server_icon(self, ctx):
+        """Shows the icon of a guild (server).
+
+        Args:
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+
+        Command examples:
+            >>> [prefix]server_icon
+
+        """
+        embed = discord.Embed(title=ast('Icon for this server:'))
+        embed = discord.Embed(
+            title=ast('Icon for this server:'),
+            description=markdown_link('icon url', ctx.guild.icon_url)
+        )
+        embed.set_image(url=ctx.guild.icon_url)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

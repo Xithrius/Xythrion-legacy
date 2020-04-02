@@ -10,14 +10,15 @@ from random import choice
 from discord.ext import commands as comms
 import discord
 
-from modules import gen_block
+from modules import gen_block, ast
 
 
 class RockPaperScissors(comms.Cog):
-    """Summary for RockPaperScissors
+    """Playing Rock Paper Scissors 15 ways with the computer.
 
     Attributes:
         bot (:obj:`comms.Bot`): Represents a Discord bot.
+        options (dict): All the options and a list of what they lose to.
 
     """
 
@@ -57,6 +58,10 @@ class RockPaperScissors(comms.Cog):
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
             option (str): The option that the user chooses.
 
+        Command examples:
+            >>> [prefix]RPS
+            >>> [prefix]rps wolf
+
         """
         option = option.lower()
         if option not in self.options.keys():
@@ -66,7 +71,7 @@ class RockPaperScissors(comms.Cog):
                     str(y) for y in v) for k, v in {'[ choice ]': ['[ beats ]'], **self.options}.items()],
                 lines=True
             )
-            block = '`Possible options for RPS-15:`\n' + block
+            block = f'`Unknown option "{option}". Please pick from the possible options:`\n' + block
             await ctx.send(block)
         else:
             lst = list(self.options.keys())
@@ -74,7 +79,7 @@ class RockPaperScissors(comms.Cog):
             computer_choice = choice(lst)
 
             embed = discord.Embed(
-                title=f'**Computer {"lost" if computer_choice in self.options[option] else "won"}**',
+                title=ast(f'Computer {"lost" if computer_choice in self.options[option] else "won"}'),
                 description=f'`Computer picked {computer_choice}, and you picked {option}.`'
             )
             await ctx.send(embed=embed)

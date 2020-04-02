@@ -34,8 +34,8 @@ class Reddit(comms.Cog):
     """ Commands """
 
     @comms.cooldown(1, 5, BucketType.default)
-    @comms.command(aliases=['sub', 'subreddit'])
-    async def reddit(self, ctx, subreddit, status='hot', timeframe='day'):
+    @comms.command(aliases=['sub', 'subreddit', 'r/'])
+    async def reddit(self, ctx, subreddit: str, status: str = 'hot', timeframe: str = 'day'):
         """Getting arguments from the user to make a Reddit request and giving an embed.
 
         Args:
@@ -44,8 +44,9 @@ class Reddit(comms.Cog):
             status (str): The current status of posts.
             timeframe (str): The interval which the subreddit posts should be picked from.
 
-        Raises:
-            AssertionError: Invalid parameters have been given to the command.
+        Command examples:
+            >>> [prefix]reddit pics top week
+            >>> [prefix]sub pics
 
         """
         status, timeframe = status.lower(), timeframe.lower()
@@ -63,6 +64,7 @@ class Reddit(comms.Cog):
             js = await r.json()
             js = js['data']['children']
             p = js[random.randint(0, len(js) - 1)]['data']
+
             fail = False
             try:
                 if p['over_18'] and not ctx.message.channel.is_nsfw():

@@ -7,7 +7,6 @@
 
 import os
 import time
-import typing as t
 from datetime import datetime
 
 import discord
@@ -16,7 +15,7 @@ from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 from psutil._common import bytes2human as b2h
 
-from modules import describe_date, gen_block, lock_executor, path
+from modules import describe_date, gen_block, lock_executor, path, markdown_link, ast
 
 
 class Links(comms.Cog):
@@ -38,8 +37,13 @@ class Links(comms.Cog):
 
     """ Cog-specific functions """
 
-    def calculate_lines(self):
-        """ """
+    def calculate_lines(self) -> int:
+        """Gets the sum of lines from all the python files in this directory
+
+        Returns:
+            An integer with the sum of the amount of lines within each .py file.
+
+        """
         lst = []
         amount = 0
         for root, dirs, files in os.walk(path()):
@@ -53,7 +57,13 @@ class Links(comms.Cog):
 
         return amount
 
-    async def calculate_uptime(self):
+    async def calculate_uptime(self) -> str:
+        """Gets the uptime based off of information from the database.
+
+        Returns:
+            A list containing all uptime information.
+
+        """
         async with self.bot.pool.acquire() as conn:
             t = await conn.fetch(
                 '''SELECT avg(t_logout - t_login) avg_uptime,
@@ -77,10 +87,17 @@ class Links(comms.Cog):
         # Putting everything together for formatting.
         lst = [f'Login time', f'Average uptime', f'Longest uptime', f'Shortest uptime']
         lst = ['UPTIME:'] + [f'{" " * 5}{y[0]}: {y[1]}' for y in zip(lst, t.values())]
+        lst = '\n'.join(str(y) for y in lst)
 
-        return lst
+        return lst + '\n'
 
-    async def get_usage(self):
+    async def calculate_usage(self) -> str:
+        """Gets the usage of the CPU and ram.
+
+        Returns:
+            A formatted string for the code block.
+
+        """
         d = describe_date(datetime.now() - datetime(year=2019, month=3, day=13, hour=17, minute=16))
 
         mem = psutil.virtual_memory()
@@ -114,12 +131,19 @@ class Links(comms.Cog):
         lst = [
             f'INFORMATION:\n{info}\n',
             f'CPU:\n{cpu}\n',
-            f'RAM:\n{ram}'
+            f'RAM:\n{ram}\n'
         ]
+        lst = '\n'.join(str(y) for y in lst)
 
         return lst
 
-    async def calculate_latency(self):
+    async def calculate_latency(self) -> str:
+        """Calculates and recieves different amounts of latency.
+
+        Returns:
+            A string with 3 different types of latency.
+
+        """
         start = time.perf_counter()
         end = time.perf_counter()
         calculated_ping = (end - start) * 1000
@@ -133,13 +157,17 @@ class Links(comms.Cog):
             f'Calculated ping: {calculated_ping}',
             f'Discord WebSocket protocol latency: {self.bot.latency}'
         ]
-
         lst = '\n'.join(' ' * 5 + y for y in lst)
-        lst = [f'LATENCY:\n{lst}']
 
-        return lst
+        return f'LATENCY:\n{lst}'
 
-    async def get_links(self):
+    async def get_links(self) -> discord.Embed:
+        """Creates an embed full of links about the bot.
+
+        Returns:
+            A embed object containing description links.
+
+        """
         branch_link = 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e'
         info = {
             'Xythrion Github repository': 'https://github.com/Xithrius/Xythrion',
@@ -148,33 +176,62 @@ class Links(comms.Cog):
             "Xithrius' Github": 'https://github.com/Xithrius',
             "Xithrius' Twitch": 'https://twitch.tv/Xithrius'
         }
-        info = '\n'.join(f'[`{k}`]({v})' for k, v in info.items())
+        info = '\n'.join(markdown_link(k, v) for k, v in info.items())
 
-        embed = discord.Embed(
-            title='**Links:**',
+        return discord.Embed(
+            title=ast('Links:'),
             description=info
         )
 
-        return embed
-
     """ Commands """
 
-    @comms.command(aliases=['about', 'usage', 'ping', 'latency', 'information'])
-    async def info(self, ctx):
+    @comms.cooldown(1, 1, BucketType.user)
+    @comms.command()
+    async def info(self, ctx, *, option: str = 'all'):
         """Returns information about this bot's origin along with usage statistics.
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
+            option (str, optional): Whatever information about the bot the user could want.
+
+        Examples:
+            >>> [prefix]info
+            >>> [prefix]info ping
 
         """
-        tmp = [await self.get_usage(), await self.calculate_uptime(), await self.calculate_latency()]
-        lst = []
-        for i in tmp:
-            lst.extend(i + [''])
+        option = option.lower()
+        options = {
+            'usage': self.calculate_usage,
+            'uptime': self.calculate_uptime,
+            'ping': self.calculate_latency,
+            'links': self.get_links
+        }
 
-        embed = await self.get_links()
+        lst = {}
+        if option != 'all':
+            for i in [option]:
+                if i not in options:
+                    embed = discord.Embed(
+                        title=ast(f'Unknown option {i}. Please pick from the following:'),
+                        description=gen_block([k for k in list(options.keys())])
+                        )
+                    return await ctx.send(embed=embed)
 
-        await ctx.send(content=gen_block(lst).strip(), embed=embed)
+                lst[i] = await options[i]()
+
+        else:
+            for k, v in options.items():
+                lst[k] = await v()
+
+        try:
+            embed = lst.pop('links')
+        except KeyError:
+            embed = None
+
+        await ctx.send(
+            content=gen_block([v for v in lst.values()]) if option != 'links' else None,
+            embed=embed
+        )
 
     @comms.command()
     async def invite(self, ctx):
@@ -183,15 +240,53 @@ class Links(comms.Cog):
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
 
+        Command examples:
+            >>> [prefix]invite
+
         """
         _id = self.bot.user.id
         url = f'https://discordapp.com/oauth2/authorize?client_id={_id}&scope=bot&permissions=37604544'
-        embed = discord.Embed(description=f'[`Xythrion invite url`]({url})')
+        embed = discord.Embed(description=markdown_link('Xythrion invite url', url))
         await ctx.send(embed=embed)
 
-    @comms.cooldown(1, 5, BucketType.user)
     @comms.command()
-    async def link(self, ctx, name: str, delete: t.Optional[int] = 0, content: str = None):
+    async def links(self, ctx):
+        """Lists out all the available links in the database.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+
+        Command examples:
+            >>> [prefix]links
+
+        """
+        async with self.bot.pool.acquire() as conn:
+            info = await conn.fetch(
+                '''SELECT name FROM Links''',
+            )
+            info = [i['name'] for i in info]
+
+            embed = discord.Embed(
+                title='**All link names:**',
+                description=gen_block(info, lines=True)
+            )
+            await ctx.send(embed=embed)
+
+    @comms.cooldown(1, 1, BucketType.user)
+    @comms.command()
+    async def link(self, ctx, name: str, content: str = None):
+        """Adds a link to the database, or gets the content of one.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            name (str): The name of the link to find within the database, or make a new link for.
+            content (str, optional): The content that the link will be named under.
+
+        Command examples:
+            >>> [prefix]link "odd future"
+            >>> [prefix]link "forbidden" https://http.cat/403.jpg
+
+        """
         async with self.bot.pool.acquire() as conn:
             info = await conn.fetch(
                 '''SELECT link, t, id FROM Links WHERE name = $1''',
@@ -199,54 +294,50 @@ class Links(comms.Cog):
             )
             if len(info):
                 if content:
-                    if delete and await self.bot.is_owner(ctx.author):
-                        await conn.execute(
-                            '''DELETE FROM links WHERE name = $1''',
-                            name
-                        )
-                        return await ctx.send('`Record has been deleted.`')
-                    return await ctx.send('`Sorry, that link already exists.`')
+                    await ctx.send('`That name already exists within the database.`')
+
                 else:
-                    # All users can access links, but none can create except the owner of the bot.
                     _link = info[0]['link']
-
-                    lst = [
-                        'https://media.tenor.com/',
-                        'https://tenor.com'
-                    ]
-
-                    gif = any([x in _link for x in lst])
-
-                    embed = discord.Embed(description=f'[`{name}`]({_link})')
-                    embed.set_footer(text=f'Full link: {_link}')
-                    if gif:
-                        return await ctx.send(_link)
-                    elif _link[-4:] in ('.jpg', 'jpeg', '.png'):
+                    if _link[-4:] in ('.jpg', 'jpeg', '.png'):
+                        embed = discord.Embed(
+                            description=markdown_link(name, _link)
+                        )
                         embed.set_image(url=_link)
-                    await ctx.send(embed=embed)
+                        return await ctx.send(embed=embed)
+                    await ctx.send(_link)
 
             else:
-                # Only the owner of the bot can create new links.
-                if content and await self.bot.is_owner(ctx.author):
-                    await conn.execute(
-                        '''INSERT INTO Links(t, id, name, link) VALUES ($1, $2, $3, $4)''',
-                        datetime.now(), ctx.author.id, name, content
-                    )
-                    await ctx.send(f'`Link with name "{name}" successfully inserted into the database.`')
+                if content:
+                    # Only the owner of the bot can create new links.
+                    if await self.bot.is_owner(ctx.author):
+                        await conn.execute(
+                            '''INSERT INTO Links(t, id, name, link) VALUES ($1, $2, $3, $4)''',
+                            datetime.now(), ctx.author.id, name, content
+                        )
+                    else:
+                        raise comms.NotOwner
 
                 else:
-                    await ctx.send('`Sorry, could not find any link with that name.`')
+                    await ctx.send('`Sorry, but a link with that name could not be found.`')
 
     @comms.command()
-    async def links(self, ctx):
+    @comms.is_owner()
+    async def remove_link(self, ctx, name: str):
+        """Removes a link from the database.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            name (str): The name of the link to find within the database.
+
+        Command examples:
+            >>> [prefix]remove_link "odd future"
+
+        """
         async with self.bot.pool.acquire() as conn:
-            info = await conn.fetch(
-                '''SELECT name FROM Links''',
+            await conn.execute(
+                '''DELETE FROM links WHERE name = $1''',
+                name
             )
-            info = [i['name'] for i in info]
-            embed = discord.Embed(title='**All link names:**',
-                                  description=gen_block(info, lines=True))
-            await ctx.send(embed=embed)
 
 
 def setup(bot):

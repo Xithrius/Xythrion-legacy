@@ -50,6 +50,12 @@ class Records(comms.Cog):
 
     @comms.Cog.listener()
     async def on_command(self, ctx):
+        """Records when a command is triggered.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+
+        """
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
                 '''INSERT INTO Commands(t, id, jump, command) VALUES ($1, $2, $3, $4)''',
@@ -58,6 +64,12 @@ class Records(comms.Cog):
 
     @comms.Cog.listener()
     async def on_command_completion(self, ctx):
+        """Records in the same place as the event 'on_command', but when the command is completed.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+
+        """
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
                 '''UPDATE Commands SET completed=$2 WHERE jump=$1''',
@@ -73,6 +85,10 @@ class Records(comms.Cog):
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
             user (discord.User): The user that will have their information retrieved (defaulted to None).
+
+        Command examples:
+            >>> [prefix]rank @Xithrius
+            >>> [prefix]rank
 
         """
         user = user if user is not None else ctx.author
@@ -95,6 +111,16 @@ class Records(comms.Cog):
 
     @comms.command()
     async def since(self, ctx, *, name: str):
+        """Tells you how long it has been since a date.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            name (str): The name of the date within the database.
+
+        Command examples:
+            >>> [prefix]since quarantine
+
+        """
         async with self.bot.pool.acquire() as conn:
             d = await conn.fetch(
                 '''SELECT t FROM Dates WHERE name = $1''', name
@@ -110,6 +136,18 @@ class Records(comms.Cog):
     @comms.command()
     @comms.is_owner()
     async def create_date(self, ctx, name, *, d: str = None):
+        """Creates a date in the database to have the command 'since' calculate by.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            name (str): The name of the date within the database.
+            d (str, optional): The date to be parsed, if any.
+
+        Command examples:
+            >>> [prefix]create_date
+            >>> [prefix]create_date 2017 5 4
+
+        """
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
                 '''INSERT INTO Dates(t, id, name) VALUES ($1, $2, $3)''',
