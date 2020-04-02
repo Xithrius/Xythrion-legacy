@@ -5,16 +5,16 @@
 """
 
 
+import asyncio
+import functools
 import json
 import os
 import sys
 import typing as t
 from datetime import datetime, timedelta
 from http.client import responses
-import asyncio
-import functools
-import discord
 
+import discord
 import numpy as np
 from aiohttp import ClientSession
 
@@ -326,7 +326,7 @@ async def lock_executor(func: t.Union[functools.partial, callable],
         loop (:obj:`asyncio.AbstractEventLoop`, optional): The loop to be used for the executor.
 
     Returns:
-        Whatever the function returns.
+        Whatever the function ('func' in args) returns.
 
     Examples:
         >>> import requests
@@ -359,7 +359,7 @@ async def lock_executor(func: t.Union[functools.partial, callable],
             return await loop.run_in_executor(None, func, *args)
 
 
-def embed_attachment(p: str) -> tuple:
+def embed_attachment(p: str, embed: discord.Embed = None) -> tuple:
     """Creating an embed and adding a local image to it.
 
     Args:
@@ -374,6 +374,45 @@ def embed_attachment(p: str) -> tuple:
     """
     f = p.split(os.sep)[-1]
     file = discord.File(p, filename=f)
-    embed = discord.Embed()
+    embed = discord.Embed() if not embed else embed
     embed.set_image(url=f'attachment://{f}')
     return file, embed
+
+
+def ast(s: str, amount: int = 3) -> str:
+    """Puts asterisks around the string.
+
+    Args:
+        s (str): The string that will be used.
+        amount (int): the amount of asteriks that will be put around the string.
+
+    Returns:
+        A string formatted with a certien amount of asteriks around it.
+
+    Examples:
+        >>> print(ast('something'), 2)
+        **something**
+
+        >>> print(ast('another', 10))
+        **********another**********
+
+    """
+    return '{0}{1}{0}'.format('*' * amount, s)
+
+
+def markdown_link(s: str, link: str) -> str:
+    """Gets rid of the thinking while creating a link for markdown.
+
+    Args:
+        s (str): The name of the link that will be shown
+        link (str): The link that the link will link to.
+
+    Returns:
+        A string containing the format of a markdown link (ex. a .md file.)
+
+    Examples:
+        >>> print(markdown_link('Google', 'https://google.com'))
+        [`Google`](https://google.com)
+
+    """
+    return f'[`{s}`]({link})'
