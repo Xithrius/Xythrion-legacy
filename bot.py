@@ -130,11 +130,10 @@ class Xythrion(comms.Bot):
                 )
             ''')
             await conn.execute('''
-                CREATE TABLE IF NOT EXISTS Users(
+                CREATE TABLE IF NOT EXISTS Ignore(
                     identification serial PRIMARY KEY,
                     t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                     id BIGINT,
-                    ignored BOOL,
                     reason TEXT
                 )
             ''')
