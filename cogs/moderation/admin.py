@@ -52,6 +52,9 @@ class Admin(comms.Cog):
             ctx (comms.Context): Represents the context in which a command is being invoked under.
             user (int): The ID of the user to be ignored.
 
+        Command examples:
+            >>> [prefix]ignore 111111111111111111 Just a bit too toxic.
+
         """
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
@@ -66,6 +69,9 @@ class Admin(comms.Cog):
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
             user (int): The ID of the user pardoned.
+
+        Command examples:
+            >>> [prefix]unignore 111111111111111111
 
         """
         async with self.bot.pool.acquire() as conn:
