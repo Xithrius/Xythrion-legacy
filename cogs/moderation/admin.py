@@ -5,7 +5,7 @@
 """
 
 
-from typing import Union
+from datetime import datetime
 
 import discord
 from discord.ext import commands as comms
@@ -45,15 +45,47 @@ class Admin(comms.Cog):
     """ Commands """
 
     @comms.command()
-    async def ignore(self, ctx, user: discord.User = None):
-        pass
+    async def ignore(self, ctx, user: int, *, reason: str):
+        """All commands to this bot by a specific user will be ignored.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            user (int): The ID of the user to be ignored.
+
+        """
+        async with self.bot.pool.acquire() as conn:
+            await conn.execute(
+                '''INSERT INTO Ignore(t, id, reason) VALUES ($1, $2, $3)''',
+                datetime.now(), user.id, reason
+            )
 
     @comms.command()
-    async def unignore(self, ctx, user: Union[discord.User, int] = None):
-        pass
+    async def unignore(self, ctx, user: int):
+        """User will be removed from the database, and will be able to do commands again.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            user (int): The ID of the user pardoned.
+
+        """
+        async with self.bot.pool.acquire() as conn:
+            await conn.execute(
+                '''DELETE FROM Ignore WHERE id = $1''',
+                user.id
+            )
 
     @comms.command()
     async def ban(self, ctx, user: int):
+        """Bans a user from a guild (server).
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            user (int): The ID of the user to be banned.
+
+        Command examples:
+            >>> [prefix]ban 111111111111111111
+
+        """
         try:
             await ctx.message.guild.ban(discord.Object(id=user))
             await ctx.send(f'<@{user}> with id {user} has been successfully banned.')

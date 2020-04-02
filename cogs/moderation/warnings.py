@@ -32,16 +32,23 @@ class Warnings(comms.Cog):
 
     @comms.Cog.listener()
     async def on_command_completion(self, ctx):
+        """Adds a reaction after a command is successfully completed.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+
+        """
         await ctx.message.add_reaction('\U00002705')
-        # await asyncio.sleep(7)
-        # try:
-        #     await ctx.message.delete()
-        # except discord.Forbidden:
-        #     pass
 
     @comms.Cog.listener()
     async def on_command_error(self, ctx, error):
-        """ """
+        """When the command has an error, this event is triggered.
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            error (comms.CommandError): The error that was raised
+
+        """
         if hasattr(ctx.command, 'on_error'):
             return
 
