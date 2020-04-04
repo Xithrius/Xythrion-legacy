@@ -1,9 +1,10 @@
 discord.py[voice]
 qrcode[pil]
+psutil
 datetime
 hyper-status
 google-cloud-texttospeech
 asyncpg
 numpy
-psutil
 tabulate
+aiohttp
