@@ -6,3 +6,4 @@ google-cloud-texttospeech
 asyncpg
 numpy
 psutil
+tabulate

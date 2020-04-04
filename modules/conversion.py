@@ -45,3 +45,11 @@ def kelvin_to_celcius(k: float, r: int = 2) -> float:
 
     """
     return round(k - 273.15, r)
+
+
+def celcius_to_kelvin(c: float, r: int = 2) -> float:
+    return round(c + 273.15, r)
+
+
+def celcius_to_fahrenheit(c: float, r: int = 2) -> float:
+    return round((c * 1.8) + 32, r)
