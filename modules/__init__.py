@@ -13,15 +13,16 @@ from .shortcuts import (
     path, get_extensions, shorten,
     gen_block, http_get, gen_filename,
     describe_date, lock_executor, embed_attachment,
-    ast, markdown_link
+    ast, markdown_link, quick_block
 )
 
 
 __all__ = [
     'kelvin_to_fahrenheit', 'kelvin_to_celcius',
     'celcius_to_kelvin', 'celcius_to_fahrenheit',
+
     'path', 'get_extensions', 'shorten',
     'gen_block', 'http_get', 'gen_filename',
     'describe_date', 'lock_executor', 'embed_attachment',
-    'ast', 'markdown_link'
+    'ast', 'markdown_link', 'quick_block'
 ]

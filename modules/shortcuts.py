@@ -13,6 +13,7 @@ import sys
 import typing as t
 from datetime import datetime, timedelta
 from http.client import responses
+from tabulate import tabulate
 
 import discord
 from aiohttp import ClientSession
@@ -336,3 +337,22 @@ def markdown_link(s: str, link: str) -> str:
 
     """
     return f'[`{s}`]({link})'
+
+
+async def quick_block(info: t.Union[dict, list], titles: list = None) -> str:
+    """Putting a table into a code block to skip a few steps.
+
+    Args:
+        info (:obj:`t.Union[dict, list]`): The items within the table.
+        titles (list): The titles for the columns at the top of the table.
+
+    Returns:
+        A string with a table formatted with newlines.
+
+    Examples:
+        >>> print(quick_block(['item 1', 'item 2']))
+        I'll put the example here later.
+
+    """
+    table = tabulate(info.items() if isinstance(info, dict) else info).split('\n')
+    return gen_block(table)

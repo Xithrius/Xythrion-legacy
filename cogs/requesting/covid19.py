@@ -32,8 +32,8 @@ class Covid19(comms.Cog):
         """
         self.bot = bot
 
+    @comms.cooldown(1, 10, BucketType.user)
     @comms.command(aliases=['corona'])
-    @comms.cooldown(1, 5, BucketType.user)
     async def COVID(self, ctx, *, option: str = None):
         """Getting information about either a country or the entire globe.
 

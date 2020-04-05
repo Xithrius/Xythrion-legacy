@@ -77,7 +77,7 @@ class Warnings(comms.Cog):
             return await ctx.send(f'`You do not have enough permissions to run this command.`')
 
         elif isinstance(error, AssertionError):
-            return await ctx.send(f'`Command request failed. {error}`')
+            return await ctx.send(f'`Command failed: {error}`')
 
         else:
             print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
