@@ -86,19 +86,6 @@ class TTS(comms.Cog):
             await asyncio.sleep(1)
         vc.stop()
 
-    """ Commands """
-
-    @comms.command(enabled=False)
-    async def tts(self, ctx, *, message: str):
-        """Plays message in a voice channel.
-
-        Args:
-            ctx (comms.Context): Represents the context in which a command is being invoked under.
-            message (str): The phrase(s) that the user wants the bot to say.
-
-        """
-        await self.tts_status(ctx.guild.voice_client, message)
-
     """ Events """
 
     @comms.Cog.listener()
@@ -143,7 +130,7 @@ class TTS(comms.Cog):
                 except discord.ClientException:
                     pass
 
-        if hasattr(before.channel, 'members'):
+        elif hasattr(before.channel, 'members'):
             amount = len(before.channel.members)
             if amount == 1 and before.channel.members[0].id == self.bot.user.id:
                 await before.channel.guild.voice_client.disconnect()
@@ -165,6 +152,9 @@ class TTS(comms.Cog):
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
 
+        Command examples:
+            >>> [prefix]join
+
         """
         if ctx.voice_client is None:
             if ctx.author.voice:
@@ -183,6 +173,9 @@ class TTS(comms.Cog):
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
 
+        Command examples:
+            >>> [prefix]leave
+
         """
         await ctx.voice_client.disconnect()
 
@@ -193,6 +186,9 @@ class TTS(comms.Cog):
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
+
+        Command examples:
+            >>> [prefix]stop
 
         """
         ctx.voice_client.stop()

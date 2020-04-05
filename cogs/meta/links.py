@@ -188,13 +188,13 @@ class Links(comms.Cog):
     @comms.cooldown(1, 1, BucketType.user)
     @comms.command()
     async def info(self, ctx, *, option: str = 'all'):
-        """Returns information about this bot's origin along with usage statistics.
+        """Information about bot origin along with usage statistics.
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
             option (str, optional): Whatever information about the bot the user could want.
 
-        Examples:
+        Command examples:
             >>> [prefix]info
             >>> [prefix]info ping
 
@@ -275,7 +275,7 @@ class Links(comms.Cog):
     @comms.cooldown(1, 1, BucketType.user)
     @comms.command()
     async def link(self, ctx, name: str, content: str = None):
-        """Adds a link to the database, or gets the content of one.
+        """Gets the content of a link, and if you are the owner of the bot, add links.
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
@@ -320,7 +320,7 @@ class Links(comms.Cog):
                 else:
                     await ctx.send('`Sorry, but a link with that name could not be found.`')
 
-    @comms.command()
+    @comms.command(hidden=True)
     @comms.is_owner()
     async def remove_link(self, ctx, name: str):
         """Removes a link from the database.

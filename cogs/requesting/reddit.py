@@ -36,7 +36,7 @@ class Reddit(comms.Cog):
     @comms.cooldown(1, 5, BucketType.default)
     @comms.command(aliases=['sub', 'subreddit', 'r/'])
     async def reddit(self, ctx, subreddit: str, status: str = 'hot', timeframe: str = 'day'):
-        """Getting arguments from the user to make a Reddit request and giving an embed.
+        """Requesting from the Reddit service to give a random post from a status within a timeframe.
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.

@@ -86,6 +86,7 @@ class Weather(comms.Cog):
             url = f'https://api.nasa.gov/insight_weather/?api_key={token}&feedtype=json&ver=1.0'
             info = await http_get(url, session=self.bot.session)
 
+            # sol = one day on Mars
             sol_keys = info['sol_keys']
             lst = {}
             titles = ['Sol', '°K', '°F', '°C', 'Pressure (Pa)', 'Wind (m/s)']

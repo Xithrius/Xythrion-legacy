@@ -15,7 +15,6 @@ from datetime import datetime, timedelta
 from http.client import responses
 
 import discord
-import numpy as np
 from aiohttp import ClientSession
 
 

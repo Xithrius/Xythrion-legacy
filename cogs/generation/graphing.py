@@ -45,11 +45,14 @@ class Graphing(comms.Cog):
     """ Commands """
 
     @comms.command(enabled=False)
-    async def graph(self, ctx):
-        """
+    async def graph(self, ctx, *, eq: str):
+        """Graphing equations
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+
+        Command examples:
+            >>> [prefix]graph x^2 + x
 
         """
         lock = asyncio.Lock()

@@ -27,12 +27,15 @@ class UNO(comms.Cog):
 
     """ Commands """
 
-    @comms.command()
+    @comms.command(enabled=False)
     async def uno(self, ctx):
         """Plays a move in uno
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+
+        Command examples:
+            >>> [prefix]uno play card
 
         """
         await ctx.send(

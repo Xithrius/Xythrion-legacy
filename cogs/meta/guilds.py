@@ -70,7 +70,7 @@ class Guilds(comms.Cog):
         )
         await ctx.send(embed=embed)
 
-    @comms.command(enabled=False)
+    @comms.command(hidden=True, enabled=False)
     @comms.is_owner()
     async def generate_server(self, ctx, *, name: str):
         """Creates a guild (server) and returns the invite to the owner.
@@ -88,7 +88,7 @@ class Guilds(comms.Cog):
         pass
 
     @comms.cooldown(1, 60, BucketType.default)
-    @comms.command()
+    @comms.command(hidden=True, enabled=False)
     @comms.is_owner()
     async def message_owners(self, ctx, *, message: str):
         """Messages owners of all guilds that the bot is in a specific message.

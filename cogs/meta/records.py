@@ -133,7 +133,7 @@ class Records(comms.Cog):
             else:
                 await ctx.send(f'Could not find dated named "{name}"')
 
-    @comms.command()
+    @comms.command(hidden=True)
     @comms.is_owner()
     async def create_date(self, ctx, name, *, d: str = None):
         """Creates a date in the database to have the command 'since' calculate by.

@@ -5,9 +5,13 @@
 """
 
 
+from datetime import datetime
+
 import discord
+import iso8601
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
+from tabulate import tabulate
 
 from modules import gen_block, http_get
 
@@ -40,33 +44,16 @@ class Warframe(comms.Cog):
     @comms.cooldown(1, 3, BucketType.user)
     @comms.command()
     async def warframe(self, ctx, item: str, platform: str = 'pc'):
-        """Gets Warframe information.
+        """Gets information about Warframe items and cycles.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
             item (str): What service you would like to request from in the Warframe API.
             platform (str, optional): The platform that the user is on.
 
-        Examples:
-            >>> (ctx.prefix)warframe cetusCycle
-            "cetusCycle" information:
-            000 | id ~> cetusCycle1584763500000
-            001 | expiry ~> 2020-03-21 04:05:00.000
-            002 | activation ~> 2020-03-21 02:25:00.000
-            003 | isDay ~> True
-            004 | state ~> day
-            005 | timeLeft ~> 23m 30s
-            006 | isCetus ~> True
-            007 | shortString ~> 23m to Night
-
-            >>> (ctx.prefix)warframe earthCycle
-            "earthCycle" information:
-            000 | id ~> earthCycle1584763200000
-            001 | expiry ~> 2020-03-21 04:00:00.140
-            002 | activation ~> 2020-03-21 00:00:00.140
-            003 | isDay ~> True
-            004 | state ~> day
-            005 | timeLeft ~> 18m 29s
+        Command examples:
+            >>> [prefix]warframe cetusCycle
+            >>> [prefix]warframe earthCycle
 
         """
         if item not in self.options:
@@ -79,14 +66,11 @@ class Warframe(comms.Cog):
 
         for k, v in info.items():
             if k in ['expiry', 'activation']:
-                x = [x if x in [':', '-', '.'] or x.isdigit() else ' ' for x in list(v)]
-                info[k] = ''.join(str(y) for y in x)
+                v = iso8601.parse_date(v)
+                info[k] = datetime.strftime(v, '%b %d %Y, %A %I:%M:%S%p').lower().capitalize()
 
-        info = [f'{k} ~> {v}'.strip() for k, v in info.items()]
-
-        embed = discord.Embed(title=f'"{item}" information:')
-        embed.description = gen_block(info, lang='py', lines=True)
-        await ctx.send(embed=embed)
+        block = gen_block(tabulate(info.items()).split('\n'))
+        await ctx.send(block)
 
 
 def setup(bot):
