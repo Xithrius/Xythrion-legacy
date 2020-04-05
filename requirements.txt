@@ -8,3 +8,5 @@ asyncpg
 numpy
 tabulate
 aiohttp
+matplotlib
+iso8601
