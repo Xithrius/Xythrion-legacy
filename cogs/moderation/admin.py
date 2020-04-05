@@ -44,13 +44,13 @@ class Admin(comms.Cog):
 
     """ Commands """
 
-    @comms.command()
-    async def ignore(self, ctx, user: int, *, reason: str):
+    @comms.command(hidden=True)
+    async def ignore(self, ctx, user_id: int, *, reason: str):
         """All commands to this bot by a specific user will be ignored.
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
-            user (int): The ID of the user to be ignored.
+            user_id (int): The ID of the user to be ignored.
 
         Command examples:
             >>> [prefix]ignore 111111111111111111 Just a bit too toxic.
@@ -59,28 +59,35 @@ class Admin(comms.Cog):
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
                 '''INSERT INTO Ignore(t, id, reason) VALUES ($1, $2, $3)''',
-                datetime.now(), user.id, reason
+                datetime.now(), user_id, reason
             )
 
-    @comms.command()
-    async def unignore(self, ctx, user: int):
+    @comms.command(hidden=True)
+    async def unignore(self, ctx, user_id: int):
         """User will be removed from the database, and will be able to do commands again.
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
-            user (int): The ID of the user pardoned.
+            user_id (int): The ID of the user pardoned.
 
         Command examples:
             >>> [prefix]unignore 111111111111111111
 
         """
         async with self.bot.pool.acquire() as conn:
-            await conn.execute(
-                '''DELETE FROM Ignore WHERE id = $1''',
-                user.id
+            info = await conn.fetch(
+                '''SELECT reason FROM Ignore WHERE id = $1''',
+                user_id
             )
+            if len(info):
+                await conn.execute(
+                    '''DELETE FROM Ignore WHERE id = $1''',
+                    user_id
+                )
+            else:
+                await ctx.send(f'`User with ID {user_id} could not be found in the database.`')
 
-    @comms.command()
+    @comms.command(hidden=True)
     async def ban(self, ctx, user: int):
         """Bans a user from a guild (server).
 
@@ -96,7 +103,25 @@ class Admin(comms.Cog):
             await ctx.message.guild.ban(discord.Object(id=user))
             await ctx.send(f'<@{user}> with id {user} has been successfully banned.')
         except discord.Forbidden:
-            await ctx.send('`This bot does not have enough permissions to ban someone.`')
+            await ctx.send('`This bot does not have enough permissions.`')
+
+    @comms.command(hidden=True)
+    async def kick(self, ctx, user: int):
+        """Kicks a user from a guild (server).
+
+        Args:
+            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            user (int): The ID of the user to be kicked.
+
+        Command examples:
+            >>> [prefix]kick 111111111111111111
+
+        """
+        try:
+            await ctx.message.guild.kick(discord.Object(id=user))
+            await ctx.send(f'<@{user}> with id {user} has been successfully kicked.')
+        except discord.Forbidden:
+            await ctx.send('`This bot does not have enough permissions.`')
 
 
 def setup(bot):
