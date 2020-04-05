@@ -26,6 +26,7 @@ import logging
 import os
 import sys
 import traceback
+from collections import defaultdict
 
 import aiohttp
 import asyncpg
@@ -104,6 +105,9 @@ class Xythrion(comms.Bot):
         for cog in __cogs:
             self.load_extension(cog)
 
+        # Creating help dictionary for the help command.
+        self.loop.run_until_complete(self.create_help())
+
     async def create_courtines(self):
         """Creates asynchronous database and session connection.
 
@@ -173,6 +177,32 @@ class Xythrion(comms.Bot):
                 )
             ''')
 
+    async def create_help(self):
+        """Creates multi-layer dictionary for helping users."""
+        self.help_info = defaultdict(dict)
+
+        for c in self.commands:
+            h = c.help.split('\n')
+
+            if not c.enabled or c.hidden:
+                continue
+
+            try:
+                e = h[h.index('Command examples:') + 1:]
+                examples = ', '.join(
+                    str(y) for y in ["'{0}{1}'".format(self.command_prefix, x[x.index("]") + 1:]) for x in e]
+                )
+
+                self.help_info[c.cog.qualified_name][c.name.lower()] = {
+                    'Aliases': ', '.join(str(y) for y in c.aliases) if c.aliases else 'None',
+                    'Description': h[0], 'Examples': examples
+                }
+            except ValueError:
+                Status(
+                    f'Help setup error: docstring in cog {c.cog.qualified_name}: [prefix]{c.name}',
+                    'fail'
+                )
+
     async def on_ready(self):
         """Updates the bot status when logged in successfully."""
         self.startup_time = datetime.datetime.now()
@@ -220,7 +250,7 @@ class Development(comms.Cog):
         """
         return await self.bot.is_owner(ctx.author)
 
-    @comms.command(aliases=['refresh', 'r'])
+    @comms.command(aliases=['refresh', 'r'], hidden=True)
     async def reload(self, ctx):
         """Gets the cogs within folders and loads them into the bot after unloading current cogs.
 
@@ -230,47 +260,36 @@ class Development(comms.Cog):
         Raises:
             Anything besides comms.ExtensionNotLoaded when loading cogs.
 
-        Examples:
-            >>> (ctx.prefix)r
-            Reloaded extensions.
-
-            >>> (ctx.prefix)refresh
-            Reloaded extensions.
+        Command examples:
+            >>> [prefix]r
+            >>> [prefix]refresh
 
         """
         for cog in get_extensions():
             try:
                 self.bot.unload_extension(cog)
                 self.bot.load_extension(cog)
+
             except comms.ExtensionNotLoaded:
                 self.bot.load_extension(cog)
+
             except Exception as e:
-                Status(f'Loading {cog} error:', 'fail')
+                Status(f'Loading "{cog}" error:', 'fail')
                 traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
+
+        # self.bot.loop.run_until_complete(self.bot.create_help())
+
         await ctx.send('Reloaded extensions.', delete_after=7)
 
-    @comms.command(name='loaded')
+    @comms.command(name='loaded', hidden=True)
     async def loaded_extension(self, ctx):
         """Gives a list of the currently loaded cogs.
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
 
-        Examples:
-            >>> (ctx.prefix)loaded
-            000 | Development
-            001 | Calculator
-            002 | Graphing
-            003 | Custom
-            004 | Guilds
-            005 | Links
-            006 | Records
-            007 | Admin
-            008 | Warnings
-            009 | Reddit
-            010 | TTS
-            011 | Warframe
-            012 | Weather
+        Command examples:
+            >>> [prefix]loaded
 
         """
         lst = [f'{str(i).zfill(3)} | {k}' for i, k in enumerate(self.bot.cogs.keys())]
@@ -278,16 +297,15 @@ class Development(comms.Cog):
         embed = discord.Embed(title='*Currently loaded cogs:*', description=f'```py\n{c}\n```')
         await ctx.send(embed=embed)
 
-    @comms.command()
+    @comms.command(hidden=True)
     async def exit(self, ctx):
         """Makes the bot logout after completing some last-second tasks.
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
 
-        Examples:
-            >>> (ctx.prefix)exit
-            ~> [ Mar 20 2020, Friday 11:57:00pm ] > [   Warn   ]: Logging out...
+        Command examples:
+            >>> [prefix]exit
 
         """
         try:
@@ -314,8 +332,12 @@ if __name__ == "__main__":
         pass
 
     # Creating the bot object
-    bot = Xythrion(command_prefix=comms.when_mentioned_or(';'),
-                   case_insensitive=True)
+    bot = Xythrion(
+        # command_prefix=comms.when_mentioned_or(';'),
+        command_prefix=';',
+        case_insensitive=True,
+        help_command=None
+    )
 
     # Running the bot
     try:
