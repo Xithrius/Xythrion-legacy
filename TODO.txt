@@ -1,9 +1,10 @@
 TODO Cogs:
-- pokemon
+- todo
 - graphing
-- tts
-- warframe, tts (off stream, bc tokens/noise)
+- tts (off stream, bc tokens/noise)
 - UNO
+- Imgur?
+- Minecraft?
 
 - README:
     - Add all the commands, stick with v2.0. The version will not change from here.
