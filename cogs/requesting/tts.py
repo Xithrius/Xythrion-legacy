@@ -144,8 +144,8 @@ class TTS(comms.Cog):
 
     """ Commands """
 
-    @comms.command()
     @comms.cooldown(1, 8, BucketType.guild)
+    @comms.command()
     async def join(self, ctx):
         """Joins the channel the caller is currently in.
 
@@ -165,8 +165,8 @@ class TTS(comms.Cog):
             await ctx.voice_client.disconnect()
             await ctx.author.voice.channel.connect()
 
-    @comms.command()
     @comms.cooldown(1, 8, BucketType.guild)
+    @comms.command()
     async def leave(self, ctx):
         """Leaves voice channel, if the bot is even in one.
 
@@ -179,8 +179,8 @@ class TTS(comms.Cog):
         """
         await ctx.voice_client.disconnect()
 
-    @comms.command()
     @comms.cooldown(1, 8, BucketType.guild)
+    @comms.command()
     async def stop(self, ctx):
         """Stops the current audio stream.
 
