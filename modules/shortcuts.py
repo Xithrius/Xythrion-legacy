@@ -40,6 +40,29 @@ def path(*filepath) -> str:
     return (os.sep).join(str(s) for s in lst)
 
 
+def join_mapped(lst: t.Iterable[t.Any], convert_to: classmethod = str,
+                separator: str = '\n') -> str:
+    """Converts everything in an iterable to another class.
+
+    Args:
+        lst (:obj:`t.Iterable[t.Any]`): Any iterable, with anything in it.
+        convert_to (classmethod, optional): The class to be converted to.
+        separator (str, optional): The string to go between items in the iterable.
+
+    Returns:
+        A string with the iterable attached together by the separator.
+
+    Examples:
+        >>> print(join_mapped([1, 2, 3]))
+        ['1', '2', '3']
+
+        >>> print(join_mapped(['1', '2', '3'], int))
+        [1, 2, 3]
+
+    """
+    return separator.join(map(convert_to, lst))
+
+
 def gen_block(content: t.Union[str, list, dict], *,
               lang: str = 'py', lines: bool = False, separator: str = '|') -> str:
     """Generates a Discord markdown block.
@@ -81,7 +104,7 @@ def gen_block(content: t.Union[str, list, dict], *,
         content = json.dumps(content, indent=3, sort_keys=True).split('\n')
 
     content = '\n'.join(
-        f'{str(i).zfill(3)} {separator} {str(y)}' if lines else (str(y)) for i, y in enumerate(content)
+        f'{str(i).zfill(3)} {separator} {y}' if lines else str(y) for i, y in enumerate(content)
     )
 
     return f'```{lang}\n{content}\n```'
@@ -233,6 +256,7 @@ def describe_date(d: timedelta) -> str:
     ts = ['hours', 'minutes', 'seconds']
     days, d = str(d).split(', ')
     d = [f'{int(float(t))} {ts[i]}' for i, t in enumerate(d.split(':')) if float(t)]
+    # return join_mapped([days] + d, separator=', ')
     return ', '.join(str(y) for y in [days] + d)
 
 
@@ -339,7 +363,8 @@ def markdown_link(s: str, link: str) -> str:
     return f'[`{s}`]({link})'
 
 
-async def quick_block(info: t.Union[dict, list], titles: list = None) -> str:
+async def quick_block(info: t.Union[dict, list], titles: list = (),
+                      title: str = None, index: bool = False) -> str:
     """Putting a table into a code block to skip a few steps.
 
     Args:
@@ -354,5 +379,11 @@ async def quick_block(info: t.Union[dict, list], titles: list = None) -> str:
         I'll put the example here later.
 
     """
-    table = tabulate(info.items() if isinstance(info, dict) else info).split('\n')
+    table = tabulate(
+        info.items() if isinstance(info, dict) else info, titles, showindex=index
+    ).split('\n')
+
+    if title:
+        table = [title, ''] + table
+
     return gen_block(table)

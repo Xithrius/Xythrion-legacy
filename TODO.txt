@@ -1,10 +1,9 @@
 TODO Cogs:
-- todo
-- graphing
-- tts (off stream, bc tokens/noise)
-- UNO
-- Imgur?
-- Minecraft?
+- graphing: Graph simple equations, then work up to integrals (matplotlib for graphing, regex for parsing).
+- tts: Get reminders working, and if they're in a voice channel, say it there as well.
+- UNO: May be really hard because of gamestate storage, maybe this should use its own database.
+- Imgur/Youtube: Get post information
+- Minecraft: Rescipes (if possible)
 
 - README:
     - Add all the commands, stick with v2.0. The version will not change from here.

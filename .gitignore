@@ -109,5 +109,7 @@ config/*.json
 
 # Visual Studio Code
 /.vscode
+*.code-workspace
 
+# The virtual environment
 venv/

@@ -6,9 +6,9 @@
 
 
 from discord.ext import commands as comms
+from tabulate import tabulate
 
 from modules import gen_block
-from tabulate import tabulate
 
 
 class Help(comms.Cog):
@@ -40,6 +40,7 @@ class Help(comms.Cog):
             >>> [prefix]help info
 
         """
+        # NOTE: Make this a embed paginator at a later time, if needed.
         available_commands = sum([list(v.keys()) for v in self.bot.help_info.values()], [])
 
         # Getting information on the command

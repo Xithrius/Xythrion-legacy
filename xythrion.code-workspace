@@ -3,14 +3,5 @@
         {
             "path": "."
         }
-    ],
-    "settings": {
-        "editor.cursorBlinking": "expand",
-        "editor.autoClosingBrackets": "always",
-        "editor.autoClosingQuotes": "always",
-        "editor.tabCompletion": "on",
-        "python.linting.flake8Args": [
-            "--max-line-length=110"
-        ],
-    }
+    ]
 }

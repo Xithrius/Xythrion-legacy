@@ -15,7 +15,10 @@ from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 from psutil._common import bytes2human as b2h
 
-from modules import describe_date, gen_block, lock_executor, path, markdown_link, ast
+from modules import (
+    describe_date, gen_block, lock_executor, path, markdown_link,
+    ast, join_mapped
+)
 
 
 class Links(comms.Cog):
@@ -87,9 +90,8 @@ class Links(comms.Cog):
         # Putting everything together for formatting.
         lst = [f'Login time', f'Average uptime', f'Longest uptime', f'Shortest uptime']
         lst = ['UPTIME:'] + [f'{" " * 5}{y[0]}: {y[1]}' for y in zip(lst, t.values())]
-        lst = '\n'.join(str(y) for y in lst)
 
-        return lst + '\n'
+        return join_mapped(lst) + '\n'
 
     async def calculate_usage(self) -> str:
         """Gets the usage of the CPU and ram.
@@ -124,18 +126,11 @@ class Links(comms.Cog):
             f'Running on {len(self.bot.guilds)} servers ({users} users).'
         ]
 
-        info = '\n'.join(' ' * 5 + y for y in info)
-        cpu = '\n'.join(' ' * 5 + y for y in cpu)
-        ram = '\n'.join(' ' * 5 + y for y in ram)
+        titles = ['INFORMATION:', 'CPU:', 'RAM']
+        lst = [info, cpu, ram]
+        lst = [f'{t}\n{join_mapped(" " * 5 + y for y in l)}\n' for t, l in zip(titles, lst)]
 
-        lst = [
-            f'INFORMATION:\n{info}\n',
-            f'CPU:\n{cpu}\n',
-            f'RAM:\n{ram}\n'
-        ]
-        lst = '\n'.join(str(y) for y in lst)
-
-        return lst
+        return join_mapped(lst)
 
     async def calculate_latency(self) -> str:
         """Calculates and recieves different amounts of latency.
@@ -157,9 +152,8 @@ class Links(comms.Cog):
             f'Calculated ping: {calculated_ping}',
             f'Discord WebSocket protocol latency: {self.bot.latency}'
         ]
-        lst = '\n'.join(' ' * 5 + y for y in lst)
 
-        return f'LATENCY:\n{lst}'
+        return f'LATENCY:\n{join_mapped(" " * 5 + y for y in lst)}'
 
     async def get_links(self) -> discord.Embed:
         """Creates an embed full of links about the bot.
