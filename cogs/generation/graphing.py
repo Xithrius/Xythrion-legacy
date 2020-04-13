@@ -5,14 +5,17 @@
 """
 
 
-import asyncio
 import os
 
 import discord
 import matplotlib.pyplot as plt
+import numpy as np
 from discord.ext import commands as comms
+from discord.ext.commands.cooldowns import BucketType
 
-from modules import gen_filename, path
+from modules import ast, embed_attachment, gen_filename, lock_executor, path
+
+plt.style.use('dark_background')
 
 
 class Graphing(comms.Cog):
@@ -36,15 +39,20 @@ class Graphing(comms.Cog):
 
     def create_plot(self) -> str:
         plt.clf()
-        plt.plot([1, 2, 3, 4])
-        # plt.legend()
+
+        # start,stop,step
+        x = np.arange(0, 4 * np.pi, 0.1)
+        y = np.sin(x)
+        plt.plot(x, y)
+
         f = f'{gen_filename()}.png'
         plt.savefig(path('tmp', f))
         return f
 
     """ Commands """
 
-    @comms.command(enabled=False)
+    @comms.cooldown(1, 10, BucketType.user)
+    @comms.command()
     async def graph(self, ctx, *, eq: str):
         """Graphing equations
 
@@ -55,12 +63,11 @@ class Graphing(comms.Cog):
             >>> [prefix]graph x^2 + x
 
         """
-        lock = asyncio.Lock()
-        async with lock:
-            f = await self.bot.loop.run_in_executor(None, self.create_plot)
-            file = discord.File(path('tmp', f), filename=f)
+        f = await lock_executor(self.create_plot, loop=self.bot.loop)
+        embed = discord.Embed(title=ast('A graph:'))
+        file, embed = embed_attachment(path('tmp', f), embed)
 
-        await ctx.send(file=file)
+        await ctx.send(file=file, embed=embed)
         os.remove(path('tmp', f))
 
 
