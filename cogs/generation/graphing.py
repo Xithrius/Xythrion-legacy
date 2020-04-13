@@ -6,6 +6,8 @@
 
 
 import os
+import typing as t
+import re
 
 import discord
 import matplotlib.pyplot as plt
@@ -37,10 +39,15 @@ class Graphing(comms.Cog):
 
     """ Cog-specific functions """
 
+    async def parse_equation(self, eq: str) -> t.List[t.List[int]]:
+        eq = re.finditer(r'([\-\+])*(\s)*(\w)*(\^\d)*', eq)
+        eq = [y.group() for y in eq if not y.group().strip() == '']
+        return eq
+
     def create_plot(self) -> str:
         plt.clf()
 
-        # start,stop,step
+        # start, stop, step
         x = np.arange(0, 4 * np.pi, 0.1)
         y = np.sin(x)
         plt.plot(x, y)
@@ -51,10 +58,10 @@ class Graphing(comms.Cog):
 
     """ Commands """
 
-    @comms.cooldown(1, 10, BucketType.user)
+    @comms.cooldown(1, 5, BucketType.user)
     @comms.command()
     async def graph(self, ctx, *, eq: str):
-        """Graphing equations
+        """Graphing equations.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
@@ -63,7 +70,8 @@ class Graphing(comms.Cog):
             >>> [prefix]graph x^2 + x
 
         """
-        f = await lock_executor(self.create_plot, loop=self.bot.loop)
+        eq = await self.parse_equation(eq)
+        f = await lock_executor(self.create_plot, eq, loop=self.bot.loop)
         embed = discord.Embed(title=ast('A graph:'))
         file, embed = embed_attachment(path('tmp', f), embed)
 
