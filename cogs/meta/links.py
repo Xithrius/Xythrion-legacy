@@ -16,9 +16,8 @@ from discord.ext.commands.cooldowns import BucketType
 from psutil._common import bytes2human as b2h
 
 from modules import (
-    describe_date, gen_block, lock_executor, path, markdown_link,
-    ast, join_mapped
-)
+    ast, describe_date, gen_block, join_mapped, lock_executor, markdown_link,
+    path)
 
 
 class Links(comms.Cog):

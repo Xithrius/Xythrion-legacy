@@ -11,7 +11,7 @@ import discord
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 
-from modules import gen_block, ast, markdown_link
+from modules import ast, gen_block, markdown_link
 
 
 class Guilds(comms.Cog):

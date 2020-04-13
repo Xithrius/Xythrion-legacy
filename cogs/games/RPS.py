@@ -7,10 +7,10 @@
 
 from random import choice
 
-from discord.ext import commands as comms
 import discord
+from discord.ext import commands as comms
 
-from modules import gen_block, ast
+from modules import ast, gen_block
 
 
 class RockPaperScissors(comms.Cog):

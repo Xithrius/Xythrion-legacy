@@ -11,7 +11,7 @@ from random import choice, randint
 import discord
 from discord.ext import commands as comms
 
-from modules import gen_block, ast
+from modules import ast, gen_block
 
 
 class Randoms(comms.Cog):

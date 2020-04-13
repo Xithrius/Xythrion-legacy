@@ -12,7 +12,7 @@ import qrcode
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 
-from modules import embed_attachment, gen_filename, lock_executor, path, ast
+from modules import ast, embed_attachment, gen_filename, lock_executor, path
 
 
 class QR(comms.Cog):

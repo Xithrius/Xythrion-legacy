@@ -5,8 +5,6 @@
 """
 
 
-# from http.client import responses
-
 import discord
 from discord.ext import commands as comms
 

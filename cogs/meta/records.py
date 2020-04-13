@@ -10,7 +10,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands as comms
 
-from modules import gen_block, describe_date
+from modules import describe_date, gen_block
 
 
 class Records(comms.Cog):
