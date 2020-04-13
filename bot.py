@@ -57,20 +57,18 @@ def _cleanup():
 
 
 class Xythrion(comms.Bot):
-    """The main class where all important attributes are set and tasks are ran.
+    """A subclass where very important tasks and connections are created.
 
     Attributes:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
+        config (dict): Tokens and other items.
+        loop (:obj:):
+        pool (:obj:):
+        session (:obj:)
 
     """
 
     def __init__(self, *args, **kwargs):
-        """Creating important attributes for this class.
-
-        Args:
-            Template: bot (:obj:`comms.Bot`): Represents a Discord bot.
-
-        """
+        """Initialization of tasks and connections."""
         super().__init__(*args, **kwargs)
 
         # Open config
@@ -176,12 +174,28 @@ class Xythrion(comms.Bot):
                     name TEXT
                 )
             ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS Todos(
+                    identification serial PRIMARY KEY,
+                    t_creation TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                    t_updated TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                    id BIGINT,
+                    todo_lst_name TEXT,
+                    lst TEXT[]
+                )
+            ''')
 
     async def create_help(self):
         """Creates multi-layer dictionary for helping users."""
         self.help_info = defaultdict(dict)
 
         for c in self.commands:
+            group = False
+            try:
+                group = [i.name for i in c.commands]
+            except AttributeError:
+                pass
+
             h = c.help.split('\n')
 
             if not c.enabled or c.hidden:
@@ -195,8 +209,10 @@ class Xythrion(comms.Bot):
 
                 self.help_info[c.cog.qualified_name][c.name.lower()] = {
                     'Aliases': ', '.join(str(y) for y in c.aliases) if c.aliases else 'None',
-                    'Description': h[0], 'Examples': examples
+                    'Description': h[0], 'Examples': examples,
+                    'Subcommands': 'None' if not group else ', '.join(group)
                 }
+
             except ValueError:
                 Status(
                     f'Help setup error: docstring in cog {c.cog.qualified_name}: [prefix]{c.name}',
