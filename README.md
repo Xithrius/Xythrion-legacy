@@ -30,6 +30,7 @@
 - Importing from `modules/`.
 - The way embeds are formatted.
 - Configuration of the bot, and the different options at launch.
+- Everything to dark mode so your eyes don't get burned by the light.
 
 #### Removed:
 - No longer recording specific messages and their content sent by users, only adding it to the count of messages/commands.
@@ -37,6 +38,7 @@
 - The youtube to mp3 command since it's against YouTube's TOS.
 - Really bad embed tables that no one liked.
 - The TTS command (I really wonder why I implimented it in the first place).
+- The fancy status, since it has been moved to its own package: [hyper-status](!https://pypi.org/project/hyper-status/).
 
 ### v0-v1.1 (Development of the project, I wouldn't look too close at these versions)
 - API tracking such as how weather changes within an area, and how a certien Reddit post is doing over a couple days.
