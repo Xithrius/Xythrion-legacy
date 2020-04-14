@@ -39,18 +39,34 @@ class Graphing(comms.Cog):
 
     """ Cog-specific functions """
 
-    async def parse_equation(self, eq: str) -> t.List[t.List[int]]:
-        eq = re.finditer(r'([\-\+])*(\s)*(\w)*(\^\d)*', eq)
-        eq = [y.group() for y in eq if not y.group().strip() == '']
-        return eq
+    async def parse_eqation(self, eq: str, domain: list = None) -> t.Tuple[np.array]:
+        eq = re.finditer(r'([\-\+])*(\s)*(\w)*(\^([\-\+])*\d)*', eq)
+        eq = [y.group().replace(' ', '').split('^') for y in eq if not y.group().strip() == '']
 
-    def create_plot(self) -> str:
+        x = np.arange(*domain if domain else [-10, 10], 0.1)
+        y = x
+
+        for item in eq:
+            if 'x' not in item[0]:
+                y += int(item[0])
+
+            else:
+                try:
+                    y *= int(item[0][:-1])
+                except (IndexError, ValueError):
+                    pass
+                try:
+                    y = pow(y, float(item[1]))
+                except IndexError:
+                    pass
+
+        return x, y
+
+    def create_plot(self, x, y, grid: bool) -> str:
         plt.clf()
-
-        # start, stop, step
-        x = np.arange(0, 4 * np.pi, 0.1)
-        y = np.sin(x)
         plt.plot(x, y)
+        if grid:
+            plt.grid()
 
         f = f'{gen_filename()}.png'
         plt.savefig(path('tmp', f))
@@ -60,19 +76,39 @@ class Graphing(comms.Cog):
 
     @comms.cooldown(1, 5, BucketType.user)
     @comms.command()
-    async def graph(self, ctx, *, eq: str):
+    async def graph(self, ctx, *, entry: str):
         """Graphing equations.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            eq (str): The equation to be parsed and graphed.
 
         Command examples:
             >>> [prefix]graph x^2 + x
 
         """
-        eq = await self.parse_equation(eq)
-        f = await lock_executor(self.create_plot, eq, loop=self.bot.loop)
-        embed = discord.Embed(title=ast('A graph:'))
+        options = {'domain': False, 'grid': False}
+
+        eq = entry
+        for item in [x for x in options.keys() if x in entry]:
+            eq = entry[:entry.index(item)]
+            tmp = entry[entry.index(item) + len(item) + 1:]
+
+            try:
+                options[item] = [int(x.strip()) for x in tmp.split(',')]
+            except ValueError:
+                options[item] = int(tmp)
+
+        print(options)
+        print(eq)
+
+        try:
+            x, y = await self.parse_eqation(eq, options['domain'])
+        except Exception:
+            return await ctx.send(
+                '`The graph command only accepts polynomials with exponents and coefficients.`')
+        f = await lock_executor(self.create_plot, (x, y, options['grid']))
+        embed = discord.Embed(title=ast(f'The graph of "{eq}":'))
         file, embed = embed_attachment(path('tmp', f), embed)
 
         await ctx.send(file=file, embed=embed)
