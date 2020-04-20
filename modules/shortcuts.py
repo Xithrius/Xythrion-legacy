@@ -260,9 +260,7 @@ def describe_date(d: timedelta) -> str:
     return ', '.join(str(y) for y in [days] + d)
 
 
-async def lock_executor(func: t.Union[functools.partial, callable],
-                        args: list = None, *,
-                        loop: asyncio.AbstractEventLoop = None):
+async def lock_executor(func: functools.partial, loop: asyncio.AbstractEventLoop):
     """Uses an asyncio lock to run an synchronous function asynchronously.
 
     Args:
@@ -295,13 +293,10 @@ async def lock_executor(func: t.Union[functools.partial, callable],
     """
     lock = asyncio.Lock()
 
-    loop = asyncio.get_running_loop() if not loop else loop
-
     async with lock:
-        if isinstance(func, functools.partial) or args is None:
-            return await loop.run_in_executor(None, func)
-        else:
-            return await loop.run_in_executor(None, func, *args)
+        f = await loop.run_in_executor(None, func)
+
+    return f
 
 
 def embed_attachment(p: str, embed: discord.Embed = None) -> tuple:
