@@ -1,6 +1,6 @@
 TODO Cogs:
 - graphing: Graph simple equations, then work up to integrals (matplotlib for graphing, regex for parsing).
-- tts: Get reminders working, and if they're in a voice channel, say it there as well.
+- reminder (tts): Get reminders working. If author is in voice chat, join, tell them, leave.
 - UNO: May be really hard because of gamestate storage, maybe this should use its own database.
 - Imgur/Youtube: Get post information
 - Minecraft: Rescipes (if possible)
