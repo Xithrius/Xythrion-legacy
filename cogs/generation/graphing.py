@@ -5,9 +5,10 @@
 """
 
 
+import asyncio
 import os
-import typing as t
 import re
+import typing as t
 
 import discord
 import matplotlib.pyplot as plt
@@ -15,7 +16,7 @@ import numpy as np
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 
-from modules import ast, embed_attachment, gen_filename, lock_executor, path
+from modules import ast, embed_attachment, gen_filename, join_mapped, path
 
 plt.style.use('dark_background')
 
@@ -62,11 +63,12 @@ class Graphing(comms.Cog):
 
         return x, y
 
-    def create_plot(self, x, y, grid: bool) -> str:
+    async def create_plot(self, lst: t.List[tuple]) -> str:
         plt.clf()
-        plt.plot(x, y)
-        if grid:
-            plt.grid()
+
+        for item in lst:
+            x, y = item
+            plt.plot(x, y)
 
         f = f'{gen_filename()}.png'
         plt.savefig(path('tmp', f))
@@ -87,28 +89,33 @@ class Graphing(comms.Cog):
             >>> [prefix]graph x^2 + x
 
         """
-        options = {'domain': False, 'grid': False}
-
-        eq = entry
-        for item in [x for x in options.keys() if x in entry]:
-            eq = entry[:entry.index(item)]
-            tmp = entry[entry.index(item) + len(item) + 1:]
-
-            try:
-                options[item] = [int(x.strip()) for x in tmp.split(',')]
-            except ValueError:
-                options[item] = int(tmp)
-
-        print(options)
-        print(eq)
-
+        domain = None
         try:
-            x, y = await self.parse_eqation(eq, options['domain'])
-        except Exception:
-            return await ctx.send(
-                '`The graph command only accepts polynomials with exponents and coefficients.`')
-        f = await lock_executor(self.create_plot, (x, y, options['grid']))
-        embed = discord.Embed(title=ast(f'The graph of "{eq}":'))
+            domain = entry[entry.index('domain') + len('domain') + 1:]
+            domain = [int(x.strip()) for x in domain.split(',')]
+            eq = entry[:entry.index('domain') - 1].strip()
+        except ValueError:
+            eq = entry
+
+        eq = [x.strip() for x in eq.split(',')]
+
+        lst = []
+
+        for item in eq:
+            try:
+                x, y = await self.parse_eqation(item, domain)
+                lst.append((x, y))
+            except Exception:
+                return await ctx.send(
+                    '`The graph command only accepts polynomials with exponents and coefficients.`')
+                break
+
+        lock = asyncio.Lock()
+
+        async with lock:
+            f = await self.create_plot(lst)
+
+        embed = discord.Embed(title=ast('The graph of "{0}":'.format(join_mapped(eq, separator=', '))))
         file, embed = embed_attachment(path('tmp', f), embed)
 
         await ctx.send(file=file, embed=embed)
