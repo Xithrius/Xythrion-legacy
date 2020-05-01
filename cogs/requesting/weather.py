@@ -5,22 +5,34 @@
 """
 
 
+import sys
+import traceback
 import typing as t
 from datetime import datetime
 
+import discord
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 from tabulate import tabulate
 
 from modules import (
-    gen_block, http_get,
+    gen_block, http_get, path, gen_filename, parallel_executor,
     kelvin_to_celcius as k2c, kelvin_to_fahrenheit as k2f,
     celcius_to_kelvin as c2k, celcius_to_fahrenheit as c2f
 )
 
 
+try:
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    plt.style.use('dark_background')
+except Exception as e:
+    traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
+
+
 class Weather(comms.Cog):
-    """Summary for Weather
+    """Putting weather information on graphs and tables.
 
     Attributes:
         bot (:obj:`comms.Bot`): Represents a Discord bot.
@@ -35,6 +47,25 @@ class Weather(comms.Cog):
 
         """
         self.bot = bot
+
+    """ Cog-specific functions """
+
+    @parallel_executor
+    def create_plot(self, lst, titles) -> str:
+        plt.clf()
+
+        print(lst)
+        print()
+        print(titles)
+
+        # for item in lst:
+        #     x, y = item
+        #     plt.plot(x, y)
+
+        f = f'{gen_filename()}.png'
+        plt.savefig(path('tmp', f), format='png')
+
+        return f
 
     """ Commands """
 
@@ -101,6 +132,9 @@ class Weather(comms.Cog):
                 ]
 
             lst = [[sol_keys[i]] + v for i, v in enumerate(lst.values())]
+
+        file = await self.create_plot(lst, titles)
+        return await ctx.send(file=discord.File(path('tmp', file)))
 
         table = tabulate(
             lst, titles,
