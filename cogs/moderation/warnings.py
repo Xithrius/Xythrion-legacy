@@ -82,6 +82,7 @@ class Warnings(comms.Cog):
         else:
             print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+            await ctx.send(f'`Command has thrown error(s). See console for more info.`')
 
 
 def setup(bot):
