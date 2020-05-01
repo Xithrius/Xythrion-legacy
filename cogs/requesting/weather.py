@@ -9,6 +9,7 @@ import sys
 import traceback
 import typing as t
 from datetime import datetime
+import numpy as np
 
 import discord
 from discord.ext import commands as comms
@@ -52,15 +53,21 @@ class Weather(comms.Cog):
 
     @parallel_executor
     def create_plot(self, lst, titles) -> str:
+        """
+
+        """
         plt.clf()
 
-        print(lst)
-        print()
-        print(titles)
+        days = np.unique([x.split(',')[0] for x in [y[0] for y in lst]])
+        lst = np.array([x[3:] for x in lst])
 
-        # for item in lst:
-        #     x, y = item
-        #     plt.plot(x, y)
+        for column in range(lst.shape[1]):
+            plt.plot(lst[:, column], label=titles[column], markevery=1)
+
+        plt.legend()
+        plt.xticks(np.arange(0, lst.shape[0], step=lst.shape[0] / len(days)), days)
+        plt.gcf().autofmt_xdate()
+        plt.title('Weather information')
 
         f = f'{gen_filename()}.png'
         plt.savefig(path('tmp', f), format='png')
@@ -110,6 +117,9 @@ class Weather(comms.Cog):
                 datetime.fromtimestamp(k).strftime('%A, %I:%M%p').lower().capitalize() for k in lst.keys()
             ]
             lst = [[dates[i]] + list(v.values()) for i, v in enumerate(lst.values())]
+            file = await self.create_plot(
+                lst, ['Fahrenheit', 'Celcius', 'Humidity (%)', 'Wind (m/s)']
+            )
 
         # Mars
         elif area.lower() == 'mars':
@@ -133,8 +143,7 @@ class Weather(comms.Cog):
 
             lst = [[sol_keys[i]] + v for i, v in enumerate(lst.values())]
 
-        file = await self.create_plot(lst, titles)
-        return await ctx.send(file=discord.File(path('tmp', file)))
+        await ctx.send(file=discord.File(path('tmp', file)))
 
         table = tabulate(
             lst, titles,
@@ -144,6 +153,7 @@ class Weather(comms.Cog):
         ).split('\n')
 
         # Limiting character count
+        return
         for i in range(len(table)):
             if sum([len(x) for x in table[:i]]) < 2000:
                 continue
