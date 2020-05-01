@@ -3,23 +3,34 @@
 > Copyright (c) 2020 Xithrius
 > MIT license, Refer to LICENSE for more info
 
-The main file for the graphing bot.
+Running the bot:
 
-Running the bot (python 3.8+):
+    Make sure your Python version is 3.8.x:
+        Windows:
+            $ python -3 -V
+
+        Linux/OSX:
+            $ python3 -V
+
+    If not, install a Python 3.8 version:
+        https://python.org/download
+
+    Creating the virtual environment (defaulting to "python", replace if needed):
+        NOTE: DO NOT INCLUDE "pip" IF ON UBUNTU!
+        $ python -m pip install --upgrade pip virtualenv
+
+        # Creating the virtual environment, then activating it.
+        $ python -m virtualenv venv
+        $ source venv/Scripts/activate
 
     Installing requirements:
         $ python -m pip install --user -r requirements.txt
 
-    Starting the bot:
-        Without logging:
-            $ python bot.py
-
-        with logging (log should show up in /tmp/discord.log):
-            $ python bot.py log
 """
 
 
 import asyncio
+import concurrent.futures
 import datetime
 import json
 import logging
@@ -80,6 +91,10 @@ class Xythrion(comms.Bot):
 
         # Create asyncio loop
         self.loop = asyncio.get_event_loop()
+
+        # Create executor for running sync functions asynchronously
+        self.executor = concurrent.futures.ThreadPoolExecutor()
+
         self.loop.run_until_complete(self.create_courtines())
 
         # Add the main cog required for development and control.
@@ -104,7 +119,7 @@ class Xythrion(comms.Bot):
             self.load_extension(cog)
 
         # Creating help dictionary for the help command.
-        self.loop.run_until_complete(self.create_help())
+        asyncio.get_event_loop().run_until_complete(self.create_help())
 
     async def create_courtines(self):
         """Creates asynchronous database and session connection.
@@ -119,7 +134,7 @@ class Xythrion(comms.Bot):
         except Exception as e:
             Status(f'Fatal error while creating connection to database: {e}', 'fail')
 
-        self.session = aiohttp.ClientSession(loop=self.loop)
+        self.session = aiohttp.ClientSession()
 
     async def check_database(self):
         """Checks if the database has the correct tables before starting the bot up."""
@@ -222,9 +237,17 @@ class Xythrion(comms.Bot):
     async def on_ready(self):
         """Updates the bot status when logged in successfully."""
         self.startup_time = datetime.datetime.now()
-        await self.change_presence(status=discord.ActivityType.playing,
-                                   activity=discord.Game('with information'))
+
+        await self.change_presence(
+            activity=discord.Activity(type=discord.ActivityType.watching,
+                                      name="graphs")
+        )
+
         Status('Awaiting...', 'ok')
+        # .change_presence(activity=discord.Game(name="a game"))
+        # .change_presence(activity=discord.Streaming(name="My Stream", url=my_twitch_url))
+        # .change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="a song"))
+        # .change_presence(status=discord.ActivityType.watching, activity=discord.Game('with information'))
 
     async def logout(self):
         """Subclassing the logout command to make sure connections are closed properly."""
@@ -293,8 +316,6 @@ class Development(comms.Cog):
                 Status(f'Loading "{cog}" error:', 'fail')
                 traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
 
-        # self.bot.loop.run_until_complete(self.bot.create_help())
-
         await ctx.send('Reloaded extensions.', delete_after=7)
 
     @comms.command(name='loaded', hidden=True)
@@ -336,30 +357,20 @@ class Development(comms.Cog):
 
 
 if __name__ == "__main__":
-    # Adding the temp folder if it doesn't exist.
     if not os.path.isdir(path('tmp')):
         os.mkdir(path('tmp'))
 
-    # Starting the logger, if requested from the command line.
     try:
         if sys.argv[1] == 'log':
             _logger()
     except IndexError:
         pass
 
-    # Creating the bot object
-    bot = Xythrion(
-        # command_prefix=comms.when_mentioned_or(';'),
-        command_prefix=';',
-        case_insensitive=True,
-        help_command=None
-    )
+    bot = Xythrion(command_prefix=';', case_insensitive=True, help_command=None)
 
-    # Running the bot
     try:
         bot.run(bot.config['discord'], bot=True, reconnect=True)
     except (discord.errors.HTTPException, discord.errors.LoginFailure):
         Status('Improper token has been passed.', 'fail')
 
-    # Cleaning up the tmp directory
     _cleanup()

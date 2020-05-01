@@ -11,9 +11,10 @@ import discord
 import qrcode
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
-import asyncio
 
-from modules import ast, embed_attachment, gen_filename, lock_executor, path
+from modules import (
+    embed_attachment, gen_filename, path, parallel_executor, quick_block
+)
 
 
 class QR(comms.Cog):
@@ -35,7 +36,8 @@ class QR(comms.Cog):
 
     """ Cog-specific functions """
 
-    async def create_qr_code(self, msg: str):
+    @parallel_executor
+    def create_qr_code(self, msg: str):
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -67,12 +69,11 @@ class QR(comms.Cog):
             >>> [prefix]another thing
 
         """
-        lock = asyncio.Lock()
+        f = await self.create_qr_code([msg])
 
-        async with lock:
-            f = await self.create_qr_code([msg])
-        embed = discord.Embed(title=ast(f'QR code for "{msg}":'))
+        embed = discord.Embed()
         file, embed = embed_attachment(path('tmp', f), embed)
+        embed.description = '\n'.join(map(str, quick_block(bin(msg)[2:])))
 
         await ctx.send(file=file, embed=embed)
         os.remove(path('tmp', f))

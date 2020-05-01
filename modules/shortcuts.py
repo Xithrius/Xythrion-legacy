@@ -6,6 +6,7 @@
 
 
 import asyncio
+import concurrent.futures
 import functools
 import json
 import os
@@ -13,10 +14,10 @@ import sys
 import typing as t
 from datetime import datetime, timedelta
 from http.client import responses
-from tabulate import tabulate
 
 import discord
 from aiohttp import ClientSession
+from tabulate import tabulate
 
 
 def path(*filepath) -> str:
@@ -260,45 +261,6 @@ def describe_date(d: timedelta) -> str:
     return ', '.join(str(y) for y in [days] + d)
 
 
-async def lock_executor(func: functools.partial, loop: asyncio.AbstractEventLoop):
-    """Uses an asyncio lock to run an synchronous function asynchronously.
-
-    Args:
-        func (:obj:`t.Union[functools.partial, callable]`): Either a partial function or a callable.
-        args (list, optional): Arguments for the function if not a callable.
-        loop (:obj:`asyncio.AbstractEventLoop`, optional): The loop to be used for the executor.
-
-    Returns:
-        Whatever the function ('func' in args) returns.
-
-    Examples:
-        >>> import requests
-        >>> url = 'https://httpbin.org/get
-        >>> print(
-                await lock_executor(requests.get(url).json())
-            )
-        {
-        "args": {},
-        "headers": {
-            "Accept": "*/*",
-            "Accept-Encoding": "gzip, deflate",
-            "Host": "httpbin.org",
-            "User-Agent": "Python/3.8 aiohttp/3.6.2",
-            "X-Amzn-Trace-Id": "██████████████████████████████████ (Just in case)"
-        },
-        "origin": "██████████████████████ (it's your ip)",
-        "url": "https://httpbin.org/get"
-        }
-
-    """
-    lock = asyncio.Lock()
-
-    async with lock:
-        f = await loop.run_in_executor(None, func)
-
-    return f
-
-
 def embed_attachment(p: str, embed: discord.Embed = None) -> tuple:
     """Creating an embed and adding a local image to it.
 
@@ -382,3 +344,35 @@ async def quick_block(info: t.Union[dict, list], titles: list = (),
         table = [title, ''] + table
 
     return gen_block(table)
+
+
+def parallel_executor(func: callable) -> callable:
+    """
+
+    """
+
+    async def run_blocking(func: functools.partial,
+                           loop: asyncio.AbstractEventLoop,
+                           executor: concurrent.futures.Executor):
+        """
+
+        """
+        done, pending = await asyncio.wait(
+            fs=(loop.run_in_executor(executor, func),),
+            return_when=asyncio.ALL_COMPLETED
+        )
+
+        return done.pop().result()
+
+    async def wrapper(self, *args, **kwargs) -> None:
+        """
+
+        """
+        p_func = functools.partial(func, self, *args, **kwargs)
+        result = await asyncio.ensure_future(
+            run_blocking(p_func, self.bot.loop, self.bot.executor)
+        )
+
+        return result
+
+    return wrapper

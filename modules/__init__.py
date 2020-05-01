@@ -12,9 +12,9 @@ from .conversion import (
 from .shortcuts import (
     path, get_extensions, shorten,
     gen_block, http_get, gen_filename,
-    describe_date, lock_executor, embed_attachment,
+    describe_date, embed_attachment,
     ast, markdown_link, quick_block,
-    join_mapped
+    join_mapped, parallel_executor
 )
 
 
@@ -24,7 +24,7 @@ __all__ = [
 
     'path', 'get_extensions', 'shorten',
     'gen_block', 'http_get', 'gen_filename',
-    'describe_date', 'lock_executor', 'embed_attachment',
+    'describe_date', 'embed_attachment',
     'ast', 'markdown_link', 'quick_block',
-    'join_mapped'
+    'join_mapped', 'parallel_executor'
 ]

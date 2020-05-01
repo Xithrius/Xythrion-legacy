@@ -16,8 +16,9 @@ from discord.ext.commands.cooldowns import BucketType
 from psutil._common import bytes2human as b2h
 
 from modules import (
-    ast, describe_date, gen_block, join_mapped, lock_executor, markdown_link,
-    path)
+    ast, describe_date, gen_block, join_mapped, markdown_link, path,
+    parallel_executor
+)
 
 
 class Links(comms.Cog):
@@ -92,7 +93,8 @@ class Links(comms.Cog):
 
         return join_mapped(lst) + '\n'
 
-    async def calculate_usage(self) -> str:
+    @parallel_executor
+    def calculate_usage(self) -> str:
         """Gets the usage of the CPU and ram.
 
         Returns:
@@ -102,12 +104,12 @@ class Links(comms.Cog):
         d = describe_date(datetime.now() - datetime(year=2019, month=3, day=13, hour=17, minute=16))
 
         mem = psutil.virtual_memory()
-        cpu = {
-            'Usage': f'{psutil.cpu_percent(interval=None)}%',
-            'Cores': psutil.cpu_count()
-        }
+        # cpu = {
+        #     'Usage': f'{psutil.cpu_percent(interval=100)}%',
+        #     'Cores': psutil.cpu_count()
+        # }
         cpu = [
-            f'Usage: {psutil.cpu_percent(interval=None)}%',
+            f'Usage: {psutil.cpu_percent(interval=1)}%',
             f'Cores: {psutil.cpu_count()}'
         ]
         tags = ['percent', 'total', 'available', 'used']
@@ -117,7 +119,7 @@ class Links(comms.Cog):
         ]
         ram = [f'{t.capitalize()}: {r}' for t, r in zip(tags, ram)]
 
-        lines = await lock_executor(self.calculate_lines)
+        lines = self.calculate_lines()
         users = sum([len(guild.members) for guild in self.bot.guilds])
         info = [
             f'Project created {d} ago, on March 13, 2019, 5:19pm PDT.',
@@ -152,7 +154,7 @@ class Links(comms.Cog):
             f'Discord WebSocket protocol latency: {self.bot.latency}'
         ]
 
-        return f'LATENCY:\n{join_mapped(" " * 5 + y for y in lst)}'
+        return f'LATENCY:\n{join_mapped(" " * 5 + y for y in lst)}\n'
 
     async def get_links(self) -> discord.Embed:
         """Creates an embed full of links about the bot.
@@ -180,7 +182,7 @@ class Links(comms.Cog):
 
     @comms.cooldown(1, 1, BucketType.user)
     @comms.command()
-    async def info(self, ctx, *, option: str = 'all'):
+    async def info(self, ctx):
         """Information about bot origin along with usage statistics.
 
         Args:
@@ -192,39 +194,14 @@ class Links(comms.Cog):
             >>> [prefix]info ping
 
         """
-        option = option.lower()
-        options = {
-            'usage': self.calculate_usage,
-            'uptime': self.calculate_uptime,
-            'ping': self.calculate_latency,
-            'links': self.get_links
-        }
 
-        lst = {}
-        if option != 'all':
-            for i in [option]:
-                if i not in options:
-                    embed = discord.Embed(
-                        title=ast(f'Unknown option {i}. Please pick from the following:'),
-                        description=gen_block([k for k in list(options.keys())])
-                        )
-                    return await ctx.send(embed=embed)
+        lst = [
+            await self.calculate_latency(),
+            await self.calculate_usage(),
+            await self.calculate_uptime()
+        ]
 
-                lst[i] = await options[i]()
-
-        else:
-            for k, v in options.items():
-                lst[k] = await v()
-
-        try:
-            embed = lst.pop('links')
-        except KeyError:
-            embed = None
-
-        await ctx.send(
-            content=gen_block([v for v in lst.values()]) if option != 'links' else None,
-            embed=embed
-        )
+        await ctx.send(content=gen_block(lst), embed=await self.get_links())
 
     @comms.command()
     async def invite(self, ctx):
