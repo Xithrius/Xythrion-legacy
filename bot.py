@@ -5,18 +5,18 @@
 
 Running the bot:
 
-    Make sure your Python version is 3.8.x:
+    Make sure your Python version is 3.7.x:
         Windows:
-            $ python -3 -V
+            $ py -3.7 -V
 
         Linux/OSX:
             $ python3 -V
 
-    If not, install a Python 3.8 version:
+    If not, install Python version 3.7.7:
         https://python.org/download
 
     Creating the virtual environment (defaulting to "python", replace if needed):
-        NOTE: DO NOT INCLUDE "pip" IF ON UBUNTU!
+        NOTE: DO NOT INCLUDE "pip" YOU'RE RUNNING THIS ON UBUNTU.
         $ python -m pip install --upgrade pip virtualenv
 
         # Creating the virtual environment, then activating it.
@@ -25,6 +25,13 @@ Running the bot:
 
     Installing requirements:
         $ python -m pip install --user -r requirements.txt
+
+    Running the bot:
+        Windows:
+            $ py -3.7 bot.py
+
+        Linux/OSX:
+            $ clear && python3 bot.py
 
 """
 
@@ -37,29 +44,49 @@ import logging
 import os
 import sys
 import traceback
-from collections import defaultdict
+import typing as t
 
 import aiohttp
 import asyncpg
 import discord
 from discord.ext import commands as comms
-from hyper_status import Status
+from rich import logging as r_logging, r_traceback
 
-from modules import get_extensions, path
+from utils import markdown_link, path, tracebacker
 
 
-def _logger():
+try:
+    r_traceback.install()
+
+except Exception as e:
+    tracebacker(e)
+
+
+def _discord_logger() -> None:
     """Logs information specifically for the discord package."""
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
+
     if not os.path.isdir(path(f'tmp{os.sep}')):
         os.mkdir(path('tmp'))
-    handler = logging.FileHandler(filename=path('tmp', 'discord.log'), encoding='utf-8', mode='w')
-    handler.setFormatter(logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s'))
-    logger.addHandler(handler)
+
+    base_handler = logging.FileHandler(filename=path('tmp', 'discord.log'), encoding='utf-8', mode='w')
+    base_handler.setFormatter(logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s'))
+    logger.addHandler(base_handler)
 
 
-def _cleanup():
+def _rich_logger(log_type: t.Union[str, bool]) -> logging.Logger:
+    log_types = {'info': logging.INFO, 'debug': logging.DEBUG, None: 'NOTSET'}[log_type]
+
+    # _format = '%(asctime)s : %(levelname)s : %(name)s : %(message)s'
+    logging.basicConfig(
+        level=log_types, format='%(message)s', datefmt="[%c]", handlers=[r_logging.RichHandler()]
+    )
+
+    return logging.getLogger('rich')
+
+
+def _cleanup() -> None:
     """Cleans up tmp/ after bot is logged out and shut down."""
     if os.path.isdir(path('tmp')):
         for item in os.listdir(path('tmp')):
@@ -71,23 +98,29 @@ class Xythrion(comms.Bot):
     """A subclass where very important tasks and connections are created.
 
     Attributes:
-        config (dict): Tokens and other items.
-        loop (:obj:):
-        pool (:obj:):
-        session (:obj:)
+        config (dict): Tokens and other items from `./config/config.json`.
+        loop (:obj:`asyncio.AbstractEventLoop`):
+        pool (:obj:`asyncpg.Pool`):
+        session (:obj:``):
 
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """Initialization of tasks and connections."""
+        self.log = kwargs.pop('log')
+
         super().__init__(*args, **kwargs)
 
         # Open config
         try:
             with open(path('config', 'config.json')) as f:
                 self.config = json.load(f)
-        except (FileNotFoundError, IndexError):
-            Status('Config could not be found or read properly.', 'fail')
+
+        except IndexError:
+            pass
+
+        except FileNotFoundError:
+            pass
 
         # Create asyncio loop
         self.loop = asyncio.get_event_loop()
@@ -100,28 +133,13 @@ class Xythrion(comms.Bot):
         # Add the main cog required for development and control.
         self.add_cog(Development(self))
 
-        # Getting cogs ready to be laoded in.
-        __cogs = get_extensions()
-
-        # Attempt to set TTS environment. If there's a failiure, the TTS cog isn't loaded.
-        if os.path.isfile(path('config', 'gsc.json')):
-            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path('config', 'gsc.json')
-        else:
-            Status(
-                'Google Service Token .json could not be opened properly. TTS is disabled.', 'fail')
-            try:
-                __cogs.remove('cogs.requesters.tts')
-            except ValueError:
-                pass
-
         # Loading the cogs in, one by one.
-        for cog in __cogs:
-            self.load_extension(cog)
+        asyncio.get_event_loop().run_until_complete(self.load_extensions())
 
         # Creating help dictionary for the help command.
-        asyncio.get_event_loop().run_until_complete(self.create_help())
+        # asyncio.get_event_loop().run_until_complete(self.create_help())
 
-    async def create_courtines(self):
+    async def create_courtines(self) -> None:
         """Creates asynchronous database and session connection.
 
         Raises:
@@ -131,129 +149,84 @@ class Xythrion(comms.Bot):
         try:
             self.pool = await asyncpg.create_pool(**self.config['db'], command_timeout=60)
             await self.check_database()
+
         except Exception as e:
-            Status(f'Fatal error while creating connection to database: {e}', 'fail')
+            self.log.info(f'Fatal error while creating connection to database: {e}')
 
         self.session = aiohttp.ClientSession()
 
-    async def check_database(self):
+    async def check_database(self) -> None:
         """Checks if the database has the correct tables before starting the bot up."""
         async with self.pool.acquire() as conn:
             await conn.execute('''
                 CREATE TABLE IF NOT EXISTS Runtime(
                     identification serial PRIMARY KEY,
-                    t_login TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                    t_logout TIMESTAMP WITHOUT TIME ZONE NOT NULL
+                    t_login TIMESTAMP WITH TIME ZONE NOT NULL,
+                    t_logout TIMESTAMP WITH TIME ZONE NOT NULL
                 )
             ''')
             await conn.execute('''
-                CREATE TABLE IF NOT EXISTS Ignore(
+                CREATE TABLE IF NOT EXISTS FailedCommands(
                     identification serial PRIMARY KEY,
-                    t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                    id BIGINT,
-                    reason TEXT
-                )
-            ''')
-            await conn.execute('''
-                CREATE TABLE IF NOT EXISTS Messages(
-                    identification serial PRIMARY KEY,
-                    t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                    id BIGINT,
-                    jump TEXT
-                )
-            ''')
-            await conn.execute('''
-                CREATE TABLE IF NOT EXISTS Commands(
-                    identification serial PRIMARY KEY,
-                    t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                    t TIMESTAMP WITH TIME ZONE NOT NULL,
                     id BIGINT,
                     jump TEXT,
-                    command TEXT,
-                    completed TIMESTAMP WITHOUT TIME ZONE
+                    error TEXT
                 )
             ''')
             await conn.execute('''
-                CREATE TABLE IF NOT EXISTS Links(
+                CREATE TABLE IF NOT EXISTS ReportedIssues(
                     identification serial PRIMARY KEY,
-                    t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                    t TIMESTAMP WITH TIME ZONE NOT NULL,
                     id BIGINT,
-                    name TEXT,
-                    link TEXT
-                )
-            ''')
-            await conn.execute('''
-                CREATE TABLE IF NOT EXISTS Dates(
-                    identification serial PRIMARY KEY,
-                    t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                    id BIGINT,
-                    name TEXT
-                )
-            ''')
-            await conn.execute('''
-                CREATE TABLE IF NOT EXISTS Todos(
-                    identification serial PRIMARY KEY,
-                    t_creation TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                    t_updated TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                    id BIGINT,
-                    todo_lst_name TEXT,
-                    lst TEXT[]
+                    flag TEXT,
+                    content TEXT
                 )
             ''')
 
-    async def create_help(self):
-        """Creates multi-layer dictionary for helping users."""
-        self.help_info = defaultdict(dict)
+    async def load_extensions(self) -> None:
+        """ """
+        extensions = await self.get_extensions()
+        broken_extensions = []
 
-        for c in self.commands:
-            group = False
+        for extension in extensions:
             try:
-                group = [i.name for i in c.commands]
-            except AttributeError:
-                pass
+                self.load_extension(extension)
 
-            h = c.help.split('\n')
+            except Exception as e:
+                broken_extensions.append((extension, e))
 
-            if not c.enabled or c.hidden:
-                continue
+        for extension, error in broken_extensions:
+            tracebacker(error)
 
-            try:
-                e = h[h.index('Command examples:') + 1:]
-                examples = ', '.join(
-                    str(y) for y in ["'{0}{1}'".format(self.command_prefix, x[x.index("]") + 1:]) for x in e]
-                )
+    async def get_extensions(self) -> t.List[str]:
+        extensions = []
 
-                self.help_info[c.cog.qualified_name][c.name.lower()] = {
-                    'Aliases': ', '.join(str(y) for y in c.aliases) if c.aliases else 'None',
-                    'Description': h[0], 'Examples': examples,
-                    'Subcommands': 'None' if not group else ', '.join(group)
-                }
+        for folder in os.listdir(path('cogs')):
+            extensions.extend(
+                [f'cogs.{folder}.{i[:-3]}' for i in os.listdir(path('cogs', folder)) if i[-3:] == '.py']
+            )
 
-            except ValueError:
-                Status(
-                    f'Help setup error: docstring in cog {c.cog.qualified_name}: [prefix]{c.name}',
-                    'fail'
-                )
+        return extensions
 
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         """Updates the bot status when logged in successfully."""
+        await self.wait_until_ready()
+
         self.startup_time = datetime.datetime.now()
 
         await self.change_presence(
-            activity=discord.Activity(type=discord.ActivityType.watching,
-                                      name="graphs")
+            activity=discord.Activity(type=discord.ActivityType.watching, name="graphs")
         )
 
-        Status('Awaiting...', 'ok')
-        # .change_presence(activity=discord.Game(name="a game"))
-        # .change_presence(activity=discord.Streaming(name="My Stream", url=my_twitch_url))
-        # .change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="a song"))
-        # .change_presence(status=discord.ActivityType.watching, activity=discord.Game('with information'))
+        self.log.info('Awaiting...')
 
-    async def logout(self):
+    async def logout(self) -> None:
         """Subclassing the logout command to make sure connections are closed properly."""
         try:
             await self.session.close()
             await self.pool.close()
+
         except Exception:
             pass
 
@@ -268,7 +241,7 @@ class Development(comms.Cog):
 
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot) -> None:
         """Creating important attributes for this class.
 
         Args:
@@ -277,7 +250,7 @@ class Development(comms.Cog):
         """
         self.bot = bot
 
-    async def cog_check(self, ctx):
+    async def cog_check(self, ctx) -> None:
         """Checks if user if owner.
 
         Args:
@@ -289,8 +262,8 @@ class Development(comms.Cog):
         """
         return await self.bot.is_owner(ctx.author)
 
-    @comms.command(aliases=['refresh', 'r'], hidden=True)
-    async def reload(self, ctx):
+    @comms.command(name='reload', aliases=['refresh', 'r'], hidden=True)
+    async def _reload(self, ctx) -> None:
         """Gets the cogs within folders and loads them into the bot after unloading current cogs.
 
         Args:
@@ -304,7 +277,7 @@ class Development(comms.Cog):
             >>> [prefix]refresh
 
         """
-        for cog in get_extensions():
+        for cog in await self.get_extensions():
             try:
                 self.bot.unload_extension(cog)
                 self.bot.load_extension(cog)
@@ -313,13 +286,13 @@ class Development(comms.Cog):
                 self.bot.load_extension(cog)
 
             except Exception as e:
-                Status(f'Loading "{cog}" error:', 'fail')
+                self.log.info(f'Loading "{cog}" error:')
                 traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
 
         await ctx.send('Reloaded extensions.', delete_after=7)
 
     @comms.command(name='loaded', hidden=True)
-    async def loaded_extension(self, ctx):
+    async def _loaded_extensions(self, ctx: comms.Context) -> None:
         """Gives a list of the currently loaded cogs.
 
         Args:
@@ -331,15 +304,17 @@ class Development(comms.Cog):
         """
         lst = [f'{str(i).zfill(3)} | {k}' for i, k in enumerate(self.bot.cogs.keys())]
         c = '\n'.join(str(y) for y in lst)
+
         embed = discord.Embed(title='*Currently loaded cogs:*', description=f'```py\n{c}\n```')
+
         await ctx.send(embed=embed)
 
-    @comms.command(hidden=True)
-    async def exit(self, ctx):
+    @comms.command(name='exit', aliases=['logout', 'disconnect'], hidden=True)
+    async def _exit(self, ctx: comms.Context) -> None:
         """Makes the bot logout after completing some last-second tasks.
 
         Args:
-            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
 
         Command examples:
             >>> [prefix]exit
@@ -349,28 +324,49 @@ class Development(comms.Cog):
             async with self.bot.pool.acquire() as conn:
                 await conn.execute(
                     '''INSERT INTO Runtime(t_login, t_logout) VALUES($1, $2)''',
-                    self.bot.startup_time, datetime.datetime.now())
+                    self.bot.startup_time, datetime.datetime.now()
+                )
+
         except AttributeError:
             pass
-        Status('Logging out...', 'warn')
+
+        self.bot.log.info('logging out...')
+
         await ctx.bot.logout()
+
+    @comms.command(name='help', aliases=['h'])
+    async def _help(self, ctx: comms.Context) -> None:
+        """Giving help to a user.
+
+        Args:
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+
+        Returns:
+            The return value is always None.
+
+        """
+        lst = [
+            '`Help is most likely not ready yet, check the link just in case:`',
+            markdown_link('Help with commands link', 'https://github.com/Xithrius/Xythrion#commands')
+        ]
+        embed = discord.Embed(description='\n'.join(map(str, lst)))
+        await ctx.send(embed=embed)
 
 
 if __name__ == "__main__":
     if not os.path.isdir(path('tmp')):
         os.mkdir(path('tmp'))
 
-    try:
-        if sys.argv[1] == 'log':
-            _logger()
-    except IndexError:
-        pass
+    log = _rich_logger('info')
 
-    bot = Xythrion(command_prefix=';', case_insensitive=True, help_command=None)
+    bot = Xythrion(
+        command_prefix=';', case_insensitive=True, help_command=None, log=log
+    )
 
     try:
         bot.run(bot.config['discord'], bot=True, reconnect=True)
+
     except (discord.errors.HTTPException, discord.errors.LoginFailure):
-        Status('Improper token has been passed.', 'fail')
+        log.info('Improper token has been passed.')
 
     _cleanup()
