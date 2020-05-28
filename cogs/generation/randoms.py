@@ -11,7 +11,7 @@ from random import choice, randint
 import discord
 from discord.ext import commands as comms
 
-from modules import ast, gen_block
+from utils import asteriks as ast, codeblock
 
 
 class Randoms(comms.Cog):
@@ -70,9 +70,10 @@ class Randoms(comms.Cog):
         if rolls > 10 or rolls < 0:
             return await ctx.send('`Rolls must be between 1 and 10.`')
 
-        if rolls > 1:
+        elif rolls > 1:
             s = sum([randint(1, 6) for x in range(rolls)]) / rolls
             avg = f'`Die was rolled {rolls} times. Average output: {round(s, 2)}`'
+
         else:
             avg = f'`Die was rolled once. Output: {randint(1, 6)}`'
 
@@ -105,7 +106,7 @@ class Randoms(comms.Cog):
 
         embed = discord.Embed(
             title=ast(f'Results from {amount} randomly chosen cards:'),
-            description=gen_block(lst)
+            description=codeblock(lst)
         )
 
         await ctx.send(embed=embed)
@@ -126,6 +127,7 @@ class Randoms(comms.Cog):
             title=ast('Tossed a coin to your Witcher.'),
             description=f'`Landed {choice(["heads", "tails"])} facing up.`'
         )
+
         await ctx.send(embed=embed)
 
     @comms.command(aliases=['rockpaperscissors'])
@@ -142,6 +144,7 @@ class Randoms(comms.Cog):
 
         """
         option = option.lower()
+
         if option not in self.options.keys():
             m = max(map(len, list(self.options.keys())))
             block = gen_block(
@@ -150,7 +153,9 @@ class Randoms(comms.Cog):
                 lines=True
             )
             block = f'`Unknown option "{option}". Please pick from the possible options:`\n' + block
+
             await ctx.send(block)
+
         else:
             lst = list(self.options.keys())
             lst.remove(option)
@@ -160,6 +165,7 @@ class Randoms(comms.Cog):
                 title=ast(f'Computer {"lost" if computer_choice in self.options[option] else "won"}'),
                 description=f'`Computer picked {computer_choice}, and you picked {option}.`'
             )
+
             await ctx.send(embed=embed)
 
 

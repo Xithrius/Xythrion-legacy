@@ -12,8 +12,8 @@ import qrcode
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 
-from modules import (
-    embed_attachment, gen_filename, path, parallel_executor, quick_block
+from utils import (
+    embed_attachment, get_filename, path, parallel_executor
 )
 
 
@@ -49,7 +49,7 @@ class QR(comms.Cog):
 
         img = qr.make_image(fill_color="black", back_color="white")
 
-        f = f'{gen_filename()}.png'
+        f = f'{get_filename()}.png'
         img.save(path('tmp', f))
         return f
 
@@ -57,7 +57,7 @@ class QR(comms.Cog):
 
     @comms.cooldown(1, 10, BucketType.user)
     @comms.command()
-    async def qr(self, ctx, *, msg: str):
+    async def qr(self, ctx: comms.Context, *, msg: str) -> None:
         """Generates a Quick Response code for a string.
 
         Args:
@@ -73,7 +73,7 @@ class QR(comms.Cog):
 
         embed = discord.Embed()
         file, embed = embed_attachment(path('tmp', f), embed)
-        embed.description = '\n'.join(map(str, quick_block(bin(msg)[2:])))
+        embed.description = f'`{bin(msg)[2:]}`'
 
         await ctx.send(file=file, embed=embed)
         os.remove(path('tmp', f))

@@ -16,9 +16,10 @@ import numpy as np
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 
-from modules import (
-    embed_attachment, gen_filename, path, quick_block, parallel_executor
+from utils import (
+    embed_attachment, get_filename, path, codeblock, parallel_executor
 )
+
 
 try:
     import matplotlib
@@ -81,8 +82,9 @@ class Graphing(comms.Cog):
             x, y = item
             plt.plot(x, y)
 
-        f = f'{gen_filename()}.png'
+        f = f'{get_filename()}.png'
         plt.savefig(path('tmp', f), format='png')
+
         return f
 
     """ Commands """
@@ -127,7 +129,7 @@ class Graphing(comms.Cog):
 
         embed = discord.Embed()
         file, embed = embed_attachment(path('tmp', f), embed)
-        embed.description = await quick_block({'Equation': E, 'Domain': domain})
+        embed.description = await quick_block({'Equation(s)': E, 'Domain': domain})
 
         await ctx.send(file=file, embed=embed)
         os.remove(path('tmp', f))
