@@ -113,3 +113,6 @@ config/*.json
 
 # The virtual environment
 venv/
+
+# tests
+tests/
