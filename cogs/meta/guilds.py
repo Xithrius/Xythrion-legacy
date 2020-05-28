@@ -4,14 +4,10 @@
 > MIT license, Refer to LICENSE for more info
 """
 
-
-import asyncio
-
 import discord
 from discord.ext import commands as comms
-from discord.ext.commands.cooldowns import BucketType
 
-from modules import ast, gen_block, markdown_link
+from utils import asteriks as ast, codeblock, markdown_link
 
 
 class Guilds(comms.Cog):
@@ -66,54 +62,9 @@ class Guilds(comms.Cog):
 
         embed = discord.Embed(
             title=ast('Guild information:'),
-            description=gen_block(lst)
+            description=codeblock(lst)
         )
         await ctx.send(embed=embed)
-
-    @comms.command(hidden=True, enabled=False)
-    @comms.is_owner()
-    async def generate_server(self, ctx, *, name: str):
-        """Creates a guild (server) and returns the invite to the owner.
-
-        Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
-            name (str): The name of the guild (server).
-
-        Command examples:
-            >>> [prefix]generate_guild a really stupid server name
-
-        """
-        # NOTE: Bot accounts in more than 10 guilds are not allowed to create guilds.
-        # TODO: Saving this functionality for a later release (I may or may not do this for v2.0)
-        pass
-
-    @comms.cooldown(1, 60, BucketType.default)
-    @comms.command(hidden=True, enabled=False)
-    @comms.is_owner()
-    async def message_owners(self, ctx, *, message: str):
-        """Messages owners of all guilds that the bot is in a specific message.
-
-        Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
-            message (str): The message to be sent to all owners of the guilds.
-
-        Command examples:
-            >>> [prefix]message_owners test
-
-        """
-        owners = [guild.owner for guild in self.bot.guilds]
-        embed = discord.Embed(description=f'`Messaging {len(owners)} owners...`')
-        msg = await ctx.send(embed=embed)
-
-        owner_embed = discord.Embed(title=ast('Message from bot creator:'))
-        owner_embed.description = message
-
-        for guild in self.bot.guilds:
-            await guild.owner.send(embed=owner_embed)
-            await asyncio.sleep(1)
-
-        embed.set_footer(text='Done.')
-        await msg.edit(embed=embed)
 
     @comms.command()
     async def icon(self, ctx, user: discord.User = None):
@@ -128,11 +79,14 @@ class Guilds(comms.Cog):
 
         """
         user = user if user else ctx.author
+
         embed = discord.Embed(
             title=ast(f'Icon for user {user}:'),
             description=markdown_link('icon url', user.avatar_url)
         )
+
         embed.set_image(url=user.avatar_url)
+
         await ctx.send(embed=embed)
 
     @comms.command()
@@ -147,11 +101,14 @@ class Guilds(comms.Cog):
 
         """
         embed = discord.Embed(title=ast('Icon for this server:'))
+
         embed = discord.Embed(
             title=ast('Icon for this server:'),
             description=markdown_link('icon url', ctx.guild.icon_url)
         )
+
         embed.set_image(url=ctx.guild.icon_url)
+
         await ctx.send(embed=embed)
 
 
