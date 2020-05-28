@@ -1,7 +1,5 @@
 {
     "discord": "",
-    "OpenWeatherMap": "",
-    "Nasa": "",
     "db": {
         "user": "",
         "password": "",
