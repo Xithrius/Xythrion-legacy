@@ -1,12 +1,11 @@
-discord.py[voice]
+discord.py
 qrcode[pil]
 psutil
 datetime
 hyper-status
-google-cloud-texttospeech
 asyncpg
 numpy
 tabulate
-aiohttp
 matplotlib
-iso8601
+# iso8601
+rich
