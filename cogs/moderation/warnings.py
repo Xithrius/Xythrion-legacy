@@ -5,8 +5,7 @@
 """
 
 
-import sys
-import traceback
+from datetime import datetime
 
 from discord.ext import commands as comms
 
@@ -41,7 +40,7 @@ class Warnings(comms.Cog):
         await ctx.message.add_reaction('\U00002705')
 
     @comms.Cog.listener()
-    async def on_command_error(self, ctx, error):
+    async def on_command_error(self, ctx: comms.Context, error: comms.CommandError) -> None:
         """When the command has an error, this event is triggered.
 
         Args:
@@ -72,17 +71,21 @@ class Warnings(comms.Cog):
             return await ctx.send(f'`{error}`')
 
         elif isinstance(error, comms.CheckFailure):
-            if str(error).strip() == 'NSFW':
-                return await ctx.send('`NSFW in SFW channels are not allowed.`')
             return await ctx.send(f'`You do not have enough permissions to run this command.`')
 
         elif isinstance(error, AssertionError):
             return await ctx.send(f'`Command failed: {error}`')
 
         else:
-            print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)
-            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
-            await ctx.send(f'`Command has thrown error(s). See console for more info.`')
+            async with self.bot.pool.acquire() as conn:
+                await conn.execute(
+                    '''INSERT INTO FailedCommands(t, id, jump, error) VALUES ($1, $2, $3, $4)''',
+                    datetime.now(), ctx.author.id, ctx.message.jump_url, str(error)
+                )
+
+            self.bot.log.info(f'Command has thrown error(s): {error}')
+
+            await ctx.send(f'`Command has thrown error(s). They have been recorded.`')
 
 
 def setup(bot):
