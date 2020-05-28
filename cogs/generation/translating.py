@@ -16,30 +16,33 @@ class Translating(comms.Cog):
 
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot) -> None:
         """Creating important attributes for this class.
 
         Args:
             bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+        Returns:
+            Nothing, just like any other cog.
 
         """
         self.bot = bot
 
     """ Commands """
 
-    @comms.command(enabled=False)
-    async def binary(self, ctx, *, msg: int):
-        """Translates from integers to binary numbers.
+    # @comms.command()
+    # async def binary(self, ctx, *, msg: int):
+    #     """Translates from integers to binary numbers.
 
-        Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
-            msg (int): A message containing only integers to be translated to binary.
+    #     Args:
+    #         ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+    #         msg (int): A message containing only integers to be translated to binary.
 
-        Command examples:
-            >>> [prefix]binary 54238702453
+    #     Command examples:
+    #         >>> [prefix]binary 54238702453
 
-        """
-        await ctx.send(f'`{bin(msg)[2:]}`')
+    #     """
+    #     await ctx.send(f'`{bin(msg)[2:]}`')
 
 
 def setup(bot):
