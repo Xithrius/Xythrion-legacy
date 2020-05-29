@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="/images/icon.png"/>
+    <img src="/images/icon.jpg"/>
 </p>
 <h1 align="center">Xythrion v2.0</h1>
 <h3 align="center">Graphing information from APIs</h3>
