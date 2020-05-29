@@ -25,7 +25,7 @@ class QR(comms.Cog):
 
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot: comms.Bot) -> None:
         """Creating important attributes for this class.
 
         Args:
@@ -37,20 +37,32 @@ class QR(comms.Cog):
     """ Cog-specific functions """
 
     @parallel_executor
-    def create_qr_code(self, msg: str):
+    def create_qr_code(self, msg: str) -> str:
+        """Creating the QR code image.
+
+        Args:
+            msg (str): The message to be converted to binary.
+
+        Returns:
+            str: The path of the image.
+
+        """
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
             box_size=10,
             border=2,
         )
+
         qr.add_data(msg)
         qr.make(fit=True)
 
         img = qr.make_image(fill_color="black", back_color="white")
 
         f = f'{get_filename()}.png'
+
         img.save(path('tmp', f))
+
         return f
 
     """ Commands """
@@ -64,6 +76,9 @@ class QR(comms.Cog):
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
             msg (str): The message to be converted into a QR code.
 
+        Returns:
+            bool: Always None.
+
         Command examples:
             >>> [prefix]something
             >>> [prefix]another thing
@@ -73,6 +88,7 @@ class QR(comms.Cog):
 
         embed = discord.Embed()
         file, embed = embed_attachment(path('tmp', f), embed)
+
         embed.description = f'`{bin(msg)[2:]}`'
 
         await ctx.send(file=file, embed=embed)

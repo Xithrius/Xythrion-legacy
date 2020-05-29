@@ -5,26 +5,18 @@
 
 Running the bot:
 
-    Make sure your Python version is 3.7.x:
-        Windows:
-            $ py -3.7 -V
+    NOTE: The following steps below assume that you have Python 3.7.7 installed.
 
-        Linux/OSX:
-            $ python3 -V
-
-    If not, install Python version 3.7.7:
-        https://python.org/download
-
-    Creating the virtual environment (defaulting to "python", replace if needed):
+    Creating the virtual environment. (defaulting to "py", replace if needed):
         NOTE: DO NOT INCLUDE "pip" YOU'RE RUNNING THIS ON UBUNTU.
-        $ python -m pip install --upgrade pip virtualenv
+        $ py -3.7 -m pip install --upgrade pip virtualenv
 
         # Creating the virtual environment, then activating it.
-        $ python -m virtualenv venv
+        $ py -3.7 -m virtualenv venv
         $ source venv/Scripts/activate
 
     Installing requirements:
-        $ python -m pip install --user -r requirements.txt
+        $ py -3.7 -m pip install -r requirements.txt
 
     Running the bot:
         Windows:
@@ -42,11 +34,8 @@ import datetime
 import json
 import logging
 import os
-import sys
-import traceback
 import typing as t
 
-import aiohttp
 import asyncpg
 import discord
 from discord.ext import commands as comms
@@ -55,15 +44,17 @@ from rich import logging as r_logging, r_traceback
 from utils import markdown_link, path, tracebacker
 
 
-try:
-    r_traceback.install()
+def _discord_logger(log_type: t.Union[str, int] = None) -> None:
+    """Logs information specifically for discord.
 
-except Exception as e:
-    tracebacker(e)
+    Args:
+        log_type (:obj:`t.Union[str, int]`, optional): The level of logging to be used.
+            Defaults to None.
 
+    Returns:
+        bool: Always None.
 
-def _discord_logger() -> None:
-    """Logs information specifically for the discord package."""
+    """
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
 
@@ -75,23 +66,67 @@ def _discord_logger() -> None:
     logger.addHandler(base_handler)
 
 
-def _rich_logger(log_type: t.Union[str, bool]) -> logging.Logger:
-    log_types = {'info': logging.INFO, 'debug': logging.DEBUG, None: 'NOTSET'}[log_type]
+def _rich_logger(log_type: t.Union[str, int] = None, store_logs: bool = False) -> logging.Logger:
+    """Logs information with the rich library with fancy tracebacks.
 
-    # _format = '%(asctime)s : %(levelname)s : %(name)s : %(message)s'
-    logging.basicConfig(
-        level=log_types, format='%(message)s', datefmt="[%c]", handlers=[r_logging.RichHandler()]
-    )
+    Args:
+        log_type (:obj:`t.Union[str, int]`, optional): The level of logging to be used.
+            Defaults to None.
+        store_file (bool, optional): If the logs want to be stored.
 
-    return logging.getLogger('rich')
+    Returns:
+        :obj:`logging.Logger`: The object that the bot will use to log information to.
+
+    Raises:
+        IndexError: If `log_type` isn't within log_types.
+
+    """
+    r_traceback.install()
+
+    log_types = {'info': logging.INFO, 'debug': logging.DEBUG, None: 'NOTSET'}
+
+    logger = logging.getLogger('rich')
+
+    if store_logs:
+        _discord_logger(log_types[log_type])
+
+    else:
+        handler = r_logging.RichHandler()
+        handler.setFormatter(logging.Formatter('%(messages)', datefmt='[%c]'))
+
+    handler.setLevel(log_types[log_type])
+
+    return logger
 
 
-def _cleanup() -> None:
-    """Cleans up tmp/ after bot is logged out and shut down."""
-    if os.path.isdir(path('tmp')):
-        for item in os.listdir(path('tmp')):
-            if item[-4:] != '.log':
-                os.remove(path('tmp', item))
+def _cleanup(folders: t.Union[list, str] = 'tmp') -> None:
+    """Cleans up folders after the running of the bot's blocking stops.
+
+    Function will continue clearing files until it is done or a folder cannot be found.
+
+    NOTE: THIS FUNCTION WILL DESTROY ALL FILES CONTAINING '.log', '.pycache', AND/OR '.png'.
+          USE THIS FUNCTION WITH CARE.
+
+    Args:
+        folders (:obj:`t.Union[list, str]`, optional): Folder to have their contents cleared out.
+
+    Returns:
+        bool: Always None.
+
+    Raises:
+        FileNotFoundError: If one of the specified folders cannot be found.
+
+    """
+    folders = [folders] if isinstance(folders, str) else folders
+
+    for folder in folders:
+        if os.path.isdir(path(folder)):
+            for item in os.listdir(path(folder)):
+                if ['.log', '.pycache', '.png'] in item[-4:]:
+                    os.remove(path(folder, item))
+
+        else:
+            raise FileNotFoundError(f'Folder {folder} could not be located.')
 
 
 class Xythrion(comms.Bot):
@@ -99,28 +134,40 @@ class Xythrion(comms.Bot):
 
     Attributes:
         config (dict): Tokens and other items from `./config/config.json`.
-        loop (:obj:`asyncio.AbstractEventLoop`):
-        pool (:obj:`asyncpg.Pool`):
-        session (:obj:``):
+        loop (:obj:`asyncio.AbstractEventLoop`): The loop that executors will run off of.
+        pool (:obj:`asyncpg.Pool`): Connection pool for database executions.
 
     """
 
     def __init__(self, *args, **kwargs) -> None:
-        """Initialization of tasks and connections."""
+        """Initialization of tasks and connections.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            bool: Always None.
+
+        """
+        # Setting the logger before inheritence occurs.
         self.log = kwargs.pop('log')
 
+        # Initializing the base class `Comms.bot` and inheriting all it's attributes and functions.
         super().__init__(*args, **kwargs)
 
-        # Open config
+        # Attempting to open config config
         try:
             with open(path('config', 'config.json')) as f:
                 self.config = json.load(f)
 
-        except IndexError:
-            pass
+        # If the file could be found but not indexed properly.
+        except IndexError as e:
+            self.log.info(f'{e}: Config file found, but token(s) could not be read properly.')
 
-        except FileNotFoundError:
-            pass
+        # If the file could not be found.
+        except FileNotFoundError as e:
+            self.log.info(f'{e}: Config file not found. Please refer to the README when setting up.')
 
         # Create asyncio loop
         self.loop = asyncio.get_event_loop()
@@ -128,7 +175,12 @@ class Xythrion(comms.Bot):
         # Create executor for running sync functions asynchronously
         self.executor = concurrent.futures.ThreadPoolExecutor()
 
-        self.loop.run_until_complete(self.create_courtines())
+        # Checking and connecting to the postgresql database.
+        fail = self.loop.run_until_complete(self.check_and_connect_database())
+
+        # If the database failed in some way.
+        if fail:
+            return
 
         # Add the main cog required for development and control.
         self.add_cog(Development(self))
@@ -136,27 +188,26 @@ class Xythrion(comms.Bot):
         # Loading the cogs in, one by one.
         asyncio.get_event_loop().run_until_complete(self.load_extensions())
 
-        # Creating help dictionary for the help command.
-        # asyncio.get_event_loop().run_until_complete(self.create_help())
-
-    async def create_courtines(self) -> None:
+    async def check_and_connect_database(self) -> t.Union[True, None]:
         """Creates asynchronous database and session connection.
 
+        Checks if the database has the correct tables before starting the bot up
+
+        Returns:
+            bool: True if the database failed to check and/or connect,
+                None if there are no errors.
+
         Raises:
-            Possible errors describing why connections could not be etablished.
+           :obj:`asyncpg.PostgresSyntaxError`: Incorrect syntax in table creation.
 
         """
         try:
             self.pool = await asyncpg.create_pool(**self.config['db'], command_timeout=60)
-            await self.check_database()
 
         except Exception as e:
             self.log.info(f'Fatal error while creating connection to database: {e}')
+            return True
 
-        self.session = aiohttp.ClientSession()
-
-    async def check_database(self) -> None:
-        """Checks if the database has the correct tables before starting the bot up."""
         async with self.pool.acquire() as conn:
             await conn.execute('''
                 CREATE TABLE IF NOT EXISTS Runtime(
@@ -184,8 +235,21 @@ class Xythrion(comms.Bot):
                 )
             ''')
 
-    async def load_extensions(self) -> None:
-        """ """
+    async def load_extensions(self, blocked_extensions: t.Union[str, list] = None) -> None:
+        """Loading in the extensions for the bot.
+
+        Args:
+            blocked_extensions (:obj:`t.Union[str, list]`, optional): Extension(s) to not be loaded.
+
+        Returns:
+            bool: Always None.
+
+        Raises:
+            :obj:`ExtensionNotFound`: The extension could not be imported.
+            :obj:`NoEntryPointError`: The extension does not have a setup function.
+            :obj:`ExtensionFailed`: The extension or its setup function had an execution error.
+
+        """
         extensions = await self.get_extensions()
         broken_extensions = []
 
@@ -200,6 +264,15 @@ class Xythrion(comms.Bot):
             tracebacker(error)
 
     async def get_extensions(self) -> t.List[str]:
+        """Acquiring extensions for the bot to load in.
+
+        Returns:
+            :obj:`t.List[str]`: A list containing cogs.
+
+        Raises:
+            FileNotFoundError: When the folder 'cogs' cannot be found.
+
+        """
         extensions = []
 
         for folder in os.listdir(path('cogs')):
@@ -210,7 +283,15 @@ class Xythrion(comms.Bot):
         return extensions
 
     async def on_ready(self) -> None:
-        """Updates the bot status when logged in successfully."""
+        """Updates the bot status when logged in successfully.
+
+        Returns:
+            bool: Always None.
+
+        Raises:
+           :obj:`discord.InvalidArgument`: If the activity type is invalid.
+
+        """
         await self.wait_until_ready()
 
         self.startup_time = datetime.datetime.now()
@@ -222,39 +303,45 @@ class Xythrion(comms.Bot):
         self.log.info('Awaiting...')
 
     async def logout(self) -> None:
-        """Subclassing the logout command to make sure connections are closed properly."""
-        try:
-            await self.session.close()
-            await self.pool.close()
+        """Subclassing the logout command to ensure connections are closed properly.
 
-        except Exception:
-            pass
+        Returns:
+            bool: Always None.
+
+        Raises:
+            TODO: What happens when self.pool.close() fails?
+
+        """
+        await self.pool.close()
 
         return await super().logout()
 
 
-class Development(comms.Cog):
-    """Cog required for development and control, along with some extras.
+class Development(comms.Cog, description='development and help commands.'):
+    """Cog required for development and control, along with the help command.
 
     Attributes:
         bot (:obj:`comms.Bot`): Represents a Discord bot.
 
     """
 
-    def __init__(self, bot) -> None:
+    def __init__(self, bot: comms.Bot) -> None:
         """Creating important attributes for this class.
 
         Args:
             bot (:obj:`comms.Bot`): Represents a Discord bot.
 
+        Returns:
+            bool: Always None.
+
         """
         self.bot = bot
 
-    async def cog_check(self, ctx) -> None:
+    async def cog_check(self, ctx: comms.Context) -> t.Union[True, False]:
         """Checks if user if owner.
 
         Args:
-            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
 
         Returns:
             True or false based off of if user is an owner of the bot.
@@ -263,11 +350,11 @@ class Development(comms.Cog):
         return await self.bot.is_owner(ctx.author)
 
     @comms.command(name='reload', aliases=['refresh', 'r'], hidden=True)
-    async def _reload(self, ctx) -> None:
+    async def _reload(self, ctx: comms.Context) -> None:
         """Gets the cogs within folders and loads them into the bot after unloading current cogs.
 
         Args:
-            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
 
         Raises:
             Anything besides comms.ExtensionNotLoaded when loading cogs.
@@ -278,16 +365,18 @@ class Development(comms.Cog):
 
         """
         for cog in await self.get_extensions():
+            # Attempting to unload the load the extension back in.
             try:
                 self.bot.unload_extension(cog)
                 self.bot.load_extension(cog)
 
+            # If the extension was created after the bot initialized startup.
             except comms.ExtensionNotLoaded:
                 self.bot.load_extension(cog)
 
+            # If a fatal error occurs.
             except Exception as e:
-                self.log.info(f'Loading "{cog}" error:')
-                traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
+                return self.log.info(f'Error while loading "{cog}" error: {e}')
 
         await ctx.send('Reloaded extensions.', delete_after=7)
 
@@ -296,7 +385,10 @@ class Development(comms.Cog):
         """Gives a list of the currently loaded cogs.
 
         Args:
-            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+
+        Returns:
+            bool: Always None.
 
         Command examples:
             >>> [prefix]loaded
@@ -311,25 +403,18 @@ class Development(comms.Cog):
 
     @comms.command(name='exit', aliases=['logout', 'disconnect'], hidden=True)
     async def _exit(self, ctx: comms.Context) -> None:
-        """Makes the bot logout after completing some last-second tasks.
+        """Makes the bot logout.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+
+        Returns:
+            bool: Always None.
 
         Command examples:
             >>> [prefix]exit
 
         """
-        try:
-            async with self.bot.pool.acquire() as conn:
-                await conn.execute(
-                    '''INSERT INTO Runtime(t_login, t_logout) VALUES($1, $2)''',
-                    self.bot.startup_time, datetime.datetime.now()
-                )
-
-        except AttributeError:
-            pass
-
         self.bot.log.info('logging out...')
 
         await ctx.bot.logout()
@@ -342,31 +427,40 @@ class Development(comms.Cog):
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
 
         Returns:
-            The return value is always None.
+            bool: Always None
+
+        Command example(s):
+            >>> [prefix]help
+            >>> [prefix]help graph
 
         """
         lst = [
             '`Help is most likely not ready yet, check the link just in case:`',
             markdown_link('Help with commands link', 'https://github.com/Xithrius/Xythrion#commands')
         ]
+
         embed = discord.Embed(description='\n'.join(map(str, lst)))
+
         await ctx.send(embed=embed)
 
 
 if __name__ == "__main__":
+    # Creating the `tmp` directory if it doesn't exist
     if not os.path.isdir(path('tmp')):
         os.mkdir(path('tmp'))
 
-    log = _rich_logger('info')
-
+    # Initializing the subclass of `comms.Bot`.
     bot = Xythrion(
-        command_prefix=';', case_insensitive=True, help_command=None, log=log
+        command_prefix=';', case_insensitive=True, help_command=None, log=_rich_logger('info')
     )
 
+    # Attempting to run the bot (blocking, obviously).
     try:
         bot.run(bot.config['discord'], bot=True, reconnect=True)
 
+    # If the token is incorrect or not given.
     except (discord.errors.HTTPException, discord.errors.LoginFailure):
-        log.info('Improper token has been passed.')
+        bot.log.info('Improper token has been passed.')
 
+    # Removing any stray files within the `tmp` directory
     _cleanup()

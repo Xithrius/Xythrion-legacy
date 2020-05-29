@@ -55,12 +55,15 @@ class Randoms(comms.Cog):
     """ Commands """
 
     @comms.command()
-    async def dice(self, ctx, rolls: int = 1):
+    async def dice(self, ctx: comms.Context, rolls: int = 1) -> None:
         """Rolls a die as many times as you want.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
             rolls (int, optional): The amount of times the die will be rolled.
+
+        Returns:
+            bool: Always None.
 
         Command examples:
             >>> [prefix]dice
@@ -82,12 +85,15 @@ class Randoms(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command()
-    async def card(self, ctx, amount: int = 1):
+    async def card(self, ctx: comms.Context, amount: int = 1) -> None:
         """Picks cards from a deck.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
             amount (int, optional): The amount of cards that will be picked.
+
+        Returns:
+            bool: Always None.
 
         Command examples:
             >>> [prefix]card
@@ -112,11 +118,14 @@ class Randoms(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command(aliases=['flip'])
-    async def coin(self, ctx):
+    async def coin(self, ctx: comms.Context) -> None:
         """Flips a coin and tells you which side it landed on.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+
+        Returns:
+            bool: Always None.
 
         Command examples:
             >>> [prefix]coin
@@ -131,12 +140,15 @@ class Randoms(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command(aliases=['rockpaperscissors'])
-    async def RPS(self, ctx, option: str):
+    async def RPS(self, ctx: comms.Context, option: str) -> None:
         """Plays a game of rock paper sissors against the bot.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
             option (str): The option that the user chooses.
+
+        Returns:
+            bool: Always None.
 
         Command examples:
             >>> [prefix]RPS
@@ -146,13 +158,8 @@ class Randoms(comms.Cog):
         option = option.lower()
 
         if option not in self.options.keys():
-            m = max(map(len, list(self.options.keys())))
-            block = gen_block(
-                content=[str(k).rjust(m) + ' : ' + ', '.join(
-                    str(y) for y in v) for k, v in {'[ choice ]': ['[ beats ]'], **self.options}.items()],
-                lines=True
-            )
-            block = f'`Unknown option "{option}". Please pick from the possible options:`\n' + block
+            url = 'https://umop.com/rps15.htm'
+            block = f'`Unknown option "{option}". Please pick from the possible options:` ' + url
 
             await ctx.send(block)
 

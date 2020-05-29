@@ -40,7 +40,7 @@ class Property:
 # ...
 # ValueError: Expected <class 'int'>: got <class 'float'>
 
-# NOTE: You can also do this:
+# NOTE: Although less efficient, you can also do this:
 
 # In [16]: class Test:
 #     ...:     def __init__(self, x):

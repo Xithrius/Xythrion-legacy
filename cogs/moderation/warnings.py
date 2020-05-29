@@ -18,7 +18,7 @@ class Warnings(comms.Cog):
 
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot: comms.Bot):
         """Creating important attributes for this class.
 
         Args:
@@ -30,11 +30,14 @@ class Warnings(comms.Cog):
     """ Events """
 
     @comms.Cog.listener()
-    async def on_command_completion(self, ctx):
+    async def on_command_completion(self, ctx: comms.Context) -> None:
         """Adds a reaction after a command is successfully completed.
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
+
+        Returns:
+            bool: Always None.
 
         """
         await ctx.message.add_reaction('\U00002705')
@@ -46,6 +49,9 @@ class Warnings(comms.Cog):
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
             error (comms.CommandError): The error that was raised
+
+        Returns:
+            bool: Always None.
 
         """
         if hasattr(ctx.command, 'on_error'):
@@ -83,7 +89,7 @@ class Warnings(comms.Cog):
                     datetime.now(), ctx.author.id, ctx.message.jump_url, str(error)
                 )
 
-            self.bot.log.info(f'Command has thrown error(s): {error}')
+            self.bot.log.info(f'Command has thrown error(s). They have been recorded. {error}')
 
             await ctx.send(f'`Command has thrown error(s). They have been recorded.`')
 

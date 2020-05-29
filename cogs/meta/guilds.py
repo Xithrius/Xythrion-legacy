@@ -15,11 +15,11 @@ class Guilds(comms.Cog):
 
     Attributes:
         bot (:obj:`comms.Bot`): Represents a Discord bot.
-        guild_attributes (list): All information ever wanted about a guild.
+        guild_attributes (:obj:`t.List[str]`): All information ever wanted about a guild.
 
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot: comms.Bot):
         """Creating important attributes for this class.
 
         Args:
@@ -38,11 +38,14 @@ class Guilds(comms.Cog):
     """ Commands """
 
     @comms.command()
-    async def guild_info(self, ctx):
+    async def guild_info(self, ctx: comms.Context):
         """Get a really large amount of information about a guild.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+
+        Returns:
+            bool: Always None.
 
         Command examples:
             >>> [prefix]guild_info
@@ -67,12 +70,15 @@ class Guilds(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command()
-    async def icon(self, ctx, user: discord.User = None):
+    async def icon(self, ctx: comms.Context, user: discord.User = None) -> None:
         """Shows the icon of a user.
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
-            user (discord.User, optional): The user to get the icon url from.
+            user (:obj:`discord.User`, optional): The user to get the icon url from.
+
+        Returns:
+            bool: Always None.
 
         Command examples:
             >>> [prefix]icon @Xithrius
@@ -90,11 +96,14 @@ class Guilds(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command()
-    async def server_icon(self, ctx):
+    async def server_icon(self, ctx: comms.Context) -> None:
         """Shows the icon of a guild (server).
 
         Args:
             ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+
+        Returns:
+            bool: Always None.
 
         Command examples:
             >>> [prefix]server_icon

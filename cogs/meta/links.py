@@ -6,6 +6,7 @@
 
 
 import os
+import typing as t
 
 import discord
 from discord.ext import commands as comms
@@ -54,20 +55,21 @@ class Links(comms.Cog):
 
         return amount
 
-    # async def calculate_uptime(self) -> str:
-    #     """Gets the uptime based off of information from the database.
+    async def calculate_uptime(self) -> str:
+        """Gets the uptime based off of information from the database.
 
-    #     Returns:
-    #         A list containing all uptime information.
+        Returns:
+            A list containing all uptime information.
 
-    #     """
-    #     async with self.bot.pool.acquire() as conn:
-    #         t = await conn.fetch(
-    #             '''SELECT avg(t_logout - t_login) avg_uptime,
-    #                       max(t_logout - t_login) max_uptime,
-    #                       min(t_logout - t_login) min_uptime FROM Runtime''')
+        """
+        async with self.bot.pool.acquire() as conn:
+            t = await conn.fetch(
+                '''SELECT avg(t_logout - t_login) avg_uptime,
+                          max(t_logout - t_login) max_uptime,
+                          min(t_logout - t_login) min_uptime FROM Runtime''')
+        return t
 
-    async def get_links(self) -> discord.Embed:
+    async def get_links(self) -> t.List[str]:
         branch_link = 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e'
         info = {
             'Xythrion Github repository': 'https://github.com/Xithrius/Xythrion',
@@ -76,9 +78,8 @@ class Links(comms.Cog):
             "Xithrius' Github": 'https://github.com/Xithrius',
             "Xithrius' Twitch": 'https://twitch.tv/Xithrius'
         }
-        info = '\n'.join(markdown_link(k, v) for k, v in info.items())
 
-        return discord.Embed(title='Links:', description=info)
+        return [markdown_link(k, v) for k, v in info.items()]
 
     """ Commands """
 
@@ -96,10 +97,12 @@ class Links(comms.Cog):
             >>> [prefix]info ping
 
         """
-        line_amount = await self.calculate_lines()
-        embed = await self.get_links()
-        embed.set_footer(f'Running off of {line_amount} lines of Python 3.7')
-        await ctx.send(embed=embed)
+        _amount = await self.calculate_lines()
+        _links = await self.get_links()
+        # NOTE: Parse times sometime.
+        _uptime = await self.calculate_uptime()
+
+        # await ctx.send(embed=embed)
 
     @comms.command()
     async def invite(self, ctx):

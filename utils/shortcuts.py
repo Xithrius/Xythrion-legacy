@@ -17,14 +17,14 @@ from datetime import datetime
 import discord
 
 
-def path(*filepath) -> str:
+def path(*filepath: t.Iterable[str]) -> str:
     """Returns absolute path from main caller file to another location.
 
     Args:
-        filepath (iritable): Arguments to add to the current filepath.
+        filepath (:obj:`t.Iterable`): Arguments to add to the current filepath.
 
     Returns:
-        String of filepath with OS based seperator.
+        str: filepath with OS based seperator.
 
     Examples:
         >>> print(path('tmp', 'image.png'))
@@ -42,7 +42,7 @@ def get_filename() -> str:
     """Generates a filename.
 
     Returns:
-        A string with the current date for filename usage.
+        str: The current date for filename usage.
 
     Examples:
         >>> print(gen_filename())
@@ -62,7 +62,7 @@ def embed_attachment(p: str, embed: discord.Embed = None) -> t.Tuple[discord.Fil
         p (str): The absolute path for the file of the image.
 
     Returns:
-        a file and embed object.
+        :obj:`t.Tuple[discord.File, discord.Embed]`: A file and an embed object.
 
     Examples:
         >>> embed_attachment(path('tmp', 'image.png'))
@@ -71,33 +71,75 @@ def embed_attachment(p: str, embed: discord.Embed = None) -> t.Tuple[discord.Fil
     f = p.split(os.sep)[-1]
     file = discord.File(p, filename=f)
     embed = discord.Embed() if not embed else embed
+
     embed.set_image(url=f'attachment://{f}')
+
     return file, embed
 
 
 def parallel_executor(func: t.Callable) -> t.Coroutine:
-    """
+    """Wrapper for making synchronous functions awaitable.
+
+    The synchronous function, after being turned into an asynchronous one, will only
+    return after the function is complete.
+
+    Args:
+        func (:obj:`t.Callable`): The synchronous function to be ran.
+
+    Returns:
+        :obj:`t.Coroutine`: The asynchronous function.
+
+    Raises:
+        ValueError: If the passed in function is not synchronous.
+        AttributeError: If `func` doesn't have attribute bot, and/or loop, executor.
 
     """
-
     async def run_blocking(func: functools.partial,
                            loop: asyncio.AbstractEventLoop,
-                           executor: concurrent.futures.Executor):
-        """
+                           executor: concurrent.futures.Executor) -> t.Any:
+        """Inner function meant to wait for the executor to finish before returning results.
+
+        Args:
+            func (:obj:`functools.partial`): `func` as a callable with arguments.
+            loop (:obj:`asyncio.AbstractEventLoop`): The loop for the executor to use.
+            executor (:obj:`concurrent.futures.Executor`): The executor for the function to be ran in.
+
+        Returns:
+            :obj:`t.Any`: The object that `func` returns.
+
+        Raises:
+            AttributeError: Any exception will be silenced by the executor, unless the timeout occurs,
+                which will cause the first result to not exist/contain anyhting.
+            NOTE: Re-check if this is true, just in case.
 
         """
         done, pending = await asyncio.wait(
             fs=(loop.run_in_executor(executor, func),),
+            loop=loop,
+            timeout=20.0,
             return_when=asyncio.FIRST_COMPLETED
         )
 
         return done.pop().result()
 
     @functools.wraps(func)
-    async def wrapper(self, *args, **kwargs) -> None:
-        """
+    async def wrapper(self, *args, **kwargs) -> t.Any:
+        """The inner function, used for creating parallels so executors can run alongside eachother.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            :obj:`t.Any`: The object that `func` returns.
+
+        Raises:
+            ValueError: If the passed in function is not synchronous.
 
         """
+        if not isinstance(func, t.Callable):
+            raise ValueError('Incorrect function type passed. Did not get synchronous.')
+
         p_func = functools.partial(func, self, *args, **kwargs)
         result = await asyncio.ensure_future(
             run_blocking(p_func, self.bot.loop, self.bot.executor)
@@ -109,6 +151,14 @@ def parallel_executor(func: t.Callable) -> t.Coroutine:
 
 
 def content_parser() -> t.List[t.Tuple[str]]:
+    """Parses arguments from a string.
+
+    NOTE: Currently not in use until the graphing extension is fixed.
+
+    Returns:
+        :obj:`t.List[t.Tuple[str]]`: A list of tuples that contain strings.
+
+    """
     pass
 
 
