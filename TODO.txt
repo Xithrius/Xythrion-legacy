@@ -1,5 +1,4 @@
 TODO:
-- Remove anything that wouldn't go into the final version of v2.0
 - Create custom embeds with formatting
 - Create content parser
 - Rewrite graphing
