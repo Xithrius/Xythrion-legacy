@@ -12,7 +12,7 @@ import os
 import sys
 import traceback
 import typing as t
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import discord
 
@@ -164,3 +164,21 @@ def content_parser() -> t.List[t.Tuple[str]]:
 
 def tracebacker(e: Exception) -> None:
     traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
+
+
+def describe_timedelta(d: timedelta) -> str:
+    """ """
+    timestamps = ['Hours', 'Minutes', 'Seconds']
+    tmp = str((datetime.min + d).time()).split(':')
+
+    return ', '.join(f'{int(float(tmp[i]))} {timestamps[i]}' for i in range(
+        len(timestamps)) if float(tmp[i]) != 0.0)
+
+
+def fancy_embed(d: t.Dict[str, t.List[str]], *, inline: bool = False) -> discord.Embed:
+    """ """
+
+    d = {f'`{k}`\n': '\n'.join(str(y) for y in v) + '\n' for k, v in d.items()}
+    embed = discord.Embed(description='\n'.join(f'{k}{v}' for k, v in d.items()))
+
+    return embed
