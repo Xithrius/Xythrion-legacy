@@ -115,4 +115,4 @@ config/*.json
 venv/
 
 # tests
-tests/
+/tests/*
