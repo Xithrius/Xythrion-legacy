@@ -11,8 +11,9 @@ import typing as t
 import discord
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
+from datetime import datetime
 
-from utils import path, markdown_link, parallel_executor
+from utils import path, markdown_link, parallel_executor, asteriks as ast, fancy_embed
 
 
 class Links(comms.Cog):
@@ -39,7 +40,7 @@ class Links(comms.Cog):
         """Gets the sum of lines from all the python files in this directory
 
         Returns:
-            An integer with the sum of the amount of lines within each .py file.
+            int: The sum of the amount of lines within each .py file.
 
         """
         lst = []
@@ -55,11 +56,11 @@ class Links(comms.Cog):
 
         return amount
 
-    async def calculate_uptime(self) -> str:
+    async def calculate_uptime(self) -> dict:
         """Gets the uptime based off of information from the database.
 
         Returns:
-            A list containing all uptime information.
+            dict: Containing average, maximum, and minimum uptimes.
 
         """
         async with self.bot.pool.acquire() as conn:
@@ -67,9 +68,32 @@ class Links(comms.Cog):
                 '''SELECT avg(t_logout - t_login) avg_uptime,
                           max(t_logout - t_login) max_uptime,
                           min(t_logout - t_login) min_uptime FROM Runtime''')
-        return t
+
+        t = dict(t[0])
+        t = {**{'t_uptime': datetime.now() - self.bot.startup_time}, **t}
+
+        timestamps = ['Hours', 'Minutes', 'Seconds']
+        new_keys = ['Startup', 'Average', 'Maximum', 'Minimum']
+        new_t = {}
+
+        for k, v in zip(new_keys, t.values()):
+            # datetime.timedelta to formatted datetime.datetime
+            tmp = str((datetime.min + v).time()).split(':')
+            new_t[k] = ', '.join(f'{int(float(tmp[i]))} {timestamps[i]}' for i in range(
+                len(timestamps)) if float(tmp[i]) != 0.0)
+
+            if k == 'Startup':
+                new_t[k] += ' ago'
+
+        return new_t
 
     async def get_links(self) -> t.List[str]:
+        """Provides links about the creator and bot.
+
+        Returns:
+            :obj:`t.List[str]`: A list containing Discord markdown hyperlinks.
+
+        """
         branch_link = 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e'
         info = {
             'Xythrion Github repository': 'https://github.com/Xithrius/Xythrion',
@@ -83,26 +107,31 @@ class Links(comms.Cog):
 
     """ Commands """
 
-    @comms.cooldown(1, 1, BucketType.user)
+    @comms.cooldown(1, 5, BucketType.user)
     @comms.command(aliases=['uptime', 'desc', 'description'])
-    async def info(self, ctx):
+    async def info(self, ctx: comms.Context) -> None:
         """Information about bot origin along with usage statistics.
 
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
-            option (str, optional): Whatever information about the bot the user could want.
+
+        Returns:
+            bool: Always None.
 
         Command examples:
             >>> [prefix]info
-            >>> [prefix]info ping
 
         """
-        _amount = await self.calculate_lines()
         _links = await self.get_links()
-        # NOTE: Parse times sometime.
+        _line_amount = await self.calculate_lines()
         _uptime = await self.calculate_uptime()
 
-        # await ctx.send(embed=embed)
+        d = {
+            'Links:': _links, 'Lines of Python code:': [_line_amount],
+            'Uptime information': [f'{ast(k)}: {v}' for k, v in _uptime.items()]
+        }
+
+        await ctx.send(embed=fancy_embed(d))
 
     @comms.command()
     async def invite(self, ctx):
@@ -111,13 +140,23 @@ class Links(comms.Cog):
         Args:
             ctx (comms.Context): Represents the context in which a command is being invoked under.
 
+        Returns:
+            bool: Always None.
+
         Command examples:
             >>> [prefix]invite
 
         """
         _id = self.bot.user.id
-        url = f'https://discordapp.com/oauth2/authorize?client_id={_id}&scope=bot&permissions=37604544'
-        embed = discord.Embed(description=markdown_link('Xythrion invite url', url))
+        permissions = {'Sending and reacting': 19520,
+                       'Previous + removing messages': 27712,
+                       'Administrator (not needed)': 8}
+        url = f'https://discordapp.com/oauth2/authorize?client_id={_id}&scope=bot&permissions='
+        invite_urls = {k: f'{url}{v}' for k, v in permissions.items()}
+        invite_urls = '\n'.join(markdown_link(k, v) for k, v in invite_urls.items())
+
+        embed = discord.Embed(description='`Invite urls:`\n' + invite_urls)
+
         await ctx.send(embed=embed)
 
 
