@@ -39,12 +39,12 @@ import typing as t
 import asyncpg
 import discord
 from discord.ext import commands as comms
-from rich import logging as r_logging, r_traceback
+from rich import logging as r_logging, traceback as r_traceback
 
 from utils import markdown_link, path, tracebacker
 
 
-def _discord_logger(log_type: t.Union[str, int] = None) -> None:
+def _discord_logger(log_type: t.Union[str, int] = None) -> logging.Logger:
     """Logs information specifically for discord.
 
     Args:
@@ -52,7 +52,7 @@ def _discord_logger(log_type: t.Union[str, int] = None) -> None:
             Defaults to None.
 
     Returns:
-        bool: Always None.
+        :obj:`logging.Logger`: The object that the bot will use to log information to.
 
     """
     logger = logging.getLogger('discord')
@@ -65,8 +65,10 @@ def _discord_logger(log_type: t.Union[str, int] = None) -> None:
     base_handler.setFormatter(logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s'))
     logger.addHandler(base_handler)
 
+    return logger
 
-def _rich_logger(log_type: t.Union[str, int] = None, store_logs: bool = False) -> logging.Logger:
+
+def _rich_logger(log_type: int = logging.INFO) -> logging.Logger:
     """Logs information with the rich library with fancy tracebacks.
 
     Args:
@@ -83,20 +85,12 @@ def _rich_logger(log_type: t.Union[str, int] = None, store_logs: bool = False) -
     """
     r_traceback.install()
 
-    log_types = {'info': logging.INFO, 'debug': logging.DEBUG, None: 'NOTSET'}
+    logging.basicConfig(
+        level=log_type, format='%(message)s', datefmt="[%c]", handlers=[r_logging.RichHandler()]
+    )
 
-    logger = logging.getLogger('rich')
-
-    if store_logs:
-        _discord_logger(log_types[log_type])
-
-    else:
-        handler = r_logging.RichHandler()
-        handler.setFormatter(logging.Formatter('%(messages)', datefmt='[%c]'))
-
-    handler.setLevel(log_types[log_type])
-
-    return logger
+    # different message types: info, debug, warning, critical
+    return logging.getLogger("rich")
 
 
 def _cleanup(folders: t.Union[list, str] = 'tmp') -> None:
@@ -163,11 +157,11 @@ class Xythrion(comms.Bot):
 
         # If the file could be found but not indexed properly.
         except IndexError as e:
-            self.log.info(f'{e}: Config file found, but token(s) could not be read properly.')
+            self.log.critical(f'{e}: Config file found, but token(s) could not be read properly.')
 
         # If the file could not be found.
         except FileNotFoundError as e:
-            self.log.info(f'{e}: Config file not found. Please refer to the README when setting up.')
+            self.log.critical(f'{e}: Config file not found. Please refer to the README when setting up.')
 
         # Create asyncio loop
         self.loop = asyncio.get_event_loop()
@@ -188,7 +182,7 @@ class Xythrion(comms.Bot):
         # Loading the cogs in, one by one.
         asyncio.get_event_loop().run_until_complete(self.load_extensions())
 
-    async def check_and_connect_database(self) -> t.Union[True, None]:
+    async def check_and_connect_database(self) -> None:
         """Creates asynchronous database and session connection.
 
         Checks if the database has the correct tables before starting the bot up
@@ -205,8 +199,8 @@ class Xythrion(comms.Bot):
             self.pool = await asyncpg.create_pool(**self.config['db'], command_timeout=60)
 
         except Exception as e:
-            self.log.info(f'Fatal error while creating connection to database: {e}')
-            return True
+            self.log.critical(f'Fatal error while creating connection to database.')
+            tracebacker(e)
 
         async with self.pool.acquire() as conn:
             await conn.execute('''
@@ -300,7 +294,7 @@ class Xythrion(comms.Bot):
             activity=discord.Activity(type=discord.ActivityType.watching, name="graphs")
         )
 
-        self.log.info('Awaiting...')
+        self.log.warning('Awaiting...')
 
     async def logout(self) -> None:
         """Subclassing the logout command to ensure connections are closed properly.
@@ -317,7 +311,8 @@ class Xythrion(comms.Bot):
         return await super().logout()
 
 
-class Development(comms.Cog, description='development and help commands.'):
+# class Development(comms.Cog, description='development and help commands.'):
+class Development(comms.Cog):
     """Cog required for development and control, along with the help command.
 
     Attributes:
@@ -337,7 +332,7 @@ class Development(comms.Cog, description='development and help commands.'):
         """
         self.bot = bot
 
-    async def cog_check(self, ctx: comms.Context) -> t.Union[True, False]:
+    async def cog_check(self, ctx: comms.Context) -> bool:
         """Checks if user if owner.
 
         Args:
@@ -364,7 +359,7 @@ class Development(comms.Cog, description='development and help commands.'):
             >>> [prefix]refresh
 
         """
-        for cog in await self.get_extensions():
+        for cog in await self.bot.get_extensions():
             # Attempting to unload the load the extension back in.
             try:
                 self.bot.unload_extension(cog)
@@ -376,7 +371,7 @@ class Development(comms.Cog, description='development and help commands.'):
 
             # If a fatal error occurs.
             except Exception as e:
-                return self.log.info(f'Error while loading "{cog}" error: {e}')
+                return self.bot.log.warning(f'Error while loading "{cog}" error: {e}')
 
         await ctx.send('Reloaded extensions.', delete_after=7)
 
@@ -415,7 +410,7 @@ class Development(comms.Cog, description='development and help commands.'):
             >>> [prefix]exit
 
         """
-        self.bot.log.info('logging out...')
+        self.bot.log.warning('logging out...')
 
         await ctx.bot.logout()
 
@@ -451,7 +446,7 @@ if __name__ == "__main__":
 
     # Initializing the subclass of `comms.Bot`.
     bot = Xythrion(
-        command_prefix=';', case_insensitive=True, help_command=None, log=_rich_logger('info')
+        command_prefix=';', case_insensitive=True, help_command=None, log=_rich_logger()
     )
 
     # Attempting to run the bot (blocking, obviously).
@@ -460,7 +455,11 @@ if __name__ == "__main__":
 
     # If the token is incorrect or not given.
     except (discord.errors.HTTPException, discord.errors.LoginFailure):
-        bot.log.info('Improper token has been passed.')
+        bot.log.critical('Improper token has been passed.')
 
     # Removing any stray files within the `tmp` directory
+    bot.log.warning('Cleaning up tmp/...')
+
     _cleanup()
+
+    bot.log.info('Cleanup complete.')
