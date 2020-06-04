@@ -219,15 +219,6 @@ class Xythrion(comms.Bot):
                     error TEXT
                 )
             ''')
-            await conn.execute('''
-                CREATE TABLE IF NOT EXISTS ReportedIssues(
-                    identification serial PRIMARY KEY,
-                    t TIMESTAMP WITH TIME ZONE NOT NULL,
-                    id BIGINT,
-                    flag TEXT,
-                    content TEXT
-                )
-            ''')
 
     async def load_extensions(self, blocked_extensions: t.Union[str, list] = None) -> None:
         """Loading in the extensions for the bot.
@@ -435,6 +426,25 @@ class Development(comms.Cog):
         ]
 
         embed = discord.Embed(description='\n'.join(map(str, lst)))
+
+        await ctx.send(embed=embed)
+
+    @comms.command(name='issue', aliases=['problem', 'issues'])
+    async def _issue(self, ctx: comms.Context) -> None:
+        """Gives the user the place to report issues.
+
+        Args:
+            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+
+        Returns:
+            bool: Always None
+
+        Command example(s):
+            >>> [prefix]issue
+
+        """
+        url = 'https://github.com/Xithrius/Xythrion/issues'
+        embed = discord.Embed(description=markdown_link('Report issue(s) here', url))
 
         await ctx.send(embed=embed)
 
