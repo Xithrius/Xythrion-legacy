@@ -15,6 +15,7 @@ import typing as t
 from datetime import datetime, timedelta
 
 import discord
+from discord.ext import commands as comms
 
 
 def path(*filepath: t.Iterable[str]) -> str:
@@ -175,10 +176,28 @@ def describe_timedelta(d: timedelta) -> str:
         len(timestamps)) if float(tmp[i]) != 0.0)
 
 
-def fancy_embed(d: t.Dict[str, t.List[str]], *, inline: bool = False) -> discord.Embed:
+def fancy_embed(d: t.Dict[str, t.List[str]], *,
+                inline: bool = False, return_str: bool = False) -> t.Union[str, discord.Embed]:
     """ """
 
     d = {f'`{k}`\n': '\n'.join(str(y) for y in v) + '\n' for k, v in d.items()}
-    embed = discord.Embed(description='\n'.join(f'{k}{v}' for k, v in d.items()))
+    d = '\n'.join(f'{k}{v}' for k, v in d.items())
 
-    return embed
+    if not return_str:
+        return discord.Embed(description=d)
+
+    return d
+
+
+async def wait_for_reaction(ctx: comms.Context, emoji) -> bool:
+    def check(reaction, user):
+        return user == ctx.message.author and str(reaction.emoji) == emoji
+
+    try:
+        reaction, user = await ctx.bot.wait_for('reaction_add', timeout=60.0, check=check)
+
+    except asyncio.TimeoutError:
+        pass
+
+    else:
+        return True
