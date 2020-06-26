@@ -1,0 +1,6 @@
+[flake8]
+max-line-length=110
+docstring-convention=all
+import-order-style=vscode
+application_import_names=xythrion
+exclude=.cache,.venv,.git
