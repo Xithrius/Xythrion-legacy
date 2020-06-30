@@ -6,7 +6,6 @@
 
 
 import asyncio
-import concurrent.futures
 import functools
 import os
 import sys
@@ -16,27 +15,6 @@ from datetime import datetime, timedelta
 
 import discord
 from discord.ext import commands as comms
-
-
-def path(*filepath: t.Iterable[str]) -> str:
-    """Returns absolute path from main caller file to another location.
-
-    Args:
-        filepath (:obj:`t.Iterable`): Arguments to add to the current filepath.
-
-    Returns:
-        str: filepath with OS based seperator.
-
-    Examples:
-        >>> print(path('tmp', 'image.png'))
-        C:\\Users\\Xithr\\Documents\\Repositories\\Xythrion\\tmp\\image.png
-
-    """
-    lst = [
-        os.path.abspath(os.path.dirname(sys.argv[0])),
-        (os.sep).join(str(y) for y in filepath)
-    ]
-    return (os.sep).join(str(s) for s in lst)
 
 
 def get_filename() -> str:
@@ -56,7 +34,7 @@ def get_filename() -> str:
     return str(datetime.timestamp(datetime.now())).replace('.', '')
 
 
-def embed_attachment(p: str, embed: discord.Embed = None) -> t.Tuple[discord.File, discord.Embed]:
+def embed_attachment(p: str, embed: t.Optional[discord.Embed] = None) -> t.Tuple[discord.File, discord.Embed]:
     """Creating an embed and adding a local image to it.
 
     Args:
@@ -92,40 +70,35 @@ def parallel_executor(func: t.Callable) -> t.Coroutine:
 
     Raises:
         ValueError: If the passed in function is not synchronous.
-        AttributeError: If `func` doesn't have attribute bot, and/or loop, executor.
+        AttributeError: If `func` doesn't have attribute bot, and/or loop.
 
     """
-    async def run_blocking(func: functools.partial,
-                           loop: asyncio.AbstractEventLoop,
-                           executor: concurrent.futures.Executor) -> t.Any:
-        """Inner function meant to wait for the executor to finish before returning results.
+
+    async def exec_func(func, loop) -> t.Any:
+        """Starting the executor and returning the response of the function.
+
+        Inner function meant to wait for the executor to finish before returning results.
 
         Args:
             func (:obj:`functools.partial`): `func` as a callable with arguments.
             loop (:obj:`asyncio.AbstractEventLoop`): The loop for the executor to use.
-            executor (:obj:`concurrent.futures.Executor`): The executor for the function to be ran in.
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
 
         Returns:
             :obj:`t.Any`: The object that `func` returns.
 
         Raises:
-            AttributeError: Any exception will be silenced by the executor, unless the timeout occurs,
-                which will cause the first result to not exist/contain anyhting.
-            NOTE: Re-check if this is true, just in case.
+            None. All exceptions are silenced by the executor.
 
         """
-        done, pending = await asyncio.wait(
-            fs=(loop.run_in_executor(executor, func),),
-            loop=loop,
-            timeout=20.0,
-            return_when=asyncio.FIRST_COMPLETED
-        )
+        res = await loop.run_in_executor(None, func)
 
-        return done.pop().result()
+        return res
 
     @functools.wraps(func)
     async def wrapper(self, *args, **kwargs) -> t.Any:
-        """The inner function, used for creating parallels so executors can run alongside eachother.
+        """The inner function, used for creating tasks so executors can be ran.
 
         Args:
             *args: Variable length argument list.
@@ -141,34 +114,43 @@ def parallel_executor(func: t.Callable) -> t.Coroutine:
         if not isinstance(func, t.Callable):
             raise ValueError('Incorrect function type passed. Did not get synchronous.')
 
-        p_func = functools.partial(func, self, *args, **kwargs)
-        result = await asyncio.ensure_future(
-            run_blocking(p_func, self.bot.loop, self.bot.executor)
-        )
+        func_partial = functools.partial(func, self, *args, **kwargs)
+        res = await exec_func(func_partial, self.bot.loop)
 
-        return result
+        return res
 
     return wrapper
 
 
-def content_parser() -> t.List[t.Tuple[str]]:
-    """Parses arguments from a string.
+def tracebacker(e: Exception) -> None:
+    """Safely gives a traceback of an exception letting the rest of the program flow.
 
-    NOTE: Currently not in use until the graphing extension is fixed.
+    Args:
+        e (Exception): The exception that was raised.
 
     Returns:
-        :obj:`t.List[t.Tuple[str]]`: A list of tuples that contain strings.
+        bool: Always None.
+
+    Raises:
+        AttributeError: If the exception is not derived from the Exception base class.
 
     """
-    pass
-
-
-def tracebacker(e: Exception) -> None:
     traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
 
 
 def describe_timedelta(d: timedelta) -> str:
-    """ """
+    """Describing a timedelta in possibily the most conviluted way.
+
+    Args:
+        d (:obj:`datetime.timedelta`): The difference between one datetime.datetime object and another.
+
+    Returns:
+        str: Contains hours and/or minutes, seconds for describing the difference between two dates.
+
+    Raises:
+        ValueError: If the only argument passed is not a `datetime.timedelta` object.
+
+    """
     timestamps = ['Hours', 'Minutes', 'Seconds']
     tmp = str((datetime.min + d).time()).split(':')
 
@@ -178,18 +160,39 @@ def describe_timedelta(d: timedelta) -> str:
 
 def fancy_embed(d: t.Dict[str, t.List[str]], *,
                 inline: bool = False, return_str: bool = False) -> t.Union[str, discord.Embed]:
-    """ """
+    """Creating an embed only with the description. No fields or titles needed.
 
+    Args:
+        d (:obj:`t.Dict[str, t.List[str]]`): A dictionary with strings as keys and lists of strings as values.
+        inline (bool, optional): If inline is wanted to be used within the embed.
+        return_str (boo, optional): Returning the description contents instead of the embed if True.
+
+    Returns:
+        :obj:`t.Union[str, discord.Embed]`: Either an embed or the description contents.
+
+    """
     d = {f'`{k}`\n': '\n'.join(str(y) for y in v) + '\n' for k, v in d.items()}
     d = '\n'.join(f'{k}{v}' for k, v in d.items())
 
     if not return_str:
-        return discord.Embed(description=d)
+        return discord.Embed(description=d, inline=inline)
 
     return d
 
 
 async def wait_for_reaction(ctx: comms.Context, emoji) -> bool:
+    """Waiting for a user to react to a message sent by the bot.
+
+    NOTE: Obviously not a wrapper.
+
+    Args:
+        ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+        emoji (str): Unicode representing an emoji that can be used by Discord.
+
+    Raises:
+        UnicodeError: If the emoji unicode cannot be read properly.
+
+    """
     def check(reaction, user):
         return user == ctx.message.author and str(reaction.emoji) == emoji
 

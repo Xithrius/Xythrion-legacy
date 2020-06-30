@@ -1,9 +1,0 @@
-discord.py
-qrcode[pil]
-datetime
-asyncpg
-numpy
-tabulate
-matplotlib
-# iso8601
-rich

@@ -11,7 +11,7 @@ from random import choice, randint
 import discord
 from discord.ext import commands as comms
 
-from utils import asteriks as ast, codeblock
+from xythrion.utils import codeblock
 
 
 class Randoms(comms.Cog):
@@ -100,7 +100,7 @@ class Randoms(comms.Cog):
             >>> [prefix]card 10
 
         """
-        if amount > 10 or amount < 0:
+        if amount > 5 or amount < 0:
             return await ctx.send('`Rolls must be between 1 and 10.`')
 
         d = defaultdict(int)
@@ -110,10 +110,7 @@ class Randoms(comms.Cog):
         lst = OrderedDict(sorted(d.items()))
         lst = [f'({v}) {k}' for k, v in d.items()]
 
-        embed = discord.Embed(
-            title=ast(f'Results from {amount} randomly chosen cards:'),
-            description=codeblock(lst)
-        )
+        embed = discord.Embed(description=codeblock(lst))
 
         await ctx.send(embed=embed)
 
@@ -133,8 +130,7 @@ class Randoms(comms.Cog):
 
         """
         embed = discord.Embed(
-            title=ast('Tossed a coin to your Witcher.'),
-            description=f'`Landed {choice(["heads", "tails"])} facing up.`'
+            description=f'`Tossed a coin to your Witcher. Landed {choice(["heads", "tails"])} facing up.`'
         )
 
         await ctx.send(embed=embed)
@@ -169,12 +165,21 @@ class Randoms(comms.Cog):
             computer_choice = choice(lst)
 
             embed = discord.Embed(
-                title=ast(f'Computer {"lost" if computer_choice in self.options[option] else "won"}'),
+                title=f'`Computer {"lost" if computer_choice in self.options[option] else "won"}`',
                 description=f'`Computer picked {computer_choice}, and you picked {option}.`'
             )
 
             await ctx.send(embed=embed)
 
 
-def setup(bot):
+def setup(bot: comms.Bot) -> None:
+    """The necessary function for loading in cogs within this file.
+
+    Args:
+        bot (:obj:`comms.Bot`): Represents a Discord bot.
+
+    Returns:
+        type(None): Always None.
+
+    """
     bot.add_cog(Randoms(bot))

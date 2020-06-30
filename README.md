@@ -2,7 +2,7 @@
     <img src="/images/icon.jpg"/>
 </p>
 <h1 align="center">Xythrion v2.0</h1>
-<h3 align="center">Graphing information from APIs</h3>
+<h3 align="center">Graphing manipulated data through discord.py</h3>
 <p align="center">
     <img src="https://img.shields.io/apm/l/vim-mode.svg"/>
     <img src="https://img.shields.io/badge/python-3.7.4-green.svg">
