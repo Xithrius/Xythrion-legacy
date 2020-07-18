@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  xythrion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xythrion
+    init: true
+
+    restart: always
+
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

@@ -6,7 +6,6 @@
 
 
 from discord.ext import commands as comms
-from xythrion.utils import tokenization
 
 
 class Math(comms.Cog):

@@ -29,14 +29,15 @@ Running the bot:
 
 
 import asyncio
-import datetime
-import json
 import os
-from pathlib import Path
 import typing as t
+from datetime import datetime
+from pathlib import Path
 
+import aiohttp
 import asyncpg
 import discord
+import humanize
 from discord.ext import commands as comms
 
 from .utils import markdown_link, tracebacker
@@ -72,27 +73,17 @@ class Xythrion(comms.Bot):
         # Initializing the base class `Comms.bot` and inheriting all it's attributes and functions.
         super().__init__(*args, **kwargs)
 
-        # Attempting to open config config
-        try:
-            with open(Path.cwd() / 'config' / 'config.json') as f:
-                self.config = json.load(f)
-
-        # If the file could be found but not indexed properly.
-        except IndexError as e:
-            self.log.critical(f'{e}: Config file found, but token(s) could not be read properly.')
-
-        # If the file could not be found.
-        except FileNotFoundError as e:
-            self.log.critical(f'{e}: Config file not found. Please refer to the README when setting up.')
-
         # Checking and connecting to the postgresql database.
         try:
             self.loop.run_until_complete(self.check_and_connect_database())
 
         except Exception as e:
             tracebacker(e)
-            self.log.critical('Database failed setup. Killing bot initialization.')
-            return
+            self.log.critical('Database failed setup. Parts of bot will not work.')
+
+        self.session = aiohttp.ClientSession()
+        # might be needed instead:
+        # asyncio.get_event_loop().run_until_complete(self.create_session())
 
         # Add the main cog required for development and control.
         self.add_cog(Development(self))
@@ -113,7 +104,7 @@ class Xythrion(comms.Bot):
            :obj:`asyncpg.PostgresSyntaxError`: Incorrect syntax in table creation.
 
         """
-        self.pool = await asyncpg.create_pool(**self.config['db'], command_timeout=60)
+        self.pool = await asyncpg.create_pool(*(os.environ('POSTGRES').split('/')), command_timeout=60)
 
         async with self.pool.acquire() as conn:
             await conn.execute('''
@@ -181,6 +172,13 @@ class Xythrion(comms.Bot):
 
         return extensions
 
+    async def record_runtime(self) -> None:
+        async with self.pool.acquire() as conn:
+            await conn.execute(
+                '''INSERT INTO Runtime(t_login, t_logout) VALUES ($1, $2)''',
+                self.startup_time, datetime.now()
+            )
+
     async def on_ready(self) -> None:
         """Updates the bot status when logged in successfully.
 
@@ -193,13 +191,13 @@ class Xythrion(comms.Bot):
         """
         await self.wait_until_ready()
 
-        self.startup_time = datetime.datetime.now()
+        self.startup_time = datetime.now()
 
         await self.change_presence(
             activity=discord.Activity(type=discord.ActivityType.watching, name="graphs")
         )
 
-        self.log.warning('Awaiting...')
+        self.log.info('Awaiting...')
 
     async def logout(self) -> None:
         """Subclassing the logout command to ensure connections are closed properly.
@@ -211,9 +209,16 @@ class Xythrion(comms.Bot):
             TODO: What happens when self.pool.close() fails?
 
         """
-        self.log.info('Closing database connection pool.')
+        try:
+            await asyncio.wait(
+                fs={self.session.close(), self.record_runtime(), self.pool.close()},
+                timeout=30.0, loop=self.loop, return_when=asyncio.ALL_COMPLETED
+            )
 
-        await self.pool.close()
+        except asyncio.TimeoutError:
+            self.log.critical('Waiting for final tasks to complete timed out after 30 seconds. Skipping.')
+
+        self.log.info('finished up closing tasks.')
 
         return await super().logout()
 
@@ -254,6 +259,7 @@ class Development(comms.Cog):
             >>> [prefix]refresh
 
         """
+        d = datetime.now()
         for cog in await self.bot.get_extensions():
 
             # Attempting to unload the load the extension back in.
@@ -269,7 +275,10 @@ class Development(comms.Cog):
             except Exception as e:
                 return self.bot.log.warning(f'Error while loading "{cog}" error: {e}')
 
-        await ctx.send('Reloaded extensions.', delete_after=7)
+        self.bot.log.info((
+            "Reloaded extensions in "
+            f"{humanize.naturaldelta(d - datetime.now(), minimum_unit='milliseconds')}"
+        ))
 
     @comms.command(name='restart', hidden=True)
     @comms.is_owner()

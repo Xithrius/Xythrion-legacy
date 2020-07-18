@@ -7,14 +7,15 @@
 
 import os
 import typing as t
+from datetime import datetime
+from pathlib import Path
 
 import discord
+from humanize import naturaldelta, intcomma, naturaldate
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
-from datetime import datetime
 
-from xythrion.utils import markdown_link, parallel_executor, asteriks as ast, fancy_embed
-from pathlib import Path
+from xythrion.utils import fancy_embed, markdown_link, parallel_executor, asteriks as ast
 
 
 class Links(comms.Cog):
@@ -47,7 +48,7 @@ class Links(comms.Cog):
         lst = []
         amount = 0
 
-        for root, dirs, files in os.walk(Path.cwd() / self.bot.n):
+        for root, _, files in os.walk(Path.cwd() / self.bot.n):
             for file in files:
                 if file.endswith('.py'):
                     lst.append(os.path.join(root, file))
@@ -56,7 +57,7 @@ class Links(comms.Cog):
             with open(file) as f:
                 amount += sum(1 for _ in f)
 
-        return amount
+        return intcomma(amount)
 
     async def calculate_uptime(self) -> dict:
         """Gets the uptime based off of information from the database.
@@ -71,24 +72,12 @@ class Links(comms.Cog):
                           max(t_logout - t_login) max_uptime,
                           min(t_logout - t_login) min_uptime FROM Runtime''')
 
-        t = dict(t[0])
-        t = {**{'t_uptime': datetime.now() - self.bot.startup_time}, **t}
+        t = {**{'t_uptime': datetime.now() - self.bot.startup_time}, **dict(t[0])}
+        new_keys = ['Current uptime', 'Average', 'Maximum', 'Minimum']
 
-        timestamps = ['Hours', 'Minutes', 'Seconds']
-        new_keys = ['Startup', 'Average', 'Maximum', 'Minimum']
-        new_t = {}
+        t = {k: naturaldelta(v) for k, v in zip(new_keys, t.values())}
 
-        # Parsing datetime.timedelta objects into readable strings.
-        for k, v in zip(new_keys, t.values()):
-            # datetime.timedelta to formatted datetime.datetime
-            tmp = str((datetime.min + v).time()).split(':')
-            new_t[k] = ', '.join(f'{int(float(tmp[i]))} {timestamps[i]}' for i in range(
-                len(timestamps)) if float(tmp[i]) != 0.0)
-
-            if k == 'Startup':
-                new_t[k] += ' ago'
-
-        return new_t
+        return [f'{ast(k)}: {v}' for k, v in t.items()]
 
     async def get_links(self) -> t.List[str]:
         """Provides links about the creator and bot.
@@ -100,7 +89,7 @@ class Links(comms.Cog):
         branch_link = 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e'
         info = {
             'Xythrion Github repository': 'https://github.com/Xithrius/Xythrion',
-            f'First commit to the repository': branch_link,
+            'First commit to the repository': branch_link,
             "Xithrius' Twitter": 'https://twitter.com/_Xithrius',
             "Xithrius' Github": 'https://github.com/Xithrius',
             "Xithrius' Twitch": 'https://twitch.tv/Xithrius'
@@ -108,10 +97,19 @@ class Links(comms.Cog):
 
         return [markdown_link(k, v) for k, v in info.items()]
 
+    async def get_date_of_creation(self) -> t.List[str]:
+        d = datetime(2019, 3, 13, 17, 16)
+
+        t = {
+            'Started:': f"{naturaldate(d)}. {naturaldelta(datetime.now() - d, months=False)} ago."
+        }
+
+        return [f'{ast(k)}: {v}' for k, v in t.items()]
+
     """ Commands """
 
     @comms.cooldown(1, 5, BucketType.user)
-    @comms.command(aliases=['uptime', 'desc', 'description'])
+    @comms.command(aliases=['uptime', 'runtime', 'desc', 'description'])
     async def info(self, ctx: comms.Context) -> None:
         """Information about bot origin along with usage statistics.
 
@@ -128,10 +126,13 @@ class Links(comms.Cog):
         _links = await self.get_links()
         _line_amount = await self.calculate_lines()
         _uptime = await self.calculate_uptime()
+        _dates = await self.get_date_of_creation()
 
         d = {
-            'Links:': _links, 'Lines of Python code:': [_line_amount],
-            'Uptime information': [f'{ast(k)}: {v}' for k, v in _uptime.items()]
+            'Links:': _links,
+            'Lines of Python code:': [_line_amount],
+            'Uptime information:': _uptime,
+            'Project length:': _dates
         }
 
         await ctx.send(embed=fancy_embed(d))

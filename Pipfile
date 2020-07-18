@@ -4,15 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-discord.py = "~=1.3.3"
-qrcode = "~=6.1"
-datetime = "~=4.3"
-asyncpg = "~=0.20.1"
-numpy = "~=1.18.5"
-tabulate = "~=0.8.7"
-matplotlib = "~=3.2.1"
-rich = "~=2.2.3"
-pillow = "~=7.1.2"
+"discord.py" = "*"
+qrcode = "*"
+datetime = "*"
+asyncpg = "*"
+numpy = "*"
+tabulate = "*"
+matplotlib = "*"
+rich = "*"
+pillow = "*"
+humanize = "*"
+sentry-sdk = "~=0.16.1"
 
 [dev-packages]
 flake8 = "~=3.7"
@@ -25,9 +27,9 @@ flake8-tidy-imports = "~=4.0"
 flake8-todo = "~=0.7"
 
 [requires]
-python_version = "3.7.7"
+python_version = "3.8"
 
 [scripts]
-start = "py -m xythrion"
+start = "python3.8 -m xythrion"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"

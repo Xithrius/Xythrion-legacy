@@ -5,12 +5,9 @@
 """
 
 
-from datetime import datetime
-
-import discord
 from discord.ext import commands as comms
 
-from xythrion.utils import fancy_embed, markdown_link, tracebacker, wait_for_reaction
+from xythrion.utils import tracebacker
 
 
 class Warnings(comms.Cog):
@@ -65,10 +62,10 @@ class Warnings(comms.Cog):
         await ctx.message.add_reaction('\U0000274c')
 
         if isinstance(error, comms.DisabledCommand):
-            return await ctx.send(f'`Command not available.`')
+            return await ctx.send('`Command not available.`')
 
         elif isinstance(error, comms.CommandNotFound):
-            return await ctx.send(f'`Command not found.`')
+            return await ctx.send('`Command not found.`')
 
         elif isinstance(error, comms.UserInputError):
             return await ctx.send(f'`Command raised bad argument: {error}`')
@@ -80,60 +77,19 @@ class Warnings(comms.Cog):
             return await ctx.send(f'`{error}`')
 
         elif isinstance(error, comms.CheckFailure):
-            return await ctx.send(f'`You do not have enough permissions to run this command.`')
+            return await ctx.send('`You do not have enough permissions to run this command.`')
+
+        elif isinstance(error, comms.MissingPermissions):
+            return await ctx.send('`Bot does not have enough permissions for this command.`')
 
         elif isinstance(error, AssertionError):
             return await ctx.send(f'`Command failed: {error}`')
 
         else:
-            async with self.bot.pool.acquire() as conn:
-                await conn.execute(
-                    '''INSERT INTO FailedCommands(t, id, jump, error) VALUES ($1, $2, $3, $4)''',
-                    datetime.now(), ctx.author.id, ctx.message.jump_url, str(error)
-                )
-
-            self.bot.log.info(f'Command has thrown error(s). They have been recorded. {error}')
+            # sentry_sdk here
             tracebacker(error)
 
-            await ctx.send(f'`Command has thrown error(s). They have been recorded.`')
-
-    @comms.command()
-    @comms.is_owner()
-    async def reports(self, ctx: comms.Context) -> None:
-        """ """
-        async with self.bot.pool.acquire() as conn:
-            r = await conn.fetch('''SELECT * FROM FailedCommands ORDER BY t ASC LIMIT 1''')
-
-            try:
-                d = {k: [v] for k, v in r[0].items() if k not in ['id']}
-
-            except IndexError:
-                return await ctx.send('`Records show that there are no reports as of now.`')
-
-            d['Time'] = [d.pop('t')[0].strftime('%c')]
-
-            desc = f'{fancy_embed(d, return_str=True)}\n{markdown_link("Jump", d.pop("jump")[0])}'
-            embed = discord.Embed(description=desc)
-
-            embed.set_footer(text='Trashcan removes the report from the database.')
-
-            msg = await ctx.send(embed=embed)
-            await msg.add_reaction('\U0001f5d1')  # trash the error
-            # await msg.add_reaction('\U000025b6')  # to the right
-
-            if await wait_for_reaction(ctx, '\U0001f5d1'):
-                await conn.execute(
-                    '''DELETE FROM FailedCommands WHERE identification = $1''',
-                    r[0]['identification']
-                )
-                await msg.delete()
-
-    @comms.command()
-    @comms.is_owner()
-    async def clear_reports(self, ctx: comms.Context) -> None:
-        """ """
-        async with self.bot.pool.acquire() as conn:
-            await conn.execute('''DELETE FROM FailedCommands''')
+            await ctx.send('`Command has thrown error(s). They have been recorded.`')
 
 
 def setup(bot: comms.Bot) -> None:

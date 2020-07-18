@@ -11,8 +11,9 @@ import os
 import sys
 import traceback
 import typing as t
-from datetime import datetime, timedelta
+from datetime import datetime
 
+import aiohttp
 import discord
 from discord.ext import commands as comms
 
@@ -54,6 +55,14 @@ def embed_attachment(p: str, embed: t.Optional[discord.Embed] = None) -> t.Tuple
     embed.set_image(url=f'attachment://{f}')
 
     return file, embed
+
+
+def shorten(s: str, mininum_character_count: int = 10) -> str:
+    """ """
+    if len(s) < mininum_character_count:
+        return s
+
+    return ' '.join(s[:mininum_character_count + 1].split()[:-1]) + '...'
 
 
 def parallel_executor(func: t.Callable) -> t.Coroutine:
@@ -138,26 +147,6 @@ def tracebacker(e: Exception) -> None:
     traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
 
 
-def describe_timedelta(d: timedelta) -> str:
-    """Describing a timedelta in possibily the most conviluted way.
-
-    Args:
-        d (:obj:`datetime.timedelta`): The difference between one datetime.datetime object and another.
-
-    Returns:
-        str: Contains hours and/or minutes, seconds for describing the difference between two dates.
-
-    Raises:
-        ValueError: If the only argument passed is not a `datetime.timedelta` object.
-
-    """
-    timestamps = ['Hours', 'Minutes', 'Seconds']
-    tmp = str((datetime.min + d).time()).split(':')
-
-    return ', '.join(f'{int(float(tmp[i]))} {timestamps[i]}' for i in range(
-        len(timestamps)) if float(tmp[i]) != 0.0)
-
-
 def fancy_embed(d: t.Dict[str, t.List[str]], *,
                 inline: bool = False, return_str: bool = False) -> t.Union[str, discord.Embed]:
     """Creating an embed only with the description. No fields or titles needed.
@@ -204,3 +193,13 @@ async def wait_for_reaction(ctx: comms.Context, emoji) -> bool:
 
     else:
         return True
+
+
+async def http_get(url, *, session: t.Optional[aiohttp.ClientSession] = None) -> t.Union[str, int]:
+    async with session.get(url) as resp:
+        if resp.status in {503, 502}:
+            print(f'request failed: {resp}')
+            return
+
+        else:
+            return await resp.json()

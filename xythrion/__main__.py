@@ -8,13 +8,27 @@
 import asyncio
 import os
 from pathlib import Path
+import logging
 
 import discord
 from discord.ext import commands as comms
 
+import sentry_sdk
+from sentry_sdk.integrations.logging import LoggingIntegration
 from xythrion.bot import Xythrion
 
 from . import _rich_logger
+
+
+sentry_logging = LoggingIntegration(
+    level=logging.DEBUG,
+    event_level=logging.WARNING
+)
+
+sentry_sdk.init(
+    dsn='',
+    integrations=[sentry_logging]
+)
 
 # Creating the `tmp` directory if it doesn't exist
 if not os.path.isdir(Path('tmp')):
