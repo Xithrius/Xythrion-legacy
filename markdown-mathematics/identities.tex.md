@@ -90,5 +90,3 @@ $$ \cos{2\theta} = \cos^{2}{\theta} - \sin^{2}{\theta} = 2\cos^{2}{\theta} - 1 =
 $$ \sin^{2}{\theta} = \frac{1 - \cos{2\theta}}{2} $$
 $$ \cos^{2}{\theta} = \frac{1 + \cos{2\theta}}{2} $$
 $$ \tan^{2}{\theta} = \frac{1 - \cos{2\theta}}{1 + \cos{2\theta}} $$
-
-![equ](https://latex.codecogs.com/gif.latex?log(y)=\beta_0&space;&plus;&space;\beta_1&space;x&space;&plus;&space;u)
