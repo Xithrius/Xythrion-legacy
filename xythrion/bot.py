@@ -39,8 +39,13 @@ import asyncpg
 import discord
 import humanize
 from discord.ext import commands as comms
+import logging
 
 from .utils import markdown_link, tracebacker
+from .constants import Postgresql
+
+
+log = logging.getLogger(__name__)
 
 
 class Xythrion(comms.Bot):
@@ -67,8 +72,8 @@ class Xythrion(comms.Bot):
         # Name of folder the bot's operating in
         self.n = Path.cwd().name.lower()
 
-        # Setting the logger before inheritence occurs.
-        self.log, self.loop = kwargs.pop('log'), kwargs.pop('loop')
+        # Setting the loop.
+        self.loop = kwargs.pop('loop')
 
         # Initializing the base class `Comms.bot` and inheriting all it's attributes and functions.
         super().__init__(*args, **kwargs)
@@ -76,10 +81,11 @@ class Xythrion(comms.Bot):
         # Checking and connecting to the postgresql database.
         try:
             self.loop.run_until_complete(self.check_and_connect_database())
+            log.info('Asynchronous connection to Postgresql database has been setup.')
 
         except Exception as e:
             tracebacker(e)
-            self.log.critical('Database failed setup. Parts of bot will not work.')
+            log.critical('Database failed setup. Parts of bot will not work.')
 
         self.session = aiohttp.ClientSession()
         # might be needed instead:
@@ -104,7 +110,7 @@ class Xythrion(comms.Bot):
            :obj:`asyncpg.PostgresSyntaxError`: Incorrect syntax in table creation.
 
         """
-        self.pool = await asyncpg.create_pool(*(os.environ('POSTGRES').split('/')), command_timeout=60)
+        self.pool = await asyncpg.create_pool(**Postgresql.asyncpg_config, command_timeout=60)
 
         async with self.pool.acquire() as conn:
             await conn.execute('''
@@ -150,7 +156,7 @@ class Xythrion(comms.Bot):
                 broken_extensions.append((extension, e))
 
         for extension, error in broken_extensions:
-            self.log.critical(f'{extension} could not be loaded: {error}')
+            log.critical(f'{extension} could not be loaded: {error}')
 
     async def get_extensions(self) -> t.List[str]:
         """Acquiring extensions for the bot to load in.
@@ -197,7 +203,7 @@ class Xythrion(comms.Bot):
             activity=discord.Activity(type=discord.ActivityType.watching, name="graphs")
         )
 
-        self.log.info('Awaiting...')
+        log.info('Awaiting...')
 
     async def logout(self) -> None:
         """Subclassing the logout command to ensure connections are closed properly.
@@ -216,9 +222,9 @@ class Xythrion(comms.Bot):
             )
 
         except asyncio.TimeoutError:
-            self.log.critical('Waiting for final tasks to complete timed out after 30 seconds. Skipping.')
+            log.critical('Waiting for final tasks to complete timed out after 30 seconds. Skipping.')
 
-        self.log.info('finished up closing tasks.')
+        log.info('finished up closing tasks.')
 
         return await super().logout()
 
@@ -273,9 +279,9 @@ class Development(comms.Cog):
 
             # If a fatal error occurs.
             except Exception as e:
-                return self.bot.log.warning(f'Error while loading "{cog}" error: {e}')
+                return log.warning(f'Error while loading "{cog}" error: {e}')
 
-        self.bot.log.info((
+        log.info((
             "Reloaded extensions in "
             f"{humanize.naturaldelta(d - datetime.now(), minimum_unit='milliseconds')}"
         ))
@@ -306,25 +312,6 @@ class Development(comms.Cog):
         embed = discord.Embed(title='*Currently loaded cogs:*', description=f'```py\n{c}\n```')
 
         await ctx.send(embed=embed)
-
-    @comms.command(name='exit', aliases=['logout', 'disconnect'], hidden=True)
-    @comms.is_owner()
-    async def _exit(self, ctx: comms.Context) -> None:
-        """Makes the bot logout.
-
-        Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
-
-        Returns:
-            type(None): Always None.
-
-        Command examples:
-            >>> [prefix]exit
-
-        """
-        self.bot.log.warning('logging out...')
-
-        await ctx.bot.logout()
 
     @comms.command(name='help', aliases=['h'])
     async def _help(self, ctx: comms.Context) -> None:

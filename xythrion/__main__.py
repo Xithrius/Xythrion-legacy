@@ -8,27 +8,18 @@
 import asyncio
 import os
 from pathlib import Path
-import logging
 
 import discord
 from discord.ext import commands as comms
 
-import sentry_sdk
-from sentry_sdk.integrations.logging import LoggingIntegration
 from xythrion.bot import Xythrion
+import logging
 
-from . import _rich_logger
+from .constants import Config
 
 
-sentry_logging = LoggingIntegration(
-    level=logging.DEBUG,
-    event_level=logging.WARNING
-)
+log = logging.getLogger(__name__)
 
-sentry_sdk.init(
-    dsn='',
-    integrations=[sentry_logging]
-)
 
 # Creating the `tmp` directory if it doesn't exist
 if not os.path.isdir(Path('tmp')):
@@ -36,22 +27,22 @@ if not os.path.isdir(Path('tmp')):
 
 loop = asyncio.get_event_loop()
 
+
 # Initializing the subclass of `comms.Bot`.
 bot = Xythrion(
     command_prefix=comms.when_mentioned_or(';'),
     case_insensitive=True,
     help_command=None,
-    log=_rich_logger(),
     loop=loop
 )
 
 # Attempting to run the bot (blocking, obviously).
 try:
-    bot.run(bot.config['discord'], bot=True, reconnect=True)
+    bot.run(Config.TOKEN, bot=True, reconnect=True)
 
 # If the token is incorrect or not given.
 except discord.errors.LoginFailure:
-    bot.log.critical('Failed to startup bot: Improper token has been passed.')
+    log.critical('Failed to startup bot: Improper token has been passed.')
 
 except IndexError:
-    bot.log.critical('Could not index config file for discord token.')
+    log.critical('Could not index config file for discord token.')

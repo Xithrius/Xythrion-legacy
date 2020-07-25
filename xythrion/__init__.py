@@ -7,53 +7,63 @@
 
 import logging
 import os
-import typing as t
 from pathlib import Path
-from rich import logging as r_logging
+from logging import handlers
+import asyncio
+import coloredlogs
+import sys
 
 
-def _discord_logger(log_type: t.Optional[t.Union[str, int]] = None) -> logging.Logger:
-    """Logs information specifically for discord.
-
-    Args:
-        log_type (:obj:`t.Union[str, int]`, optional): The level of logging to be used.
-            Defaults to None.
-
-    Returns:
-        :obj:`logging.Logger`: The object that the bot will use to log information to.
-
-    """
-    logger = logging.getLogger('discord')
-    logger.setLevel(logging.DEBUG)
-
-    if not os.path.isdir(Path(f'tmp{os.sep}')):
-        os.mkdir(Path('tmp'))
-
-    base_handler = logging.FileHandler(filename=Path('tmp', 'discord.log'), encoding='utf-8', mode='w')
-    base_handler.setFormatter(logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s'))
-    logger.addHandler(base_handler)
-
-    return logger
+logging.TRACE = 15
+logging.addLevelName(logging.TRACE, 'TRACE')
 
 
-def _rich_logger(log_type: int = 20) -> logging.Logger:
-    """Logs information with the rich library with fancy tracebacks.
+def trace_logger(self: logging.Logger, msg: str, *args, **kwargs) -> None:
+    """Log messages with the `TRACE` level."""
+    if self.isEnabledFor(logging.TRACE):
+        self._log(logging.TRACE, msg, args, **kwargs)
 
-    Args:
-        log_type (:obj:`t.Union[str, int]`, optional): The level of logging to be used.
-            Defaults to None.
-        store_file (bool, optional): If the logs want to be stored.
 
-    Returns:
-        :obj:`logging.Logger`: The object that the bot will use to log information to.
+logging.Logger.trace = trace_logger
 
-    Raises:
-        IndexError: If `log_type` isn't within log_types.
+LOG_LEVEL = logging.INFO
+LOG_FORMAT = '%(asctime)s | %(name)s | %(levelname)s | %(message)s'
+log_formatter = logging.Formatter(LOG_FORMAT)
 
-    """
-    logging.basicConfig(
-        level=log_type, format='%(message)s', datefmt="[%c]", handlers=[r_logging.RichHandler()]
-    )
+log_file = Path.cwd() / 'logs' / 'bot.log'
+log_file.parent.mkdir(exist_ok=True)
 
-    # different message types: info, debug, warning, critical
-    return logging.getLogger('rich')
+file_handler = handlers.RotatingFileHandler(
+    log_file,
+    maxBytes=8388608,
+    backupCount=7,
+    encoding='utf-8'
+)
+file_handler.setFormatter(log_formatter)
+
+root_logger = logging.getLogger()
+root_logger.setLevel(LOG_LEVEL)
+root_logger.addHandler(file_handler)
+
+coloredlogs.DEFAULT_LEVEL_STYLES = {
+    **coloredlogs.DEFAULT_LEVEL_STYLES,
+    'trace': {'color': 246},
+    'critical': {'background': 'red'},
+    'debug': coloredlogs.DEFAULT_LEVEL_STYLES['info']
+}
+coloredlogs.DEFAULT_LOG_FORMAT = LOG_FORMAT
+
+coloredlogs.install(logger=root_logger, stream=sys.stdout, level=logging.TRACE)
+
+# Important warnings
+# logging.getLogger('asyncio').setLevel(logging.WARNING)
+# logging.getLogger('chardet').setLevel(logging.WARNING)
+# logging.getLogger('discord').setLevel(logging.WARNING)
+# logging.getLogger('websockets').setLevel(logging.WARNING)
+
+log = logging.getLogger(__name__)
+log.setLevel(LOG_LEVEL)
+
+if os.name == 'nt':
+    log.info('Setting WindowsSelectorEventLoopPolicy as Snek is running on Windows')
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

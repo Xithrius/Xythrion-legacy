@@ -5,9 +5,10 @@
 """
 
 
+import logging
 from discord.ext import commands as comms
 
-from xythrion.utils import tracebacker
+log = logging.getLogger(__name__)
 
 
 class Warnings(comms.Cog):
@@ -86,10 +87,7 @@ class Warnings(comms.Cog):
             return await ctx.send(f'`Command failed: {error}`')
 
         else:
-            # sentry_sdk here
-            tracebacker(error)
-
-            await ctx.send('`Command has thrown error(s). They have been recorded.`')
+            log.warning(f'Error occured: {error}')
 
 
 def setup(bot: comms.Bot) -> None:
