@@ -119,3 +119,6 @@ venv/
 
 # tests
 /tests/*
+
+# database stuffs
+/postgres_data/
