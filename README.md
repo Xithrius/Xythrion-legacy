@@ -17,6 +17,13 @@
 ## Commands:
 (insert gif here)
 
+## Setup:
+```sh
+cp .env-example .env # Edit the info in there
+docker pull postgres
+docker run --name postgres -e POSTGRES_PASSWORD=your_password_here -d postgres
+docker-compose up --build
+```
 ## Changelog
 
 ### [v2.0](!https://github.com/Xithrius/Xythrion/releases/tag/v2.0)

@@ -1,4 +1,0 @@
-TODO:
-- Create custom embeds with formatting
-- Create lexical analyzer
-- Image manipulator by matricies
