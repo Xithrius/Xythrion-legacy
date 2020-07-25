@@ -11,9 +11,9 @@ asyncpg = "*"
 numpy = "*"
 tabulate = "*"
 matplotlib = "*"
-rich = "*"
 pillow = "*"
 humanize = "*"
+coloredlogs = "*"
 sentry-sdk = "~=0.16.1"
 
 [dev-packages]
