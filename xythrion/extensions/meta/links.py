@@ -15,7 +15,7 @@ from humanize import naturaldelta, intcomma, naturaldate
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
 
-from xythrion.utils import fancy_embed, markdown_link, parallel_executor, asteriks as ast
+from xythrion.utils import fancy_embed, markdown_link, parallel_executor
 
 
 class Links(comms.Cog):
@@ -57,27 +57,7 @@ class Links(comms.Cog):
             with open(file) as f:
                 amount += sum(1 for _ in f)
 
-        return intcomma(amount)
-
-    async def calculate_uptime(self) -> dict:
-        """Gets the uptime based off of information from the database.
-
-        Returns:
-            dict: Containing average, maximum, and minimum uptimes.
-
-        """
-        async with self.bot.pool.acquire() as conn:
-            t = await conn.fetch(
-                '''SELECT avg(t_logout - t_login) avg_uptime,
-                          max(t_logout - t_login) max_uptime,
-                          min(t_logout - t_login) min_uptime FROM Runtime''')
-
-        t = {**{'t_uptime': datetime.now() - self.bot.startup_time}, **dict(t[0])}
-        new_keys = ['Current uptime', 'Average', 'Maximum', 'Minimum']
-
-        t = {k: naturaldelta(v) for k, v in zip(new_keys, t.values())}
-
-        return [f'{ast(k)}: {v}' for k, v in t.items()]
+        return [intcomma(amount)]
 
     async def get_links(self) -> t.List[str]:
         """Provides links about the creator and bot.
@@ -100,11 +80,7 @@ class Links(comms.Cog):
     async def get_date_of_creation(self) -> t.List[str]:
         d = datetime(2019, 3, 13, 17, 16)
 
-        t = {
-            'Started:': f"{naturaldate(d)}. {naturaldelta(datetime.now() - d, months=False)} ago."
-        }
-
-        return [f'{ast(k)}: {v}' for k, v in t.items()]
+        return [f'{naturaldate(d)}; {naturaldelta(datetime.now() - d, months=False)} ago.']
 
     """ Commands """
 
@@ -123,16 +99,15 @@ class Links(comms.Cog):
             >>> [prefix]info
 
         """
-        _links = await self.get_links()
-        _line_amount = await self.calculate_lines()
-        _uptime = await self.calculate_uptime()
-        _dates = await self.get_date_of_creation()
+        media_links = await self.get_links()
+        amount_of_lines = await self.calculate_lines()
+        project_length = await self.get_date_of_creation()
 
         d = {
-            'Links:': _links,
-            'Lines of Python code:': [_line_amount],
-            'Uptime information:': _uptime,
-            'Project length:': _dates
+            'Links:': media_links,
+            'Lines of Python code:': amount_of_lines,
+            'Current uptime:': [naturaldelta(datetime.now() - self.bot.startup_time)],
+            'Project length:': project_length
         }
 
         await ctx.send(embed=fancy_embed(d))
@@ -162,6 +137,10 @@ class Links(comms.Cog):
         embed = discord.Embed(description='`Invite urls:`\n' + invite_urls)
 
         await ctx.send(embed=embed)
+
+    @comms.command()
+    async def link(self, ctx, name: str, url: t.Optional[str] = None) -> None:
+        pass
 
 
 def setup(bot: comms.Bot) -> None:
