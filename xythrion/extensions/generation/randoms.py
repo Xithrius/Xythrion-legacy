@@ -114,27 +114,6 @@ class Randoms(comms.Cog):
 
         await ctx.send(embed=embed)
 
-    @comms.command(aliases=['flip'])
-    async def coin(self, ctx: comms.Context) -> None:
-        """Flips a coin and tells you which side it landed on.
-
-        Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
-
-        Returns:
-            bool: Always None.
-
-        Command examples:
-            >>> [prefix]coin
-            >>> [prefix]flip
-
-        """
-        embed = discord.Embed(
-            description=f'`Tossed a coin to your Witcher. Landed {choice(["heads", "tails"])} facing up.`'
-        )
-
-        await ctx.send(embed=embed)
-
     @comms.command(aliases=['rockpaperscissors'])
     async def RPS(self, ctx: comms.Context, option: str) -> None:
         """Plays a game of rock paper sissors against the bot.
