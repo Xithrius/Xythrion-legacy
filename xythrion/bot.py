@@ -114,19 +114,21 @@ class Xythrion(comms.Bot):
 
         async with self.pool.acquire() as conn:
             await conn.execute('''
-                CREATE TABLE IF NOT EXISTS Runtime(
-                    identification serial PRIMARY KEY,
-                    t_login TIMESTAMP WITH TIME ZONE NOT NULL,
-                    t_logout TIMESTAMP WITH TIME ZONE NOT NULL
-                )
-            ''')
-            await conn.execute('''
-                CREATE TABLE IF NOT EXISTS FailedCommands(
+                CREATE TABLE IF NOT EXISTS Links(
                     identification serial PRIMARY KEY,
                     t TIMESTAMP WITH TIME ZONE NOT NULL,
                     id BIGINT,
-                    jump TEXT,
-                    error TEXT
+                    name TEXT,
+                    link TEXT
+                )
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS Snippets(
+                    identification serial PRIMARY KEY,
+                    t TIMESTAMP WITH TIME ZONE NOT NULL,
+                    id BIGINT,
+                    name TEXT,
+                    code TEXT
                 )
             ''')
 
@@ -145,10 +147,9 @@ class Xythrion(comms.Bot):
             :obj:`ExtensionFailed`: The extension or its setup function had an execution error.
 
         """
-        extensions = await self.get_extensions()
         broken_extensions = []
 
-        for extension in extensions:
+        for extension in await self.get_extensions():
             try:
                 self.load_extension(extension)
 
@@ -177,13 +178,6 @@ class Xythrion(comms.Bot):
             )
 
         return extensions
-
-    async def record_runtime(self) -> None:
-        async with self.pool.acquire() as conn:
-            await conn.execute(
-                '''INSERT INTO Runtime(t_login, t_logout) VALUES ($1, $2)''',
-                self.startup_time, datetime.now()
-            )
 
     async def on_ready(self) -> None:
         """Updates the bot status when logged in successfully.
@@ -217,7 +211,7 @@ class Xythrion(comms.Bot):
         """
         try:
             await asyncio.wait(
-                fs={self.session.close(), self.record_runtime(), self.pool.close()},
+                fs={self.session.close(), self.pool.close()},
                 timeout=30.0, loop=self.loop, return_when=asyncio.ALL_COMPLETED
             )
 
@@ -251,7 +245,7 @@ class Development(comms.Cog):
 
     @comms.command(name='reload', aliases=['refresh', 'r'], hidden=True)
     @comms.is_owner()
-    async def _reload(self, ctx: comms.Context) -> None:
+    async def _reload(self, ctx: comms.Context, cog: t.Optional[str] = None) -> None:
         """Gets the cogs within folders and loads them into the bot after unloading current cogs.
 
         Args:
@@ -270,8 +264,7 @@ class Development(comms.Cog):
 
             # Attempting to unload the load the extension back in.
             try:
-                self.bot.unload_extension(cog)
-                self.bot.load_extension(cog)
+                self.bot.reload_extension(cog)
 
             # If the extension was created after the bot initialized startup.
             except comms.ExtensionNotLoaded:
@@ -279,17 +272,18 @@ class Development(comms.Cog):
 
             # If a fatal error occurs.
             except Exception as e:
-                return log.warning(f'Error while loading "{cog}" error: {e}')
+                await ctx.send(f'Error while reloading: {cog} - {e}')
+                return log.warning(f'Reloading {cog} error: {e}')
 
         log.info((
             "Reloaded extensions in "
             f"{humanize.naturaldelta(d - datetime.now(), minimum_unit='milliseconds')}"
         ))
 
-    @comms.command(name='restart', hidden=True)
+    @comms.command(name='restart', aliases=['reboot'], hidden=True)
     @comms.is_owner()
     async def _restart(self, ctx: comms.Context) -> None:
-        pass
+        await self.bot.logout()
 
     @comms.command(name='loaded', hidden=True)
     @comms.is_owner()
