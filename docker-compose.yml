@@ -29,5 +29,9 @@ services:
       context: .
       dockerfile: Dockerfile
 
+    volumes:
+      - ./logs:/xythrion/logs
+      - .:/xythrion:rw
+
     ports:
       - "5005:5000"

@@ -13,9 +13,6 @@ ENV PIP_NO_CACHE_DIR=false \
 RUN apt-get -y update && \
     apt-get install -y git
 
-# Install postgres
-# RUN command
-
 # Install pipenv
 RUN pip install -U pipenv
 
@@ -28,6 +25,3 @@ RUN pipenv install --deploy --system
 
 ENTRYPOINT ["python"]
 CMD ["-m", "xythrion"]
-
-# Define docker persistent volumes
-VOLUME /Xythrion/xythrion/log /xythrion/data
