@@ -10,8 +10,8 @@ import os
 from pathlib import Path
 from logging import handlers
 import asyncio
-import coloredlogs
 import sys
+import coloredlogs
 
 
 logging.TRACE = 15
@@ -28,6 +28,7 @@ logging.Logger.trace = trace_logger
 
 LOG_LEVEL = logging.INFO
 LOG_FORMAT = '%(asctime)s | %(name)s | %(levelname)s | %(message)s'
+
 log_formatter = logging.Formatter(LOG_FORMAT)
 
 log_file = Path.cwd() / 'logs' / 'bot.log'
@@ -39,6 +40,7 @@ file_handler = handlers.RotatingFileHandler(
     backupCount=7,
     encoding='utf-8'
 )
+
 file_handler.setFormatter(log_formatter)
 
 root_logger = logging.getLogger()
@@ -51,15 +53,10 @@ coloredlogs.DEFAULT_LEVEL_STYLES = {
     'critical': {'background': 'red'},
     'debug': coloredlogs.DEFAULT_LEVEL_STYLES['info']
 }
+
 coloredlogs.DEFAULT_LOG_FORMAT = LOG_FORMAT
 
 coloredlogs.install(logger=root_logger, stream=sys.stdout, level=logging.TRACE)
-
-# Important warnings
-# logging.getLogger('asyncio').setLevel(logging.WARNING)
-# logging.getLogger('chardet').setLevel(logging.WARNING)
-# logging.getLogger('discord').setLevel(logging.WARNING)
-# logging.getLogger('websockets').setLevel(logging.WARNING)
 
 log = logging.getLogger(__name__)
 log.setLevel(LOG_LEVEL)
