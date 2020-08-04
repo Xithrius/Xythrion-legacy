@@ -5,32 +5,61 @@
 
 Running the bot:
 
-    NOTE: The following steps below assume that you have Python 3.7.7 installed.
+    These instructions are also available in the "Setup" section of the README.
 
-    Creating the virtual environment. (defaulting to "py", replace if needed):
-        NOTE: DO NOT INCLUDE "pip" YOU'RE RUNNING THIS ON UBUNTU.
-        $ py -3.7 -m pip install --upgrade pip virtualenv
+    NOTE: The following steps below assume that you have Python 3.8.x installed.
+          It is assumed that "python3 -V" outputs Python 3.8.x if on Linux.
+          If on Windows, replace "python3" with "py -3.8", "python", or "py".
 
-        # Creating the virtual environment, then activating it.
-        $ py -3.7 -m virtualenv venv
-        $ source venv/Scripts/activate
+    NOTE: ALTERNATIVES #1 AND #2 FOR THE VIRTUAL ENVIRONMENT SETUP AND THE SETUP WITHOUT
+          ANY VIRTUAL ENVIRONMENT ASSUME THAT YOU'VE INSTALLED POSTGRESQL
+          ON YOUR SYSTEM AND YOU'VE INSERTED YOUR CREDENTIALS INTO THE ".env" FILE.
 
-    Installing requirements:
-        $ py -3.7 -m pip install -r requirements.txt
+    No virtual environment setup steps:
+        Installing requirements:
+            $ python3 -m pip install -r requirements.txt
 
-    Running the bot:
-        Windows:
-            $ py -3.7 bot.py
+        Running the bot:
+            $ clear && python3 -m xythrion
 
-        Linux/OSX:
-            $ clear && python3 bot.py
+    Creating the virtual environment and running the bot (3 ways):
+        NOTE: DO NOT UPGRADE "pip" YOU'RE RUNNING THIS ON UBUNTU.
+
+        Alternative #1 - virtualenv/venv:
+            $ python3 -m pip install --U pip virtualenv
+            $ python3 -m virtualenv venv
+            $ source venv/Scripts/activate
+            $ python3 -m xythrion
+
+        Alternative #2 - pipenv:
+            $ python3 -m pip install --U pip pipenv
+            $ pipenv install --dev
+            $ pipenv shell
+            $ pipenv start run
+
+        Alternative #3 - Docker:
+            NOTE: IF YOU PLAN TO RUN THIS ALTERNATIVE ON WINDOWS 10,
+                  YOU MUST HAVE WINDOWS 10 PRO.
+            NOTE: IF YOU'RE ON LINUX MAKE SURE YOU HAVE CORRECTLY INSTALLED DOCKER BEFORE
+                  RUNNING THESE COMMANDS.
+
+            $ cp .env-example .env
+
+            NOTE: Put as much information as you can into the .env file before running the final command in
+                  this alternative.
+            $ docker pull postgres
+
+            NOTE: After running this command, be sure to replace "your_password_here" in the .env file,
+                  with the password you have selected. This should be on the same line as "POSTGRES_PASSWORD"
+            $ docker run --name postgres -e POSTGRES_PASSWORD=your_password_here -d postgres
+            $ docker-compose up --build
 
 """
 
 
 import asyncio
 import os
-import typing as t
+from typing import Optional, Union, List
 from datetime import datetime
 from pathlib import Path
 
@@ -39,20 +68,20 @@ import asyncpg
 import discord
 import humanize
 from discord.ext import commands as comms
-import logging
+from discord.ext.commands import Bot, Cog, Context
+from logging import getLogger
 
-from .utils import markdown_link, tracebacker
+from .utils import markdown_link
 from .constants import Postgresql
 
 
-log = logging.getLogger(__name__)
+log = getLogger(__name__)
 
 
-class Xythrion(comms.Bot):
+class Xythrion(Bot):
     """A subclass where very important tasks and connections are created.
 
     Attributes:
-        config (dict): Tokens and other items from `./config/config.json`.
         loop (:obj:`asyncio.AbstractEventLoop`): The loop that executors will run off of.
         pool (:obj:`asyncpg.Pool`): Connection pool for database executions.
 
@@ -65,18 +94,11 @@ class Xythrion(comms.Bot):
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
 
-        Returns:
-            type(None): Always None.
-
         """
-        # Name of folder the bot's operating in
-        self.n = Path.cwd().name.lower()
+        super().__init__(*args, **kwargs)
 
         # Setting the loop.
-        self.loop = kwargs.pop('loop')
-
-        # Initializing the base class `Comms.bot` and inheriting all it's attributes and functions.
-        super().__init__(*args, **kwargs)
+        self.loop = asyncio.get_event_loop()
 
         # Checking and connecting to the postgresql database.
         try:
@@ -84,18 +106,16 @@ class Xythrion(comms.Bot):
             log.info('Asynchronous connection to Postgresql database has been setup.')
 
         except Exception as e:
-            tracebacker(e)
-            log.critical('Database failed setup. Parts of bot will not work.')
+            log.critical(f'Database failed setup. Parts of bot will not work.\nError: {e}')
 
+        # Creating the session for getting information from URLs by fetching with GETs.
         self.session = aiohttp.ClientSession()
-        # might be needed instead:
-        # asyncio.get_event_loop().run_until_complete(self.create_session())
 
         # Add the main cog required for development and control.
         self.add_cog(Development(self))
 
-        # Loading the cogs in, one by one.
-        asyncio.get_event_loop().run_until_complete(self.load_extensions())
+        # Loading the rest of the extensions, one by one.
+        # asyncio.get_event_loop().run_until_complete(self.load_extensions())
 
     async def check_and_connect_database(self) -> None:
         """Creates asynchronous database and session connection.
@@ -103,8 +123,7 @@ class Xythrion(comms.Bot):
         Checks if the database has the correct tables before starting the bot up
 
         Returns:
-            bool: True if the database failed to check and/or connect,
-                None if there are no errors.
+            :obj:`type(None)`: Always None
 
         Raises:
            :obj:`asyncpg.PostgresSyntaxError`: Incorrect syntax in table creation.
@@ -132,19 +151,20 @@ class Xythrion(comms.Bot):
                 )
             ''')
 
-    async def load_extensions(self, blocked_extensions: t.Optional[t.Union[str, list]] = None) -> None:
+    async def load_extensions(self, blocked_extensions: Optional[Union[str, list]] = None) -> None:
         """Loading in the extensions for the bot.
 
         Args:
-            blocked_extensions (:obj:`t.Union[str, list]`, optional): Extension(s) to not be loaded.
+            blocked_extensions (:obj:`typing.Union[str, list]`, optional): Extension(s) to not be loaded.
 
         Returns:
-            type(None): Always None.
+            :obj:`type(None)`: Always None
 
         Raises:
-            :obj:`ExtensionNotFound`: The extension could not be imported.
-            :obj:`NoEntryPointError`: The extension does not have a setup function.
-            :obj:`ExtensionFailed`: The extension or its setup function had an execution error.
+            :obj:`discord.ext.commands.ExtensionNotFound`: The extension could not be imported.
+            :obj:`discord.ext.commands.NoEntryPointError`: The extension does not have a setup function.
+            :obj:`discord.ext.commands.ExtensionFailed`:
+                The extension or its setup function had an execution error.
 
         """
         broken_extensions = []
@@ -159,11 +179,11 @@ class Xythrion(comms.Bot):
         for extension, error in broken_extensions:
             log.critical(f'{extension} could not be loaded: {error}')
 
-    async def get_extensions(self) -> t.List[str]:
+    async def get_extensions(self) -> List[str]:
         """Acquiring extensions for the bot to load in.
 
         Returns:
-            :obj:`t.List[str]`: A list containing cogs.
+            :obj:`typing.List[str]`: A list containing cogs.
 
         Raises:
             FileNotFoundError: When the folder 'cogs' cannot be found.
@@ -183,7 +203,7 @@ class Xythrion(comms.Bot):
         """Updates the bot status when logged in successfully.
 
         Returns:
-            type(None): Always None.
+            :obj:`type(None)`: Always None
 
         Raises:
            :obj:`discord.InvalidArgument`: If the activity type is invalid.
@@ -203,10 +223,7 @@ class Xythrion(comms.Bot):
         """Subclassing the logout command to ensure connections are closed properly.
 
         Returns:
-            type(None): Always None.
-
-        Raises:
-            TODO: What happens when self.pool.close() fails?
+            :obj:`type(None)`: Always None
 
         """
         try:
@@ -223,11 +240,11 @@ class Xythrion(comms.Bot):
         return await super().logout()
 
 
-class Development(comms.Cog):
+class Development(Cog):
     """Cog required for development and control, along with the help command.
 
     Attributes:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
+        bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
     """
 
@@ -237,22 +254,23 @@ class Development(comms.Cog):
         Args:
             bot (:obj:`comms.Bot`): Represents a Discord bot.
 
-        Returns:
-            type(None): Always None.
-
         """
         self.bot = bot
 
     @comms.command(name='reload', aliases=['refresh', 'r'], hidden=True)
     @comms.is_owner()
-    async def _reload(self, ctx: comms.Context, cog: t.Optional[str] = None) -> None:
+    async def _reload(self, ctx: Context, cog: Optional[str] = None) -> None:
         """Gets the cogs within folders and loads them into the bot after unloading current cogs.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
 
         Raises:
-            Anything besides comms.ExtensionNotLoaded when loading cogs.
+            Anything besides discord.ext.commands.ExtensionNotLoaded when loading cogs.
+
+        Returns:
+            :obj:`type(None)`: Always None
 
         Command examples:
             >>> [prefix]r
@@ -280,21 +298,34 @@ class Development(comms.Cog):
             f"{humanize.naturaldelta(d - datetime.now(), minimum_unit='milliseconds')}"
         ))
 
-    @comms.command(name='restart', aliases=['reboot'], hidden=True)
+    @comms.command(name='logout', hidden=True)
     @comms.is_owner()
-    async def _restart(self, ctx: comms.Context) -> None:
+    async def _logout(self, ctx: Context) -> None:
+        """Makes the bot Log out..
+
+        NOTE: If in Docker, the current instance will die and another will be created.
+
+        Args:
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
+
+        Returns:
+            :obj:`type(None)`: Always None
+
+        """
         await self.bot.logout()
 
     @comms.command(name='loaded', hidden=True)
     @comms.is_owner()
-    async def _loaded_extensions(self, ctx: comms.Context) -> None:
+    async def _loaded_extensions(self, ctx: Context) -> None:
         """Gives a list of the currently loaded cogs.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
 
         Returns:
-            type(None): Always None.
+            :obj:`type(None)`: Always None
 
         Command examples:
             >>> [prefix]loaded
@@ -308,14 +339,15 @@ class Development(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command(name='help', aliases=['h'])
-    async def _help(self, ctx: comms.Context) -> None:
+    async def _help(self, ctx: Context) -> None:
         """Giving help to a user.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
 
         Returns:
-            type(None): Always None.
+            :obj:`type(None)`: Always None
 
         Command example(s):
             >>> [prefix]help
@@ -332,14 +364,15 @@ class Development(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command(name='issue', aliases=['problem', 'issues'])
-    async def _issue(self, ctx: comms.Context) -> None:
+    async def _issue(self, ctx: Context) -> None:
         """Gives the user the place to report issues.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
 
         Returns:
-            type(None): Always None.
+            :obj:`type(None)`: Always None
 
         Command example(s):
             >>> [prefix]issue
