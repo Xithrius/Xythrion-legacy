@@ -1,11 +1,9 @@
 discord.py
-qrcode
 datetime
 asyncpg
 numpy
-tabulate
+# tabulate
 matplotlib
-pillow
 humanize
+pipenv
 coloredlogs
-sentry-sdk ~= 0.16.1
