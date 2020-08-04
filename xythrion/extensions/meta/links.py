@@ -6,7 +6,7 @@
 
 
 import os
-import typing as t
+from typing import List, Optional
 from datetime import datetime
 from pathlib import Path
 
@@ -14,28 +14,29 @@ import discord
 from humanize import naturaldelta, intcomma, naturaldate
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
+from discord.ext.commands import Bot, Cog, Context
 
 from xythrion.utils import fancy_embed, markdown_link, parallel_executor
 
 
-class Links(comms.Cog):
+class Links(Cog):
     """Links to many different things around the internet, including bot statistics.
 
     Attributes:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
+        bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
     """
 
-    def __init__(self, bot: comms.Bot):
+    def __init__(self, bot: Bot):
         """Creating important attributes for this class.
 
         Args:
-            bot (:obj:`comms.Bot`): Represents a Discord bot.
+            bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
         """
         self.bot = bot
 
-    """ Cog-specific functions """
+    # Cog-specific functions
 
     @parallel_executor
     def calculate_lines(self) -> int:
@@ -59,11 +60,11 @@ class Links(comms.Cog):
 
         return [intcomma(amount)]
 
-    async def get_links(self) -> t.List[str]:
+    async def get_links(self) -> List[str]:
         """Provides links about the creator and bot.
 
         Returns:
-            :obj:`t.List[str]`: A list containing Discord markdown hyperlinks.
+            :obj:`typing.List[str]`: A list containing Discord markdown hyperlinks.
 
         """
         branch_link = 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e'
@@ -77,20 +78,21 @@ class Links(comms.Cog):
 
         return [markdown_link(k, v) for k, v in info.items()]
 
-    async def get_date_of_creation(self) -> t.List[str]:
+    async def get_date_of_creation(self) -> List[str]:
         d = datetime(2019, 3, 13, 17, 16)
 
         return [f'{naturaldate(d)}; {naturaldelta(datetime.now() - d, months=False)} ago.']
 
-    """ Commands """
+    # Commands
 
     @comms.cooldown(1, 5, BucketType.user)
     @comms.command(aliases=['uptime', 'runtime', 'desc', 'description'])
-    async def info(self, ctx: comms.Context) -> None:
+    async def info(self, ctx: Context) -> None:
         """Information about bot origin along with usage statistics.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
 
         Returns:
             :obj:`type(None)`: None
@@ -113,14 +115,15 @@ class Links(comms.Cog):
         await ctx.send(embed=fancy_embed(d))
 
     @comms.command()
-    async def invite(self, ctx):
+    async def invite(self, ctx: Context) -> None:
         """Gives the invite link of this bot.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
 
         Returns:
-            :obj:`type(None)`: None
+            :obj:`type(None)`: Always None
 
         Command examples:
             >>> [prefix]invite
@@ -139,18 +142,21 @@ class Links(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command()
-    async def link(self, ctx, name: str, url: t.Optional[str] = None) -> None:
+    async def link(self, ctx: Context, name: str, url: Optional[str] = None) -> None:
+        """
+
+        Args:
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
+            name (str): The name that the link will be called by in the database.
+            url (:obj:`typing.Optional[str]`, optional): The url of the link, if a new one is being created.
+
+        Returns:
+            :obj:`type(None)`: Always None
+
+        Command examples:
+            >>> [prefix]link something
+            >>> [prefix]link DOOM-Eternal-OST https://www.youtube.com/watch?v=aam9VvzFuI0
+
+        """
         pass
-
-
-def setup(bot: comms.Bot) -> None:
-    """The necessary function for loading in cogs within this file.
-
-    Args:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
-
-    Returns:
-        type(None): Always None.
-
-    """
-    bot.add_cog(Links(bot))

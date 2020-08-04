@@ -7,6 +7,7 @@
 
 import logging
 from discord.ext import commands as comms
+from discord.ext.commands import Context, Bot, CommandError
 
 log = logging.getLogger(__name__)
 
@@ -15,44 +16,46 @@ class Warnings(comms.Cog):
     """Warning the user about specific actions taken.
 
     Attributes:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
+        bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
     """
 
-    def __init__(self, bot: comms.Bot):
+    def __init__(self, bot: Bot) -> None:
         """Creating important attributes for this class.
 
         Args:
-            bot (:obj:`comms.Bot`): Represents a Discord bot.
+            bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
         """
         self.bot = bot
 
-    """ Events """
+    # Events
 
     @comms.Cog.listener()
-    async def on_command_completion(self, ctx: comms.Context) -> None:
+    async def on_command_completion(self, ctx: Context) -> None:
         """Adds a reaction after a command is successfully completed.
 
         Args:
-            ctx (comms.Context): Represents the context in which a command is being invoked under.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
 
         Returns:
-            bool: Always None.
+            :obj:`type(None)`: Always None
 
         """
         await ctx.message.add_reaction('\U00002705')
 
     @comms.Cog.listener()
-    async def on_command_error(self, ctx: comms.Context, error: comms.CommandError) -> None:
+    async def on_command_error(self, ctx: Context, error: CommandError) -> None:
         """When the command has an error, this event is triggered.
 
         Args:
-            ctx (comms.Context): Represents the context in which a command is being invoked under.
-            error (comms.CommandError): The error that was raised
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
+            error (:obj:`discord.ext.commands.CommandError`): The error that was raised
 
         Returns:
-            bool: Always None.
+            :obj:`type(None)`: Always None
 
         """
         if hasattr(ctx.command, 'on_error'):
@@ -87,17 +90,4 @@ class Warnings(comms.Cog):
             return await ctx.send(f'`Command failed: {error}`')
 
         else:
-            log.warning(f'Error occured: {error}')
-
-
-def setup(bot: comms.Bot) -> None:
-    """The necessary function for loading in cogs within this file.
-
-    Args:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
-
-    Returns:
-        type(None): Always None.
-
-    """
-    bot.add_cog(Warnings(bot))
+            log.debug(f'Error occured: {error}')

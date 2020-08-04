@@ -9,23 +9,24 @@ import random
 
 import discord
 from discord.ext import commands as comms
+from discord.ext.commands import Bot, Cog, Context, Message
 
 from xythrion.utils import shorten
 
 
-class Reddit(comms.Cog):
+class Reddit(Cog):
     """The Reddit cog that sends Reddit information in the form of an embed.
 
     Attributes:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
+        bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
     """
 
-    def __init__(self, bot: comms.Bot):
+    def __init__(self, bot: Bot) -> None:
         """Creating important attributes for this class.
 
         Args:
-            bot (:obj:`comms.Bot`): Represents a Discord bot.
+            bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
         """
         self.bot = bot
@@ -33,7 +34,7 @@ class Reddit(comms.Cog):
     """ Events """
 
     @comms.Cog.listener()
-    async def on_message(self, message: discord.Message) -> None:
+    async def on_message(self, message: Message) -> None:
         """Scans for Reddit posts and provides info on them.
 
         Args:
@@ -42,17 +43,21 @@ class Reddit(comms.Cog):
         """
         pass
 
-    """ Commands """
+    # Commands
 
     @comms.command(aliases=['sub', 'subreddit'])
-    async def reddit(self, ctx, subreddit: str, status: str = 'hot', timeframe: str = 'day') -> None:
+    async def reddit(self, ctx: Context, subreddit: str, status: str = 'hot', timeframe: str = 'day') -> None:
         """Requesting from the Reddit service to give a random post from a status within a timeframe.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
             subreddit (str): The name of the subreddit.
             status (str, optional): The current status of posts.
             timeframe (str, optional): The interval which the subreddit posts should be picked from.
+
+        Returns:
+            :obj:`type(None)`: Always None
 
         Command examples:
             >>> [prefix]reddit pics top week
@@ -98,7 +103,3 @@ class Reddit(comms.Cog):
                 embed.set_image(url=image)
 
             await ctx.send(embed=embed)
-
-
-def setup(bot):
-    bot.add_cog(Reddit(bot))

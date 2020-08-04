@@ -7,22 +7,22 @@
 
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
-# from pathlib import Path
+from discord.ext.commands import Cog, Bot, Context
 
 
-class Graphing(comms.Cog):
+class Graphing(Cog):
     """Parsing a user's input and making a graph out of it..
 
     Attributes:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
+        bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
     """
 
-    def __init__(self, bot: comms.Bot):
+    def __init__(self, bot: Bot) -> None:
         """Creating important attributes for this class.
 
         Args:
-            bot (:obj:`comms.Bot`): Represents a Discord bot.
+            bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
         """
         self.bot = bot
@@ -31,36 +31,20 @@ class Graphing(comms.Cog):
 
     @comms.cooldown(1, 5, BucketType.user)
     @comms.command(enabled=False)
-    async def graph(self, ctx: comms.Context, *, entry: str) -> None:
-        """Graphing equations.
+    async def graph(self, ctx: Context, *, entry: str) -> None:
+        """Lexing then Graphing equations that the user gives.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
-            eq (str): The equation to be parsed and graphed.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
+            eq (str): The equation to be lexed and graphed.
 
         Returns:
-            bool: Always None.
+            :obj:`type(None)`: Always None
 
         Command examples:
             >>> [prefix]graph x^2 + x
 
         """
-        # NOTE: Will be filled in once parsing utility is finished.
+        # NOTE: Will be filled in once lexer utility is finished.
         pass
-
-    # @comms.command()
-    # async def path_test(self, ctx):
-    #     print(Path.cwd() / 'tmp')
-
-
-def setup(bot: comms.Bot) -> None:
-    """The necessary function for loading in cogs within this file.
-
-    Args:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
-
-    Returns:
-        type(None): Always None.
-
-    """
-    bot.add_cog(Graphing(bot))

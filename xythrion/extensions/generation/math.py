@@ -6,38 +6,40 @@
 
 
 from discord.ext import commands as comms
+from discord.ext.commands import Cog, Bot, Context
 
 
-class Math(comms.Cog):
+class Math(Cog):
     """Calculates equations and/or expressions.
 
     Attributes:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
+        bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
     """
 
-    def __init__(self, bot: comms.Bot) -> None:
+    def __init__(self, bot: Bot) -> None:
         """Creating important attributes for this class.
 
         Args:
-            bot (:obj:`comms.Bot`): Represents a Discord bot.
+            bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
         """
         self.bot = bot
 
-    @comms.command()
-    async def calculate(self, ctx: comms.Context, *, msg: str) -> None:
+    @comms.command(aliases=['calc'], enabled=False)
+    async def calculate(self, ctx: Context, *, ex: str) -> None:
+        """Lexes and calculates the expression given by a user.
+
+        Args:
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
+            ex (str): The expression to be lexed and calculated.
+
+        Returns:
+            :obj:`type(None)`: Always None
+
+        Command examples:
+            >>> [prefix]calculate 2 + 2
+
+        """
         pass
-
-
-def setup(bot: comms.Bot) -> None:
-    """The necessary function for loading in cogs within this file.
-
-    Args:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
-
-    Returns:
-        type(None): Always None.
-
-    """
-    bot.add_cog(Math(bot))

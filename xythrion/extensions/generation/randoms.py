@@ -7,34 +7,37 @@
 
 from collections import OrderedDict, defaultdict
 from random import choice, randint
+from typing import Optional, Union, List, Dict
 
 import discord
 from discord.ext import commands as comms
+from discord.ext.commands import Bot, Cog, Context
 
 from xythrion.utils import codeblock
 
 
-class Randoms(comms.Cog):
+class Randoms(Cog):
     """Picking a bunch of different things at random (games based on random chance).
 
     Attributes:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
-        card_values (list): All possible values for a card
-        card_suites (list): All possible suites for a card
+        bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
+        card_values (:obj:`typing.List[typing.Union[int, str]]`): All possible values for a card
+        card_suites (:obj:`typing.List[str]`): All possible suites for a card
+        rps_options (:obj:`typing.Dict[str, typing.List[str]]`): All the options for RPS-15.
 
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot: Bot) -> None:
         """Creating important attributes for this class.
 
         Args:
-            bot (:obj:`comms.Bot`): Represents a Discord bot.
+            bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
         """
         self.bot = bot
-        self.card_values = [*range(2, 11), 'Jack', 'Queen', 'King', 'Ace']
-        self.card_suites = ['Hearts', 'Clubs', 'Diamonds', 'Spades']
-        self.rps_options = {
+        self.card_values: List[Union[int, str]] = [*range(2, 11), 'Jack', 'Queen', 'King', 'Ace']
+        self.card_suites: List[str] = ['Hearts', 'Clubs', 'Diamonds', 'Spades']
+        self.rps_options: Dict[str, List[str]] = {
             'rock': ['fire', 'scissors', 'snake', 'human', 'wolf', 'sponge', 'tree'],
             'paper': ['air', 'rock', 'water', 'devil', 'dragon', 'lightning'],
             'fire': ['scissors', 'paper', 'snake', 'human', 'tree', 'wolf', 'sponge'],
@@ -52,18 +55,19 @@ class Randoms(comms.Cog):
             'tree': ['wolf', 'dragon', 'sponge', 'paper', 'air', 'water', 'devil']
         }
 
-    """ Commands """
+    # Commands
 
     @comms.command()
-    async def dice(self, ctx: comms.Context, rolls: int = 1) -> None:
+    async def dice(self, ctx: Context, rolls: int = 1) -> None:
         """Rolls a die as many times as you want.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
             rolls (int, optional): The amount of times the die will be rolled.
 
         Returns:
-            bool: Always None.
+            :obj:`type(None)`: Always None
 
         Command examples:
             >>> [prefix]dice
@@ -85,15 +89,16 @@ class Randoms(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command()
-    async def card(self, ctx: comms.Context, amount: int = 1) -> None:
+    async def card(self, ctx: Context, amount: int = 1) -> None:
         """Picks cards from a deck.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
             amount (int, optional): The amount of cards that will be picked.
 
         Returns:
-            bool: Always None.
+            :obj:`type(None)`: Always None
 
         Command examples:
             >>> [prefix]card
@@ -115,15 +120,16 @@ class Randoms(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command(aliases=['rockpaperscissors'])
-    async def RPS(self, ctx: comms.Context, option: str) -> None:
+    async def RPS(self, ctx: Context, option: Optional[str] = None) -> None:
         """Plays a game of rock paper sissors against the bot.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
-            option (str): The option that the user chooses.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
+            option (:obj:`typing.Optional[str]`, optional): The option that the user chooses, if any.
 
         Returns:
-            bool: Always None.
+            :obj:`type(None)`: Always None
 
         Command examples:
             >>> [prefix]RPS
@@ -132,7 +138,7 @@ class Randoms(comms.Cog):
         """
         option = option.lower()
 
-        if option not in self.options.keys():
+        if option not in self.options.keys() or not option:
             url = 'https://umop.com/rps15.htm'
             block = f'`Unknown option "{option}". Please pick from the possible options:` ' + url
 
@@ -149,16 +155,3 @@ class Randoms(comms.Cog):
             )
 
             await ctx.send(embed=embed)
-
-
-def setup(bot: comms.Bot) -> None:
-    """The necessary function for loading in cogs within this file.
-
-    Args:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
-
-    Returns:
-        type(None): Always None.
-
-    """
-    bot.add_cog(Randoms(bot))

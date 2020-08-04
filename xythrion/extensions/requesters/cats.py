@@ -6,36 +6,41 @@
 
 
 from discord.ext import commands as comms
+from discord.ext.commands import Bot, Cog, Context
 import discord
 
 from xythrion.utils import http_get, markdown_link
 from http import HTTPStatus
 
 
-class Cats(comms.Cog):
+class Cats(Cog):
     """A large amount of cats.
 
     Attributes:
-        bot (:obj:`comms.Bot`): Represents a Discord bot.
+        bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
     """
 
-    def __init__(self, bot: comms.Bot):
+    def __init__(self, bot: Bot) -> None:
         """Creating important attributes for this class.
 
         Args:
-            bot (:obj:`comms.Bot`): Represents a Discord bot.
+            bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
 
         """
         self.bot = bot
 
     @comms.command(aliases=['status', 'response', 'code', 'statuscat'])
-    async def http_cat(self, ctx, code: int):
+    async def http_cat(self, ctx: Context, code: int) -> None:
         """Gets the http status code information.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
             code (int): The status code that is wanted.
+
+        Returns:
+            :obj:`type(None)`: Always None
 
         Command examples:
             >>> [prefix]http_cat 404
@@ -55,11 +60,15 @@ class Cats(comms.Cog):
         await ctx.send(embed=embed)
 
     @comms.command()
-    async def neko(self, ctx):
+    async def neko(self, ctx: Context) -> None:
         """Returns a 'neko' (human cat-girl, not actual cat) image.
 
         Args:
-            ctx (:obj:`comms.Context`): Represents the context in which a command is being invoked under.
+            ctx (:obj:`discord.ext.commands.Context`):
+                Represents the context in which a command is being invoked under.
+
+        Returns:
+            :obj:`type(None)`: Always None
 
         Command examples:
             >>> [prefix]neko
@@ -72,7 +81,3 @@ class Cats(comms.Cog):
         embed.set_footer(text='Taken from https://nekos.life/')
 
         await ctx.send(embed=embed)
-
-
-def setup(bot):
-    bot.add_cog(Cats(bot))
