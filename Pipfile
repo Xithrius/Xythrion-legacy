@@ -5,16 +5,12 @@ name = "pypi"
 
 [packages]
 "discord.py" = "*"
-qrcode = "*"
 datetime = "*"
 asyncpg = "*"
 numpy = "*"
-tabulate = "*"
 matplotlib = "*"
-pillow = "*"
 humanize = "*"
 coloredlogs = "*"
-sentry-sdk = "~=0.16.1"
 
 [dev-packages]
 flake8 = "~=3.7"
@@ -30,6 +26,6 @@ flake8-todo = "~=0.7"
 python_version = "3.8"
 
 [scripts]
-start = "python3.8 -m xythrion"
+start = "python3 -m xythrion"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
