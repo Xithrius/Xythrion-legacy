@@ -10,20 +10,46 @@
 <p align="center">
     <a href="https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=335400150">Invite</a> -
     <a href="#commands">Commands</a> -
+    <a href="#setup">Setup</a>
     <a href="#changelog">Changelog</a>
 </p>
 
 
 ## Commands:
-(insert gif here)
+(Insert stuff here)
 
 ## Setup:
+
+*NOTES* (I'd read these):
+> - The following steps below assume that you have Python 3.8.x installed.
+> - They also assume you know what to replace `python3` with on your OS, such as if on Windows, replacing `python3` with `py -3.8`, `python`, or `py`. 
+> - Alternatives #1 and #2 assume that you've inserted your credentials into the `.env` file that you have to create manually for the environment variables. You can copy the contents of the `.env-example` file into the `.env` and configure to your liking.
+> - DO NOT UPGRADE `pip` YOU'RE RUNNING THIS ON UBUNTU.
+
+#### Creating the virtual environment and running the bot (3 ways):
+
+1. virtualenv/venv:
 ```sh
-cp .env-example .env # Edit the info in there
-docker pull postgres
-docker run --name postgres -e POSTGRES_PASSWORD=your_password_here -d postgres
-docker-compose up --build
+$ python3 -m pip install --U pip virtualenv
+$ python3 -m virtualenv venv
+$ source venv/Scripts/activate
+$ python3 -m xythrion
 ```
+
+2. pipenv:
+```sh
+$ python3 -m pip install --U pip pipenv
+$ pipenv install --dev
+$ pipenv shell
+$ pipenv start run
+```
+
+3. Docker:
+*NOTE*: This does all the setup for you. Run this command and the bot will do the do.
+```sh
+$ docker-compose up --build
+```
+
 ## Changelog
 
 ### [v2.0](!https://github.com/Xithrius/Xythrion/releases/tag/v2.0)
