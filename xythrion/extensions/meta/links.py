@@ -6,7 +6,7 @@
 
 
 import os
-from typing import List, Optional
+from typing import List
 from datetime import datetime
 from pathlib import Path
 
@@ -14,38 +14,21 @@ import discord
 from humanize import naturaldelta, intcomma, naturaldate
 from discord.ext import commands as comms
 from discord.ext.commands.cooldowns import BucketType
-from discord.ext.commands import Bot, Cog, Context
+from discord.ext.commands import Cog, Context
 
 from xythrion.utils import fancy_embed, markdown_link, parallel_executor
+from xythrion.bot import Xythrion
 
 
 class Links(Cog):
-    """Links to many different things around the internet, including bot statistics.
+    """Links to many different things around the internet, including bot statistics."""
 
-    Attributes:
-        bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
-
-    """
-
-    def __init__(self, bot: Bot):
-        """Creating important attributes for this class.
-
-        Args:
-            bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
-
-        """
+    def __init__(self, bot: Xythrion):
         self.bot = bot
-
-    # Cog-specific functions
 
     @parallel_executor
     def calculate_lines(self) -> int:
-        """Gets the sum of lines from all the python files in this directory
-
-        Returns:
-            int: The sum of the amount of lines within each .py file.
-
-        """
+        """Gets the sum of lines from all the python files a directory."""
         lst = []
         amount = 0
 
@@ -61,12 +44,7 @@ class Links(Cog):
         return [intcomma(amount)]
 
     async def get_links(self) -> List[str]:
-        """Provides links about the creator and bot.
-
-        Returns:
-            :obj:`typing.List[str]`: A list containing Discord markdown hyperlinks.
-
-        """
+        """Provides links about the creator and bot."""
         branch_link = 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e'
         info = {
             'Xythrion Github repository': 'https://github.com/Xithrius/Xythrion',
@@ -83,24 +61,10 @@ class Links(Cog):
 
         return [f'{naturaldate(d)}; {naturaldelta(datetime.now() - d, months=False)} ago.']
 
-    # Commands
-
     @comms.cooldown(1, 5, BucketType.user)
     @comms.command(aliases=['uptime', 'runtime', 'desc', 'description'])
     async def info(self, ctx: Context) -> None:
-        """Information about bot origin along with usage statistics.
-
-        Args:
-            ctx (:obj:`discord.ext.commands.Context`):
-                Represents the context in which a command is being invoked under.
-
-        Returns:
-            :obj:`type(None)`: None
-
-        Command examples:
-            >>> [prefix]info
-
-        """
+        """Information about bot origin along with usage statistics."""
         media_links = await self.get_links()
         amount_of_lines = await self.calculate_lines()
         project_length = await self.get_date_of_creation()
@@ -116,19 +80,7 @@ class Links(Cog):
 
     @comms.command()
     async def invite(self, ctx: Context) -> None:
-        """Gives the invite link of this bot.
-
-        Args:
-            ctx (:obj:`discord.ext.commands.Context`):
-                Represents the context in which a command is being invoked under.
-
-        Returns:
-            :obj:`type(None)`: Always None
-
-        Command examples:
-            >>> [prefix]invite
-
-        """
+        """Gives the invite link of this bot."""
         _id = self.bot.user.id
         permissions = {'Sending and reacting': 19520,
                        'Previous + removing messages': 27712,
@@ -140,23 +92,3 @@ class Links(Cog):
         embed = discord.Embed(description='`Invite urls:`\n' + invite_urls)
 
         await ctx.send(embed=embed)
-
-    @comms.command()
-    async def link(self, ctx: Context, name: str, url: Optional[str] = None) -> None:
-        """
-
-        Args:
-            ctx (:obj:`discord.ext.commands.Context`):
-                Represents the context in which a command is being invoked under.
-            name (str): The name that the link will be called by in the database.
-            url (:obj:`typing.Optional[str]`, optional): The url of the link, if a new one is being created.
-
-        Returns:
-            :obj:`type(None)`: Always None
-
-        Command examples:
-            >>> [prefix]link something
-            >>> [prefix]link DOOM-Eternal-OST https://www.youtube.com/watch?v=aam9VvzFuI0
-
-        """
-        pass

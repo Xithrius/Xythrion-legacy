@@ -9,61 +9,26 @@ import random
 
 import discord
 from discord.ext import commands as comms
-from discord.ext.commands import Bot, Cog, Context, Message
+from discord.ext.commands import Cog, Context, Message
 
+from xythrion.bot import Xythrion
 from xythrion.utils import shorten
 
 
 class Reddit(Cog):
-    """The Reddit cog that sends Reddit information in the form of an embed.
+    """The Reddit cog that sends Reddit information in the form of an embed."""
 
-    Attributes:
-        bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
-
-    """
-
-    def __init__(self, bot: Bot) -> None:
-        """Creating important attributes for this class.
-
-        Args:
-            bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
-
-        """
+    def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
-
-    """ Events """
 
     @comms.Cog.listener()
     async def on_message(self, message: Message) -> None:
-        """Scans for Reddit posts and provides info on them.
-
-        Args:
-            message (:obj:`discord.Message`): Represents a message from Discord.
-
-        """
+        """Scans for Reddit posts and provides info on them."""
         pass
-
-    # Commands
 
     @comms.command(aliases=['sub', 'subreddit'])
     async def reddit(self, ctx: Context, subreddit: str, status: str = 'hot', timeframe: str = 'day') -> None:
-        """Requesting from the Reddit service to give a random post from a status within a timeframe.
-
-        Args:
-            ctx (:obj:`discord.ext.commands.Context`):
-                Represents the context in which a command is being invoked under.
-            subreddit (str): The name of the subreddit.
-            status (str, optional): The current status of posts.
-            timeframe (str, optional): The interval which the subreddit posts should be picked from.
-
-        Returns:
-            :obj:`type(None)`: Always None
-
-        Command examples:
-            >>> [prefix]reddit pics top week
-            >>> [prefix]sub pics
-
-        """
+        """Requesting from the Reddit service to give a random post from a status within a timeframe."""
         status, timeframe = status.lower(), timeframe.lower()
         statuses = ['top', 'hot', 'controvertial', 'new', 'guilded']
         timeframes = ['hour', 'day', 'week', 'month', 'year', 'all']
