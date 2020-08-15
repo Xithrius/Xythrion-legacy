@@ -8,17 +8,14 @@
 import asyncio
 import functools
 import os
-import sys
-import traceback
 import typing as t
 from datetime import datetime
 
-import aiohttp
-import discord
-from discord.ext import commands as comms
+from discord import File, Embed
+from discord.ext.commands import Context
 
 
-def get_filename() -> str:
+def gen_filename() -> str:
     """Generates a filename.
 
     Returns:
@@ -35,7 +32,7 @@ def get_filename() -> str:
     return str(datetime.timestamp(datetime.now())).replace('.', '')
 
 
-def embed_attachment(p: str, embed: t.Optional[discord.Embed] = None) -> t.Tuple[discord.File, discord.Embed]:
+def embed_attachment(p: str, embed: t.Optional[Embed] = None) -> t.Tuple[File, Embed]:
     """Creating an embed and adding a local image to it.
 
     Args:
@@ -49,8 +46,8 @@ def embed_attachment(p: str, embed: t.Optional[discord.Embed] = None) -> t.Tuple
 
     """
     f = p.split(os.sep)[-1]
-    file = discord.File(p, filename=f)
-    embed = discord.Embed() if not embed else embed
+    file = File(p, filename=f)
+    embed = Embed() if not embed else embed
 
     embed.set_image(url=f'attachment://{f}')
 
@@ -131,45 +128,7 @@ def parallel_executor(func: t.Callable) -> t.Coroutine:
     return wrapper
 
 
-def tracebacker(e: Exception) -> None:
-    """Safely gives a traceback of an exception letting the rest of the program flow.
-
-    Args:
-        e (Exception): The exception that was raised.
-
-    Returns:
-        bool: Always None.
-
-    Raises:
-        AttributeError: If the exception is not derived from the Exception base class.
-
-    """
-    traceback.print_exception(type(e), e, e.__traceback__, file=sys.stderr)
-
-
-def fancy_embed(d: t.Dict[str, t.List[str]], *,
-                inline: bool = False, return_str: bool = False) -> t.Union[str, discord.Embed]:
-    """Creating an embed only with the description. No fields or titles needed.
-
-    Args:
-        d (:obj:`t.Dict[str, t.List[str]]`): A dictionary with strings as keys and lists of strings as values.
-        inline (bool, optional): If inline is wanted to be used within the embed.
-        return_str (boo, optional): Returning the description contents instead of the embed if True.
-
-    Returns:
-        :obj:`t.Union[str, discord.Embed]`: Either an embed or the description contents.
-
-    """
-    d = {f'`{k}`\n': '\n'.join(str(y) for y in v) + '\n' for k, v in d.items()}
-    d = '\n'.join(f'{k}{v}' for k, v in d.items())
-
-    if not return_str:
-        return discord.Embed(description=d, inline=inline)
-
-    return d
-
-
-async def wait_for_reaction(ctx: comms.Context, emoji) -> bool:
+async def wait_for_reaction(ctx: Context, emoji) -> bool:
     """Waiting for a user to react to a message sent by the bot.
 
     NOTE: Obviously not a wrapper.
@@ -193,13 +152,3 @@ async def wait_for_reaction(ctx: comms.Context, emoji) -> bool:
 
     else:
         return True
-
-
-async def http_get(url, *, session: t.Optional[aiohttp.ClientSession] = None) -> t.Union[str, int]:
-    async with session.get(url) as resp:
-        if resp.status in {503, 502}:
-            print(f'request failed: {resp}')
-            return
-
-        else:
-            return await resp.json()
