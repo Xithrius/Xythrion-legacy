@@ -36,24 +36,6 @@ def codeblock(s: t.Union[str, t.List[str]], language: t.Union[str, None] = 'py')
     )
 
 
-def asteriks(s: str, amount: int = 3) -> str:
-    """Surrounds a string in specified amounts of '*'
-
-    Args:
-        s (str): The string to be surrounded.
-        amount (int): The amount of asteriks on both sides.
-
-    Returns:
-        str: Asterisk-surrounded string.
-
-    Example(s):
-        >>> print(asteriks('something'))
-        ***something***
-
-    """
-    return f'{"*" * amount}{s}{"*" * amount}'
-
-
 def markdown_link(s: str, link: str) -> str:
     """Gets rid of the thinking while creating a link for markdown.
 
