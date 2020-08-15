@@ -13,6 +13,7 @@ import discord
 from discord.ext import commands as comms
 
 from xythrion.bot import Xythrion
+from xythrion.extensions import EXTENSIONS
 import logging
 
 from .constants import Config
@@ -35,6 +36,10 @@ bot = Xythrion(
     help_command=None,
     loop=loop
 )
+
+# Loading in each cog.
+for extension in EXTENSIONS:
+    bot.load_extensions(extension)
 
 # Attempting to run the bot (blocking, obviously).
 try:
