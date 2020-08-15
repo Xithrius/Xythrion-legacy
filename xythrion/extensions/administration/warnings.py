@@ -6,58 +6,30 @@
 
 
 import logging
+
 from discord.ext import commands as comms
-from discord.ext.commands import Context, Bot, CommandError
+from discord.ext.commands import Cog, Context
+
+from xythrion.bot import Xythrion
+
 
 log = logging.getLogger(__name__)
 
 
-class Warnings(comms.Cog):
-    """Warning the user about specific actions taken.
+class Warnings(Cog):
+    """Warning the user about specific actions taken."""
 
-    Attributes:
-        bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
-
-    """
-
-    def __init__(self, bot: Bot) -> None:
-        """Creating important attributes for this class.
-
-        Args:
-            bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
-
-        """
+    def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
-
-    # Events
 
     @comms.Cog.listener()
     async def on_command_completion(self, ctx: Context) -> None:
-        """Adds a reaction after a command is successfully completed.
-
-        Args:
-            ctx (:obj:`discord.ext.commands.Context`):
-                Represents the context in which a command is being invoked under.
-
-        Returns:
-            :obj:`type(None)`: Always None
-
-        """
+        """Adds a reaction after a command is successfully completed."""
         await ctx.message.add_reaction('\U00002705')
 
     @comms.Cog.listener()
-    async def on_command_error(self, ctx: Context, error: CommandError) -> None:
-        """When the command has an error, this event is triggered.
-
-        Args:
-            ctx (:obj:`discord.ext.commands.Context`):
-                Represents the context in which a command is being invoked under.
-            error (:obj:`discord.ext.commands.CommandError`): The error that was raised
-
-        Returns:
-            :obj:`type(None)`: Always None
-
-        """
+    async def on_command_error(self, ctx: Context, error: comms.CommandError) -> None:
+        """When the command has an error, this event is triggered."""
         if hasattr(ctx.command, 'on_error'):
             return
 

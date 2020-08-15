@@ -1,17 +1,9 @@
-from discord.ext.commands import Bot
-from xythrion.extensions.administration.moderation import Moderation
+from xythrion.bot import Xythrion
+from xythrion.extensions.administration.development import Development
 from xythrion.extensions.administration.warnings import Warnings
 
 
-def setup(bot: Bot):
-    """The necessary function for loading in cogs within this folder.
-
-    Args:
-        bot (:obj:`discord.ext.commands.Bot`): Represents a Discord bot.
-
-    Returns:
-        :obj:`type(None)`: Always None
-
-    """
-    bot.add_cog(Moderation(bot))
+def setup(bot: Xythrion):
+    """The necessary function for loading in extensions within this folder."""
+    bot.add_cog(Development(bot))
     bot.add_cog(Warnings(bot))
