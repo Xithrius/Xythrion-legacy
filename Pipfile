@@ -4,10 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-"discord.py" = "*"
-datetime = "*"
-asyncpg = "*"
-numpy = "*"
+"discord.py" = "~=1.4.1"
 matplotlib = "*"
 humanize = "*"
 coloredlogs = "*"
