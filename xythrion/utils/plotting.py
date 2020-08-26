@@ -1,17 +1,17 @@
 """
-> Xythrion
-> Copyright (c) 2020 Xithrius
-> MIT license, Refer to LICENSE for more info
+> Xythrion: Graphing manipulated data through Discord.py.
+
+Copyright (c) 2020 Xithrius.
+MIT license, Refer to LICENSE for more info.
 """
 
 
-import typing as t
+from pathlib import Path
+from typing import Iterable, Union
 
 import numpy as np
 
-from .shortcuts import tracebacker, get_filename
-from pathlib import Path
-
+from .shortcuts import gen_filename
 
 try:
     import matplotlib
@@ -20,21 +20,17 @@ try:
     plt.style.use('dark_background')
 
 except Exception as e:
-    tracebacker(e)
+    print(e)
 
 
-def create_plot(x: t.Union[np.ndarray, t.Iterable[t.Union[int, float]]],
-                y: t.Union[np.ndarray, t.Iterable[t.Union[int, float]]],
-                *,
-                domain: t.Optional[t.Union[np.ndarray, t.Iterable[t.Union[int, float]]]] = None,
-                range: t.Optional[t.Union[np.ndarray, t.Iterable[t.Union[int, float]]]] = None,
-                graph_type: str = 'line'
-                ) -> str:
+def create_plot(x: Union[np.ndarray, Iterable[Union[int, float]]],
+                y: Union[np.ndarray, Iterable[Union[int, float]]]) -> str:
+    """Attempting to make a graph from the void."""
     plt.clf()
 
     for x, y in zip(x, y):
         plt.bar(x, y)
 
-    f = f'{get_filename()}.png'
+    f = f'{gen_filename()}.png'
     plt.savefig(Path.cwd() / 'tmp' / f)
     return f

@@ -1,17 +1,14 @@
 """
-> Xythrion
-> Copyright (c) 2020 Xithrius
-> MIT license, Refer to LICENSE for more info
+> Xythrion: Graphing manipulated data through Discord.py.
+
+Copyright (c) 2020 Xithrius.
+MIT license, Refer to LICENSE for more info.
 """
 
 
-# https://docs.python.org/3/library/tokenize.html#examples
-
-
-import re
-import typing as t
 from collections import OrderedDict
-
+import re
+from typing import List
 
 TOKENTYPES = OrderedDict((
     ('OPEN_PAREN', r'^\(|\['),
@@ -26,15 +23,13 @@ TOKENTYPES = OrderedDict((
 ))
 
 
-# print(parse('5*((x-2)*(x-3))'))
-
-
-def tokenize(string: str) -> t.List[str]:
+def tokenize(string: str) -> List[str]:
     """
+    Attempting to parse a string to prepare for plotting.
 
-    Examples:
-        print(tokenizer('5*((x-2)*(x-3))'))
-
+    print(tokenizer('5*((x-2)*(x-3))'))
+    https://docs.python.org/3/library/tokenize.html#examples
+    print(parse('5*((x-2)*(x-3))'))
     """
     tokens = []
 

@@ -1,18 +1,19 @@
 """
-> Xythrion
-> Copyright (c) 2020 Xithrius
-> MIT license, Refer to LICENSE for more info
+> Xythrion: Graphing manipulated data through Discord.py.
+
+Copyright (c) 2020 Xithrius.
+MIT license, Refer to LICENSE for more info.
 """
 
 
+import asyncio
 import logging
+from logging import handlers
 import os
 from pathlib import Path
-from logging import handlers
-import asyncio
 import sys
-import coloredlogs
 
+import coloredlogs
 
 logging.TRACE = 15
 logging.addLevelName(logging.TRACE, 'TRACE')
@@ -62,5 +63,5 @@ log = logging.getLogger(__name__)
 log.setLevel(LOG_LEVEL)
 
 if os.name == 'nt':
-    log.info('Setting WindowsSelectorEventLoopPolicy as Snek is running on Windows')
+    log.info('Setting WindowsSelectorEventLoopPolicy if Xythrion is running on Windows')
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

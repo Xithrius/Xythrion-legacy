@@ -1,7 +1,13 @@
-import os
-from pathlib import Path
+"""
+> Xythrion: Graphing manipulated data through Discord.py.
+
+Copyright (c) 2020 Xithrius.
+MIT license, Refer to LICENSE for more info.
+"""
 
 
-EXTENSIONS = [
-    f'xythrion.extensions.{ext_f}' for ext_f in os.listdir(Path.cwd() / 'xythrion') if '__' not in ext_f
-]
+from pkgutil import iter_modules
+
+EXTENSIONS = frozenset(
+    extension.name for extension in iter_modules(('xythrion/extensions',), 'xythrion.extensions.')
+)

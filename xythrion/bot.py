@@ -1,25 +1,31 @@
 """
-> Xythrion
-> Copyright (c) 2020 Xithrius
-> MIT license, Refer to LICENSE for more info
+> Xythrion: Graphing manipulated data through Discord.py.
+
+Copyright (c) 2020 Xithrius.
+MIT license, Refer to LICENSE for more info.
 """
 
 
 import asyncio
 from datetime import datetime
+import logging
 
 import aiohttp
+import asyncpg
 import discord
 from discord.ext.commands import Bot
-from logging import getLogger
+from xythrion.constants import Postgresql
+from xythrion.databasing import setup_database
+from xythrion.utils import calculate_lines
 
-log = getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 class Xythrion(Bot):
-    """A subclass where very important tasks and connections are created."""
+    """A subclass where important tasks and connections are created."""
 
     def __init__(self, *args, **kwargs) -> None:
+        """Creating import attributes."""
         super().__init__(*args, **kwargs)
 
         # Setting the loop.
@@ -28,11 +34,33 @@ class Xythrion(Bot):
         # Creating the session for getting information from URLs by fetching with GETs.
         self.session = aiohttp.ClientSession()
 
-    async def on_ready(self) -> None:
-        """Updates the bot status when logged in successfully."""
-
+        # Setting when the bot started up.
         self.startup_time = datetime.now()
 
+        # Counting the amount of lines within each Python file.
+        self.line_amount = calculate_lines()
+
+        # Attempting to create the pool for asynchronous connections to the Postgresql database.
+        try:
+            self.pool = self.loop.run_until_complete(self.create_asyncpg_pool())
+            log.info('Connected to Postgresql database successfully.')
+
+            self.loop.run_until_complete(setup_database(self.pool))
+            log.info('Setup database tables successfully.')
+
+        except Exception as e:
+            log.critical((
+                'Could not create async connection pool and/or setup tables to/for Postgresql database. '
+                f'Error: {e}'
+            ))
+
+    @staticmethod
+    async def create_asyncpg_pool() -> asyncpg.pool.Pool:
+        """Attempting to connect to the database."""
+        return await asyncpg.create_pool(**Postgresql.asyncpg_config, command_timeout=60)
+
+    async def on_ready(self) -> None:
+        """Updates the bot status when logged in successfully."""
         await self.change_presence(
             activity=discord.Activity(type=discord.ActivityType.watching, name="graphs")
         )
@@ -41,12 +69,7 @@ class Xythrion(Bot):
 
     async def logout(self) -> None:
         """Subclassing the logout command to ensure connection(s) are closed properly."""
-        try:
-            await asyncio.wait_for(self.session.close(), timeout=30.0, loop=self.loop)
-
-        except asyncio.TimeoutError:
-            log.critical(('Waiting for final tasks to complete timed out after 30 seconds.'
-                          'Skipping, forcing logout'))
+        await asyncio.wait(fs={self.session.close(), self.pool.close()}, timeout=30.0, loop=self.loop)
 
         log.info('Finished up closing tasks.')
 

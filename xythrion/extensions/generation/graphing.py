@@ -1,14 +1,13 @@
 """
-> Xythrion
-> Copyright (c) 2020 Xithrius
-> MIT license, Refer to LICENSE for more info
+> Xythrion: Graphing manipulated data through Discord.py.
+
+Copyright (c) 2020 Xithrius.
+MIT license, Refer to LICENSE for more info.
 """
 
 
-from discord.ext import commands as comms
-from discord.ext.commands import Cog, Context
+from discord.ext.commands import Cog, command, Context, cooldown
 from discord.ext.commands.cooldowns import BucketType
-
 from xythrion.bot import Xythrion
 
 
@@ -18,9 +17,8 @@ class Graphing(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    @comms.cooldown(1, 5, BucketType.user)
-    @comms.command(enabled=False)
+    @cooldown(1, 5, BucketType.user)
+    @command()
     async def graph(self, ctx: Context, *, entry: str) -> None:
         """Lexing then Graphing equations that the user gives."""
-        # NOTE: Will be filled in once lexer utility is finished.
         pass

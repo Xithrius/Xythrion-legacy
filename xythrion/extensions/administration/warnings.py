@@ -1,7 +1,8 @@
 """
-> Xythrion
-> Copyright (c) 2020 Xithrius
-> MIT license, Refer to LICENSE for more info
+> Xythrion: Graphing manipulated data through Discord.py.
+
+Copyright (c) 2020 Xithrius.
+MIT license, Refer to LICENSE for more info.
 """
 
 
@@ -9,9 +10,7 @@ import logging
 
 from discord.ext import commands as comms
 from discord.ext.commands import Cog, Context
-
 from xythrion.bot import Xythrion
-
 
 log = logging.getLogger(__name__)
 
@@ -58,8 +57,5 @@ class Warnings(Cog):
         elif isinstance(error, comms.MissingPermissions):
             return await ctx.send('`Bot does not have enough permissions for this command.`')
 
-        elif isinstance(error, AssertionError):
-            return await ctx.send(f'`Command failed: {error}`')
-
-        else:
-            log.debug(f'Error occured: {error}')
+        log.warning(f'Error occurred: {error}')
+        await ctx.send(f'`An error has occurred: {error}`')

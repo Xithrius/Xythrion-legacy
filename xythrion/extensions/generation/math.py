@@ -1,12 +1,12 @@
 """
-> Xythrion
-> Copyright (c) 2020 Xithrius
-> MIT license, Refer to LICENSE for more info
+> Xythrion: Graphing manipulated data through Discord.py.
+
+Copyright (c) 2020 Xithrius.
+MIT license, Refer to LICENSE for more info.
 """
 
 
-from discord.ext import commands as comms
-from discord.ext.commands import Cog, Context
+from discord.ext.commands import Cog, command, Context
 from xythrion.bot import Xythrion
 
 
@@ -16,7 +16,7 @@ class Math(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    @comms.command(aliases=['calc'], enabled=False)
+    @command(aliases=('calc',), enabled=False)
     async def calculate(self, ctx: Context, *, ex: str) -> None:
-        """Lexes and calculates the expression given by a user."""
+        """Parses and calculates the expression given by a user."""
         pass

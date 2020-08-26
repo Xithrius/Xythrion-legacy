@@ -1,7 +1,8 @@
 """
-> Xythrion
-> Copyright (c) 2020 Xithrius
-> MIT license, Refer to LICENSE for more info
+> Xythrion: Graphing manipulated data through Discord.py.
+
+Copyright (c) 2020 Xithrius.
+MIT license, Refer to LICENSE for more info.
 """
 
 
@@ -9,79 +10,73 @@ from datetime import datetime
 from logging import getLogger
 from typing import Optional
 
-import discord
+from discord import Embed
+from discord.ext.commands import Cog, command, Context, ExtensionNotLoaded, Greedy
 import humanize
-from discord.ext import commands as comms
-from discord.ext.commands import Cog, Context
-
 from xythrion.bot import Xythrion
 from xythrion.extensions import EXTENSIONS
-from xythrion.utils import markdown_link
-
 
 log = getLogger(__name__)
 
 
 class Development(Cog):
-    """Cog required for development and control"""
+    """Cog required for development and control."""
 
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    @comms.command(name='reload', aliases=['refresh', 'r'], hidden=True)
-    @comms.is_owner()
+    async def cog_check(self, ctx: Context) -> bool:
+        """Checking if the user running commands is the owner of this bot."""
+        return await self.bot.is_owner(ctx.author)
+
+    @command(name='reload', aliases=('refresh', 'r'), hidden=True)
     async def _reload(self, ctx: Context, ext: Optional[str] = None) -> None:
-        """Reloads all extensions within the `EXTENSION` variable."""
+        """Reloads all extensions."""
         d = datetime.now()
 
-        for extension in await EXTENSIONS:
+        for extension in EXTENSIONS:
             try:
                 self.bot.reload_extension(extension)
 
-            except comms.ExtensionNotLoaded:
+            except ExtensionNotLoaded:
                 self.bot.load_extension(extension)
 
             except Exception as e:
                 return log.warning(f'Reloading {extension} error: {e}')
 
         log.info((
-            "Reloaded extensions in about"
-            f"{humanize.naturaldelta(d - datetime.now(), minimum_unit='milliseconds')}"
+            f'{ctx.author.name} reloaded extension{"" if ext else "s"} successfully. '
+            f'In about {humanize.naturaldelta(d - datetime.now(), minimum_unit="milliseconds")}ms'
         ))
 
-    @comms.command(name='logout', hidden=True)
-    @comms.is_owner()
+        await ctx.send(f'`Extension{" " + ext if ext else "s"} reloaded.`')
+
+    @command(name='logout', hidden=True)
     async def _logout(self, ctx: Context) -> None:
         """Makes the bot Log out."""
-        await self.bot.logout()
+        await ctx.bot.logout()
 
-    @comms.command(name='loaded', hidden=True)
-    @comms.is_owner()
+    @command(name='loaded', hidden=True)
     async def _loaded_extensions(self, ctx: Context) -> None:
         """Gives a list of the currently loaded cogs."""
-        lst = [f'{str(i).zfill(3)} | {ext}' for i, ext in enumerate(EXTENSIONS)]
-        c = '\n'.join(str(y) for y in lst)
+        extensions = '\n'.join(f'{str(i).zfill(3)} | {ext}' for i, ext in enumerate(self.bot.cogs))
 
-        embed = discord.Embed(title='*Currently loaded cogs:*', description=f'```py\n{c}\n```')
-
-        await ctx.send(embed=embed)
-
-    @comms.command(name='help', aliases=['h'])
-    async def _help(self, ctx: Context) -> None:
-        """Giving help to a user."""
-        lst = [
-            '`Help is most likely not ready yet, check the link just in case:`',
-            markdown_link('Help with commands link', 'https://github.com/Xithrius/Xythrion#commands')
-        ]
-
-        embed = discord.Embed(description='\n'.join(map(str, lst)))
+        embed = Embed(title='*Currently loaded cogs:*', description=f'```py\n{extensions}\n```')
 
         await ctx.send(embed=embed)
 
-    @comms.command(name='issue', aliases=['problem', 'issues'])
-    async def _issue(self, ctx: Context) -> None:
-        """Gives the user the place to report issues."""
-        url = 'https://github.com/Xithrius/Xythrion/issues'
-        embed = discord.Embed(description=markdown_link('Report issue(s) here', url))
+    @command(name='echo', aliases=('say',))
+    async def _echo(self, ctx: Context, channel_id: Greedy[int], *, msg: str) -> None:
+        """Makes the bot send a message to a channel."""
+        channel = self.bot.get_channel(channel_id[0]) if channel_id else ctx.channel
+        await channel.send(msg)
 
+    @command(name='embed')
+    async def _embed(self, ctx: Context, *, desc: Optional[str] = None) -> None:
+        """Testing out embed descriptions. Discord markdown supported, obviously."""
+        embed = Embed(description=desc if desc else '')
         await ctx.send(embed=embed)
+
+    @command(name='raw')
+    async def _raw(self, ctx: Context, msg: str) -> None:
+        pass

@@ -1,23 +1,20 @@
 """
-> Xythrion
-> Copyright (c) 2020 Xithrius
-> MIT license, Refer to LICENSE for more info
+> Xythrion: Graphing manipulated data through Discord.py.
+
+Copyright (c) 2020 Xithrius.
+MIT license, Refer to LICENSE for more info.
 """
 
 
-import os
-from typing import List
 from datetime import datetime
-from pathlib import Path
+from typing import List
 
-import discord
-from humanize import naturaldelta, intcomma, naturaldate
-from discord.ext import commands as comms
+from discord import Embed
+from discord.ext.commands import Cog, command, Context, cooldown
 from discord.ext.commands.cooldowns import BucketType
-from discord.ext.commands import Cog, Context
-
-from xythrion.utils import fancy_embed, markdown_link, parallel_executor
+from humanize import intcomma, naturaldate, naturaldelta
 from xythrion.bot import Xythrion
+from xythrion.utils import markdown_link
 
 
 class Links(Cog):
@@ -26,24 +23,8 @@ class Links(Cog):
     def __init__(self, bot: Xythrion):
         self.bot = bot
 
-    @parallel_executor
-    def calculate_lines(self) -> int:
-        """Gets the sum of lines from all the python files a directory."""
-        lst = []
-        amount = 0
-
-        for root, _, files in os.walk(Path.cwd() / self.bot.n):
-            for file in files:
-                if file.endswith('.py'):
-                    lst.append(os.path.join(root, file))
-
-        for file in lst:
-            with open(file) as f:
-                amount += sum(1 for _ in f)
-
-        return [intcomma(amount)]
-
-    async def get_links(self) -> List[str]:
+    @staticmethod
+    async def get_links() -> List[str]:
         """Provides links about the creator and bot."""
         branch_link = 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e'
         info = {
@@ -56,29 +37,31 @@ class Links(Cog):
 
         return [markdown_link(k, v) for k, v in info.items()]
 
-    async def get_date_of_creation(self) -> List[str]:
+    @staticmethod
+    async def get_date_of_creation() -> List[str]:
+        """Get the date between now and the day that this bot was created."""
         d = datetime(2019, 3, 13, 17, 16)
 
         return [f'{naturaldate(d)}; {naturaldelta(datetime.now() - d, months=False)} ago.']
 
-    @comms.cooldown(1, 5, BucketType.user)
-    @comms.command(aliases=['uptime', 'runtime', 'desc', 'description'])
+    @cooldown(1, 5, BucketType.user)
+    @command(aliases=['uptime', 'runtime', 'desc', 'description'])
     async def info(self, ctx: Context) -> None:
         """Information about bot origin along with usage statistics."""
         media_links = await self.get_links()
-        amount_of_lines = await self.calculate_lines()
         project_length = await self.get_date_of_creation()
 
         d = {
             'Links:': media_links,
-            'Lines of Python code:': amount_of_lines,
+            'Lines of Python code:': intcomma(self.bot.line_amount),
             'Current uptime:': [naturaldelta(datetime.now() - self.bot.startup_time)],
             'Project length:': project_length
         }
+        embed = Embed(description='\n'.join(markdown_link(k, v) for k, v in d.items()))
 
-        await ctx.send(embed=fancy_embed(d))
+        await ctx.send(embed=embed)
 
-    @comms.command()
+    @command()
     async def invite(self, ctx: Context) -> None:
         """Gives the invite link of this bot."""
         _id = self.bot.user.id
@@ -89,6 +72,26 @@ class Links(Cog):
         invite_urls = {k: f'{url}{v}' for k, v in permissions.items()}
         invite_urls = '\n'.join(markdown_link(k, v) for k, v in invite_urls.items())
 
-        embed = discord.Embed(description='`Invite urls:`\n' + invite_urls)
+        embed = Embed(description='`Invite urls:`\n' + invite_urls)
+
+        await ctx.send(embed=embed)
+
+    @command(name='help', aliases=['h'])
+    async def _help(self, ctx: Context) -> None:
+        """Giving help to a user."""
+        lst = [
+            '`Help is most likely not ready yet, check the link just in case:`',
+            markdown_link('Help with commands link', 'https://github.com/Xithrius/Xythrion#commands')
+        ]
+
+        embed = Embed(description='\n'.join(map(str, lst)))
+
+        await ctx.send(embed=embed)
+
+    @command(name='issue', aliases=['problem', 'issues'])
+    async def _issue(self, ctx: Context) -> None:
+        """Gives the user the place to report issues."""
+        url = 'https://github.com/Xithrius/Xythrion/issues'
+        embed = Embed(description=markdown_link('Report issue(s) here', url))
 
         await ctx.send(embed=embed)
