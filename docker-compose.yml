@@ -2,10 +2,25 @@ version: "3.8"
 
 services:
 
+  postgres:
+    image: postgres:latest
+
+    env_file:
+      - ./.env
+
+    expose:
+      - 5432
+
+    volumes:
+      - ./postgres_data/:/var/lib/postgresql/data/
+
   xythrion:
     container_name: xythrion
     init: true
     restart: always
+
+    depends_on:
+      - postgres
 
     env_file:
       - ./.env

@@ -1,9 +1,11 @@
+pipenv
 discord.py
 datetime
-asyncpg
 numpy
-# tabulate
 matplotlib
 humanize
-pipenv
 coloredlogs
+aiohttp
+asyncpg
+qrcode
+Pillow

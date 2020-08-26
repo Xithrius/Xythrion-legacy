@@ -1,28 +1,26 @@
 [[source]]
+name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-name = "pypi"
 
 [packages]
 "discord.py" = "~=1.4.1"
+asyncpg = "~=0.21.0"
 matplotlib = "*"
 humanize = "*"
+numpy = "*"
 coloredlogs = "*"
+qrcode = "*"
+Pillow = "~=7.2.0"
 
 [dev-packages]
-flake8 = "~=3.7"
-flake8-annotations = "~=2.0"
-flake8-bugbear = "~=20.1"
-flake8-docstrings = "~=1.5"
-flake8-import-order = "~=0.18"
-flake8-string-format = "~=0.3"
-flake8-tidy-imports = "~=4.0"
-flake8-todo = "~=0.7"
+flake8 = "~=3.8.3"
+pre-commit = "~=2.6.0"
 
 [requires]
 python_version = "3.8"
 
 [scripts]
-start = "python3 -m xythrion"
-lint = "pre-commit run --all-files"
+start = "python -m xythrion"
+lint = "python -m flake8 ./"
 precommit = "pre-commit install"
