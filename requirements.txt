@@ -1,4 +1,3 @@
-pipenv
 discord.py
 datetime
 numpy
