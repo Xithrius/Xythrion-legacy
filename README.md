@@ -15,12 +15,11 @@
 </p>
 
 
-## Commands:
+## Commands
 (Insert stuff here)
 
 ## Setup:
-
-*NOTES* (I'd read these):
+*NOTES*:
 > - The following steps below assume that you have Python 3.8.x installed.
 > - They also assume you know what to replace `python3` with on your OS, such as if on Windows, replacing `python3` with `py -3.8`, `python`, or `py`. 
 > - Alternatives #1 and #2 assume that you've inserted your credentials into the `.env` file that you have to create manually for the environment variables. You can copy the contents of the `.env-example` file into the `.env` and configure to your liking.
@@ -45,7 +44,6 @@ $ pipenv start run
 ```
 
 3. Docker:
-*NOTE*: This does all the setup for you. Run this command and the bot will do the do.
 ```sh
 $ docker pull postgres
 # "placeholder" in this command should replace the placeholder with the same name in the .env file.

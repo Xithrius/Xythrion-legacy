@@ -1,0 +1,25 @@
+- [ ] Extensions:
+    - [ ] Administration:
+        - [ ] Development
+        - [ ] Warnings
+        - [ ] Source
+        - [ ] Documentation
+    - [ ] Generation:
+        - [ ] Fractals
+        - [ ] Graphing
+        - [ ] Math
+        - [ ] QRCodes
+        - [ ] Randoms
+        - [ ] Images
+    - [ ] Meta:
+        - [ ] Dates
+        - [ ] Guilds
+        - [ ] Links
+    - [ ] Requesters
+        - [ ] API_usage
+        - [ ] Reddit
+        - [ ] Weather
+        - [ ] Warframe
+        - [ ] Youtube
+
+- Make sure guilds/users can have their permissions removed/added through the database
