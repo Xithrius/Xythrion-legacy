@@ -8,3 +8,5 @@ aiohttp
 asyncpg
 qrcode
 Pillow
+tabulate
+pygments

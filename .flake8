@@ -1,7 +1,7 @@
 [flake8]
 max-line-length=110
 docstring-convention=all
-import-order-style=google
+import-order-style=pycharm
 exclude=.cache,.venv,.git,.md,constants.py
 
 ignore=

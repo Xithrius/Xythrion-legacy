@@ -17,7 +17,7 @@ COPY . .
 RUN apt update -y && apt install -y git
 
 # Use pipenv version 2018.11.26 to avoid errors
-RUN pip install -U "pipenv==2018.11.26" && pipenv install --system --deploy
+RUN pip install -U pipenv && pipenv install --system --deploy
 #RUN pip install -U pipenv && pipenv install --system --deploy
 
 ENTRYPOINT ["python"]
