@@ -1,19 +1,12 @@
-"""
-> Xythrion: Graphing manipulated data through Discord.py.
-
-Copyright (c) 2020 Xithrius.
-MIT license, Refer to LICENSE for more info.
-"""
-
-
 import asyncio
-from datetime import datetime
 import logging
+from datetime import datetime
 
 import aiohttp
 import asyncpg
 import discord
 from discord.ext.commands import Bot
+
 from xythrion.constants import Postgresql
 from xythrion.databasing import setup_database
 from xythrion.utils import calculate_lines

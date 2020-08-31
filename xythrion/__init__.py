@@ -1,17 +1,9 @@
-"""
-> Xythrion: Graphing manipulated data through Discord.py.
-
-Copyright (c) 2020 Xithrius.
-MIT license, Refer to LICENSE for more info.
-"""
-
-
 import asyncio
 import logging
-from logging import handlers
 import os
-from pathlib import Path
 import sys
+from logging import handlers
+from pathlib import Path
 
 import coloredlogs
 

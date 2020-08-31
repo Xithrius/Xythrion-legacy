@@ -1,15 +1,8 @@
-"""
-> Xythrion: Graphing manipulated data through Discord.py.
-
-Copyright (c) 2020 Xithrius.
-MIT license, Refer to LICENSE for more info.
-"""
-
-
 from typing import Optional
 
 from discord import Embed
-from discord.ext.commands import Cog, command, Context
+from discord.ext.commands import Cog, Context, command
+
 from xythrion.bot import Xythrion
 
 

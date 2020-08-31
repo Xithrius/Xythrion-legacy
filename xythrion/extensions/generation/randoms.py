@@ -1,19 +1,12 @@
-"""
-> Xythrion: Graphing manipulated data through Discord.py.
-
-Copyright (c) 2020 Xithrius.
-MIT license, Refer to LICENSE for more info.
-"""
-
-
-from collections import defaultdict, OrderedDict
 import json
+from collections import OrderedDict, defaultdict
 from pathlib import Path
 from random import choice, randint
 from typing import Optional, Tuple
 
 import discord
-from discord.ext.commands import Cog, command, Context
+from discord.ext.commands import Cog, Context, command
+
 from xythrion.bot import Xythrion
 from xythrion.utils import code_block
 

@@ -1,12 +1,5 @@
-"""
-> Xythrion: Graphing manipulated data through Discord.py.
+from discord.ext.commands import Cog, Context, command
 
-Copyright (c) 2020 Xithrius.
-MIT license, Refer to LICENSE for more info.
-"""
-
-
-from discord.ext.commands import Cog, command, Context
 from xythrion.bot import Xythrion
 
 

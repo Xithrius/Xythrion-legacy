@@ -1,11 +1,3 @@
-"""
-> Xythrion: Graphing manipulated data through Discord.py.
-
-Copyright (c) 2020 Xithrius.
-MIT license, Refer to LICENSE for more info.
-"""
-
-
 from xythrion.bot import Xythrion
 from xythrion.extensions.generation.fractals import Fractals
 from xythrion.extensions.generation.graphing import Graphing

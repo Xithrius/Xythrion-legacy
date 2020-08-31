@@ -1,16 +1,8 @@
-"""
-> Xythrion: Graphing manipulated data through Discord.py.
-
-Copyright (c) 2020 Xithrius.
-MIT license, Refer to LICENSE for more info.
-"""
-
-
 from typing import List, Union
 
-from discord.ext.commands import Cog, command, Context
+from discord.ext.commands import Cog, Context, command
+
 from xythrion.bot import Xythrion
-from xythrion.utils import parallel_executor
 
 
 class Fractals(Cog):
@@ -19,7 +11,6 @@ class Fractals(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    @parallel_executor
     def create_fractal(self, dimensions: List[Union[float, int]]) -> str:
         """Create the fractal image."""
         pass

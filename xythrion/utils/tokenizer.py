@@ -1,14 +1,6 @@
-"""
-> Xythrion: Graphing manipulated data through Discord.py.
-
-Copyright (c) 2020 Xithrius.
-MIT license, Refer to LICENSE for more info.
-"""
-
-
-from collections import OrderedDict
 import re
-from typing import List
+from collections import OrderedDict
+from typing import List, Tuple
 
 TOKENTYPES = OrderedDict((
     ('OPEN_PAREN', r'^\(|\['),
@@ -23,7 +15,7 @@ TOKENTYPES = OrderedDict((
 ))
 
 
-def tokenize(string: str) -> List[str]:
+def tokenize(string: str) -> List[Tuple[str, str]]:
     """
     Attempting to parse a string to prepare for plotting.
 
