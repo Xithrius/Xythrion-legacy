@@ -1,18 +1,11 @@
-"""
-> Xythrion: Graphing manipulated data through Discord.py.
-
-Copyright (c) 2020 Xithrius.
-MIT license, Refer to LICENSE for more info.
-"""
-
-
 from datetime import datetime
 from typing import List
 
 from discord import Embed
-from discord.ext.commands import Cog, command, Context, cooldown
+from discord.ext.commands import Cog, Context, command, cooldown
 from discord.ext.commands.cooldowns import BucketType
 from humanize import intcomma, naturaldate, naturaldelta
+
 from xythrion.bot import Xythrion
 from xythrion.utils import markdown_link
 
@@ -52,12 +45,13 @@ class Links(Cog):
         project_length = await self.get_date_of_creation()
 
         d = {
-            'Links:': media_links,
-            'Lines of Python code:': intcomma(self.bot.line_amount),
-            'Current uptime:': [naturaldelta(datetime.now() - self.bot.startup_time)],
-            'Project length:': project_length
+            'Links': media_links,
+            'Lines of Python code': [intcomma(self.bot.line_amount)],
+            'Current uptime': [naturaldelta(datetime.now() - self.bot.startup_time)],
+            'Project length': project_length
         }
-        embed = Embed(description='\n'.join(markdown_link(k, v) for k, v in d.items()))
+        formatted = '\n'.join([f'\n**{k}**:\n' + '\n'.join(x for x in v) for k, v in d.items()])
+        embed = Embed(description=formatted)
 
         await ctx.send(embed=embed)
 
@@ -85,13 +79,5 @@ class Links(Cog):
         ]
 
         embed = Embed(description='\n'.join(map(str, lst)))
-
-        await ctx.send(embed=embed)
-
-    @command(name='issue', aliases=['problem', 'issues'])
-    async def _issue(self, ctx: Context) -> None:
-        """Gives the user the place to report issues."""
-        url = 'https://github.com/Xithrius/Xythrion/issues'
-        embed = Embed(description=markdown_link('Report issue(s) here', url))
 
         await ctx.send(embed=embed)

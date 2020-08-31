@@ -1,17 +1,14 @@
-"""
-> Xythrion: Graphing manipulated data through Discord.py.
-
-Copyright (c) 2020 Xithrius.
-MIT license, Refer to LICENSE for more info.
-"""
-
-
+import logging
+import os
 from pathlib import Path
 
-from discord.ext.commands import Cog, command, Context
 import qrcode
+from discord.ext.commands import Cog, Context, command
+
 from xythrion.bot import Xythrion
-from xythrion.utils import gen_filename, parallel_executor
+from xythrion.utils import DefaultEmbed, gen_filename
+
+log = logging.getLogger(__name__)
 
 
 class QRCode(Cog):
@@ -20,8 +17,8 @@ class QRCode(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    @parallel_executor
-    def create_qr_code(self, msg: str) -> str:
+    @staticmethod
+    def _create_qr_code(msg: str, fill_color: str = 'black', back_color: str = 'white') -> str:
         """Create the QR (quick response) code image."""
         qr = qrcode.QRCode(
             version=1,
@@ -32,13 +29,18 @@ class QRCode(Cog):
         qr.add_data(msg)
         qr.make(fit=True)
 
-        img = qr.make_image(fill_color='black', back_color='white')
+        img = qr.make_image(fill_color=fill_color, back_color=back_color)
 
-        f = f'{gen_filename()}.png'
-        img.save(Path.cwd() / 'tmp' / f)
-        return f
+        f = Path.cwd() / 'tmp' / f'{gen_filename()}.png'
+        img.save(f)
+        return str(f)
 
     @command()
-    async def qr(self, ctx: Context) -> None:
+    async def qr(self, ctx: Context, fill_color: str, back_color: str, *, msg: str) -> None:
         """Giving a fractal to the user, with given inputs."""
-        pass
+        f = await self.bot.loop.run_in_executor(None, self._create_qr_code, msg, fill_color, back_color)
+        embed = DefaultEmbed(embed_attachment=f)
+
+        await ctx.send(file=embed.file, embed=embed)
+
+        os.remove(f)
