@@ -15,28 +15,25 @@ TOKENTYPES = OrderedDict((
 ))
 
 
-def tokenize(string: str) -> List[Tuple[str, str]]:
+def parse(string: str) -> List[Tuple[str]]:
     """
-    Attempting to parse a string to prepare for plotting.
+    Parsing the string into tokens.
 
-    print(tokenizer('5*((x-2)*(x-3))'))
-    https://docs.python.org/3/library/tokenize.html#examples
-    print(parse('5*((x-2)*(x-3))'))
+    Example: print(parse('5*((x-2)*(x-3))')).
     """
+    string = re.sub(re.compile(r'\s+'), '', string)
+
     tokens = []
 
     while string:
         for name, pattern in TOKENTYPES.items():
             m = re.match(pattern, string)
-
             if m is not None:
                 tokens.append((name, m.group(0)))
-
                 string = string[len(m.group(0)):]
-
                 break
 
         else:
-            raise ValueError('Bad math, dumbass. Git gud.')
+            raise ValueError('Input string could be not parsed correctly.')
 
     return tokens

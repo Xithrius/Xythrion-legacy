@@ -1,11 +1,3 @@
-"""
-> Xythrion: Graphing manipulated data through Discord.py.
-
-Copyright (c) 2020 Xithrius.
-MIT license, Refer to LICENSE for more info.
-"""
-
-
 from pathlib import Path
 from typing import Iterable, Union
 
@@ -15,8 +7,10 @@ from .shortcuts import gen_filename
 
 try:
     import matplotlib
+
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
+
     plt.style.use('dark_background')
 
 except Exception as e:
@@ -25,8 +19,14 @@ except Exception as e:
 
 def create_plot(x: Union[np.ndarray, Iterable[Union[int, float]]],
                 y: Union[np.ndarray, Iterable[Union[int, float]]]) -> str:
-    """Attempting to make a graph from the void."""
+    """
+    Attempting to make a graph from the void.
+
+    Dynamic numpy arange by getting difference in domain and dividing by like 50.
+    """
     plt.clf()
+
+    np.arange()
 
     for x, y in zip(x, y):
         plt.bar(x, y)
