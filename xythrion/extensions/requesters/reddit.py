@@ -1,17 +1,10 @@
-"""
-> Xythrion: Graphing manipulated data through Discord.py.
-
-Copyright (c) 2020 Xithrius.
-MIT license, Refer to LICENSE for more info.
-"""
-
-
 from random import randint
 
 from discord import Embed, Message
-from discord.ext.commands import CheckFailure, Cog, command, Context
+from discord.ext.commands import CheckFailure, Cog, Context, command
+
 from xythrion.bot import Xythrion
-from xythrion.utils import shorten
+from xythrion.utils import DefaultEmbed, markdown_link, shorten
 
 
 class Reddit(Cog):
@@ -20,10 +13,35 @@ class Reddit(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
+    async def cog_check(self, ctx: Context) -> bool:
+        """Checks if the user and/or guild has permissions for this command."""
+        return True
+
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
         """Scans for Reddit posts and provides info on them."""
-        pass
+        if 'https://www.reddit.com/r/' in message.content:
+            url = f'{message.content.rsplit("/", maxsplit=1)[0]}.json'
+            async with self.bot.session.get(url) as resp:
+                assert resp.status == 200
+                _json = await resp.json()
+                _json = _json[0]['data']['children'][0]['data']
+
+            if _json['over_18'] and not message.channel.is_nsfw():
+                return
+
+            d = {
+                'Title': _json['title'],
+                'Subreddit': markdown_link(_json["subreddit"],
+                                           f'https://www.reddit.com/r/{_json["subreddit"]}'),
+                'Upvotes': _json['ups'],
+                'Upvotes/downvotes': f'{_json["upvote_ratio"] * 100}%',
+                'Image url': markdown_link('Link', _json['url'])
+            }
+            formatted = '\n'.join(f'**{k}**: {v}' for k, v in d.items())
+            embed = DefaultEmbed(description=formatted)
+
+            await message.channel.send(embed=embed)
 
     @command(aliases=['sub', 'subreddit'])
     async def reddit(self, ctx: Context, subreddit: str, status: str = 'hot', timeframe: str = 'day') -> None:
