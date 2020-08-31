@@ -31,5 +31,5 @@ python_version = "3.8"
 
 [scripts]
 start = "python -m xythrion"
-lint = "python -m flake8 --all-files"
+lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
