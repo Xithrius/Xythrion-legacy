@@ -8,7 +8,7 @@ from pathlib import Path
 from discord import Embed, Emoji, File, Member, Message, TextChannel
 from discord.ext.commands import BadArgument, Context, MessageConverter
 
-from xythrion.constants import BasicConfig
+from xythrion.constants import Config
 
 log = logging.getLogger(__name__)
 
@@ -87,7 +87,7 @@ class DefaultEmbed(Embed):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
 
-        self.set_footer(text=BasicConfig.BOT_DESCRIPTION, icon_url=BasicConfig.BOT_ICON_LINK)
+        self.set_footer(text=Config.BOT_DESCRIPTION, icon_url=Config.BOT_ICON_LINK)
 
         if 'embed_attachment' in kwargs.keys():
             v = kwargs['embed_attachment']
