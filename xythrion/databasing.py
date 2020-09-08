@@ -1,8 +1,4 @@
-import logging
-
 import asyncpg
-
-log = logging.getLogger(__name__)
 
 
 async def setup_database(pool: asyncpg.pool.Pool) -> None:
@@ -26,18 +22,14 @@ async def setup_database(pool: asyncpg.pool.Pool) -> None:
                 )
             ''')
         await conn.execute('''
-                CREATE TABLE IF NOT EXISTS Guild_API_Usage(
+                CREATE TABLE IF NOT EXISTS Blocked_Guilds(
                     identification serial PRIMARY KEY,
-                    guild_id BIGINT,
-                    access_to TEXT,
-                    blocked BOOL
+                    guild_id BIGINT
                 )
             ''')
         await conn.execute('''
-                CREATE TABLE IF NOT EXISTS User_API_Usage(
+                CREATE TABLE IF NOT EXISTS Blocked_Users(
                     identification serial PRIMARY KEY,
-                    user_id BIGINT,
-                    access_to TEXT,
-                    blocked BOOL
+                    user_id BIGINT
                 )
             ''')
