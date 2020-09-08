@@ -4,8 +4,10 @@ from typing import Optional
 from discord import Message
 from discord.ext import commands
 from discord.ext.commands import Cog, Context
+from fuzzywuzzy import process
 
 from xythrion.bot import Xythrion
+from xythrion.utils import DefaultEmbed
 
 log = logging.getLogger(__name__)
 
@@ -35,7 +37,15 @@ class Warnings(Cog):
             return await ctx.send('`Command not available.`')
 
         elif isinstance(error, commands.CommandNotFound):
-            return await ctx.send('`Command not found.`')
+            # Tries to suggest similar commands.
+            _cmd = ctx.message.content[len(ctx.prefix):].split()[0]
+            query = process.extract(_cmd, [x for x in self.bot.commands if not x.hidden])
+            found = '\n'.join(f'`{ctx.prefix}{x[0].name}`' for x in query) if len(query) else None
+            embed = DefaultEmbed(description=found)
+
+            embed.title = f'Command "{_cmd}" not found.{" Suggestions:" if found else ""}'
+
+            return await ctx.send(embed=embed)
 
         elif isinstance(error, commands.UserInputError):
             return await ctx.send(f'`Command raised bad argument: {error}`')
@@ -53,7 +63,6 @@ class Warnings(Cog):
             return await ctx.send('`Bot does not have enough permissions for this command.`')
 
         else:
-            log.warning(f'Error occurred: {error}')
+            log.critical(f'Error occurred: {error}')
 
-            if await self.bot.is_owner(ctx.author):
-                await ctx.send(f'`An error has occurred: {type(error)} {error} {error.args}`')
+            await ctx.send(f'`An error has occurred: {type(error)} {error} {error.args}`')
