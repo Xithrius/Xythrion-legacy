@@ -1,5 +1,0 @@
-TODO:
-- Create custom embeds with formatting
-- Create content parser
-- Rewrite graphing
-- Create math solver (derivatives, integrals, etc.)

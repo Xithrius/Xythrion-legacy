@@ -114,8 +114,11 @@ config/*.json
 # PyCharm
 /.idea
 
-# The virtual environment
-venv/
-
 # tests
-/tests/*
+/tests/
+
+# logs
+/logs/
+
+# database stuffs
+/postgres_data/

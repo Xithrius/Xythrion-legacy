@@ -1,0 +1,2 @@
+https://en.wikibooks.org/wiki/LaTeX/Mathematics#Sums_and_integrals
+https://oeis.org/wiki/List_of_LaTeX_mathematical_symbols
