@@ -15,13 +15,34 @@
 </p>
 
 
-## Commands
-(Insert stuff here)
+## Checklist:
+- [ ] Extensions:
+    - [ ] Administration:
+        - [x] API_usage
+        - [x] Development
+        - [x] Warnings
+        - [ ] Source
+        - [ ] Documentation/help
+    - [ ] Generation:
+        - [x] Graphing
+        - [ ] Math
+        - [x] QRCodes
+        - [x] Randoms
+        - [ ] Images
+    - [ ] Meta:
+        - [x] Dates
+        - [x] Guilds
+        - [ ] Links
+    - [ ] Requesters
+        - [x] Reddit
+        - [ ] Weather
+        - [ ] Youtube
+
 
 ## Setup:
 *NOTES*:
 > - The following steps below assume that you have Python 3.8.x installed.
-> - They also assume you know what to replace `python3` with on your OS, such as if on Windows, replacing `python3` with `py -3.8`, `python`, or `py`. 
+> - They also assume you know what to replace `python3` with on your OS, such as if on Windows, replacing `python3` with `py -3.8`, `python`, or `py`.
 > - Alternatives #1 and #2 assume that you've inserted your credentials into the `.env` file that you have to create manually for the environment variables. You can copy the contents of the `.env-example` file into the `.env` and configure to your liking.
 > - DO NOT UPGRADE `pip` YOU'RE RUNNING THIS ON UBUNTU.
 
@@ -56,9 +77,9 @@ $ docker-compose up --build
 ### [v2.0](!https://github.com/Xithrius/Xythrion/releases/tag/v2.0)
 #### Added:
 - Motivation to actually do this project.
-- Documentation that's actually useful
+- Documentation that's actually useful.
 - Tables instead of weird broken graphs, and replaced the void with more graphs.
-- 
+-
 
 #### Changed:
 - Importing from `modules/`.
@@ -79,7 +100,7 @@ $ docker-compose up --build
 - Added the ability to graph math equations.
 - Building sourcing cogs. This will be moved to my other bot, [Demoness](!https://www.github.com/Xithrius/Demoness).
 - Bot now uses asyncpg (asynchronous Postgresql) to access databases.
-- `bot.py` now subclasses `comms.Bot`, while Main_Cog gets `comms.Cog`. 
+- `bot.py` now subclasses `comms.Bot`, while Main_Cog gets `comms.Cog`.
 - The extensions `etg.py` and `imgur.py` have been brought back from the dead.
 - Parser and shortcut functions have now been removed from the subclass of `bot.py` and moved to their own place in `modules/`.
 - The setup within this README has been given extra files for token generation.
