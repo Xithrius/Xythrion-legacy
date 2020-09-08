@@ -2,18 +2,18 @@ import json
 from collections import OrderedDict, defaultdict
 from pathlib import Path
 from random import choice, randint
-from typing import Optional, Tuple
+from typing import Optional
 
 import discord
 from discord.ext.commands import Cog, Context, command
 
 from xythrion.bot import Xythrion
-from xythrion.utils import code_block
+from xythrion.utils import DefaultEmbed
 
 with Path('xythrion/resources/randoms.json').open('r', encoding='utf8') as f:
     RANDOMS = json.load(f)
 
-    CARD_VALUES = [*range(2, 11), RANDOMS['card_values']]
+    CARD_VALUES = [*range(2, 11), *RANDOMS['card_values']]
     CARD_SUITES = RANDOMS['card_suites']
     RPS_OPTIONS = RANDOMS['rps_options']
 
@@ -38,9 +38,7 @@ class Randoms(Cog):
         else:
             avg = f'`Die was rolled once. Output: {randint(1, 6)}`'
 
-        embed = discord.Embed(description=avg)
-
-        await ctx.send(embed=embed)
+        await ctx.send(embed=DefaultEmbed(description=avg))
 
     @command()
     async def card(self, ctx: Context, amount: int = 1) -> None:
@@ -53,9 +51,9 @@ class Randoms(Cog):
             for _ in range(amount):
                 d[f'{choice(CARD_VALUES)} of {choice(CARD_SUITES)}'] += 1
 
-            lst = [f'({v}) {k}' for k, v in OrderedDict(sorted(d.items())).items()]
+            lst = '\n'.join([f'({v}) {k}' for k, v in OrderedDict(sorted(d.items())).items()])
 
-            embed = discord.Embed(description=code_block(lst))
+            embed = DefaultEmbed(description=f'```py\n{lst}```')
 
             await ctx.send(embed=embed)
 
@@ -81,8 +79,3 @@ class Randoms(Cog):
             )
 
             await ctx.send(embed=embed)
-
-    @command(name='choice')
-    async def _choice(self, ctx: Context, *args: Tuple[str]) -> None:
-        """Picks a random item from a list of choices."""
-        await ctx.send(f'`I have picked "{choice(args)}".`')

@@ -1,4 +1,3 @@
-import logging
 import os
 from pathlib import Path
 
@@ -8,8 +7,6 @@ from discord.ext.commands import Cog, Context, command
 from xythrion.bot import Xythrion
 from xythrion.utils import DefaultEmbed, gen_filename
 
-log = logging.getLogger(__name__)
-
 
 class QRCode(Cog):
     """Creating fractals out of user inputs."""
@@ -18,7 +15,7 @@ class QRCode(Cog):
         self.bot = bot
 
     @staticmethod
-    def _create_qr_code(msg: str, fill_color: str = 'black', back_color: str = 'white') -> str:
+    def _create_qr_code(msg: str, fill_color: str, back_color: str) -> str:
         """Create the QR (quick response) code image."""
         qr = qrcode.QRCode(
             version=1,
@@ -36,9 +33,11 @@ class QRCode(Cog):
         return str(f)
 
     @command()
-    async def qr(self, ctx: Context, fill_color: str, back_color: str, *, msg: str) -> None:
+    async def qr(self, ctx: Context, msg: str, fill_color: str = 'black', back_color: str = 'white') -> None:
         """Giving a fractal to the user, with given inputs."""
-        f = await self.bot.loop.run_in_executor(None, self._create_qr_code, msg, fill_color, back_color)
+        async with ctx.typing():
+            f = await self.bot.loop.run_in_executor(None, self._create_qr_code, msg, fill_color, back_color)
+
         embed = DefaultEmbed(embed_attachment=f)
 
         await ctx.send(file=embed.file, embed=embed)

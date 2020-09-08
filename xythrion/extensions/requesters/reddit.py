@@ -4,7 +4,7 @@ from discord import Embed, Message
 from discord.ext.commands import CheckFailure, Cog, Context, command
 
 from xythrion.bot import Xythrion
-from xythrion.utils import DefaultEmbed, markdown_link, shorten
+from xythrion.utils import DefaultEmbed, check_if_blocked, http_get, markdown_link, shorten
 
 
 class Reddit(Cog):
@@ -15,7 +15,7 @@ class Reddit(Cog):
 
     async def cog_check(self, ctx: Context) -> bool:
         """Checks if the user and/or guild has permissions for this command."""
-        return True
+        return await check_if_blocked(ctx, self.bot.pool)
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
@@ -58,35 +58,33 @@ class Reddit(Cog):
 
         url = f'https://reddit.com/r/{subreddit}/{status}.json?limit=100&t={timeframe}'
 
-        async with self.bot.session.get(url) as r:
-            assert r.status == 200, r.status
+        _json = await http_get(url, session=self.bot.session)
 
-            js = await r.json()
-            js = js['data']['children']
-            p = js[randint(0, len(js) - 1)]['data']
+        _json = _json['data']['children']
+        p = _json[randint(0, len(_json) - 1)]['data']
 
-            fail = False
+        fail = False
 
-            try:
-                if p['over_18'] and not ctx.message.channel.is_nsfw():
-                    fail = True
-
-            except AttributeError:
+        try:
+            if p['over_18'] and not ctx.message.channel.is_nsfw():
                 fail = True
 
-            if fail:
-                raise CheckFailure(message='NSFW')
+        except AttributeError:
+            fail = True
 
-            image = False
+        if fail:
+            raise CheckFailure(message='NSFW')
 
-            if p['url'][-4:] in ('.jpg', 'jpeg', '.png'):
-                image = p['url']
+        image = False
 
-            desc = f'[`{shorten(p["title"])}`](https://reddit.com{p["permalink"]})'
-            embed = Embed(title=f'*r/{subreddit}*', description=desc)
+        if p['url'][-4:] in ('.jpg', 'jpeg', '.png'):
+            image = p['url']
 
-            embed.set_footer(text=f'Upvotes: {p["ups"]}\nAuthor: u/{p["author"]}')
+        desc = f'[`{shorten(p["title"])}`](https://reddit.com{p["permalink"]})'
+        embed = Embed(title=f'*r/{subreddit}*', description=desc)
 
-            embed.set_image(url=image if image else '')
+        embed.set_footer(text=f'Upvotes: {p["ups"]}\nAuthor: u/{p["author"]}')
 
-            await ctx.send(embed=embed)
+        embed.set_image(url=image if image else '')
+
+        await ctx.send(embed=embed)
