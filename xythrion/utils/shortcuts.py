@@ -5,10 +5,13 @@ import typing as t
 from datetime import datetime
 from pathlib import Path
 
+import asyncpg
 from discord import Embed, Emoji, File, Member, Message, TextChannel
 from discord.ext.commands import BadArgument, Context, MessageConverter
 
 from xythrion.constants import Config
+from xythrion.utils.markdown import markdown_link
+import aiohttp
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +32,7 @@ def shorten(s: str, approx_string_len: int = 10) -> str:
 async def wait_for_reaction(ctx: Context, emoji: Emoji) -> bool:
     """Waiting for a user to react to a message sent by the bot."""
 
-    def check(reaction: Emoji, user: Context.author) -> bool:
+    def check(reaction, user: Context.author) -> bool:
         return user == ctx.message.author and str(reaction.emoji) == emoji
 
     try:
@@ -96,9 +99,41 @@ class DefaultEmbed(Embed):
 
             self.set_image(url=f'attachment://{f}')
 
-        try:
-            if '`' not in self.description or '\n' not in self.description:
+        elif 'single_url' in kwargs.keys():
+            self.description = markdown_link(*kwargs['single_url'])
+
+        elif 'description' in kwargs.keys():
+            if '`' not in self.description and '\n' not in self.description:
                 self.description = f'`{self.description}`'
 
-        except TypeError:
+        elif 'multiple_urls' in kwargs.keys():
             pass
+
+
+async def check_if_blocked(ctx: Context, pool: asyncpg.pool.Pool) -> bool:
+    """Checks if user/guild is blocked."""
+    async with pool.acquire() as conn:
+        # Check if user is blocked.
+        _user = await conn.fetch(
+            'SELECT * FROM Blocked_Users WHERE user_id = $1',
+            ctx.author.id
+        )
+
+        if not len(_user):
+            # If the user is not blocked, check if the guild is blocked.
+            _guild = await conn.fetch(
+                'SELECT * FROM Blocked_Guilds WHERE guild_id = $1',
+                ctx.guild.id
+            )
+            if not len(_guild):
+                return True
+
+    # If none of the checks passed, either the guild or the user is blocked.
+    return False
+
+
+async def http_get(url: str, *, session: aiohttp.ClientSession) -> t.Any:
+    """Small snippet to get json from a url."""
+    async with session.get(url) as resp:
+        assert resp.status == 200
+        return await resp.json()
