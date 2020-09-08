@@ -54,16 +54,6 @@ class Links(Cog):
 
         await ctx.send(embed=DefaultEmbed(single_url=('Invite url', url)))
 
-        # await conn.execute('''
-        #         CREATE TABLE IF NOT EXISTS Links(
-        #             identification serial PRIMARY KEY,
-        #             t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-        #             id BIGINT,
-        #             name TEXT,
-        #             link TEXT
-        #         )
-        #     ''')
-
     @group()
     async def link(self, ctx: Context, link_query: str) -> None:
         """Attempts to get a link from the database."""
