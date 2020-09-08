@@ -4,6 +4,8 @@ services:
 
   postgres:
     image: postgres:latest
+    init: true
+    restart: always
 
     env_file:
       - ./.env
