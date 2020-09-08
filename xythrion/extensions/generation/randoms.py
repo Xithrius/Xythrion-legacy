@@ -24,10 +24,10 @@ class Randoms(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    @command()
+    @command(aliases=('roll',))
     async def dice(self, ctx: Context, rolls: int = 1) -> None:
         """Rolls a die as many times as you want."""
-        if rolls > 10 or rolls < 0:
+        if rolls > 10 or rolls < 1:
             await ctx.send('`Rolls must be between 1 and 10.`')
             return
 
@@ -44,7 +44,7 @@ class Randoms(Cog):
     async def card(self, ctx: Context, amount: int = 1) -> None:
         """Picks cards from a deck."""
         if amount > 5 or amount < 0:
-            await ctx.send('`Rolls must be between 1 and 10.`')
+            await ctx.send('`Rolls must be between 1 and 5.`')
 
         else:
             d = defaultdict(int)
