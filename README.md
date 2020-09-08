@@ -4,13 +4,10 @@
 <h1 align="center">Xythrion v2.0</h1>
 <h3 align="center">Graphing manipulated data through discord.py</h3>
 <p align="center">
-    <img src="https://img.shields.io/apm/l/vim-mode.svg"/>
-    <img src="https://img.shields.io/badge/python-3.7.4-green.svg">
-</p>
-<p align="center">
     <a href="https://discordapp.com/oauth2/authorize?client_id=591885341812850699&scope=bot&permissions=335400150">Invite</a> -
+    <a href="#checklist">Checklist</a> -
     <a href="#commands">Commands</a> -
-    <a href="#setup">Setup</a>
+    <a href="#setup">Setup</a> -
     <a href="#changelog">Changelog</a>
 </p>
 
@@ -37,6 +34,10 @@
         - [x] Reddit
         - [ ] Weather
         - [ ] Youtube
+
+
+## Commands:
+I'll put stuff here later.
 
 
 ## Setup:
