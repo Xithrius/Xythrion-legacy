@@ -5,12 +5,10 @@ from datetime import datetime
 import aiohttp
 import asyncpg
 import discord
-import twitter
 from discord.ext.commands import Bot
 
-from xythrion.constants import Postgresql, TwitterOAuth
+from xythrion.constants import Postgresql
 from xythrion.databasing import setup_database
-from xythrion.prediction import Model
 from xythrion.utils import calculate_lines
 
 log = logging.getLogger(__name__)
@@ -48,16 +46,6 @@ class Xythrion(Bot):
                 'Could not create async connection pool and/or setup tables to/for Postgresql database. '
                 f'Error: {e}'
             ))
-
-        self.twitter_api = twitter.Api(
-            TwitterOAuth.CONSUMER_KEY,
-            TwitterOAuth.CONSUMER_SECRET,
-            TwitterOAuth.ACCESS_TOKEN_KEY,
-            TwitterOAuth.ACCESS_TOKEN_SECRET
-        )
-
-        # Setting up the model for Trump tweet statistic prediction
-        self.model = Model(self.twitter_api)
 
     @staticmethod
     async def create_asyncpg_pool() -> asyncpg.pool.Pool:
