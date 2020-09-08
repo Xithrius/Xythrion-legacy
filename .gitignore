@@ -111,5 +111,14 @@ config/*.json
 /.vscode
 *.code-workspace
 
-# The virtual environment
-venv/
+# PyCharm
+/.idea
+
+# tests
+/tests/
+
+# logs
+/logs/
+
+# database stuffs
+/postgres_data/
