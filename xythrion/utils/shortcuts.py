@@ -5,13 +5,13 @@ import typing as t
 from datetime import datetime
 from pathlib import Path
 
+import aiohttp
 import asyncpg
 from discord import Embed, Emoji, File, Member, Message, TextChannel
 from discord.ext.commands import BadArgument, Context, MessageConverter
 
 from xythrion.constants import Config
 from xythrion.utils.markdown import markdown_link
-import aiohttp
 
 log = logging.getLogger(__name__)
 
