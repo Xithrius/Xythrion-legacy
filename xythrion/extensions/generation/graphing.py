@@ -1,25 +1,10 @@
-import logging
 import os
-from pathlib import Path
+from typing import Union
 
-import numpy as np
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Cog, Context, Greedy, command
 
 from xythrion.bot import Xythrion
-from xythrion.utils import DefaultEmbed, gen_filename, parse
-
-log = logging.getLogger(__name__)
-
-try:
-    import matplotlib
-
-    matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
-
-    plt.style.use('dark_background')
-
-except Exception as e:
-    log.critical(f'Error when importing matplotlib: {e}')
+from xythrion.utils import DefaultEmbed, check_if_blocked, create_graph_from_expression
 
 
 class Graphing(Cog):
@@ -28,31 +13,27 @@ class Graphing(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    @staticmethod
-    def _create_graph(latex: str) -> str:
-        """Creating the graph and then saving it to a file."""
-        f = Path.cwd() / 'tmp' / f'{gen_filename()}.png'
-        x = np.arange(-10, 10, 0.1)
-        y = x
-
-        plt.plot(x, y)
-
-        plt.savefig(f)
-        plt.clf()
-
-        return str(f)
+    async def cog_check(self, ctx: Context) -> bool:
+        """Checking if the user running commands is trusted by the owner."""
+        return await check_if_blocked(ctx, self.bot.pool)
 
     @command()
-    async def graph(self, ctx: Context, *, latex: str) -> None:
-        """Lexing then Graphing equations that the user gives."""
-        f = await self.bot.loop.run_in_executor(None, self._create_graph, latex)
-        embed = DefaultEmbed(embed_attachment=f)
+    async def graph(self, ctx: Context, domain_nums: Greedy[Union[int, float]], *, expression: str) -> None:
+        """
+        Using SymPy and MatPlotLib to grab expressions that a user gives.
+
+        Only supports single variable expressions.
+        """
+        if len(domain_nums) > 2:
+            await ctx.send(embed=DefaultEmbed(
+                description=f'Expected 2 domain numbers. Got {len(domain_nums)}: {domain_nums}'))
+            return
+
+        async with ctx.typing():
+            f = await self.bot.loop.run_in_executor(None, create_graph_from_expression, expression,
+                                                    domain_nums if len(domain_nums) else None)
+            embed = DefaultEmbed(embed_attachment=f)
 
         await ctx.send(file=embed.file, embed=embed)
 
         os.remove(f)
-
-    @command()
-    async def tokenize(self, ctx: Context, *, ex: str) -> None:
-        """Testing tokenization."""
-        await ctx.send(parse(ex))
