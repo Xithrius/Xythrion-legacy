@@ -84,7 +84,6 @@ class Reddit(Cog):
         embed = Embed(title=f'*r/{subreddit}*', description=desc)
 
         embed.set_footer(text=f'Upvotes: {p["ups"]}\nAuthor: u/{p["author"]}')
-
         embed.set_image(url=image if image else '')
 
         await ctx.send(embed=embed)
