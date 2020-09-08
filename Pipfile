@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-"discord.py" = "~=1.4.1"
+"discord.py[voice]" = "~=1.4.1"
 asyncpg = "~=0.21.0"
 matplotlib = "*"
 humanize = "*"
@@ -12,7 +12,11 @@ coloredlogs = "*"
 qrcode = "*"
 Pillow = "~=7.2.0"
 tabulate = "*"
-pygments = "*"
+sympy = "~=1.6.2"
+tensorflow = "~=2.3.0"
+python-twitter = "~=3.5"
+fuzzywuzzy = "~=0.18.0"
+gTTS = "~=2.1.1"
 
 [dev-packages]
 flake8 = "~=3.8"

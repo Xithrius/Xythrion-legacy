@@ -1,6 +1,5 @@
 discord.py
 datetime
-numpy
 matplotlib
 humanize
 coloredlogs
@@ -9,4 +8,8 @@ asyncpg
 qrcode
 Pillow
 tabulate
-pygments
+sympy
+tensorflow
+python-twitter
+fuzzywuzzy
+gTTS
