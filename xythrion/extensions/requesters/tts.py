@@ -2,10 +2,11 @@ import asyncio
 import logging
 from pathlib import Path
 
-from discord import ClientException, FFmpegPCMAudio, Member, PCMVolumeTransformer, VoiceState
+from discord import ClientException, FFmpegPCMAudio, Member, PCMVolumeTransformer, VoiceChannel, VoiceState
 from discord.ext.commands import Cog, Context, command
 from gtts import gTTS
 
+from xythrion.bot import Xythrion
 from xythrion.utils import DefaultEmbed
 
 log = logging.getLogger(__name__)
@@ -14,7 +15,7 @@ log = logging.getLogger(__name__)
 class TTS(Cog):
     """Using Google Cloud's Text-To-Speech API to speak."""
 
-    def __init__(self, bot):
+    def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
     async def cog_check(self, ctx: Context) -> bool:
@@ -27,7 +28,7 @@ class TTS(Cog):
         tts = gTTS(message)
         tts.save(str(Path.cwd() / 'tmp' / 'tts.mp3'))
 
-    async def speak_message(self, vc, message) -> None:
+    async def speak_message(self, vc: VoiceChannel, message: str) -> None:
         """Calling tts_creation after joining a channel to play audio."""
         await self.bot.loop.run_in_executor(None, self.tts_creation, message)
 
@@ -87,13 +88,9 @@ class TTS(Cog):
                     except ClientException:
                         pass
 
-    @command(name='tts', hidden=True)
-    async def message_to_speech(self, ctx: Context, *, msg: str) -> None:
-        await self.speak_message(ctx.voice_client, msg)
-
     @command()
     async def join(self, ctx: Context) -> None:
-        """Joins the channel the caller is currently in."""
+        """Joins the channel the command user is currently in."""
         if ctx.voice_client is None:
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
@@ -108,5 +105,5 @@ class TTS(Cog):
 
     @command()
     async def leave(self, ctx: Context) -> None:
-        """Leaves voice channel, if the bot is even in one."""
+        """Leaves a voice channel."""
         await ctx.voice_client.disconnect()

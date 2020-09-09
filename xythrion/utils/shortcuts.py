@@ -7,7 +7,7 @@ from pathlib import Path
 
 import aiohttp
 import asyncpg
-from discord import Embed, Emoji, File, Member, Message, TextChannel
+from discord import Embed, Emoji, File, Member, Message, Reaction, TextChannel
 from discord.ext.commands import BadArgument, Context, MessageConverter
 
 from xythrion.constants import Config
@@ -32,7 +32,7 @@ def shorten(s: str, approx_string_len: int = 10) -> str:
 async def wait_for_reaction(ctx: Context, emoji: Emoji) -> bool:
     """Waiting for a user to react to a message sent by the bot."""
 
-    def check(reaction, user: Context.author) -> bool:
+    def check(reaction: Reaction, user: Context.author) -> bool:
         return user == ctx.message.author and str(reaction.emoji) == emoji
 
     try:
@@ -135,5 +135,5 @@ async def check_if_blocked(ctx: Context, pool: asyncpg.pool.Pool) -> bool:
 async def http_get(url: str, *, session: aiohttp.ClientSession) -> t.Any:
     """Small snippet to get json from a url."""
     async with session.get(url) as resp:
-        assert resp.status == 200
+        assert resp.status == 200, resp.raise_for_status()
         return await resp.json()

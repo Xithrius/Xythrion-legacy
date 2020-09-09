@@ -16,7 +16,8 @@ class Weather(Cog, command_attrs=dict(hidden=True, enabled=False)):
         self.bot = bot
 
     @staticmethod
-    async def create_table(lst, titles: List[str]):
+    async def create_table(lst: List[str], titles: List[str]) -> str:
+        """Creates a table from the tabulate module."""
         table = tabulate(
             lst, titles,
             tablefmt='simple', showindex=False,
@@ -34,7 +35,7 @@ class Weather(Cog, command_attrs=dict(hidden=True, enabled=False)):
         return table
 
     @group()
-    async def weather(self, ctx: Context):
+    async def weather(self, ctx: Context) -> None:
         """Getting Weather for different planets."""
         pass
 
