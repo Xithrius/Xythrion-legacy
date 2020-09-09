@@ -13,8 +13,6 @@ qrcode = "*"
 Pillow = "~=7.2.0"
 tabulate = "*"
 sympy = "~=1.6.2"
-tensorflow = "~=2.3.0"
-python-twitter = "~=3.5"
 fuzzywuzzy = "~=0.18.0"
 gTTS = "~=2.1.1"
 
