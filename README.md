@@ -12,60 +12,35 @@
 </p>
 
 
-## Checklist:
+# Checklist:
 - [ ] Extensions:
     - [ ] Administration:
         - [x] API_usage
         - [x] Development
         - [x] Warnings
         - [ ] Source
-        - [ ] Documentation/help
     - [ ] Generation:
         - [x] Graphing
-        - [ ] Math
         - [x] QRCodes
         - [x] Randoms
         - [ ] Images
     - [ ] Meta:
         - [x] Dates
         - [x] Guilds
+        - [x] Help
         - [ ] Links
+        - [ ] Prefix
     - [ ] Requesters
         - [x] Reddit
         - [ ] Weather
         - [ ] Youtube
+        - [ ] Documentation
 
 
-## Commands:
-I'll put stuff here later.
+# Setup:
+*NOTE*:
+- This guide assumes you've copied the template from `.env-example` to a file called `.env` that you've created yourself.
 
-
-## Setup:
-*NOTES*:
-> - The following steps below assume that you have Python 3.8.x installed.
-> - They also assume you know what to replace `python3` with on your OS, such as if on Windows, replacing `python3` with `py -3.8`, `python`, or `py`.
-> - Alternatives #1 and #2 assume that you've inserted your credentials into the `.env` file that you have to create manually for the environment variables. You can copy the contents of the `.env-example` file into the `.env` and configure to your liking.
-> - DO NOT UPGRADE `pip` YOU'RE RUNNING THIS ON UBUNTU.
-
-#### Creating the virtual environment and running the bot (3 ways):
-
-1. virtualenv/venv:
-```sh
-$ python3 -m pip install --U pip virtualenv
-$ python3 -m virtualenv venv
-$ source venv/Scripts/activate
-$ python3 -m xythrion
-```
-
-2. pipenv:
-```sh
-$ python3 -m pip install --U pip pipenv
-$ pipenv install --dev
-$ pipenv shell
-$ pipenv start run
-```
-
-3. Docker:
 ```sh
 $ docker pull postgres
 # "placeholder" in this command should replace the placeholder with the same name in the .env file.
@@ -73,37 +48,30 @@ $ docker run --name postgres -e POSTGRES_PASSWORD=placeholder -d postgres
 $ docker-compose up --build
 ```
 
-## Changelog
+# Changelog
 
-### [v2.0](!https://github.com/Xithrius/Xythrion/releases/tag/v2.0)
-#### Added:
+## [v2.0](!https://github.com/Xithrius/Xythrion/releases/tag/v2.0)
+### Added:
 - Motivation to actually do this project.
 - Documentation that's actually useful.
-- Tables instead of weird broken graphs, and replaced the void with more graphs.
--
+- Graphing now works with single variable expressions (ex. only x or y, not both.), except factorials aren't available.
+- Docker is now used for the use of environment variables.
 
-#### Changed:
-- Importing from `modules/`.
-- The way embeds are formatted.
-- Configuration of the bot, and the different options at launch.
-- Everything to dark mode so your eyes don't get burned by the light.
+### Changed:
+- Renamed `modules/` to `utils/`.
+- Embeds now have default values and are sometimes modified after initialization.
+- Graphs have been changed to dark mode so your eyes aren't burned out by the sun that is the graph image.
+- No longer using `.json` files for storing credentials, a singular `.env` file is now used.
 
-#### Removed:
-- No longer recording specific messages and their content sent by users, only adding it to the count of messages/commands.
-- Enter The Gungeon wiki and imgur cogs. These might be added again in the future.
-- The youtube to mp3 command since it's against YouTube's TOS.
-- Embed tables that no one liked.
-- The TTS command (I really wonder why I implemented it in the first place).
-- The fancy status, since it has been moved to its own package: [hyper-status](!https://pypi.org/project/hyper-status/).
+### Removed:
+- Too many things were removed, so I ended up losing track.
+- All the useless stuff from previous versions. This is a graphing/utility bot, not a music bot.
+- One thing that I can remember getting removed are the `imgur` and `etg` cogs, because they served no use.
 
-### v0-v1.1 (Development of the project, I wouldn't look too close at these versions)
+## [v1.0](!https://github.com/Xithrius/Xythrion/releases/tag/v1.0)
 - API tracking such as how weather changes within an area, and how a certain Reddit post is doing over a couple days.
-- Added the ability to graph math equations.
-- Building sourcing cogs. This will be moved to my other bot, [Demoness](!https://www.github.com/Xithrius/Demoness).
-- Bot now uses asyncpg (asynchronous Postgresql) to access databases.
+- Bot now uses asyncpg (asynchronous Postgresql) for databasing.
 - `bot.py` now subclasses `comms.Bot`, while Main_Cog gets `comms.Cog`.
 - The extensions `etg.py` and `imgur.py` have been brought back from the dead.
 - Parser and shortcut functions have now been removed from the subclass of `bot.py` and moved to their own place in `modules/`.
-- The setup within this README has been given extra files for token generation.
 - Permission loading and service checks are now automated before bot is available for use.
-- First real stable version with no major flaws (I haven't found any within testing yet).
