@@ -4,14 +4,14 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-"discord.py[voice]" = "~=1.4.1"
+"discord.py" = {extras = ["voice"], version = "~=1.4.1"}
 asyncpg = "~=0.21.0"
-matplotlib = "*"
-humanize = "*"
-coloredlogs = "*"
-qrcode = "*"
+matplotlib = "~=3.3.2"
+humanize = "~=2.6.0"
+coloredlogs = "~=14.0"
+qrcode = "~=6.1"
 Pillow = "~=7.2.0"
-tabulate = "*"
+tabulate = "~=0.8.7"
 sympy = "~=1.6.2"
 fuzzywuzzy = "~=0.18.0"
 gTTS = "~=2.1.1"
