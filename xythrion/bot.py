@@ -4,7 +4,6 @@ from datetime import datetime
 
 import aiohttp
 import asyncpg
-import discord
 from discord.ext.commands import Bot
 
 from xythrion.constants import Postgresql
@@ -52,12 +51,9 @@ class Xythrion(Bot):
         """Attempting to connect to the database."""
         return await asyncpg.create_pool(**Postgresql.asyncpg_config, command_timeout=60)
 
-    async def on_ready(self) -> None:
+    @staticmethod
+    async def on_ready() -> None:
         """Updates the bot status when logged in successfully."""
-        await self.change_presence(
-            activity=discord.Activity(type=discord.ActivityType.watching, name="graphs")
-        )
-
         log.info('Awaiting...')
 
     async def logout(self) -> None:
