@@ -7,6 +7,9 @@ services:
     init: true
     restart: always
 
+    env_file:
+      - ./.env
+
     expose:
       - 5432
 
@@ -20,6 +23,9 @@ services:
 
     depends_on:
       - postgres
+
+    env_file:
+      - ./.env
 
     build:
       context: .
