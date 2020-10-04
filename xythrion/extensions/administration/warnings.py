@@ -50,7 +50,9 @@ class Warnings(Cog):
         elif isinstance(error, commands.MissingPermissions):
             return await ctx.send('`Bot does not have enough permissions for this command.`')
 
-        embed = DefaultEmbed(title='**An error has occurred:**',
+        embed = DefaultEmbed(ctx, title='**An error has occurred:**',
                              description=f'{type(error).__name__}: {error}')
 
         await ctx.send(embed=embed)
+
+        log.warning(f'Error: {type(error).__name__}: {error}')

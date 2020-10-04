@@ -6,7 +6,6 @@ import aiohttp
 from discord.ext.commands import Bot
 
 from xythrion.databasing import Database
-from xythrion.utils import calculate_lines
 
 log = logging.getLogger(__name__)
 
@@ -27,11 +26,9 @@ class Xythrion(Bot):
         # Setting when the bot started up.
         self.startup_time = datetime.now()
 
-        # Counting the amount of lines within each Python file.
-        self.line_amount = calculate_lines()
-
         # Setting up the database.
-        self.pool = Database(self.loop).pool
+        self.database = Database(self.loop)
+        self.pool = self.database.pool
 
     @staticmethod
     async def on_ready() -> None:

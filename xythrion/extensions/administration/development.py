@@ -44,7 +44,7 @@ class Development(Cog, command_attrs=dict(hidden=True)):
             f'{ctx.author.name} reloaded extension{"" if ext else "s"} successfully in about {ms}.'
         )
 
-        await ctx.send(f'`Extension{" " + ext if ext else "s"} reloaded in about {ms}`')
+        await ctx.send(f'`Extension{" " + ext if ext else "s"} reloaded in about {ms}.`')
 
     @command(name='logout')
     async def _logout(self, ctx: Context) -> None:
@@ -56,9 +56,7 @@ class Development(Cog, command_attrs=dict(hidden=True)):
         """Gives a list of the currently loaded cogs."""
         extensions = '\n'.join(f'{str(i).zfill(3)} | {ext}' for i, ext in enumerate(self.bot.cogs))
 
-        embed = Embed(title='*Currently loaded cogs:*', description=f'```py\n{extensions}\n```')
-
-        embed = DefaultEmbed(description=f'```py\n{extensions}\n```')
+        embed = DefaultEmbed(ctx, description=f'```py\n{extensions}\n```')
 
         await ctx.send(embed=embed)
 

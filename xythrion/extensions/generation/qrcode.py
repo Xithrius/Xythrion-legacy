@@ -38,7 +38,7 @@ class QRCode(Cog):
         async with ctx.typing():
             f = await self.bot.loop.run_in_executor(None, self._create_qr_code, msg, fill_color, back_color)
 
-        embed = DefaultEmbed(embed_attachment=f)
+        embed = DefaultEmbed(ctx, embed_attachment=f)
 
         await ctx.send(file=embed.file, embed=embed)
 

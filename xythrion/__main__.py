@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 bot = Xythrion(
     description=Config.BOT_DESCRIPTION,
-    command_prefix=when_mentioned_or(';'),
+    command_prefix=when_mentioned_or('\\'),
     case_insensitive=True,
     help_command=None,
     allowed_mentions=discord.AllowedMentions(everyone=False)
