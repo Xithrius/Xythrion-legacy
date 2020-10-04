@@ -1,89 +1,99 @@
-from datetime import datetime
-from typing import List
+import os
 
+import matplotlib.pyplot as plt
+import numpy as np
 from discord.ext.commands import Cog, Context, group
-from tabulate import tabulate
 
 from xythrion.bot import Xythrion
 from xythrion.constants import WeatherAPIs
-from xythrion.utils import c2f, c2k, http_get, k2c, k2f
+from xythrion.utils import Graph, c2f, http_get
+
+EARTH_URL = 'https://api.openweathermap.org/data/2.5/forecast?zip={0},{1}&appid={2}'
+MARS_URL = f'https://api.nasa.gov/insight_weather/?api_key={WeatherAPIs.MARS}&feedtype=json&ver=1.0'
 
 
-class Weather(Cog, command_attrs=dict(hidden=True, enabled=False)):
-    """Weather for Earth and Mars."""
+class Weather(Cog):
+    """Weather for different planets."""
 
     def __init__(self, bot: Xythrion):
         self.bot = bot
 
-    @staticmethod
-    async def create_table(lst: List[str], titles: List[str]) -> str:
-        """Creates a table from the tabulate module."""
-        table = tabulate(
-            lst, titles,
-            tablefmt='simple', showindex=False,
-            numalign='left', stralign='right',
-            floatfmt='.2f'
-        ).split('\n')
-
-        # Limiting character count
-        for i in range(len(table)):
-            if sum([len(x) for x in table[:i]]) < 2000:
-                continue
-            else:
-                table = table[:i - 1]
-
-        return table
+    async def cog_check(self, ctx: Context) -> bool:
+        """Checks if the user and/or guild has permissions for this command."""
+        return await self.bot.database.check_if_blocked(ctx)
 
     @group()
     async def weather(self, ctx: Context) -> None:
         """Getting Weather for different planets."""
         pass
 
-    @weather.command()
-    async def earth(self, ctx: Context, zip_code: int, country_code: str = 'US') -> None:
-        """Getting weather for planet Earth."""
-        c = country_code.upper()
-        url = f'https://api.openweathermap.org/data/2.5/forecast?zip={zip_code},{c}&appid={WeatherAPIs.EARTH}'
-        _json = await http_get(url, session=self.bot.session)
+    # @weather.command()
+    # async def earth(self, ctx: Context, zip_code: int, country_code: str = 'US') -> None:
+    #     """Getting weather for planet Earth."""
+    #     _json = await http_get(
+    #         EARTH_URL.format(zip_code, country_code.upper(), WeatherAPIs.EARTH), session=self.bot.session)
+    #
+    #     lst = {}
+    #     for i in _json['list']:
+    #         lst[i['dt']] = {
+    #             'description': i['weather'][0]['description'],
+    #             '°K': i['main']['temp'], '°F': k2f(i['main']['temp']), '°C': k2c(i['main']['temp']),
+    #             'humidity': i['main']['humidity'],
+    #             'wind speed': i['wind']['speed']
+    #         }
+    #
+    #     titles = ['Date', 'Description', '°K', '°F', '°C', 'Humidity (%)', 'Wind (m/s)']
+    #     dates = [
+    #         datetime.fromtimestamp(k).strftime('%A, %I:%M%p').lower().capitalize() for k in lst.keys()
+    #     ]
+    #     lst = [[dates[i]] + list(v.values()) for i, v in enumerate(lst.values())]
+    #     table = await self.create_table(lst, titles)
+    #
+    #     await ctx.send(f'```\n{table}```')
 
-        lst = {}
-        for i in _json['list']:
-            lst[i['dt']] = {
-                'description': i['weather'][0]['description'],
-                '°K': i['main']['temp'], '°F': k2f(i['main']['temp']), '°C': k2c(i['main']['temp']),
-                'humidity': i['main']['humidity'],
-                'wind speed': i['wind']['speed']
-            }
+    @staticmethod
+    def create_mars_graph(ctx: Context, _json: dict) -> Graph:
+        """Manipulating JSON data from the NASA Mars API."""
+        sols = _json['sol_keys']
+        lst = []
+        titles = ['°F', '°C', 'Pressure (Pa)', 'Wind (m/s)']
 
-        titles = ['Date', 'Description', '°K', '°F', '°C', 'Humidity (%)', 'Wind (m/s)']
-        dates = [
-            datetime.fromtimestamp(k).strftime('%A, %I:%M%p').lower().capitalize() for k in lst.keys()
-        ]
-        lst = [[dates[i]] + list(v.values()) for i, v in enumerate(lst.values())]
-        table = await self.create_table(lst, titles)
+        for sol in sols:
+            i = _json[sol]
+            c = i['AT']['av']
+            lst.append([c2f(c), c, i['PRE']['av'], i['HWS']['av']])
 
-        await ctx.send(f'```\n{table}```')
+        fig, axes = plt.subplots(nrows=2, ncols=2)
+
+        lst = np.array(lst)
+        lst = [lst[:, i] for i in range(lst.shape[1])]
+
+        for i, (ax, title) in enumerate(zip(sum(axes, []), titles)):
+            ax.plot(lst[i])
+            ax.title(label=title)
+            ax.set_xticklabels(sols)
+
+        return Graph(ctx, fig=fig)
 
     @weather.command()
     async def mars(self, ctx: Context) -> None:
         """Getting weather for planet Mars."""
-        url = f'https://api.nasa.gov/insight_weather/?api_key={WeatherAPIs.MARS}&feedtype=json&ver=1.0'
-        _json = await http_get(url, session=self.bot.session)
+        _json = await http_get(MARS_URL, session=self.bot.session)
+        _graph = self.bot.loop.run_in_executor(None, self.create_mars_graph, ctx, _json)
 
-        sol_keys = _json['sol_keys']
-        lst = {}
-        titles = ['Sol', '°K', '°F', '°C', 'Pressure (Pa)', 'Wind (m/s)']
+        await ctx.send(file=_graph.embed.file, embed=_graph.embed)
 
-        for sol in sol_keys:
-            i = _json[sol]
-            c = i['AT']['av']
-            lst[sol] = [
-                c2k(c), c2f(c), c,
-                i['PRE']['av'],
-                i['HWS']['av']
-            ]
+        os.remove(_graph.save_path)
 
-        lst = [[sol_keys[i]] + v for i, v in enumerate(lst.values())]
-        table = await self.create_table(lst, titles)
-
-        await ctx.send(f'```\n{table}```')
+    # @staticmethod
+    # async def create_table(lst: List[str], titles: List[str]) -> str:
+    #     """Creates a table from the tabulate module."""
+    #     table = tabulate(
+    #         lst, titles,
+    #         tablefmt='simple', showindex=False,
+    #         numalign='left', stralign='right',
+    #         floatfmt='.2f'
+    #     ).split('\n')
+    #
+    #
+    #     return table

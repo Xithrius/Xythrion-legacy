@@ -4,7 +4,7 @@ from discord import Embed, Message
 from discord.ext.commands import CheckFailure, Cog, Context, command
 
 from xythrion.bot import Xythrion
-from xythrion.utils import DefaultEmbed, check_if_blocked, http_get, markdown_link, shorten
+from xythrion.utils import DefaultEmbed, http_get, markdown_link, shorten
 
 
 class Reddit(Cog):
@@ -15,7 +15,7 @@ class Reddit(Cog):
 
     async def cog_check(self, ctx: Context) -> bool:
         """Checks if the user and/or guild has permissions for this command."""
-        return await check_if_blocked(ctx, self.bot.pool)
+        return await self.bot.database.check_if_blocked(ctx)
 
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
