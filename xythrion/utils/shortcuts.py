@@ -2,7 +2,6 @@ import asyncio
 import os
 import typing as t
 from datetime import datetime
-from pathlib import Path
 
 import aiohttp
 from discord import Embed, Emoji, File, Member, Message, Reaction, TextChannel
@@ -44,23 +43,6 @@ async def wait_for_reaction(ctx: Context, emoji: Emoji) -> bool:
         return True
 
 
-def calculate_lines() -> int:
-    """Gets the sum of lines from all the python files a directory."""
-    lst = []
-    amount = 0
-
-    for root, _, files in os.walk(Path.cwd()):
-        for file in files:
-            if file.endswith('.py'):
-                lst.append(os.path.join(root, file))
-
-    for file in lst:
-        with open(file) as f:
-            amount += sum(1 for _ in f)
-
-    return amount
-
-
 def permissions_in_channel(member: Member, channel: TextChannel, *permissions: str) -> bool:
     """Checks if a user has a permission(s) within a channel."""
     member_perms_in_channel = channel.permissions_for(member)
@@ -97,7 +79,7 @@ class DefaultEmbed(Embed):
         super().__init__(**kwargs)
 
         d = naturaldelta(datetime.now() - ctx.bot.startup_time)
-        self.set_footer(text=f'Discord API Latency: {ctx.bot.latency}. Uptime: {d}.')
+        self.set_footer(text=f'Latency: {round(ctx.bot.latency / 1000, 2)}ms. Uptime: {d}.')
 
         if 'embed_attachment' in kwargs.keys():
             v = kwargs['embed_attachment']
