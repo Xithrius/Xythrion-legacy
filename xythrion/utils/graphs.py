@@ -51,9 +51,8 @@ class Graph:
         elif y:
             self.ax.plot(y)
 
-        elif x:
-            if y:
-                self.ax.plot(x, y)
+        elif x and y:
+            self.ax.plot(x, y)
 
         if x_labels:
             self.ax.set_xticklabels(x_labels)
