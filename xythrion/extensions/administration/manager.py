@@ -6,7 +6,7 @@ from xythrion.bot import Xythrion
 from xythrion.utils import DefaultEmbed
 
 
-class APIManager(Cog):
+class Manager(Cog, command_attrs=dict(hidden=True)):
     """Changing permissions of guilds/users in different cases for usage of the bot."""
 
     def __init__(self, bot: Xythrion) -> None:
@@ -27,7 +27,7 @@ class APIManager(Cog):
 
         guild = self.bot.get_guild(guild_id) if not guild_id else ctx.guild
         embed = DefaultEmbed(
-            description=f'API Permissions restored for guild "{guild.name if guild else guild_id}".')
+            ctx, description=f'API Permissions restored for guild "{guild.name if guild else guild_id}".')
 
         await ctx.send(embed=embed)
 
@@ -42,7 +42,7 @@ class APIManager(Cog):
 
         user = self.bot.get_user(user_id) if user_id else ctx.author
         embed = DefaultEmbed(
-            description=f'API Permissions restored for user {user.name if user else user_id}.')
+            ctx, description=f'API Permissions restored for user {user.name if user else user_id}.')
 
         await ctx.send(embed=embed)
 
@@ -57,7 +57,7 @@ class APIManager(Cog):
 
         guild = self.bot.get_guild(guild_id) if not guild_id else ctx.guild
         embed = DefaultEmbed(
-            description=f'API Permissions removed from guild "{guild.name if guild else guild_id}".')
+            ctx, description=f'API Permissions removed from guild "{guild.name if guild else guild_id}".')
 
         await ctx.send(embed=embed)
 
@@ -72,6 +72,6 @@ class APIManager(Cog):
 
         user = self.bot.get_user(user_id) if user_id else ctx.author
         embed = DefaultEmbed(
-            description=f'API Permissions Removed from user {user.name if user else user_id}.')
+            ctx, description=f'API Permissions Removed from user {user.name if user else user_id}.')
 
         await ctx.send(embed=embed)
