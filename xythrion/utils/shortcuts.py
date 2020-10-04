@@ -1,19 +1,13 @@
 import asyncio
-import logging
 import os
 import typing as t
 from datetime import datetime
 from pathlib import Path
 
 import aiohttp
-import asyncpg
 from discord import Embed, Emoji, File, Member, Message, Reaction, TextChannel
 from discord.ext.commands import BadArgument, Context, MessageConverter
-
-from xythrion.constants import Config
-from xythrion.utils.markdown import markdown_link
-
-log = logging.getLogger(__name__)
+from humanize import naturaldelta
 
 
 def gen_filename() -> str:
@@ -21,12 +15,17 @@ def gen_filename() -> str:
     return str(datetime.timestamp(datetime.now())).replace('.', '')
 
 
-def shorten(s: str, approx_string_len: int = 10) -> str:
+def shorten(s: t.Union[t.List[str], str], min_chars: int = 100, max_chars: int = 2000
+            ) -> t.Union[t.List[str], str]:
     """Shortens a string down to an amount of characters."""
-    if len(s) < approx_string_len:
-        return s
+    if isinstance(s, str):
+        return ' '.join(s[:min_chars + 1].split()[:-1]) + '...' if len(s) > min_chars else s
 
-    return ' '.join(s[:approx_string_len + 1].split()[:-1]) + '...'
+    elif isinstance(s, list):
+        return [lst for index, lst in enumerate(s) if sum(map(len, s[:index])) < max_chars]
+
+    else:
+        raise ValueError('This function only accepts strings or a list of lists with strings.')
 
 
 async def wait_for_reaction(ctx: Context, emoji: Emoji) -> bool:
@@ -84,13 +83,21 @@ async def get_discord_message(
         return False
 
 
+async def http_get(url: str, *, session: aiohttp.ClientSession) -> t.Any:
+    """Small snippet to get json from a url."""
+    async with session.get(url) as resp:
+        assert resp.status == 200, resp.raise_for_status()
+        return await resp.json()
+
+
 class DefaultEmbed(Embed):
     """Subclassing the embed class to set defaults."""
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, ctx: Context, **kwargs) -> None:
         super().__init__(**kwargs)
 
-        self.set_footer(text=Config.BOT_DESCRIPTION, icon_url=Config.BOT_ICON_LINK)
+        d = naturaldelta(datetime.now() - ctx.bot.startup_time)
+        self.set_footer(text=f'Discord API Latency: {ctx.bot.latency}. Uptime: {d}.')
 
         if 'embed_attachment' in kwargs.keys():
             v = kwargs['embed_attachment']
@@ -99,41 +106,6 @@ class DefaultEmbed(Embed):
 
             self.set_image(url=f'attachment://{f}')
 
-        elif 'single_url' in kwargs.keys():
-            self.description = markdown_link(*kwargs['single_url'])
-
         elif 'description' in kwargs.keys():
             if '`' not in self.description and '\n' not in self.description:
                 self.description = f'`{self.description}`'
-
-        elif 'multiple_urls' in kwargs.keys():
-            pass
-
-
-async def check_if_blocked(ctx: Context, pool: asyncpg.pool.Pool) -> bool:
-    """Checks if user/guild is blocked."""
-    async with pool.acquire() as conn:
-        # Check if user is blocked.
-        _user = await conn.fetch(
-            'SELECT * FROM Blocked_Users WHERE user_id = $1',
-            ctx.author.id
-        )
-
-        if not len(_user):
-            # If the user is not blocked, check if the guild is blocked.
-            _guild = await conn.fetch(
-                'SELECT * FROM Blocked_Guilds WHERE guild_id = $1',
-                ctx.guild.id
-            )
-            if not len(_guild):
-                return True
-
-    # If none of the checks passed, either the guild or the user is blocked.
-    return False
-
-
-async def http_get(url: str, *, session: aiohttp.ClientSession) -> t.Any:
-    """Small snippet to get json from a url."""
-    async with session.get(url) as resp:
-        assert resp.status == 200, resp.raise_for_status()
-        return await resp.json()
