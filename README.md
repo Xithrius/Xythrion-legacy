@@ -12,31 +12,6 @@
 </p>
 
 
-# Checklist:
-- [ ] Extensions:
-    - [ ] Administration:
-        - [x] API_usage
-        - [x] Development
-        - [x] Warnings
-        - [ ] Source
-    - [ ] Generation:
-        - [x] Graphing
-        - [x] QRCodes
-        - [x] Randoms
-        - [ ] Images
-    - [ ] Meta:
-        - [x] Dates
-        - [x] Guilds
-        - [x] Help
-        - [ ] Links
-        - [ ] Prefix
-    - [ ] Requesters
-        - [x] Reddit
-        - [ ] Weather
-        - [ ] Youtube
-        - [ ] Documentation
-
-
 # Setup:
 *NOTE*:
 - This guide assumes you've copied the template from `.env-example` to a file called `.env` that you've created yourself.
