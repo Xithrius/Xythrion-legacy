@@ -6,7 +6,7 @@ from xythrion.bot import Xythrion
 from xythrion.utils import DefaultEmbed
 
 
-class APIManager(Cog, command_attrs=dict(hidden=True)):
+class APIManager(Cog):
     """Changing permissions of guilds/users in different cases for usage of the bot."""
 
     def __init__(self, bot: Xythrion) -> None:

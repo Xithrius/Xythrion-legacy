@@ -3,9 +3,8 @@ from logging import getLogger
 from typing import Optional
 
 import humanize
-from discord import Embed, Message
-from discord.ext.commands import Cog, Context, ExtensionNotLoaded, Greedy, command
-from tabulate import tabulate
+from discord import Embed
+from discord.ext.commands import Cog, Context, ExtensionNotLoaded, command
 
 from xythrion.bot import Xythrion
 from xythrion.extensions import EXTENSIONS
@@ -63,55 +62,8 @@ class Development(Cog, command_attrs=dict(hidden=True)):
 
         await ctx.send(embed=embed)
 
-    @command(name='echo', aliases=('say',))
-    async def _echo(self, ctx: Context, channel_id: Greedy[int], *, msg: str) -> None:
-        """Makes the bot send a message to a channel."""
-        channel = self.bot.get_channel(channel_id[0]) if channel_id else ctx.channel
-        await channel.send(msg)
-
     @command(name='embed')
     async def _embed(self, ctx: Context, *, desc: Optional[str] = None) -> None:
         """Testing out embed descriptions. Discord markdown supported, obviously."""
         embed = Embed(description=desc if desc else '')
-        await ctx.send(embed=embed)
-
-    @command(name='sql')
-    async def _sql(self, ctx: Context, command_type: str, *, _command: str) -> Optional[Message]:
-        """Executes a command given by the user. User has to be an owner."""
-        async with self.bot.pool.acquire() as conn:
-            if command_type == 'fetch':
-                output = await conn.fetch(_command)
-
-                try:
-                    keys = list(output[0].keys())
-                    table = tabulate([[x[k] for k in keys] for x in output], showindex='Always', headers=keys)
-
-                    await ctx.send(f'```sql\n{table}```')
-
-                except IndexError:
-                    await ctx.send(embed=DefaultEmbed(description='`This table is empty.`'))
-
-            elif command_type == 'execute':
-                output = await conn.execute(_command)
-                await ctx.send(f'```sql\n{output}```')
-
-            else:
-                embed = DefaultEmbed(description=f'"{command_type}" is not a valid command type.')
-                return await ctx.send(embed=embed)
-
-    @command(name='sql_tables')
-    async def _sql_tables(self, ctx: Context) -> None:
-        """Sends all the names of the tables in the database."""
-        async with self.bot.pool.acquire() as conn:
-            tables = await conn.fetch('''
-                SELECT table_name FROM information_schema.tables
-                    WHERE table_schema = 'public'
-                    ORDER BY table_name
-            ''')
-
-        tables = [x['table_name'] for x in tables]
-        tables = '\n'.join(f'{str(i).zfill(3)} | {t}' for i, t in enumerate(tables))
-
-        embed = DefaultEmbed(description=f'```py\n{tables}\n```')
-
         await ctx.send(embed=embed)
