@@ -1,12 +1,12 @@
 import logging
-import re
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import AnyStr, Iterable, List, Optional, Union
 
 import numpy as np
-from sympy import symbols, sympify
+from discord.ext.commands import Context
+from matplotlib.pyplot import Axes, Figure
 
-from .shortcuts import gen_filename
+from .shortcuts import DefaultEmbed, gen_filename
 
 log = logging.getLogger(__name__)
 
@@ -17,48 +17,55 @@ try:
     import matplotlib.pyplot as plt
 
     plt.style.use('dark_background')
-
-except Exception as e:
-    log.error(f'Error when importing matplotlib: {e}')
-
-
-def create_graph(x: Union[np.ndarray, List[Union[int, float]]],
-                 y: Union[np.ndarray, List[Union[int, float]]]) -> str:
-    """Creates a graph from a list of coordinates."""
-    plt.plot(x, y)
+    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     plt.grid(True, linestyle='-.', linewidth=0.5)
 
-    # Save the graph image to a file.
-    f = Path.cwd() / 'tmp' / f'{gen_filename()}.png'
-    plt.savefig(f)
-
-    # Clearing the graph so the next one doesn't have previously graphed info.
-    plt.clf()
-
-    return str(f)
+except Exception as e:
+    log.critical(f'Error when importing matplotlib: {e}')
 
 
-def create_graph_from_expression(expression: str, domain: Optional[List[Union[int, float]]] = None) -> str:
-    """
-    Uses SymPy and MatPlotLib to create a graph from an expression.
+class Graph:
+    """Getting graphs all over the place."""
 
-    Dynamic numpy.arange by getting difference in domain and dividing by like 50.
-    """
-    # Removing the whitespace
-    expression = re.sub(re.compile(r'\s+'), '', expression)
+    def __init__(
+            self,
+            ctx: Context,
+            x: Optional[Union[np.ndarray, List[Union[int, float]]]] = None,
+            y: Optional[Union[np.ndarray, List[Union[int, float]]]] = None,
+            *,
+            fig: Optional[Figure] = None,
+            ax: Optional[Axes] = None,
+            x_labels: Optional[Iterable[AnyStr]] = None,
+            y_labels: Optional[Iterable[AnyStr]] = None
+    ) -> None:
+        if not fig and not ax:
+            self.fig, self.ax = plt.subplots()
 
-    # Creating the modifiable expression.
-    expression = sympify(expression)
+        else:
+            self.fig = fig
+            self.ax = ax
 
-    # There will only be one variable.
-    symbol = symbols('x')
+        if x:
+            self.ax.plot(x)
 
-    domain = domain if domain else (-10, 10)
+        elif y:
+            self.ax.plot(y)
 
-    # Dynamic domain, 50 steps between domain numbers.
-    x = np.arange(*domain, sum((abs(domain[0]), domain[1])) / 50)
+        elif x:
+            if y:
+                self.ax.plot(x, y)
 
-    # Creating the y values.
-    y = [expression.subs(symbol, i) for i in x]
+        if x_labels:
+            self.ax.set_xticklabels(x_labels)
 
-    return create_graph(x, y)
+        if y_labels:
+            self.ax.set_yticklabels(y_labels)
+
+        file = f'{gen_filename()}.png'
+        self.save_path = Path.cwd() / 'tmp' / file
+        self.fig.savefig(self.save_path, format='png')
+
+        self.embed = DefaultEmbed(ctx, embed_attachment=self.save_path)
+
+        # self.fig.clear()
+        # self.ax.clear()
