@@ -11,6 +11,29 @@ from .constants import Postgresql
 log = logging.getLogger(__name__)
 
 
+def build_where_string(func: Callable) -> Callable:
+    """Creating strings out of iterables so fetch/executions of the Postgresql database are easier."""
+
+    @functools.wraps(func)
+    async def wrapper(**kwargs) -> None:
+        """Modifying the where and items kwargs, if they exist into strings."""
+        where = kwargs.get('where')
+        where_str = ' AND '.join(f'{k} = ${i}' for i, k in enumerate(where.keys(), start=1))
+        kwargs['where'] = (where_str, list(where.values()))
+
+        if 'items' in kwargs.keys():
+            items = kwargs.get('items', None)
+
+            if items != '*' and isinstance(items, tuple) and len(items) > 1:
+                kwargs['items'] = f'({", ".join(items)})'
+
+        result = await func(**kwargs)
+
+        return result
+
+    return wrapper
+
+
 class DatabaseSetup:
     """Setting up the database before the bot initializes completely."""
 
@@ -22,14 +45,6 @@ class DatabaseSetup:
 
         self.pool = self.loop.run_until_complete(self.create_asyncpg_pool())
         self.tables = self.loop.run_until_complete(self.setup_tables())
-
-    def __str__(self) -> str:
-        """The name of the host of the database."""
-        return Postgresql.HOST
-
-    def __bool__(self) -> bool:
-        """If the database is not available."""
-        return all((self.pool, self.tables))
 
     @staticmethod
     async def create_asyncpg_pool() -> Optional[asyncpg.pool.Pool]:
@@ -86,6 +101,14 @@ class Database(DatabaseSetup):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
+    def __str__(self) -> str:
+        """The name of the host of the database."""
+        return Postgresql.HOST
+
+    def __bool__(self) -> bool:
+        """If the database is not available."""
+        return all((self.pool, self.tables))
+
     async def check_if_blocked(self, ctx: Context) -> bool:
         """Checks if user/guild is blocked."""
         async with self.pool.acquire() as conn:
@@ -101,29 +124,6 @@ class Database(DatabaseSetup):
 
         # If none of the checks passed, either the guild or the user is blocked.
         return False
-
-    @staticmethod
-    def build_where_string(func: Callable) -> Callable:
-        """Creating strings out of iterables so fetch/executions of the Postgresql database are easier."""
-
-        @functools.wraps(func)
-        async def wrapper(**kwargs) -> None:
-            """Modifying the where and items kwargs, if they exist into strings."""
-            where = kwargs.get('where')
-            where_str = ' AND '.join(f'{k} = ${i}' for i, k in enumerate(where.keys(), start=1))
-            kwargs['where'] = (where_str, list(where.values()))
-
-            if 'items' in kwargs.keys():
-                items = kwargs.get('items', None)
-
-                if items != '*' and isinstance(items, tuple) and len(items) > 1:
-                    kwargs['items'] = f'({", ".join(items)})'
-
-            result = await func(**kwargs)
-
-            return result
-
-        return wrapper
 
     @build_where_string
     async def select(self, *, table: str, items: Union[Tuple[Any], str] = '*', where: Tuple[str, str]
