@@ -1,4 +1,6 @@
 import logging
+from os import listdir, remove
+from pathlib import Path
 
 import discord
 from discord.ext.commands import when_mentioned_or
@@ -8,6 +10,10 @@ from xythrion.extensions import EXTENSIONS
 from .constants import Config
 
 log = logging.getLogger(__name__)
+
+log.info('Cleaning out tmp/...')
+for file in listdir(Path.cwd() / 'tmp'):
+    remove(Path.cwd() / 'tmp' / file)
 
 bot = Xythrion(
     description=Config.BOT_DESCRIPTION,
