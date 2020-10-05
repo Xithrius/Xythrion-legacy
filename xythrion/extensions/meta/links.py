@@ -1,14 +1,9 @@
-from datetime import datetime
-from typing import List
-
-from discord import Embed, Permissions
-from discord.ext.commands import Cog, Context, command, cooldown, group
-from discord.ext.commands.cooldowns import BucketType
+from discord import Permissions
+from discord.ext.commands import Cog, Context, command, group
 from discord.utils import oauth_url
-from humanize import intcomma, naturaldelta
 
 from xythrion.bot import Xythrion
-from xythrion.utils import DefaultEmbed, markdown_link
+from xythrion.utils import DefaultEmbed, check_for_subcommands, markdown_link
 
 
 class Links(Cog):
@@ -17,33 +12,22 @@ class Links(Cog):
     def __init__(self, bot: Xythrion):
         self.bot = bot
 
-    @staticmethod
-    async def get_links() -> List[str]:
-        """Provides links about the creator and bot."""
-        branch_link = 'https://github.com/Xithrius/Xythrion/tree/55fe604d293e42240905e706421241279caf029e'
+    async def cog_check(self, ctx: Context) -> bool:
+        """Checks if the user and/or guild has permissions for this command."""
+        return await self.bot.database.check_if_blocked(ctx) and self.bot.database
+
+    @command(aliases=('desc', 'description'))
+    async def info(self, ctx: Context) -> None:
+        """Information about bot origin along with usage statistics."""
         info = {
             'Xythrion Github repository': 'https://github.com/Xithrius/Xythrion',
-            'First commit to the repository': branch_link,
             "Xithrius' Twitter": 'https://twitter.com/_Xithrius',
             "Xithrius' Github": 'https://github.com/Xithrius',
             "Xithrius' Twitch": 'https://twitch.tv/Xithrius'
         }
 
-        return [markdown_link(k, v) for k, v in info.items()]
-
-    @cooldown(1, 5, BucketType.user)
-    @command(aliases=['uptime', 'runtime', 'desc', 'description'])
-    async def info(self, ctx: Context) -> None:
-        """Information about bot origin along with usage statistics."""
-        media_links = await self.get_links()
-
-        d = {
-            'Links': media_links,
-            'Lines of Python code': [intcomma(self.bot.line_amount)],
-            'Current uptime': [naturaldelta(datetime.now() - self.bot.startup_time)]
-        }
-        formatted = '\n'.join([f'\n**{k}:**\n' + '\n'.join(x for x in v) for k, v in d.items()])
-        embed = Embed(description=formatted)
+        embed = DefaultEmbed(
+            ctx, title='**Links**', description='\n'.join(markdown_link(k, v) for k, v in info.items()))
 
         await ctx.send(embed=embed)
 
@@ -51,38 +35,37 @@ class Links(Cog):
     async def invite(self, ctx: Context) -> None:
         """Gives the invite link of this bot."""
         url = oauth_url(self.bot.user.id, Permissions(19520))
+        embed = DefaultEmbed(ctx, description=markdown_link('invite_link', url))
 
-        await ctx.send(embed=DefaultEmbed(single_url=('Invite url', url)))
+        await ctx.send(embed=embed)
 
-    @group()
-    async def link(self, ctx: Context, link_query: str) -> None:
-        """Attempts to get a link from the database."""
-        async with self.bot.pool.acquire() as conn:
-            links = await conn.fetch('SELECT (name, link) FROM Links WHERE id = $1', ctx.author.id)
-            if links:
-                await ctx.send([x.link for x in links if x.name == link_query][0])
-
-            else:
-                embed = DefaultEmbed(description='No link by that name could be found.')
-                await ctx.send(embed=embed)
+    @group(aliases=('links',))
+    async def link(self, ctx: Context) -> None:
+        """Group command for management of links."""
+        if ctx.invoked_subcommand is None:
+            await check_for_subcommands(ctx)
 
     @link.command()
-    async def create(self, ctx: Context, name: str, url: str) -> None:
-        """Creates a link if it doesn't exist in the database."""
-        async with self.bot.pool.acquire() as conn:
-            links = await conn.fetch('SELECT * FROM Links WHERE name = $1', name)
-            if len(links):
-                embed = DefaultEmbed(description=f'Link "{name}" already exists in the database.')
-                await ctx.send(embed=embed)
+    async def show(self, ctx: Context, name: str) -> None:
+        """Shows a link that a user selected."""
+        pass
 
-            else:
-                await conn.execute(
-                    'INSERT INTO Links(t, id, name, link) Values($1, $2, $3, $4)',
-                    datetime.now(), ctx.author.id, name, url
-                )
+    @link.command()
+    async def search(self, ctx: Context, name: str) -> None:
+        """Queries the database for a link."""
+        pass
+
+    @link.command()
+    async def random(self, ctx: Context) -> None:
+        """Selects a random link from the database."""
+        pass
+
+    @link.command()
+    async def add(self, ctx: Context, name: str, url: str) -> None:
+        """Adds a link to the database."""
+        pass
 
     @link.command()
     async def remove(self, ctx: Context, name: str) -> None:
-        """Attempts to remove a link from the database."""
-        async with self.bot.pool.acquire() as conn:
-            await conn.execute('DELETE FROM Links WHERE id = $1, name = $2', ctx.author.id, name)
+        """Removes a link from the database."""
+        pass
