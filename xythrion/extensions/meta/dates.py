@@ -1,13 +1,10 @@
 from datetime import datetime
-from logging import getLogger
 
-from discord.ext.commands import Cog, Context, Greedy, command, is_owner
+from discord.ext.commands import Cog, Context, Greedy, command
 from humanize import naturaldate, precisedelta
 
 from xythrion.bot import Xythrion
 from xythrion.utils import DefaultEmbed
-
-log = getLogger(__name__)
 
 
 class Dates(Cog):
@@ -16,8 +13,11 @@ class Dates(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
+    async def cog_check(self, ctx: Context) -> bool:
+        """Checks if the user and/or guild has permissions for this command."""
+        return await self.bot.database.check_if_blocked(ctx) and self.bot.database
+
     @command()
-    @is_owner()
     async def create_date(self, ctx: Context, name: str, dates: Greedy[int]) -> None:
         """Creating a new data to track the time difference from."""
         async with self.bot.pool.acquire() as conn:
@@ -26,7 +26,7 @@ class Dates(Cog):
                 datetime(*dates), ctx.author.id, name
             )
 
-        embed = DefaultEmbed(description=f'Date "{name}" has been put into the database.')
+        embed = DefaultEmbed(ctx, description=f'Date "{name}" has been put into the database.')
 
         await ctx.send(embed=embed)
 
@@ -34,7 +34,7 @@ class Dates(Cog):
     async def _date(self, ctx: Context, name: str) -> None:
         """Getting the name of the date and the difference between now and then."""
         async with self.bot.pool.acquire() as conn:
-            d = await conn.fetch('SELECT t FROM Dates WHERE name = $1', name)
+            d = await conn.fetch('SELECT t FROM Dates WHERE name = $1 AND id = $2', name, ctx.author.id)
 
         if len(d):
             delta = precisedelta(datetime.now() - d[0]["t"], minimum_unit='days', format='%0.4f',
@@ -42,14 +42,16 @@ class Dates(Cog):
 
             if datetime.now() > d[0]['t']:
                 embed = DefaultEmbed(
+                    ctx,
                     description=f'{delta} have passed since {naturaldate(d[0]["t"])}, the start of "{name}".')
 
             else:
-                embed = DefaultEmbed(description=f'{naturaldate(d[0]["t"])} is in {delta}.')
+                embed = DefaultEmbed(ctx, description=f'{naturaldate(d[0]["t"])} is in {delta}.')
 
             await ctx.send(embed=embed)
 
         else:
-            embed = DefaultEmbed(description=f'Could not find date named "{name}" stored in the database.')
+            embed = DefaultEmbed(ctx,
+                                 description=f'Could not find date named "{name}" stored in the database.')
 
             await ctx.send(embed=embed)
