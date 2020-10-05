@@ -8,7 +8,7 @@ from discord.ext.commands import Cog, Context, Greedy, group
 from sympy import symbols, sympify
 
 from xythrion.bot import Xythrion
-from xythrion.utils import DefaultEmbed, Graph
+from xythrion.utils import DefaultEmbed, Graph, check_for_subcommands
 
 log = logging.getLogger(__name__)
 
@@ -19,9 +19,9 @@ class Graphing(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    # async def cog_check(self, ctx: Context) -> bool:
-    #     """Checking if the user running commands is trusted by the owner."""
-    #     return await self.bot.database.check_if_blocked(ctx)
+    async def cog_check(self, ctx: Context) -> bool:
+        """Checks if the user and/or guild has permissions for this command."""
+        return await self.bot.database.check_if_blocked(ctx)
 
     @staticmethod
     def create_graph_from_expression(
@@ -46,14 +46,15 @@ class Graphing(Cog):
         x = np.arange(*domain, sum((abs(domain[0]), domain[1])) / 50)
 
         # Creating the y values.
-        y = [expression.subs(symbol, i) for i in x]
+        y = np.array([expression.subs(symbol, i) for i in x])
 
         return Graph(ctx, x, y)
 
     @group(aliases=('plot',))
     async def graph(self, ctx: Context) -> None:
         """Group function for graphing."""
-        pass
+        if ctx.invoked_subcommand is None:
+            await check_for_subcommands(ctx)
 
     @graph.command(aliases=('ex',))
     async def expression(self, ctx: Context, domain_nums: Greedy[Union[int, float]], *, expression: str

@@ -17,8 +17,6 @@ try:
     import matplotlib.pyplot as plt
 
     plt.style.use('dark_background')
-    plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
-    plt.grid(True, linestyle='-.', linewidth=0.5)
 
 except Exception as e:
     log.critical(f'Error when importing matplotlib: {e}')
@@ -34,7 +32,7 @@ class Graph:
             y: Optional[Union[np.ndarray, List[Union[int, float]]]] = None,
             *,
             fig: Optional[Figure] = None,
-            ax: Optional[Axes] = None,
+            ax: Optional[Union[Axes, List[Axes]]] = None,
             x_labels: Optional[Iterable[AnyStr]] = None,
             y_labels: Optional[Iterable[AnyStr]] = None
     ) -> None:
@@ -45,20 +43,29 @@ class Graph:
             self.fig = fig
             self.ax = ax
 
-        if x:
-            self.ax.plot(x)
+        self.fig.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
 
-        elif y:
-            self.ax.plot(y)
+        if isinstance(self.ax, list) and self.ax:
+            for x in self.ax:
+                x.grid(True, linestyle='-.', linewidth=0.5)
 
-        elif x and y:
-            self.ax.plot(x, y)
+        else:
+            self.ax.grid(True, linestyle='-.', linewidth=0.5)
 
-        if x_labels:
-            self.ax.set_xticklabels(x_labels)
+            if all((x.any(), y.any())):
+                self.ax.plot(x, y)
 
-        if y_labels:
-            self.ax.set_yticklabels(y_labels)
+            elif x:
+                self.ax.plot(x)
+
+            elif y:
+                self.ax.plot(y)
+
+            if x_labels:
+                self.ax.set_xticklabels(x_labels)
+
+            if y_labels:
+                self.ax.set_yticklabels(y_labels)
 
         file = f'{gen_filename()}.png'
         self.save_path = Path.cwd() / 'tmp' / file
@@ -66,5 +73,11 @@ class Graph:
 
         self.embed = DefaultEmbed(ctx, embed_attachment=self.save_path)
 
-        # self.fig.clear()
-        # self.ax.clear()
+        self.fig.clear()
+
+        if isinstance(self.ax, list):
+            for x in self.ax:
+                x.clear()
+
+        else:
+            self.ax.clear()
