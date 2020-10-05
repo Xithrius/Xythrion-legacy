@@ -3,7 +3,6 @@ from logging import getLogger
 from typing import Optional
 
 import humanize
-from discord import Embed
 from discord.ext.commands import Cog, Context, ExtensionNotLoaded, command
 
 from xythrion.bot import Xythrion
@@ -44,7 +43,9 @@ class Development(Cog, command_attrs=dict(hidden=True)):
             f'{ctx.author.name} reloaded extension{"" if ext else "s"} successfully in about {ms}.'
         )
 
-        await ctx.send(f'`Extension{" " + ext if ext else "s"} reloaded in about {ms}.`')
+        embed = DefaultEmbed(ctx, description=f'Extension{" " + ext if ext else "s"} reloaded in about {ms}.')
+
+        await ctx.send(embed=embed)
 
     @command(name='logout')
     async def _logout(self, ctx: Context) -> None:
@@ -58,10 +59,4 @@ class Development(Cog, command_attrs=dict(hidden=True)):
 
         embed = DefaultEmbed(ctx, description=f'```py\n{extensions}\n```')
 
-        await ctx.send(embed=embed)
-
-    @command(name='embed')
-    async def _embed(self, ctx: Context, *, desc: Optional[str] = None) -> None:
-        """Testing out embed descriptions. Discord markdown supported, obviously."""
-        embed = Embed(description=desc if desc else '')
         await ctx.send(embed=embed)
