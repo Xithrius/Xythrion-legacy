@@ -1,6 +1,6 @@
 from typing import Optional
 
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Cog, Context, command, is_owner
 
 from xythrion.bot import Xythrion
 from xythrion.utils import DefaultEmbed
@@ -12,11 +12,8 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    async def cog_check(self, ctx: Context) -> bool:
-        """Checking if the user running commands is the owner of this bot."""
-        return await self.bot.is_owner(ctx.author)
-
     @command()
+    @is_owner()
     async def restore_guild_api_permissions(self, ctx: Context, guild_id: Optional[int] = None) -> None:
         """Restores the permissions for a specific guild."""
         async with self.bot.pool.acquire() as conn:
@@ -32,6 +29,7 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
         await ctx.send(embed=embed)
 
     @command()
+    @is_owner()
     async def restore_user_api_permissions(self, ctx: Context, user_id: Optional[int] = None) -> None:
         """Restores API permissions for a user."""
         async with self.bot.pool.acquire() as conn:
@@ -47,6 +45,7 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
         await ctx.send(embed=embed)
 
     @command()
+    @is_owner()
     async def remove_guild_api_permissions(self, ctx: Context, guild_id: Optional[int] = None) -> None:
         """Removes API permissions for a specific guild."""
         async with self.bot.pool.acquire() as conn:
@@ -62,6 +61,7 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
         await ctx.send(embed=embed)
 
     @command()
+    @is_owner()
     async def remove_user_api_permissions(self, ctx: Context, user_id: Optional[int] = None) -> None:
         """Removes API permissions for a specific user."""
         async with self.bot.pool.acquire() as conn:
@@ -73,5 +73,18 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
         user = self.bot.get_user(user_id) if user_id else ctx.author
         embed = DefaultEmbed(
             ctx, description=f'API Permissions Removed from user {user.name if user else user_id}.')
+
+        await ctx.send(embed=embed)
+
+    @command(aliases=('blocked', 'amiblocked'))
+    async def am_i_blocked(self, ctx: Context) -> None:
+        """Checking if the guild that the user is in and/or if the user is blocked."""
+        async with self.bot.pool.acquire() as conn:
+            u = await conn.fetch('SELECT * FROM Blocked_Users WHERE user_id = $1', ctx.author.id)
+            g = await conn.fetch('SELECT * FROM Blocked_Guilds WHERE guild_id = $1', ctx.guild.id)
+
+            blocked_string = f'`User:` **{"Yes." if u else "No."}**\n`Guild:` **{"Yes." if g else "No."}**'
+
+        embed = DefaultEmbed(ctx, description=blocked_string)
 
         await ctx.send(embed=embed)
