@@ -1,7 +1,6 @@
 import asyncio
-import functools
 import logging
-from typing import Any, Callable, Optional, Tuple, Union
+from typing import Optional
 
 import asyncpg
 from discord.ext.commands import Context
@@ -9,29 +8,6 @@ from discord.ext.commands import Context
 from .constants import Postgresql
 
 log = logging.getLogger(__name__)
-
-
-def build_where_string(func: Callable) -> Callable:
-    """Creating strings out of iterables so fetch/executions of the Postgresql database are easier."""
-
-    @functools.wraps(func)
-    async def wrapper(**kwargs) -> None:
-        """Modifying the where and items kwargs, if they exist into strings."""
-        where = kwargs.get('where')
-        where_str = ' AND '.join(f'{k} = ${i}' for i, k in enumerate(where.keys(), start=1))
-        kwargs['where'] = (where_str, list(where.values()))
-
-        if 'items' in kwargs.keys():
-            items = kwargs.get('items', None)
-
-            if items != '*' and isinstance(items, tuple) and len(items) > 1:
-                kwargs['items'] = f'({", ".join(items)})'
-
-        result = await func(**kwargs)
-
-        return result
-
-    return wrapper
 
 
 class DatabaseSetup:
@@ -124,38 +100,3 @@ class Database(DatabaseSetup):
 
         # If none of the checks passed, either the guild or the user is blocked.
         return False
-
-    @build_where_string
-    async def select(self, *, table: str, items: Union[Tuple[Any], str] = '*', where: Tuple[str, str]
-                     ) -> asyncpg.Record:
-        """
-        Select value(s) from the Postgresql database.
-
-        Example: 'SELECT * FROM table WHERE guild_id = $1 AND something_else = $2'
-        """
-        async with self.pool.acquire() as conn:
-            return conn.fetch(
-                f'SELECT {items} FROM {table} {"WHERE " + where[0] if where else ""}', *where[1]
-            )
-
-    @build_where_string
-    async def insert(self, *, table: str, items: Union[Tuple[Any], str] = '*', where: Tuple[str, str]
-                     ) -> asyncpg.Record:
-        """
-        Insert value(s) from the Postgresql database.
-
-        Example: 'INSERT INTO table(item, item2) VALUES($1, $2)', something, another
-        """
-        async with self.pool.acquire() as conn:
-            return conn.execute(
-                f'INSERT INTO {table} VALUES'
-            )
-
-    @build_where_string
-    async def delete(self, *, table: str, where: str) -> asyncpg.Record:
-        """
-        Delete value(s) from the Postgresql database.
-
-        Example: 'DELETE FROM table WHERE something = $1 AND another_thing = $2', something, another
-        """
-        pass
