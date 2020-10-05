@@ -65,6 +65,17 @@ async def get_discord_message(
         return False
 
 
+async def check_for_subcommands(ctx: Context) -> None:
+    """If an invalid subcommand is passed, this is brought up."""
+    lst = ', '.join([x.name for x in ctx.command.commands if x.enabled])
+
+    error_string = f'Unknown command. Available group command(s): {lst}'
+
+    embed = DefaultEmbed(ctx, description=error_string)
+
+    await ctx.send(embed=embed)
+
+
 async def http_get(url: str, *, session: aiohttp.ClientSession) -> t.Any:
     """Small snippet to get json from a url."""
     async with session.get(url) as resp:
@@ -78,12 +89,11 @@ class DefaultEmbed(Embed):
     def __init__(self, ctx: Context, **kwargs) -> None:
         super().__init__(**kwargs)
 
-        d = naturaldelta(datetime.now() - ctx.bot.startup_time)
-        self.set_footer(text=f'Latency: {round(ctx.bot.latency / 1000, 2)}ms. Uptime: {d}.')
+        self.set_footer(text=f'Bot uptime: {naturaldelta(datetime.now() - ctx.bot.startup_time)}.')
 
         if 'embed_attachment' in kwargs.keys():
             v = kwargs['embed_attachment']
-            f = v.split(os.sep)[-1]
+            f = str(v).split(os.sep)[-1]
             self.file = File(v, filename=f)
 
             self.set_image(url=f'attachment://{f}')
