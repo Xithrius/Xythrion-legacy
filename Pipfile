@@ -15,6 +15,7 @@ tabulate = "~=0.8.7"
 sympy = "~=1.6.2"
 fuzzywuzzy = "~=0.18.0"
 gTTS = "~=2.1.1"
+numpy = "~=1.19.2"
 
 [dev-packages]
 flake8 = "~=3.8"
