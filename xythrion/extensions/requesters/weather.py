@@ -1,12 +1,16 @@
+import functools
 import os
+from datetime import datetime
+from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
 from discord.ext.commands import Cog, Context, group
+from tabulate import tabulate
 
 from xythrion.bot import Xythrion
 from xythrion.constants import WeatherAPIs
-from xythrion.utils import Graph, c2f, http_get
+from xythrion.utils import Graph, c2f, check_for_subcommands, http_get, k2c, k2f
 
 EARTH_URL = 'https://api.openweathermap.org/data/2.5/forecast?zip={0},{1}&appid={2}'
 MARS_URL = f'https://api.nasa.gov/insight_weather/?api_key={WeatherAPIs.MARS}&feedtype=json&ver=1.0'
@@ -25,75 +29,84 @@ class Weather(Cog):
     @group()
     async def weather(self, ctx: Context) -> None:
         """Getting Weather for different planets."""
-        pass
+        if ctx.invoked_subcommand is None:
+            await check_for_subcommands(ctx)
 
-    # @weather.command()
-    # async def earth(self, ctx: Context, zip_code: int, country_code: str = 'US') -> None:
-    #     """Getting weather for planet Earth."""
-    #     _json = await http_get(
-    #         EARTH_URL.format(zip_code, country_code.upper(), WeatherAPIs.EARTH), session=self.bot.session)
-    #
-    #     lst = {}
-    #     for i in _json['list']:
-    #         lst[i['dt']] = {
-    #             'description': i['weather'][0]['description'],
-    #             '°K': i['main']['temp'], '°F': k2f(i['main']['temp']), '°C': k2c(i['main']['temp']),
-    #             'humidity': i['main']['humidity'],
-    #             'wind speed': i['wind']['speed']
-    #         }
-    #
-    #     titles = ['Date', 'Description', '°K', '°F', '°C', 'Humidity (%)', 'Wind (m/s)']
-    #     dates = [
-    #         datetime.fromtimestamp(k).strftime('%A, %I:%M%p').lower().capitalize() for k in lst.keys()
-    #     ]
-    #     lst = [[dates[i]] + list(v.values()) for i, v in enumerate(lst.values())]
-    #     table = await self.create_table(lst, titles)
-    #
-    #     await ctx.send(f'```\n{table}```')
+    @weather.command()
+    async def earth(self, ctx: Context, zip_code: int, country_code: str = 'US') -> None:
+        """Getting weather for the planet of Earth."""
+        _json = await http_get(
+            EARTH_URL.format(zip_code, country_code.upper(), WeatherAPIs.EARTH), session=self.bot.session)
 
-    @staticmethod
-    def create_mars_graph(ctx: Context, _json: dict) -> Graph:
-        """Manipulating JSON data from the NASA Mars API."""
+        lst, dates = [], []
+        for i in _json['list']:
+            lst.append(
+                [k2f(i['main']['temp']), k2c(i['main']['temp']), i['main']['humidity'], i['wind']['speed']])
+            dates.append(datetime.fromtimestamp(i['dt']).strftime('%a: %H%p').lower().title())
+
+        titles = ['°F', '°C', 'Humidity (%)', 'Wind (m/s)']
+
+        func = functools.partial(self._create_weather_graph_and_table, ctx, lst, titles, dates, 'Time')
+        _graph, _table = await self.bot.loop.run_in_executor(None, func)
+
+        _graph.embed.title = '**Weather on Earth.**'
+
+        await ctx.send(file=_graph.embed.file, embed=_graph.embed, content=_table)
+
+        os.remove(_graph.save_path)
+
+    @weather.command()
+    async def mars(self, ctx: Context) -> None:
+        """Getting weather for the planet of Mars."""
+        _json = await http_get(MARS_URL, session=self.bot.session)
         sols = _json['sol_keys']
         lst = []
         titles = ['°F', '°C', 'Pressure (Pa)', 'Wind (m/s)']
 
         for sol in sols:
-            i = _json[sol]
-            c = i['AT']['av']
-            lst.append([c2f(c), c, i['PRE']['av'], i['HWS']['av']])
+            try:
+                i = _json[sol]
+                c = i['AT']['av']
+                lst.append([c2f(c), c, i['PRE']['av'], i['HWS']['av']])
 
-        fig, axes = plt.subplots(nrows=2, ncols=2)
+            except KeyError:
+                break
 
-        lst = np.array(lst)
-        lst = [lst[:, i] for i in range(lst.shape[1])]
+        func = functools.partial(self._create_weather_graph_and_table, ctx, lst, titles, sols, 'Sol')
+        _graph, _table = await self.bot.loop.run_in_executor(None, func)
 
-        for i, (ax, title) in enumerate(zip(sum(axes, []), titles)):
-            ax.plot(lst[i])
-            ax.title(label=title)
-            ax.set_xticklabels(sols)
+        _graph.embed.title = f'**Weather on Mars sols {sols[0]}-{sols[-1]}.**'
 
-        return Graph(ctx, fig=fig)
-
-    @weather.command()
-    async def mars(self, ctx: Context) -> None:
-        """Getting weather for planet Mars."""
-        _json = await http_get(MARS_URL, session=self.bot.session)
-        _graph = self.bot.loop.run_in_executor(None, self.create_mars_graph, ctx, _json)
-
-        await ctx.send(file=_graph.embed.file, embed=_graph.embed)
+        await ctx.send(file=_graph.embed.file, embed=_graph.embed, content=_table)
 
         os.remove(_graph.save_path)
 
-    # @staticmethod
-    # async def create_table(lst: List[str], titles: List[str]) -> str:
-    #     """Creates a table from the tabulate module."""
-    #     table = tabulate(
-    #         lst, titles,
-    #         tablefmt='simple', showindex=False,
-    #         numalign='left', stralign='right',
-    #         floatfmt='.2f'
-    #     ).split('\n')
-    #
-    #
-    #     return table
+    def _create_weather_graph_and_table(self, ctx: Context, data_lst: List[List[float]],
+                                        titles: List[str], days: List[str], day_title: str
+                                        ) -> Tuple[Graph, str]:
+        """Manipulating JSON data from weather APIs."""
+        fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(nrows=2, ncols=2)
+        axes = [ax1, ax2, ax3, ax4]
+
+        lst = np.array(data_lst)
+
+        lst = [lst[:, i] for i in range(lst.shape[1])]
+
+        for i, (ax, title) in enumerate(zip(axes, titles)):
+            ax.plot(lst[i])
+            ax.set_title(title)
+            ax.set_xticklabels(days, rotation=30)
+
+        return Graph(ctx, fig=fig, ax=axes), self._create_table(days, day_title, titles, data_lst)
+
+    @staticmethod
+    def _create_table(days: List[str], day_title: str, titles: List[str], lst: List[str]) -> str:
+        """Creates a table from the tabulate module."""
+        table = tabulate(
+            [[days[i]] + x for i, x in enumerate(lst)], [day_title, *titles],
+            tablefmt='simple', showindex=False,
+            numalign='left', stralign='right',
+            floatfmt='.2f'
+        )
+
+        return f'```py\n{table}```'
