@@ -1,7 +1,7 @@
 import functools
 import os
 from datetime import datetime
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -100,7 +100,7 @@ class Weather(Cog):
         return Graph(ctx, fig=fig, ax=axes), self._create_table(days, day_title, titles, data_lst)
 
     @staticmethod
-    def _create_table(days: List[str], day_title: str, titles: List[str], lst: List[str]) -> str:
+    def _create_table(days: List[str], day_title: str, titles: List[str], lst: List[Any]) -> str:
         """Creates a table from the tabulate module."""
         table = tabulate(
             [[days[i]] + x for i, x in enumerate(lst)], [day_title, *titles],

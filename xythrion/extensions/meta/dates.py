@@ -18,12 +18,12 @@ class Dates(Cog):
         return await self.bot.database.check_if_blocked(ctx) and self.bot.database
 
     @command()
-    async def create_date(self, ctx: Context, name: str, dates: Greedy[int]) -> None:
+    async def create_date(self, ctx: Context, name: str, dates: Greedy[int] = 'now') -> None:
         """Creating a new data to track the time difference from."""
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
                 '''INSERT INTO Dates(t, id, name) Values($1, $2, $3)''',
-                datetime(*dates), ctx.author.id, name
+                datetime.now() if dates == 'now' else datetime(*dates), ctx.author.id, name
             )
 
         embed = DefaultEmbed(ctx, description=f'Date "{name}" has been put into the database.')
