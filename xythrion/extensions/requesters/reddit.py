@@ -13,16 +13,12 @@ class Reddit(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    async def cog_check(self, ctx: Context) -> bool:
-        """Checks if the user and/or guild has permissions for this command."""
-        return await self.bot.database.check_if_blocked(ctx)
-
     @Cog.listener()
     async def on_message(self, message: Message) -> None:
         """Scans for Reddit posts and provides info on them."""
         if 'https://www.reddit.com/r/' in message.content:
             url = f'{message.content.rsplit("/", maxsplit=1)[0]}.json'
-            async with self.bot.session.get(url) as resp:
+            async with self.bot.http_session.get(url) as resp:
                 assert resp.status == 200
                 _json = await resp.json()
                 _json = _json[0]['data']['children'][0]['data']
@@ -39,7 +35,7 @@ class Reddit(Cog):
                 'Image url': markdown_link('Link', _json['url'])
             }
             formatted = '\n'.join(f'**{k}**: {v}' for k, v in d.items())
-            embed = DefaultEmbed(description=formatted)
+            embed = DefaultEmbed(self.bot, description=formatted)
 
             await message.channel.send(embed=embed)
 
@@ -58,7 +54,7 @@ class Reddit(Cog):
 
         url = f'https://reddit.com/r/{subreddit}/{status}.json?limit=100&t={timeframe}'
 
-        _json = await http_get(url, session=self.bot.session)
+        _json = await http_get(ctx, url)
 
         _json = _json['data']['children']
         p = _json[randint(0, len(_json) - 1)]['data']

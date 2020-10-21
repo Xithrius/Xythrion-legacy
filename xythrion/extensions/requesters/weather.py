@@ -19,12 +19,8 @@ MARS_URL = f'https://api.nasa.gov/insight_weather/?api_key={WeatherAPIs.MARS}&fe
 class Weather(Cog):
     """Weather for different planets."""
 
-    def __init__(self, bot: Xythrion):
+    def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
-
-    async def cog_check(self, ctx: Context) -> bool:
-        """Checks if the user and/or guild has permissions for this command."""
-        return await self.bot.database.check_if_blocked(ctx)
 
     @group()
     async def weather(self, ctx: Context) -> None:
@@ -36,7 +32,7 @@ class Weather(Cog):
     async def earth(self, ctx: Context, zip_code: int, country_code: str = 'US') -> None:
         """Getting weather for the planet of Earth."""
         _json = await http_get(
-            EARTH_URL.format(zip_code, country_code.upper(), WeatherAPIs.EARTH), session=self.bot.session)
+            ctx, EARTH_URL.format(zip_code, country_code.upper(), WeatherAPIs.EARTH))
 
         lst, dates = [], []
         for i in _json['list']:
@@ -58,7 +54,7 @@ class Weather(Cog):
     @weather.command()
     async def mars(self, ctx: Context) -> None:
         """Getting weather for the planet of Mars."""
-        _json = await http_get(MARS_URL, session=self.bot.session)
+        _json = await http_get(ctx, MARS_URL)
         sols = _json['sol_keys']
         lst = []
         titles = ['°F', '°C', 'Pressure (Pa)', 'Wind (m/s)']
