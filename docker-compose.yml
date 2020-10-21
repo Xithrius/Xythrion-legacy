@@ -2,19 +2,7 @@ version: "3.8"
 
 services:
 
-  postgres:
-    image: postgres:latest
-    init: true
-    restart: always
-
-    env_file:
-      - ./.env
-
-    expose:
-      - 5432
-
-    volumes:
-      - ./postgres_data/:/var/lib/postgresql/data/
+  #  Another service.
 
   xythrion:
     container_name: xythrion
@@ -22,7 +10,7 @@ services:
     restart: always
 
     depends_on:
-      - postgres
+      - mysql
 
     env_file:
       - ./.env
@@ -32,8 +20,8 @@ services:
       dockerfile: Dockerfile
 
     volumes:
-      - ./logs:/xythrion/logs
-      - .:/xythrion:rw
+      - ./logs:/xythrion/logs:rw
+      - .:/xythrion:ro
 
     ports:
       - "5005:5000"
