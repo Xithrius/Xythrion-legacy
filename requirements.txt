@@ -1,9 +1,0 @@
-discord.py
-datetime
-matplotlib
-humanize
-coloredlogs
-aiohttp
-qrcode
-tabulate
-fuzzywuzzy
