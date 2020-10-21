@@ -4,12 +4,6 @@ matplotlib
 humanize
 coloredlogs
 aiohttp
-asyncpg
 qrcode
-Pillow
 tabulate
-sympy
-tensorflow
-python-twitter
 fuzzywuzzy
-gTTS
