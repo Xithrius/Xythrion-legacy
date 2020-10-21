@@ -3,7 +3,7 @@ from os import listdir, remove
 from pathlib import Path
 
 import discord
-from discord.ext.commands import when_mentioned_or
+from discord.ext.commands import when_mentioned
 
 from xythrion.bot import Xythrion
 from xythrion.extensions import EXTENSIONS
@@ -16,8 +16,7 @@ for file in listdir(Path.cwd() / 'tmp'):
     remove(Path.cwd() / 'tmp' / file)
 
 bot = Xythrion(
-    description=Config.BOT_DESCRIPTION,
-    command_prefix=when_mentioned_or('\\'),
+    command_prefix=when_mentioned,
     case_insensitive=True,
     help_command=None,
     allowed_mentions=discord.AllowedMentions(everyone=False)
