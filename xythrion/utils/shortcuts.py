@@ -3,9 +3,8 @@ import os
 import typing as t
 from datetime import datetime
 
-import aiohttp
-from discord import Embed, Emoji, File, Member, Message, Reaction, TextChannel
-from discord.ext.commands import BadArgument, Context, MessageConverter
+from discord import Embed, Emoji, File, Reaction
+from discord.ext.commands import Context
 from humanize import naturaldelta
 
 
@@ -34,35 +33,13 @@ async def wait_for_reaction(ctx: Context, emoji: Emoji) -> bool:
         return user == ctx.message.author and str(reaction.emoji) == emoji
 
     try:
-        _, __ = await ctx.bot.wait_for('reaction_add', timeout=60.0, check=check)
+        await ctx.bot.wait_for('reaction_add', timeout=60.0, check=check)
 
     except asyncio.TimeoutError:
         pass
 
     else:
         return True
-
-
-def permissions_in_channel(member: Member, channel: TextChannel, *permissions: str) -> bool:
-    """Checks if a user has a permission(s) within a channel."""
-    member_perms_in_channel = channel.permissions_for(member)
-    return all(getattr(member_perms_in_channel, permission, False) for permission in permissions)
-
-
-async def get_discord_message(
-        ctx: Context, permissions: t.Iterable[str], text: str) -> t.Union[Message, bool]:
-    """Converts a message ID or link to a message object."""
-    try:
-        msg = await MessageConverter().convert(ctx.channel, text)
-
-        if permissions_in_channel(ctx.author, msg.channel, *permissions):
-            return msg
-
-        else:
-            raise PermissionError
-
-    except BadArgument:
-        return False
 
 
 async def check_for_subcommands(ctx: Context) -> None:
@@ -76,11 +53,12 @@ async def check_for_subcommands(ctx: Context) -> None:
     await ctx.send(embed=embed)
 
 
-async def http_get(url: str, *, session: aiohttp.ClientSession) -> t.Any:
+async def http_get(ctx: Context, url: str) -> t.Any:
     """Small snippet to get json from a url."""
-    async with session.get(url) as resp:
+    async with ctx.bot.http_session.get(url) as resp:
         assert resp.status == 200, resp.raise_for_status()
-        return await resp.json()
+
+    return await resp.json()
 
 
 class DefaultEmbed(Embed):
