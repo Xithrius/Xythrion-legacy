@@ -1,7 +1,7 @@
-import typing as t
+from typing import List, Union
 
 
-def code_block(s: t.Union[str, t.List[str]], language: t.Union[str, None] = 'py') -> str:
+def code_block(s: Union[str, List[str]], language: Union[str, None] = 'py') -> str:
     """Creates a code block for Discord's markdown language."""
     return f'```{0}\n{1}\n```'.format(
         language if language else '', '\n'.join(map(str, s)) if isinstance(s, list) else s

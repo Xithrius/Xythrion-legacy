@@ -7,6 +7,8 @@ from discord import Embed, Emoji, File, Reaction
 from discord.ext.commands import Context
 from humanize import naturaldelta
 
+from xythrion.bot import Xythrion
+
 
 def gen_filename() -> str:
     """Generates a filename from the current date."""
@@ -64,10 +66,12 @@ async def http_get(ctx: Context, url: str) -> t.Any:
 class DefaultEmbed(Embed):
     """Subclassing the embed class to set defaults."""
 
-    def __init__(self, ctx: Context, **kwargs) -> None:
+    def __init__(self, ctx: t.Union[Context, Xythrion], **kwargs) -> None:
         super().__init__(**kwargs)
 
-        self.set_footer(text=f'Bot uptime: {naturaldelta(datetime.now() - ctx.bot.startup_time)}.')
+        startup_time = ctx.bot.startup_time if isinstance(ctx, Context) else ctx.startup_time
+
+        self.set_footer(text=f'Bot uptime: {naturaldelta(datetime.now() - startup_time)}.')
 
         if 'embed_attachment' in kwargs.keys():
             v = kwargs['embed_attachment']
