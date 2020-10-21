@@ -23,6 +23,7 @@ flake8-tidy-imports = "~=4.1.0"
 flake8-todo = "~=0.7"
 pep8-naming = "~=0.11.1"
 pre-commit = "~=2.7.1"
+coverage = "~=5.3"
 
 [requires]
 python_version = "3.8"
@@ -32,3 +33,5 @@ start = "python -m xythrion"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
 flake8 = "python -m flake8"
+test = "coverage run -m unittest"
+report = "coverage report"
