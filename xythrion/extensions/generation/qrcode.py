@@ -14,10 +14,6 @@ class QRCode(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    async def cog_check(self, ctx: Context) -> bool:
-        """Checks if the user and/or guild has permissions for this command."""
-        return await self.bot.database.check_if_blocked(ctx)
-
     @staticmethod
     def _create_qr_code(msg: str, fill_color: str, back_color: str) -> str:
         """Create the QR (quick response) code image."""
@@ -36,7 +32,7 @@ class QRCode(Cog):
         img.save(f)
         return str(f)
 
-    @command()
+    @command(aliases=('qrcode',))
     async def qr(self, ctx: Context, msg: str, fill_color: str = 'black', back_color: str = 'white') -> None:
         """Giving a fractal to the user, with given inputs."""
         async with ctx.typing():
