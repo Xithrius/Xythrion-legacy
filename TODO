@@ -1,0 +1,5 @@
+Begin writing unit tests with either unittest or pytest (find out which would be better).
+
+Create DSL for parsing math expressions, including factorial, e, and pi.
+
+Attempt to learn how neural networks work to interpret what a user wants instead of using commands.
