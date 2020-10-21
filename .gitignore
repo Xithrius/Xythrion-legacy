@@ -114,11 +114,5 @@ config/*.json
 # PyCharm
 /.idea
 
-# tests
-/tests/
-
-# logs
+# Logs
 /logs/
-
-# database stuffs
-/postgres_data/
