@@ -5,26 +5,26 @@ from pathlib import Path
 from typing import Optional, Tuple, Union
 
 from discord import Colour, Embed
-from discord.ext import commands
+from discord.ext import commands as comms
 
 from xythrion.constants import Config
 
 GITHUB_URL = Config.GITHUB_URL
 
 SourceType = Union[
-    commands.HelpCommand,
-    commands.Command,
-    commands.Cog,
+    comms.HelpCommand,
+    comms.Command,
+    comms.Cog,
     str,
-    commands.ExtensionNotLoaded,
+    comms.ExtensionNotLoaded,
 ]
 
 
-class SourceConverter(commands.Converter):
+class SourceConverter(comms.Converter):
     """Convert an argument into a help command, tag, command, or cog."""
 
     # special thanks to Pydis
-    async def convert(self, ctx: commands.Context, argument: str) -> SourceType:
+    async def convert(self, ctx: comms.Context, argument: str) -> SourceType:
         """Convert argument into source object."""
         if argument.lower().startswith("help"):
             return ctx.bot.help_command
@@ -45,14 +45,14 @@ class SourceConverter(commands.Converter):
         elif argument.lower() in tags_cog._cache:
             return argument.lower()
 
-        raise commands.BadArgument(
+        raise comms.BadArgument(
             f"Unable to convert '{argument}' to valid command{', tag,' if show_tag else ''} or Cog."
         )
 
     @staticmethod
     def get_source_location(src_obj: SourceType) -> Tuple[str, str, Optional[int]]:
         """Attemps to get the source of a command and build the URL."""
-        if isinstance(src_obj, commands.Command):
+        if isinstance(src_obj, comms.Command):
             src = src_obj.callback.__code__
             filename = src.co_filename
         else:
@@ -61,13 +61,13 @@ class SourceConverter(commands.Converter):
             try:
                 filename = inspect.getsourcefile(src)
             except TypeError:
-                raise commands.BadArgument("Cannot get source for a dynamically-created object.")
+                raise comms.BadArgument("Cannot get source for a dynamically-created object.")
 
         if not isinstance(src_obj, str):
             try:
                 lines, first_line_no = inspect.getsourcelines(src)
             except OSError:
-                raise commands.BadArgument("Cannot get source for a dynamically-created object.")
+                raise comms.BadArgument("Cannot get source for a dynamically-created object.")
 
             lines_extension = f"#L{first_line_no}-L{first_line_no + len(lines) - 1}"
         else:
@@ -81,14 +81,14 @@ class SourceConverter(commands.Converter):
         return url, file_location, first_line_no or None
 
 
-class Source(commands.Cog):
+class Source(comms.Cog):
     """Command to send the source (github repo) of a command."""
 
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: comms.Bot):
         self.bot = bot
 
-    @commands.command(name="source", brief="Send a link to Xythrion's GitHub repo")
-    async def send_source(self, ctx: commands.Context, arg1: str = "") -> None:
+    @comms.command(name="source", brief="Send a link to Xythrion's GitHub repo")
+    async def send_source(self, ctx: comms.Context, arg1: str = "") -> None:
         """Send the source GitGub url in an embed."""
         src_conv = SourceConverter()
         if arg1:
@@ -111,7 +111,7 @@ class Source(commands.Cog):
                     value=f"[Go To GitHub]({src_url})",
                 )
                 await ctx.send(embed=embed)
-            except commands.BadArgument as e:
+            except comms.BadArgument as e:
                 raise e
         else:
             embed = Embed(title="Xythrion's GitHub Repo", colour=Colour.blue())
@@ -119,8 +119,3 @@ class Source(commands.Cog):
                 name="Repository", value=f"[Go To GitHub]({GITHUB_URL})"
             )
             await ctx.send(embed=embed)
-
-
-def setup(bot: commands.Bot) -> None:
-    """Load the Source cog."""
-    bot.add_cog(Source(bot))
