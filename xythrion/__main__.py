@@ -1,5 +1,5 @@
 import logging
-from os import listdir, remove
+from os import listdir, mkdir, remove
 from pathlib import Path
 
 import discord
@@ -8,6 +8,9 @@ from discord.ext.commands import when_mentioned_or
 from xythrion.bot import Xythrion
 from xythrion.extensions import EXTENSIONS
 from .constants import Config
+
+if not Path.cwd().exists:
+    mkdir(Path.cwd() / 'tmp')
 
 log = logging.getLogger(__name__)
 

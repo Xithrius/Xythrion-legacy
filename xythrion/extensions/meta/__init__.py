@@ -3,6 +3,7 @@ from xythrion.extensions.meta.dates import Dates
 from xythrion.extensions.meta.guilds import Guilds
 from xythrion.extensions.meta.help import Help
 from xythrion.extensions.meta.links import Links
+from xythrion.extensions.meta.source import Source
 
 
 def setup(bot: Xythrion) -> None:
@@ -11,3 +12,4 @@ def setup(bot: Xythrion) -> None:
     bot.add_cog(Guilds(bot))
     bot.add_cog(Help(bot))
     bot.add_cog(Links(bot))
+    bot.add_cog(Source(bot))

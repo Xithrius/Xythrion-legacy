@@ -7,6 +7,7 @@ __all__ = ('Config', 'Postgresql', 'WeatherAPIs')
 class Config(NamedTuple):
     TOKEN = environ.get('BOT_TOKEN')
     BOT_DESCRIPTION = environ.get('BOT_DESCRIPTION', 'Graphing manipulated data through discord.py')
+    GITHUB_URL = environ.get('GITHUB_URL')
 
 
 class Postgresql(NamedTuple):
