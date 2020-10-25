@@ -46,7 +46,7 @@ class SourceConverter(commands.Converter):
             return argument.lower()
 
         raise commands.BadArgument(
-            f"Unable to convert `{argument}` to valid command{', tag,' if show_tag else ''} or Cog."
+            f"Unable to convert '{argument}' to valid command{', tag,' if show_tag else ''} or Cog."
         )
 
     @staticmethod
