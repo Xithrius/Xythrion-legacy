@@ -13,28 +13,28 @@ log = logging.getLogger(__name__)
 try:
     import matplotlib
 
-    matplotlib.use('Agg')
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    plt.style.use('dark_background')
+    plt.style.use("dark_background")
 
 except Exception as e:
-    log.critical(f'Error when importing matplotlib: {e}')
+    log.critical(f"Error when importing matplotlib: {e}")
 
 
 class Graph:
     """Getting graphs all over the place."""
 
     def __init__(
-            self,
-            ctx: Context,
-            x: Optional[Union[np.ndarray, List[Union[int, float]]]] = None,
-            y: Optional[Union[np.ndarray, List[Union[int, float]]]] = None,
-            *,
-            fig: Optional[Figure] = None,
-            ax: Optional[Union[Axes, List[Axes]]] = None,
-            x_labels: Optional[Iterable[AnyStr]] = None,
-            y_labels: Optional[Iterable[AnyStr]] = None
+        self,
+        ctx: Context,
+        x: Optional[Union[np.ndarray, List[Union[int, float]]]] = None,
+        y: Optional[Union[np.ndarray, List[Union[int, float]]]] = None,
+        *,
+        fig: Optional[Figure] = None,
+        ax: Optional[Union[Axes, List[Axes]]] = None,
+        x_labels: Optional[Iterable[AnyStr]] = None,
+        y_labels: Optional[Iterable[AnyStr]] = None,
     ) -> None:
         if not fig and not ax:
             self.fig, self.ax = plt.subplots()
@@ -47,10 +47,10 @@ class Graph:
 
         if isinstance(self.ax, list) and self.ax:
             for x in self.ax:
-                x.grid(True, linestyle='-.', linewidth=0.5)
+                x.grid(True, linestyle="-.", linewidth=0.5)
 
         else:
-            self.ax.grid(True, linestyle='-.', linewidth=0.5)
+            self.ax.grid(True, linestyle="-.", linewidth=0.5)
 
             if all((x.any(), y.any())):
                 self.ax.plot(x, y)
@@ -67,9 +67,9 @@ class Graph:
             if y_labels:
                 self.ax.set_yticklabels(y_labels)
 
-        file = f'{gen_filename()}.png'
-        self.save_path = Path.cwd() / 'tmp' / file
-        self.fig.savefig(self.save_path, format='png')
+        file = f"{gen_filename()}.png"
+        self.save_path = Path.cwd() / "tmp" / file
+        self.fig.savefig(self.save_path, format="png")
 
         self.embed = DefaultEmbed(ctx, embed_attachment=self.save_path)
 

@@ -2,17 +2,19 @@ import re
 from collections import OrderedDict
 from typing import Iterator, List, Tuple
 
-TOKEN_TYPES = OrderedDict((
-    ('OPEN_PAREN', r'^\(|\['),
-    ('CLOSE_PAREN', r'^\)|\]'),
-    ('ADD', r'^\+'),
-    ('SUBTRACT', r'^-'),
-    ('MULTIPLY', r'^\*'),
-    ('DIVIDE', r'^\/'),
-    ('EXPONENTIAL', r'^\^'),
-    ('NUMBER', r'^-?\d+\.?\d*'),
-    ('VARIABLE', r'^[a-zA-Z_]+')
-))
+TOKEN_TYPES = OrderedDict(
+    (
+        ("OPEN_PAREN", r"^\(|\["),
+        ("CLOSE_PAREN", r"^\)|\]"),
+        ("ADD", r"^\+"),
+        ("SUBTRACT", r"^-"),
+        ("MULTIPLY", r"^\*"),
+        ("DIVIDE", r"^\/"),
+        ("EXPONENTIAL", r"^\^"),
+        ("NUMBER", r"^-?\d+\.?\d*"),
+        ("VARIABLE", r"^[a-zA-Z_]+"),
+    )
+)
 
 
 class TokenizationError(Exception):
@@ -34,7 +36,7 @@ class Tokenizer:
     @staticmethod
     def parse_string_into_tokens(expression: str) -> List[Tuple[str, str]]:
         """Parsing the given expression into tokens."""
-        ex = re.sub(re.compile(r'\s+'), '', expression)
+        ex = re.sub(re.compile(r"\s+"), "", expression)
 
         tokens = []
 
@@ -43,10 +45,11 @@ class Tokenizer:
                 m = re.match(pattern, ex)
                 if m is not None:
                     tokens.append((name, m.group(0)))
-                    ex = ex[len(m.group(0)):]
+                    index = len(m.group(0))
+                    ex = ex[index:]
                     break
 
             else:
-                raise TokenizationError('Input string could be not tokenized correctly.')
+                raise TokenizationError("Input string could be not tokenized correctly.")
 
         return tokens
