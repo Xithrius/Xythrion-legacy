@@ -14,5 +14,7 @@
 *NOTE*:
 - This guide assumes you've copied the template from `.env-example` to a file called `.env` that you've created yourself.
 ```shell script
-docker-compose up --build
+docker pull postgres
+docker run --name postgres -e POSTGRES_PASSWORD=placeholder -d postgres
+docker-compose up
 ```
