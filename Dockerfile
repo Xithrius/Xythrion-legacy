@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.8-slim
 
 # Allow service to handle stops gracefully
 STOPSIGNAL SIGQUIT
@@ -9,15 +9,17 @@ ENV PIP_NO_CACHE_DIR=false \
     PIPENV_IGNORE_VIRTUALENVS=1 \
     PIPENV_NOSPIN=1
 
-# Copy the project files into working directory
+# Install pipenv
+RUN pip install -U pipenv
+
+# Create the working directory
 WORKDIR /xythrion
+
+# Install packages
+COPY Pipfile* ./
+RUN pipenv install --system --deploy
+
 COPY . .
-
-# Install git
-RUN apt update -y && apt install -y git
-
-RUN pip install -U pipenv && pipenv install --system --deploy
-#RUN pip install -U pipenv && pipenv install --system --deploy
 
 ENTRYPOINT ["python"]
 CMD ["-m", "xythrion"]
