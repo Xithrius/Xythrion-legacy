@@ -28,12 +28,18 @@ class QRCode(Cog):
 
         img = qr.make_image(fill_color=fill_color, back_color=back_color)
 
-        f = Path.cwd() / 'tmp' / f'{gen_filename()}.png'
+        f = Path.cwd() / "tmp" / f"{gen_filename()}.png"
         img.save(f)
         return str(f)
 
-    @command(aliases=('qrcode',))
-    async def qr(self, ctx: Context, msg: str, fill_color: str = 'black', back_color: str = 'white') -> None:
+    @command(aliases=("qrcode",))
+    async def qr(
+        self,
+        ctx: Context,
+        msg: str,
+        fill_color: str = "black",
+        back_color: str = "white",
+    ) -> None:
         """Giving a fractal to the user, with given inputs."""
         async with ctx.typing():
             f = await self.bot.loop.run_in_executor(None, self._create_qr_code, msg, fill_color, back_color)

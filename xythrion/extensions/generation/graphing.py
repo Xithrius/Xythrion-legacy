@@ -1,10 +1,13 @@
 import os
-from typing import Union
+from typing import List, Optional, Union
 
+from discord import Message
 from discord.ext.commands import Cog, Context, Greedy, group
 
 from xythrion.bot import Xythrion
 from xythrion.utils import DefaultEmbed, Graph, check_for_subcommands
+
+UNSUPPORTED_CHARACTERS = ("!", "{", "}", "[", "]")
 
 
 class Graphing(Cog):
@@ -13,44 +16,41 @@ class Graphing(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    @group(aliases=('plot',))
+    @group(aliases=("plot",), enabled=False)
     async def graph(self, ctx: Context) -> None:
         """Group function for graphing."""
         if ctx.invoked_subcommand is None:
             await check_for_subcommands(ctx)
 
-    @graph.command(aliases=('ex',))
-    async def expression(self, ctx: Context, domain_nums: Greedy[Union[int, float]], *, expression: str
-                         ) -> None:
+    @graph.command()
+    async def expression(
+        self, ctx: Context, domain: Greedy[Union[int, float]], *, expression: str
+    ) -> Optional[Message]:
         """
-        Using SymPy and MatPlotLib to grab expressions that a user gives.
+        Takes a single variable math expression and plots it.
 
-        Only supports single variable expressions.
+        Supports any single variable, e, and pi. Factorials are not supported.
         """
 
-        def create_graph_from_expression() -> Graph:
-            """Creating graphs by parsing expressions through a tokenizer."""
-            # domain = domain if domain else (-10, 10)
+        def create_graph(ex: str, domain_nums: Optional[List[Union[int, float]]]) -> Graph:
+            """Creates a graph object after getting values within a domain from an expression."""
+            pass
 
-            # Dynamic domain, 50 steps between domain numbers.
-            # x = np.arange(*domain, sum((abs(domain[0]), domain[1])) / 50)
+        if len(domain) != 2:
+            embed = DefaultEmbed(ctx, desc=f"Expected 2 domain numbers. Got {len(domain)}: {domain}")
+            return await ctx.send(embed=embed)
 
-            # Creating the y values.
-            # y = np.array([expression.subs(symbol, i) for i in x])
+        illegal_characters = [char for char in UNSUPPORTED_CHARACTERS if char in expression]
 
-            # return Graph(ctx, x, y)
-            ...
+        if any(illegal_characters):
+            chars = ", ".join(illegal_characters)
+            embed = DefaultEmbed(ctx, desc=f"Found unsupported characters in expression: {chars}")
+            await ctx.send()
 
-        if len(domain_nums) > 2:
-            await ctx.send(embed=DefaultEmbed(
-                ctx,
-                description=f'Expected 2 domain numbers. Got {len(domain_nums)}: {domain_nums}'))
-            return
+        domain = domain if len(domain) else None
 
-        # async with ctx.typing():
-        _graph = await self.bot.loop.run_in_executor(
-            None, create_graph_from_expression, expression, domain_nums if len(domain_nums) else None)
+        graph = await self.bot.loop.run_in_executor(None, create_graph, expression)
 
-        await ctx.send(file=_graph.embed.file, embed=_graph.embed)
+        await ctx.send(file=graph.embed.file, embed=graph.embed)
 
-        os.remove(_graph.save_path)
+        os.remove(graph.save_path)

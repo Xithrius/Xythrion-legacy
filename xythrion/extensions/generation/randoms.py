@@ -12,19 +12,19 @@ class Randoms(Cog):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    @command(aliases=('roll',))
+    @command(aliases=("roll",))
     async def dice(self, ctx: Context, rolls: int = 1) -> None:
         """Rolls a die as many times as you want."""
         if rolls > 10 or rolls < 1:
-            await ctx.send('`Rolls must be between 1 and 10.`')
+            await ctx.send("`Rolls must be between 1 and 10.`")
             return
 
         elif rolls > 1:
             s = sum([randint(1, 6) for _ in range(rolls)]) / rolls
-            avg = f'`Die was rolled {rolls} times. Average output: {round(s, 2)}`'
+            avg = f"`Die was rolled {rolls} times. Average output: {round(s, 2)}`"
 
         else:
-            avg = f'`Die was rolled once. Output: {randint(1, 6)}`'
+            avg = f"`Die was rolled once. Output: {randint(1, 6)}`"
 
         embed = DefaultEmbed(ctx, description=avg)
 
