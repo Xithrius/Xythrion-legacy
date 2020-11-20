@@ -12,20 +12,26 @@ from xythrion.bot import Xythrion
 
 def gen_filename() -> str:
     """Generates a filename from the current date."""
-    return str(datetime.timestamp(datetime.now())).replace('.', '')
+    return str(datetime.timestamp(datetime.now())).replace(".", "")
 
 
-def shorten(s: t.Union[t.List[str], str], min_chars: int = 100, max_chars: int = 2000
-            ) -> t.Union[t.List[str], str]:
+def shorten(
+    s: t.Union[t.List[str], str], min_chars: int = 100, max_chars: int = 2000
+) -> t.Union[t.List[str], str]:
     """Shortens a string down to an amount of characters."""
     if isinstance(s, str):
-        return ' '.join(s[:min_chars + 1].split()[:-1]) + '...' if len(s) > min_chars else s
+        return " ".join(s[: min_chars + 1].split()[:-1]) + "..." if len(s) > min_chars else s
 
     elif isinstance(s, list):
         return [lst for index, lst in enumerate(s) if sum(map(len, s[:index])) < max_chars]
 
     else:
-        raise ValueError('This function only accepts strings or a list of lists with strings.')
+        raise ValueError("This function only accepts strings or a list of lists with strings.")
+
+
+def and_join(lst: t.List[t.Any], sep: str = ", ") -> str:
+    """Joins a list by a separator with an 'and' at the very end for readability."""
+    return f"{sep.join(str(x) for x in lst[:-1])}{sep}and {lst[-1]}"
 
 
 async def wait_for_reaction(ctx: Context, emoji: Emoji) -> bool:
@@ -35,7 +41,7 @@ async def wait_for_reaction(ctx: Context, emoji: Emoji) -> bool:
         return user == ctx.message.author and str(reaction.emoji) == emoji
 
     try:
-        await ctx.bot.wait_for('reaction_add', timeout=60.0, check=check)
+        await ctx.bot.wait_for("reaction_add", timeout=60.0, check=check)
 
     except asyncio.TimeoutError:
         pass
@@ -46,9 +52,9 @@ async def wait_for_reaction(ctx: Context, emoji: Emoji) -> bool:
 
 async def check_for_subcommands(ctx: Context) -> None:
     """If an invalid subcommand is passed, this is brought up."""
-    lst = ', '.join([x.name for x in ctx.command.commands if x.enabled])
+    lst = ", ".join([x.name for x in ctx.command.commands if x.enabled])
 
-    error_string = f'Unknown command. Available group command(s): {lst}'
+    error_string = f"Unknown command. Available group command(s): {lst}"
 
     embed = DefaultEmbed(ctx, description=error_string)
 
@@ -71,15 +77,16 @@ class DefaultEmbed(Embed):
 
         startup_time = ctx.bot.startup_time if isinstance(ctx, Context) else ctx.startup_time
 
-        self.set_footer(text=f'Bot uptime: {naturaldelta(datetime.now() - startup_time)}.')
+        self.set_footer(text=f"Bot uptime: {naturaldelta(datetime.now() - startup_time)}.")
 
-        if 'embed_attachment' in kwargs.keys():
-            v = kwargs['embed_attachment']
+        if "embed_attachment" in kwargs.keys():
+            v = kwargs["embed_attachment"]
             f = str(v).split(os.sep)[-1]
             self.file = File(v, filename=f)
 
-            self.set_image(url=f'attachment://{f}')
+            self.set_image(url=f"attachment://{f}")
 
-        elif 'description' in kwargs.keys():
-            if '`' not in self.description and '\n' not in self.description:
-                self.description = f'`{self.description}`'
+        elif "description" in kwargs.keys() or "desc" in kwargs.keys():
+            self.description = kwargs["description"] if "description" in kwargs.keys() else kwargs["desc"]
+            if "`" not in self.description and "\n" not in self.description:
+                self.description = f"`{self.description}`"
