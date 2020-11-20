@@ -18,46 +18,49 @@ class Warnings(Cog):
     @commands.Cog.listener()
     async def on_command_completion(self, ctx: Context) -> None:
         """Adds a reaction after a command is successfully completed."""
-        await ctx.message.add_reaction('\U00002705')
+        await ctx.message.add_reaction("\U00002705")
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: Context, error: commands.CommandError) -> None:
         """When the command has an error, this event is triggered."""
-        if hasattr(ctx.command, 'on_error'):
+        if hasattr(ctx.command, "on_error"):
             return
 
-        error = getattr(error, 'original', error)
+        error = getattr(error, "original", error)
 
-        await ctx.message.add_reaction('\U0000274c')
+        await ctx.message.add_reaction("\U0000274c")
 
-        embed = DefaultEmbed(ctx, title='**An error has occurred:**')
+        embed = DefaultEmbed(ctx, title="**An error has occurred:**")
 
         if isinstance(error, commands.DisabledCommand):
-            embed.description = 'Command not available.'
+            embed.description = "Command not available."
 
         elif isinstance(error, commands.UserInputError):
-            embed.description = f'Command raised bad argument: {error}.'
+            embed.description = f"Command raised bad argument: {error}."
 
         elif isinstance(error, commands.NotOwner):
-            embed.description = 'You do not have enough permissions for this command.'
+            embed.description = "You do not have enough permissions for this command."
 
         elif isinstance(error, commands.CommandOnCooldown):
-            embed.description = f'{error}.'
+            embed.description = f"{error}."
 
         elif isinstance(error, commands.CheckFailure):
-            embed.description = 'You do not have enough permissions to run this command.'
+            embed.description = "You do not have enough permissions to run this command."
 
         elif isinstance(error, commands.MissingPermissions):
-            embed.description = 'Bot does not have enough permissions for this command.'
+            embed.description = "Bot does not have enough permissions for this command."
 
         elif isinstance(error, commands.CommandNotFound):
-            embed.description = 'Unknown command.'
+            embed.description = "Unknown command."
 
         else:
-            embed.description = f'{type(error).__name__}: {error}'
+            embed.description = f"{type(error).__name__}: {error}"
 
-        embed.description = f'`{embed.description}`'
+        log.error(
+            "Failed to connect to Postgresql database",
+            exc_info=(type(error), error, error.__traceback__),
+        )
+
+        embed.description = f"`{embed.description}`"
 
         await ctx.send(embed=embed)
-
-        log.info(f'{type(error).__name__}: {error}')
