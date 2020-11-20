@@ -11,6 +11,7 @@ coloredlogs = "~=14.0"
 qrcode = "~=6.1"
 tabulate = "~=0.8.7"
 fuzzywuzzy = "~=0.18.0"
+asyncpg = "~=0.21.0"
 
 [dev-packages]
 flake8 = "~=3.8.4"
@@ -21,17 +22,20 @@ flake8-import-order = "~=0.18.1"
 flake8-string-format = "~=0.3.0"
 flake8-tidy-imports = "~=4.1.0"
 flake8-todo = "~=0.7"
+black = "~=20.8b1"
 pep8-naming = "~=0.11.1"
 pre-commit = "~=2.7.1"
-coverage = "~=5.3"
 
 [requires]
-python_version = "3.8"
+python_version = "3.8.5"
 
 [scripts]
 start = "python -m xythrion"
 lint = "pre-commit run --all-files"
+format = "black ."
 precommit = "pre-commit install"
+black = "black --check ."
 flake8 = "python -m flake8"
-test = "coverage run -m unittest"
-report = "coverage report"
+
+[pipenv]
+allow_prereleases = true
