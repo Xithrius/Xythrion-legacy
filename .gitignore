@@ -116,3 +116,6 @@ config/*.json
 
 # Logs
 /logs/
+
+# Postgresql
+postgres_data/
