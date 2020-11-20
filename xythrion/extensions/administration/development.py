@@ -22,7 +22,7 @@ class Development(Cog, command_attrs=dict(hidden=True)):
         """Checking if the user running commands is the owner of this bot."""
         return await self.bot.is_owner(ctx.author)
 
-    @command(name='reload', aliases=('refresh', 'r'))
+    @command(name="reload", aliases=("refresh", "r"))
     async def _reload(self, ctx: Context, ext: Optional[str] = None) -> None:
         """Reloads all extensions."""
         d = datetime.now()
@@ -35,28 +35,24 @@ class Development(Cog, command_attrs=dict(hidden=True)):
                 self.bot.load_extension(extension)
 
             except Exception as e:
-                return log.warning(f'Reloading {extension} error: {e}')
+                return log.warning(f"Reloading {extension} error: {e}")
 
         ms = humanize.naturaldelta(d - datetime.now(), minimum_unit="milliseconds")
 
-        log.info(
-            f'{ctx.author.name} reloaded extension{"" if ext else "s"} successfully in about {ms}.'
-        )
+        log.info(f'{ctx.author.name} reloaded extension{"" if ext else "s"} successfully in about {ms}.')
 
-        embed = DefaultEmbed(ctx, description=f'Extension{" " + ext if ext else "s"} reloaded in about {ms}.')
+        embed = DefaultEmbed(
+            ctx,
+            description=f'Extension{" " + ext if ext else "s"} reloaded in about {ms}.',
+        )
 
         await ctx.send(embed=embed)
 
-    @command(name='logout')
-    async def _logout(self, ctx: Context) -> None:
-        """Makes the bot Log out."""
-        await ctx.bot.logout()
-
-    @command(name='loaded')
+    @command(name="loaded")
     async def _loaded_extensions(self, ctx: Context) -> None:
         """Gives a list of the currently loaded cogs."""
-        extensions = '\n'.join(f'{str(i).zfill(3)} | {ext}' for i, ext in enumerate(self.bot.cogs))
+        extensions = "\n".join(f"{str(i).zfill(3)} | {ext}" for i, ext in enumerate(self.bot.cogs))
 
-        embed = DefaultEmbed(ctx, description=f'```py\n{extensions}\n```')
+        embed = DefaultEmbed(ctx, description=f"```py\n{extensions}\n```")
 
         await ctx.send(embed=embed)
