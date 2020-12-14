@@ -17,6 +17,6 @@ bot = Xythrion(
 
 for extension in EXTENSIONS:
     bot.load_extension(extension)
-    log.info(f'Loaded extension "{extension}"')
+    log.trace(f'Loaded extension "{extension}"')
 
 bot.run(Config.TOKEN, bot=True, reconnect=True)
