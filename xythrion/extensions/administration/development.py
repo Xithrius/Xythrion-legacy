@@ -3,7 +3,7 @@ from logging import getLogger
 from typing import Optional
 
 import humanize
-from discord.ext.commands import Cog, Context, ExtensionNotLoaded, command
+from discord.ext.commands import Cog, Context, ExtensionNotLoaded, command, is_owner
 
 from xythrion.bot import Xythrion
 from xythrion.extensions import EXTENSIONS
@@ -18,11 +18,8 @@ class Development(Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
-    async def cog_check(self, ctx: Context) -> bool:
-        """Checking if the user running commands is the owner of this bot."""
-        return await self.bot.is_owner(ctx.author)
-
     @command(name="reload", aliases=("refresh", "r"))
+    @is_owner()
     async def _reload(self, ctx: Context, ext: Optional[str] = None) -> None:
         """Reloads all extensions."""
         d = datetime.now()
@@ -45,14 +42,5 @@ class Development(Cog, command_attrs=dict(hidden=True)):
             ctx,
             description=f'Extension{" " + ext if ext else "s"} reloaded in about {ms}.',
         )
-
-        await ctx.send(embed=embed)
-
-    @command(name="loaded")
-    async def _loaded_extensions(self, ctx: Context) -> None:
-        """Gives a list of the currently loaded cogs."""
-        extensions = "\n".join(f"{str(i).zfill(3)} | {ext}" for i, ext in enumerate(self.bot.cogs))
-
-        embed = DefaultEmbed(ctx, description=f"```py\n{extensions}\n```")
 
         await ctx.send(embed=embed)
