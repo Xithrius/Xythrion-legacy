@@ -1,9 +1,8 @@
-import asyncio
 import os
 import typing as t
 from datetime import datetime
 
-from discord import Embed, Emoji, File, Reaction
+from discord import Embed, File
 from discord.ext.commands import Context
 from humanize import naturaldelta
 
@@ -13,6 +12,11 @@ from xythrion.bot import Xythrion
 def gen_filename() -> str:
     """Generates a filename from the current date."""
     return str(datetime.timestamp(datetime.now())).replace(".", "")
+
+
+def markdown_link(s: str, link: str) -> str:
+    """Gets rid of the thinking while creating a link for markdown."""
+    return f"[`{s}`]({link})"
 
 
 def shorten(
@@ -32,22 +36,6 @@ def shorten(
 def and_join(lst: t.List[t.Any], sep: str = ", ") -> str:
     """Joins a list by a separator with an 'and' at the very end for readability."""
     return f"{sep.join(str(x) for x in lst[:-1])}{sep}and {lst[-1]}"
-
-
-async def wait_for_reaction(ctx: Context, emoji: Emoji) -> bool:
-    """Waiting for a user to react to a message sent by the bot."""
-
-    def check(reaction: Reaction, user: Context.author) -> bool:
-        return user == ctx.message.author and str(reaction.emoji) == emoji
-
-    try:
-        await ctx.bot.wait_for("reaction_add", timeout=60.0, check=check)
-
-    except asyncio.TimeoutError:
-        pass
-
-    else:
-        return True
 
 
 async def check_for_subcommands(ctx: Context) -> None:
