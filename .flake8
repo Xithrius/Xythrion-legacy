@@ -23,3 +23,5 @@ ignore=
     ANN002,ANN003,ANN101,ANN102,ANN204,ANN206
     # Imports
     I202, I201
+    # Weird conflicts with raw strings and regex.
+    P103
