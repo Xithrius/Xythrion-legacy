@@ -19,6 +19,7 @@ WORKDIR /xythrion
 COPY Pipfile* ./
 RUN pipenv install --system --deploy
 
+# Copy working directory
 COPY . .
 
 ENTRYPOINT ["python"]

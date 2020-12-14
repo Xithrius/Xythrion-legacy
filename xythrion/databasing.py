@@ -20,7 +20,6 @@ class DatabaseSetup:
             self.loop = asyncio.get_event_loop()
 
         self.pool = self.loop.run_until_complete(self.create_asyncpg_pool())
-        self.tables = self.loop.run_until_complete(self.check_tables())
 
     @staticmethod
     async def create_asyncpg_pool() -> Optional[asyncpg.pool.Pool]:
@@ -32,47 +31,6 @@ class DatabaseSetup:
             log.error(
                 "Failed to connect to Postgresql database",
                 exc_info=(type(e), e, e.__traceback__),
-            )
-
-    async def check_tables(self) -> None:
-        """Setting up all the tables for the Postgres database."""
-        async with self.pool.acquire() as conn:
-            await conn.execute(
-                """
-                    CREATE TABLE IF NOT EXISTS Links(
-                        identification serial PRIMARY KEY,
-                        t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                        id BIGINT,
-                        name TEXT,
-                        link TEXT
-                    )
-                """
-            )
-            await conn.execute(
-                """
-                    CREATE TABLE IF NOT EXISTS Dates(
-                        identification serial PRIMARY KEY,
-                        t TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-                        id BIGINT,
-                        name TEXT
-                    )
-                """
-            )
-            await conn.execute(
-                """
-                    CREATE TABLE IF NOT EXISTS Blocked_Guilds(
-                        identification serial PRIMARY KEY,
-                        guild_id BIGINT
-                    )
-                """
-            )
-            await conn.execute(
-                """
-                    CREATE TABLE IF NOT EXISTS Blocked_Users(
-                        identification serial PRIMARY KEY,
-                        user_id BIGINT
-                    )
-                """
             )
 
 
@@ -88,7 +46,7 @@ class Database(DatabaseSetup):
 
     def __bool__(self) -> bool:
         """If the database is not available."""
-        return all((self.pool, self.tables))
+        return bool(self.pool)
 
     async def check_if_blocked(self, ctx: Context) -> bool:
         """Checks if user/guild is blocked."""
