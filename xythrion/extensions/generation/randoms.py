@@ -1,5 +1,6 @@
-from random import randint
+from random import choice, sample
 
+import numpy as np
 from discord.ext.commands import Cog, Context, command
 
 from xythrion.bot import Xythrion
@@ -14,18 +15,19 @@ class Randoms(Cog):
 
     @command(aliases=("roll",))
     async def dice(self, ctx: Context, rolls: int = 1) -> None:
-        """Rolls a die as many times as you want."""
-        if rolls > 10 or rolls < 1:
-            await ctx.send("`Rolls must be between 1 and 10.`")
-            return
-
-        elif rolls > 1:
-            s = sum([randint(1, 6) for _ in range(rolls)]) / rolls
-            avg = f"`Die was rolled {rolls} times. Average output: {round(s, 2)}`"
-
+        """Rolls a die anywhere between 1 and 100."""
+        if 1 < rolls < 100:
+            s = round(np.sum(sample(range(1, 6), rolls)) / rolls, 3)
+            msg = f"Die was rolled {rolls} time(s). Average output: {s}"
         else:
-            avg = f"`Die was rolled once. Output: {randint(1, 6)}`"
+            msg = "Integer gives for rolls is invalid."
 
-        embed = DefaultEmbed(ctx, description=avg)
+        embed = DefaultEmbed(ctx, description=msg)
 
+        await ctx.send(embed=embed)
+
+    @command(aliases=("pick",))
+    async def choose(self, ctx: Context, *choices) -> None:
+        """Returns only one of the items that the user gives."""
+        embed = DefaultEmbed(ctx, description=f"A choice was made. Fate landed on {choice(choices)}.")
         await ctx.send(embed=embed)

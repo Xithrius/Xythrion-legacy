@@ -33,12 +33,12 @@ class Xythrion(Bot):
     @staticmethod
     async def on_ready() -> None:
         """Updates the bot status when logged in successfully."""
-        log.warning("Awaiting...")
+        log.trace("Awaiting...")
 
     async def logout(self) -> None:
         """Subclassing the logout command to ensure connection(s) are closed properly."""
         await asyncio.wait_for(self.http_session.close(), 30.0, loop=self.loop)
 
-        log.info("Finished up closing task(s): Closing http session.")
+        log.trace("Finished up closing task(s).")
 
         return await super().logout()

@@ -19,6 +19,6 @@ class Tinyy(Cog):
         async with self.bot.http_session.post(URL, json={"url": url}, headers=HEADERS) as resp:
             data = await resp.json()
 
-        embed = DefaultEmbed(ctx, desc=f'```\n{URL}/{data["code"]}```')
+        embed = DefaultEmbed(ctx, desc=f'```{URL}/{data["code"]}```')
 
         await ctx.send(embed=embed)

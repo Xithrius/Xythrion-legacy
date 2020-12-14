@@ -15,7 +15,7 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
     @command()
     @is_owner()
     async def restore_guild_api_permissions(self, ctx: Context, guild_id: Optional[int] = None) -> None:
-        """Restores the permissions for a specific guild."""
+        """Restores bot usage privileges for a guild."""
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
                 "DELETE FROM Blocked_Guilds WHERE guild_id = $1",
@@ -25,7 +25,7 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
         guild = self.bot.get_guild(guild_id) if not guild_id else ctx.guild
         embed = DefaultEmbed(
             ctx,
-            description=f'API Permissions restored for guild "{guild.name if guild else guild_id}".',
+            description=f'Bot usage privileges restored for guild "{guild.name if guild else guild_id}".',
         )
 
         await ctx.send(embed=embed)
@@ -33,7 +33,7 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
     @command()
     @is_owner()
     async def restore_user_api_permissions(self, ctx: Context, user_id: Optional[int] = None) -> None:
-        """Restores API permissions for a user."""
+        """Restores bot usage privileges for a user."""
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
                 "DELETE FROM Blocked_Users WHERE user_id = $1",
@@ -43,7 +43,7 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
         user = self.bot.get_user(user_id) if user_id else ctx.author
         embed = DefaultEmbed(
             ctx,
-            description=f"API Permissions restored for user {user.name if user else user_id}.",
+            description=f"Bot usage privileges restored for user {user.name if user else user_id}.",
         )
 
         await ctx.send(embed=embed)
@@ -51,7 +51,7 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
     @command()
     @is_owner()
     async def remove_guild_api_permissions(self, ctx: Context, guild_id: Optional[int] = None) -> None:
-        """Removes API permissions for a specific guild."""
+        """Removes bot usage privileges for a guild."""
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
                 "INSERT INTO Blocked_Guilds(guild_id) VALUES ($1)",
@@ -61,7 +61,7 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
         guild = self.bot.get_guild(guild_id) if not guild_id else ctx.guild
         embed = DefaultEmbed(
             ctx,
-            description=f'API Permissions removed from guild "{guild.name if guild else guild_id}".',
+            description=f'Bot usage privileges removed from guild "{guild.name if guild else guild_id}".',
         )
 
         await ctx.send(embed=embed)
@@ -69,7 +69,7 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
     @command()
     @is_owner()
     async def remove_user_api_permissions(self, ctx: Context, user_id: Optional[int] = None) -> None:
-        """Removes API permissions for a specific user."""
+        """Removes bot usage privileges for a user."""
         async with self.bot.pool.acquire() as conn:
             await conn.execute(
                 "INSERT INTO Blocked_Users(user_id) VALUES ($1)",
@@ -79,7 +79,7 @@ class Manager(Cog, command_attrs=dict(hidden=True)):
         user = self.bot.get_user(user_id) if user_id else ctx.author
         embed = DefaultEmbed(
             ctx,
-            description=f"API Permissions Removed from user {user.name if user else user_id}.",
+            description=f"Bot usage privileges Removed from user {user.name if user else user_id}.",
         )
 
         await ctx.send(embed=embed)

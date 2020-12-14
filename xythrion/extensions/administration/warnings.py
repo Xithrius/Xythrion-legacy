@@ -9,7 +9,7 @@ from xythrion.utils import DefaultEmbed
 log = logging.getLogger(__name__)
 
 
-class Warnings(Cog):
+class Warnings(Cog, command_attrs=dict(hidden=True)):
     """Warning the user about specific actions taken."""
 
     def __init__(self, bot: Xythrion) -> None:
@@ -57,7 +57,7 @@ class Warnings(Cog):
             embed.description = f"{type(error).__name__}: {error}"
 
         log.error(
-            "Failed to connect to Postgresql database",
+            "An error has occurred.",
             exc_info=(type(error), error, error.__traceback__),
         )
 
