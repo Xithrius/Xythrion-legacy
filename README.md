@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="/images/icon.jpg"/>
+    <img src="/images/icon.jpg" alt=""/>
 </p>
 <h1 align="center">Xythrion v2.0</h1>
 <h3 align="center">Graphing manipulated data through discord.py</h3>
@@ -12,9 +12,14 @@
 
 # Setup:
 *NOTE*:
-- This guide assumes you've copied the template from `.env-example` to a file called `.env` that you've created yourself.
-```shell script
+- The following examples of setup assumes that you've copied and modified the contents of `.env-example` to `.env`.
+
+1. Setting up the database
+```shell
 docker pull postgres
 docker run --name postgres -e POSTGRES_PASSWORD=placeholder -d postgres
-docker-compose up
 ```
+
+2. Options for running the bot
+- If running through pipenv (for development), `docker-compose up postgres` must be run before `pipenv run start`.
+- If only using docker, the entire bot can be set up with `docker-compose up`.
