@@ -36,7 +36,7 @@ class Graph:
         x_labels: Optional[Iterable[AnyStr]] = None,
         y_labels: Optional[Iterable[AnyStr]] = None,
     ) -> None:
-        if not fig and not ax:
+        if fig is None and ax is None:
             self.fig, self.ax = plt.subplots()
 
         else:
