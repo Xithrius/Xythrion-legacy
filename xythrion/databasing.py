@@ -10,15 +10,11 @@ from .constants import Postgresql
 log = logging.getLogger(__name__)
 
 
-class DatabaseSetup:
-    """Setting up the database before the bot initializes completely."""
+class Database:
+    """Utilities for the database, inheriting from setup."""
 
-    def __init__(self, loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
+    def __init__(self, loop: asyncio.AbstractEventLoop) -> None:
         self.loop = loop
-
-        if not loop:
-            self.loop = asyncio.get_event_loop()
-
         self.pool = self.loop.run_until_complete(self.create_asyncpg_pool())
 
     @staticmethod
@@ -32,13 +28,6 @@ class DatabaseSetup:
                 "Failed to connect to Postgresql database",
                 exc_info=(type(e), e, e.__traceback__),
             )
-
-
-class Database(DatabaseSetup):
-    """Utilities for the database, inheriting from setup."""
-
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
 
     def __str__(self) -> str:
         """The name of the host of the database."""
