@@ -33,7 +33,7 @@ class Warnings(Cog, command_attrs=dict(hidden=True)):
         embed = DefaultEmbed(ctx, title="**An error has occurred:**")
 
         if isinstance(e, commands.DisabledCommand):
-            embed.description = "Command not available."
+            embed.description = "Command not currently enabled."
 
         elif isinstance(e, commands.UserInputError):
             embed.description = f"Command received bad argument: {e}."
