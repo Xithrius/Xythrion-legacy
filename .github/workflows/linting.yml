@@ -21,4 +21,4 @@ jobs:
         pipenv install --dev --pre --deploy --system
     - name: Lint with flake8
       run: |
-        pipenv run flake8
+        flake8 .
