@@ -21,45 +21,42 @@ class Warnings(Cog, command_attrs=dict(hidden=True)):
         await ctx.message.add_reaction("\U00002705")
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: Context, error: commands.CommandError) -> None:
+    async def on_command_error(self, ctx: Context, e: commands.CommandError) -> None:
         """When the command has an error, this event is triggered."""
         if hasattr(ctx.command, "on_error"):
             return
 
-        error = getattr(error, "original", error)
+        e = getattr(e, "original", e)
 
         await ctx.message.add_reaction("\U0000274c")
 
         embed = DefaultEmbed(ctx, title="**An error has occurred:**")
 
-        if isinstance(error, commands.DisabledCommand):
+        if isinstance(e, commands.DisabledCommand):
             embed.description = "Command not available."
 
-        elif isinstance(error, commands.UserInputError):
-            embed.description = f"Command raised bad argument: {error}."
+        elif isinstance(e, commands.UserInputError):
+            embed.description = f"Command received bad argument: {e}."
 
-        elif isinstance(error, commands.NotOwner):
+        elif isinstance(e, commands.NotOwner):
             embed.description = "You do not have enough permissions for this command."
 
-        elif isinstance(error, commands.CommandOnCooldown):
-            embed.description = f"{error}."
+        elif isinstance(e, commands.CommandOnCooldown):
+            embed.description = f"{e}."
 
-        elif isinstance(error, commands.CheckFailure):
+        elif isinstance(e, commands.CheckFailure):
             embed.description = "You do not have enough permissions to run this command."
 
-        elif isinstance(error, commands.MissingPermissions):
+        elif isinstance(e, commands.MissingPermissions):
             embed.description = "Bot does not have enough permissions for this command."
 
-        elif isinstance(error, commands.CommandNotFound):
+        elif isinstance(e, commands.CommandNotFound):
             embed.description = "Unknown command."
 
         else:
-            embed.description = f"{type(error).__name__}: {error}"
+            embed.description = f"{type(e).__name__}: {e}"
 
-        log.error(
-            "An error has occurred.",
-            exc_info=(type(error), error, error.__traceback__),
-        )
+        log.error("An error has occurred.", exc_info=(type(e), e, e.__traceback__))
 
         embed.description = f"`{embed.description}`"
 
