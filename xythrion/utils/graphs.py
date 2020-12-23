@@ -1,8 +1,11 @@
 import logging
+from io import BytesIO
 from pathlib import Path
+from tempfile import TemporaryFile
 from typing import AnyStr, Iterable, List, Optional, Union
 
 import numpy as np
+from discord import File
 from discord.ext.commands import Context
 from matplotlib.pyplot import Axes, Figure
 
@@ -19,7 +22,43 @@ try:
     plt.style.use("dark_background")
 
 except Exception as e:
-    log.critical(f"Error when importing matplotlib: {e}")
+    log.error("Error when importing Matplotlib.", exc_info=(type(e), e, e.__traceback__))
+
+
+class SimpleGraph:
+    """Getting graphs all over the place."""
+
+    def __init__(
+        self,
+        ctx: Context,
+        x: Optional[Union[np.ndarray, List[Union[int, float]]]],
+        y: Optional[Union[np.ndarray, List[Union[int, float]]]],
+        buffer: TemporaryFile,
+    ) -> None:
+        self.ctx = ctx
+        self.buffer = buffer
+
+        self.fig, self.ax = plt.subplots()
+
+        self.ax.grid(True, linestyle="-.", linewidth=0.5)
+        # self.ax.autoscale(False)
+
+        self.fig.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
+        self.ax.plot(x, y)
+
+        self.fig.savefig(self.buffer, format="png")
+        self.buffer.seek(0)
+
+    def __enter__(self) -> DefaultEmbed:
+        buffer = BytesIO(self.buffer.read())
+
+        file = File(fp=buffer, filename="temporary_graph_file.png")
+
+        return DefaultEmbed(self.ctx, embed_attachment=file)
+
+    def __exit__(self, *args) -> None:
+        self.fig.clear()
+        self.ax.clear()
 
 
 class Graph:
@@ -68,7 +107,9 @@ class Graph:
                 self.ax.set_yticklabels(y_labels)
 
         file = f"{gen_filename()}.png"
+
         self.save_path = Path.cwd() / "tmp" / file
+
         self.fig.savefig(self.save_path, format="png")
 
         self.embed = DefaultEmbed(ctx, embed_attachment=self.save_path)
