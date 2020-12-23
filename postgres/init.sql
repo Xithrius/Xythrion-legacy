@@ -1,5 +1,3 @@
--- CREATE DATABASE xythrion;
-
 \c xythrion;
 
 CREATE TABLE IF NOT EXISTS Dates(

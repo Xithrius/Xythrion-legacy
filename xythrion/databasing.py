@@ -17,6 +17,14 @@ class Database:
         self.loop = loop
         self.pool = self.loop.run_until_complete(self.create_asyncpg_pool())
 
+    def __str__(self) -> str:
+        """The name of the host of the database."""
+        return Postgresql.HOST
+
+    def __bool__(self) -> bool:
+        """If the database is not available."""
+        return bool(self.pool)
+
     @staticmethod
     async def create_asyncpg_pool() -> Optional[asyncpg.pool.Pool]:
         """Attempting to connect to the database."""
@@ -28,14 +36,6 @@ class Database:
                 "Failed to connect to Postgresql database",
                 exc_info=(type(e), e, e.__traceback__),
             )
-
-    def __str__(self) -> str:
-        """The name of the host of the database."""
-        return Postgresql.HOST
-
-    def __bool__(self) -> bool:
-        """If the database is not available."""
-        return bool(self.pool)
 
     async def check_if_blocked(self, ctx: Context) -> bool:
         """Checks if user/guild is blocked."""
