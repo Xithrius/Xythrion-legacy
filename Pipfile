@@ -5,9 +5,9 @@ verify_ssl = true
 
 [packages]
 "discord.py" = "~=1.5.1"
-matplotlib = "~=3.3.2"
+matplotlib = "~=3.3.3"
 humanize = "~=2.6.0"
-coloredlogs = "~=14.3"
+coloredlogs = "~=15.0"
 tabulate = "~=0.8.7"
 fuzzywuzzy = "~=0.18.0"
 asyncpg = "~=0.21.0"
