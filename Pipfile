@@ -6,7 +6,7 @@ verify_ssl = true
 [packages]
 "discord.py" = {extras = ["voice"], version = "~=1.4.1"}
 asyncpg = "~=0.21.0"
-matplotlib = "~=3.3.2"
+matplotlib = "~=3.3.3"
 humanize = "~=2.6.0"
 coloredlogs = "~=14.0"
 qrcode = "~=6.1"
