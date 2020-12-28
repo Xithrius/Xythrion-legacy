@@ -1,15 +1,14 @@
 import logging
 from io import BytesIO
-from pathlib import Path
 from tempfile import TemporaryFile
-from typing import AnyStr, Iterable, List, Optional, Union
+from typing import List, Optional, TypeVar, Union
 
 import numpy as np
 from discord import File
 from discord.ext.commands import Context
 from matplotlib.pyplot import Axes, Figure
 
-from .shortcuts import DefaultEmbed, gen_filename
+from .shortcuts import DefaultEmbed
 
 log = logging.getLogger(__name__)
 
@@ -24,27 +23,68 @@ try:
 except Exception as e:
     log.error("Error when importing Matplotlib.", exc_info=(type(e), e, e.__traceback__))
 
+_N = TypeVar("_N", int, float)
+NUMBER_ARRAY = List[Union[_N]]
+ANY_NUMBER_ARRAY = Union[np.ndarray, NUMBER_ARRAY]
 
-class SimpleGraph:
-    """Getting graphs all over the place."""
+
+def check_2d(lst: ANY_NUMBER_ARRAY) -> bool:
+    """Checks if all items in a 2d list are lists."""
+    return all((isinstance(item, list) for item in lst))
+
+
+class Graph:
+    """Graphing plot(s) within one image."""
 
     def __init__(
         self,
         ctx: Context,
-        x: Optional[Union[np.ndarray, List[Union[int, float]]]],
-        y: Optional[Union[np.ndarray, List[Union[int, float]]]],
         buffer: TemporaryFile,
+        x: Optional[Union[ANY_NUMBER_ARRAY, List[ANY_NUMBER_ARRAY]]] = None,
+        y: Optional[Union[ANY_NUMBER_ARRAY, List[ANY_NUMBER_ARRAY]]] = None,
+        *,
+        fig: Optional[Figure] = None,
+        ax: Optional[Union[Axes, List[Axes]]] = None,
+        x_labels: Union[str, List[str]] = "x",
+        y_labels: Union[str, List[str]] = "y",
     ) -> None:
         self.ctx = ctx
         self.buffer = buffer
 
-        self.fig, self.ax = plt.subplots()
+        self.x = x
+        self.y = y
 
-        self.ax.grid(True, linestyle="-.", linewidth=0.5)
-        # self.ax.autoscale(False)
+        if fig is None and ax is None:
+            self.fig, self.ax = plt.subplots()
+        else:
+            self.fig = fig
+            self.ax = ax
 
         self.fig.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
-        self.ax.plot(x, y)
+
+        if isinstance(self.ax, list) and self.ax:
+            for i, axis in enumerate(self.ax):
+                axis.grid(True, linestyle="-.", linewidth=0.5)
+
+                if all((x[i].any(), y[i].any())):
+                    axis.plot(x[i], y[i])
+
+                axis.set_xticklabels(x_labels[i])
+                axis.set_yticklabels(y_labels[i])
+
+        else:
+            self.ax.grid(True, linestyle="-.", linewidth=0.5)
+
+            self.ax.spines["left"].set_position("zero")
+            self.ax.spines["right"].set_color("none")
+            self.ax.spines["bottom"].set_position("zero")
+            self.ax.spines["top"].set_color("none")
+
+            if all((x.any(), y.any())):
+                self.ax.plot(x, y)
+
+            self.ax.set_xticklabels(x_labels)
+            self.ax.set_yticklabels(y_labels)
 
         self.fig.savefig(self.buffer, format="png")
         self.buffer.seek(0)
@@ -58,67 +98,10 @@ class SimpleGraph:
 
     def __exit__(self, *args) -> None:
         self.fig.clear()
-        self.ax.clear()
-
-
-class Graph:
-    """Getting graphs all over the place."""
-
-    def __init__(
-        self,
-        ctx: Context,
-        x: Optional[Union[np.ndarray, List[Union[int, float]]]] = None,
-        y: Optional[Union[np.ndarray, List[Union[int, float]]]] = None,
-        *,
-        fig: Optional[Figure] = None,
-        ax: Optional[Union[Axes, List[Axes]]] = None,
-        x_labels: Optional[Iterable[AnyStr]] = None,
-        y_labels: Optional[Iterable[AnyStr]] = None,
-    ) -> None:
-        if fig is None and ax is None:
-            self.fig, self.ax = plt.subplots()
-
-        else:
-            self.fig = fig
-            self.ax = ax
-
-        self.fig.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
-
-        if isinstance(self.ax, list) and self.ax:
-            for x in self.ax:
-                x.grid(True, linestyle="-.", linewidth=0.5)
-
-        else:
-            self.ax.grid(True, linestyle="-.", linewidth=0.5)
-
-            if all((x.any(), y.any())):
-                self.ax.plot(x, y)
-
-            elif x:
-                self.ax.plot(x)
-
-            elif y:
-                self.ax.plot(y)
-
-            if x_labels:
-                self.ax.set_xticklabels(x_labels)
-
-            if y_labels:
-                self.ax.set_yticklabels(y_labels)
-
-        file = f"{gen_filename()}.png"
-
-        self.save_path = Path.cwd() / "tmp" / file
-
-        self.fig.savefig(self.save_path, format="png")
-
-        self.embed = DefaultEmbed(ctx, embed_attachment=self.save_path)
-
-        self.fig.clear()
 
         if isinstance(self.ax, list):
-            for x in self.ax:
-                x.clear()
+            for axis in self.ax:
+                axis.clear()
 
         else:
             self.ax.clear()
