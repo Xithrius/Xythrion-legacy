@@ -13,13 +13,11 @@ class Postgresql(NamedTuple):
     USER = environ.get("POSTGRES_USER", "postgres")
     PASSWORD = environ.get("POSTGRES_PASSWORD")
     DATABASE = environ.get("POSTGRES_DB", "postgres")
-    HOST = environ.get("POSTGRES_HOST", "localhost")
 
     asyncpg_config = {
         "user": USER,
         "password": PASSWORD,
         "database": DATABASE,
-        "host": HOST,
     }
 
 
