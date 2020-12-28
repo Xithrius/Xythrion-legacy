@@ -1,3 +1,4 @@
+import logging
 import re
 from tempfile import TemporaryFile
 from typing import List, Optional, Union
@@ -6,11 +7,14 @@ from discord import Message
 from discord.ext.commands import Cog, Context, group
 
 from xythrion.bot import Xythrion
-from xythrion.utils import DefaultEmbed, SimpleGraph, check_for_subcommands, remove_whitespace
-from xythrion.utils.DSL import calculate
+from xythrion.utils import DefaultEmbed, Graph, check_for_subcommands, remove_whitespace
+
+log = logging.getLogger(__name__)
 
 ILLEGAL_EXPRESSION_CHARACTERS = re.compile(r"[!{}\[\]]+")
 POINT_ARRAY_FORMAT = re.compile(r"(-?\d+(\.\d+)?),(-?\d(\.\d+)?)")
+
+MATH_EXPRESSION_FORMAT = re.compile(r"(-?\d{1,5}(x\^(\.\d{1,5})?\+?)|x?)+")
 
 
 class Graphing(Cog):
@@ -22,9 +26,9 @@ class Graphing(Cog):
     @staticmethod
     def create_graph(ctx: Context, x: List[Union[int, float]], y: List[Union[int, float]]) -> DefaultEmbed:
         """Creates a graph object after getting values within a domain from an expression."""
-        # Interpreter stuffs
-        with TemporaryFile(suffix=".png") as file:
-            with SimpleGraph(ctx, x, y, file) as embed:
+        # TODO: Interpreter stuffs
+        with TemporaryFile(suffix=".png") as buffer:
+            with Graph(ctx, buffer, x, y) as embed:
                 return embed
 
     @group(aliases=("plot",))
@@ -33,7 +37,7 @@ class Graphing(Cog):
         if ctx.invoked_subcommand is None:
             await check_for_subcommands(ctx)
 
-    @graph.command(aliases=("ex",))
+    @graph.command(aliases=("ex",), enabled=False)
     async def expression(self, ctx: Context, *, expression: remove_whitespace) -> Optional[Message]:
         """
         Takes a single variable math expression and plots it.
@@ -44,10 +48,13 @@ class Graphing(Cog):
             embed = DefaultEmbed(ctx, desc=f"Illegal character in expression: {illegal_char.group(0)}")
             return await ctx.send(embed=embed)
 
-        x, y = calculate(expression)
-        embed = await self.bot.loop.run_in_executor(None, self.create_graph, ctx, x, y)
+        if re.fullmatch(MATH_EXPRESSION_FORMAT, expression):
+            ...
 
-        await ctx.send(file=embed.file, embed=embed)
+            # x, y = calculate(expression)
+            # embed = await self.bot.loop.run_in_executor(None, self.create_graph, ctx, x, y)
+
+            # await ctx.send(file=embed.file, embed=embed)
 
     @graph.command(aliases=("point",))
     async def points(self, ctx: Context, *, points: remove_whitespace) -> Optional[Message]:
@@ -60,6 +67,7 @@ class Graphing(Cog):
             embed = DefaultEmbed(ctx, desc="Illegal character(s) in point array.")
             return await ctx.send(embed=embed)
 
+        # *_ catches any other dimension of the array, so only 2d is captured.
         x, y, *_ = zip(*[list(map(float, point.group(0).split(","))) for point in point_array])
 
         embed = await self.bot.loop.run_in_executor(None, self.create_graph, ctx, x, y)
