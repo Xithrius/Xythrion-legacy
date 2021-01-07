@@ -11,7 +11,7 @@ coloredlogs = "~=15.0"
 tabulate = "~=0.8.7"
 fuzzywuzzy = "~=0.18.0"
 asyncpg = "~=0.21.0"
-numpy = "~=1.19.4"
+numpy = "~=1.19.5"
 
 [dev-packages]
 flake8 = "~=3.8.4"
