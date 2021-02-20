@@ -1,10 +1,14 @@
+import asyncio
+import functools
 import logging
 import re
 from tempfile import TemporaryFile
-from typing import List, Optional, Union
+from typing import Any, Union
 
-from discord import Message
+import numpy as np
 from discord.ext.commands import Cog, Context, group
+from sympy import Symbol
+from sympy.parsing.sympy_parser import parse_expr
 
 from xythrion.bot import Xythrion
 from xythrion.utils import DefaultEmbed, Graph, check_for_subcommands, remove_whitespace
@@ -14,7 +18,7 @@ log = logging.getLogger(__name__)
 ILLEGAL_EXPRESSION_CHARACTERS = re.compile(r"[!{}\[\]]+")
 POINT_ARRAY_FORMAT = re.compile(r"(-?\d+(\.\d+)?),(-?\d(\.\d+)?)")
 
-MATH_EXPRESSION_FORMAT = re.compile(r"(-?\d{1,5}(x\^(\.\d{1,5})?\+?)|x?)+")
+TIMEOUT_FOR_GRAPHS = 10.0
 
 
 class Graphing(Cog):
@@ -24,10 +28,21 @@ class Graphing(Cog):
         self.bot = bot
 
     @staticmethod
-    def create_graph(ctx: Context, x: List[Union[int, float]], y: List[Union[int, float]]) -> DefaultEmbed:
+    def calculate(expression: str) -> Any:
+        """Calculate y-axis values from a set of x-axis values, given a math expression."""
+        x = np.arange(-10, 10, 0.5)
+        expr = parse_expr(expression)
+        x_symbol = Symbol("x")
+
+        y = np.array([expr.subs({x_symbol: x_point}).evalf(3) for x_point in x])
+
+        return x, y
+
+    def create_graph(self, ctx: Context, *graph_input: Union[str, Any]) -> DefaultEmbed:
         """Creates a graph object after getting values within a domain from an expression."""
-        # TODO: Interpreter stuffs
         with TemporaryFile(suffix=".png") as buffer:
+            x, y = self.calculate(graph_input) if isinstance(graph_input, str) else graph_input
+
             with Graph(ctx, buffer, x, y) as embed:
                 return embed
 
@@ -37,27 +52,35 @@ class Graphing(Cog):
         if ctx.invoked_subcommand is None:
             await check_for_subcommands(ctx)
 
-    @graph.command(aliases=("ex",), enabled=False)
-    async def expression(self, ctx: Context, *, expression: remove_whitespace) -> Optional[Message]:
+    @graph.command(aliases=("ex",))
+    async def expression(self, ctx: Context, *, expression: remove_whitespace) -> None:
         """
         Takes a single variable math expression and plots it.
 
         Supports one variable per expression (ex. x or y, not x and y), e, and pi.
         """
+        if "^" in expression:
+            expression = expression.replace("^", "**")
+
         if (illegal_char := re.search(ILLEGAL_EXPRESSION_CHARACTERS, expression)) is not None:
             embed = DefaultEmbed(ctx, desc=f"Illegal character in expression: {illegal_char.group(0)}")
-            return await ctx.send(embed=embed)
+            await ctx.send(embed=embed)
+            return
 
-        if re.fullmatch(MATH_EXPRESSION_FORMAT, expression):
-            ...
+        else:
+            func = functools.partial(self.create_graph, ctx, expression)
+            future = self.bot.loop.run_in_executor(None, func)
 
-            # x, y = calculate(expression)
-            # embed = await self.bot.loop.run_in_executor(None, self.create_graph, ctx, x, y)
+            try:
+                with ctx.typing():
+                    embed = await asyncio.wait_for(future, TIMEOUT_FOR_GRAPHS, loop=self.bot.loop)
+                    await ctx.send(file=embed.file, embed=embed)
+            except asyncio.TimeoutError:
+                embed = DefaultEmbed(ctx, desc=f"Timed out after {TIMEOUT_FOR_GRAPHS} seconds.")
+                await ctx.send(embed=embed)
 
-            # await ctx.send(file=embed.file, embed=embed)
-
-    @graph.command(aliases=("point",))
-    async def points(self, ctx: Context, *, points: remove_whitespace) -> Optional[Message]:
+    @graph.command(aliases=("point",), enabled=False)
+    async def points(self, ctx: Context, *, points: remove_whitespace) -> None:
         """
         Graphs points on a plot.
 
@@ -65,11 +88,15 @@ class Graphing(Cog):
         """
         if not (point_array := re.finditer(POINT_ARRAY_FORMAT, points)):
             embed = DefaultEmbed(ctx, desc="Illegal character(s) in point array.")
-            return await ctx.send(embed=embed)
 
-        # *_ catches any other dimension of the array, so only 2d is captured.
-        x, y, *_ = zip(*[list(map(float, point.group(0).split(","))) for point in point_array])
+            await ctx.send(embed=embed)
 
-        embed = await self.bot.loop.run_in_executor(None, self.create_graph, ctx, x, y)
+            return
 
-        await ctx.send(file=embed.file, embed=embed)
+        else:
+            # *_ catches any other dimension of the array, so only 2d is captured.
+            x, y, *_ = zip(*[list(map(float, point.group(0).split(","))) for point in point_array])
+
+            embed = await self.bot.loop.run_in_executor(None, self.create_graph, ctx, x, y)
+
+            await ctx.send(file=embed.file, embed=embed)

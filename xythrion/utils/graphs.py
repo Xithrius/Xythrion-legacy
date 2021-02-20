@@ -83,9 +83,6 @@ class Graph:
             if all((x.any(), y.any())):
                 self.ax.plot(x, y)
 
-            self.ax.set_xticklabels(x_labels)
-            self.ax.set_yticklabels(y_labels)
-
         self.fig.savefig(self.buffer, format="png")
         self.buffer.seek(0)
 
