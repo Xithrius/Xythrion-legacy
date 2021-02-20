@@ -3,7 +3,7 @@ import functools
 import logging
 import re
 from tempfile import TemporaryFile
-from typing import Any, Union
+from typing import Tuple, Union
 
 import numpy as np
 from discord.ext.commands import Cog, Context, group
@@ -28,22 +28,23 @@ class Graphing(Cog):
         self.bot = bot
 
     @staticmethod
-    def calculate(expression: str) -> Any:
+    def calculate(
+        expression: str, symmetrical_bounds: Union[int, float] = 10
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """Calculate y-axis values from a set of x-axis values, given a math expression."""
-        x = np.arange(-10, 10, 0.5)
+        symmetrical_bounds = abs(symmetrical_bounds)
+        x = np.arange(-symmetrical_bounds, symmetrical_bounds, symmetrical_bounds / 50)
         expr = parse_expr(expression)
         x_symbol = Symbol("x")
 
-        y = np.array([expr.subs({x_symbol: x_point}).evalf(3) for x_point in x])
+        y = np.array([expr.subs({x_symbol: x_point}).evalf() for x_point in x])
 
         return x, y
 
-    def create_graph(self, ctx: Context, *graph_input: Union[str, Any]) -> DefaultEmbed:
+    def create_graph(self, ctx: Context, graph_input: str) -> DefaultEmbed:
         """Creates a graph object after getting values within a domain from an expression."""
         with TemporaryFile(suffix=".png") as buffer:
-            x, y = self.calculate(graph_input) if isinstance(graph_input, str) else graph_input
-
-            with Graph(ctx, buffer, x, y) as embed:
+            with Graph(ctx, buffer, *self.calculate(graph_input)) as embed:
                 return embed
 
     @group(aliases=("plot",))
