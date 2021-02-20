@@ -1,8 +1,7 @@
-import os
 import typing as t
 from datetime import datetime
 
-from discord import Embed, File
+from discord import Embed
 from discord.ext.commands import Context
 from humanize import naturaldelta
 
@@ -68,11 +67,9 @@ class DefaultEmbed(Embed):
         self.set_footer(text=f"Bot uptime: {naturaldelta(datetime.now() - startup_time)}.")
 
         if "embed_attachment" in kwargs.keys():
-            v = kwargs["embed_attachment"]
-            f = str(v).split(os.sep)[-1]
-            self.file = File(v, filename=f)
+            self.file = kwargs["embed_attachment"]
 
-            self.set_image(url=f"attachment://{f}")
+            self.set_image(url="attachment://temporary_graph_file.png")
 
         elif "description" in kwargs.keys() or "desc" in kwargs.keys():
             self.description = kwargs["description"] if "description" in kwargs.keys() else kwargs["desc"]

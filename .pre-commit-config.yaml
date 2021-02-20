@@ -21,12 +21,7 @@ repos:
     hooks:
       - id: python-check-blanket-noqa
 
-  - repo: local
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.4
     hooks:
       - id: flake8
-        name: Flake8
-        description: Lints this repository using flake8.
-        entry: pipenv run flake8
-        language: python
-        types: [ python ]
-        require_serial: true
