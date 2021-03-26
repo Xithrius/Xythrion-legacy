@@ -16,7 +16,7 @@ mplcyberpunk = "~=0.1.11"
 sympy = "~=1.7.1"
 
 [dev-packages]
-flake8 = "~=3.8.4"
+flake8 = "~=3.9.0"
 flake8-annotations = "~=2.5.0"
 flake8-bugbear = "~=21.3.2"
 flake8-docstrings = "~=1.6.0"
