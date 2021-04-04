@@ -17,7 +17,7 @@ sympy = "~=1.7.1"
 
 [dev-packages]
 flake8 = "~=3.9.0"
-flake8-annotations = "~=2.5.0"
+flake8-annotations = "~=2.6.2"
 flake8-bugbear = "~=21.4.3"
 flake8-docstrings = "~=1.6.0"
 flake8-import-order = "~=0.18.1"
