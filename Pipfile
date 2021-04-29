@@ -24,7 +24,7 @@ flake8-import-order = "~=0.18.1"
 flake8-string-format = "~=0.3.0"
 flake8-tidy-imports = "~=4.1.0"
 flake8-todo = "~=0.7"
-black = "~=21.4b1"
+black = "~=21.4b2"
 pep8-naming = "~=0.11.1"
 pre-commit = "~=2.12.1"
 
