@@ -4,7 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-"discord.py" = "~=1.6.0"
+"discord.py" = "~=1.7.2"
 matplotlib = "~=3.4.2"
 humanize = "~=3.5.0"
 loguru = "~=0.5.3"
@@ -25,12 +25,9 @@ pep8-naming = "~=0.11.1"
 pre-commit = "~=2.12.1"
 
 [requires]
-python_version = "3.9.4"
+python_version = "3.9.5"
 
 [scripts]
 start = "python -m xythrion"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
-
-[pipenv]
-allow_prereleases = true
