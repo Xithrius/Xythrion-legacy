@@ -1,7 +1,6 @@
-from discord.ext.commands import Cog, Context, command
+from discord.ext.commands import Cog, command
 
-from xythrion.bot import Xythrion
-from xythrion.utils import DefaultEmbed
+from xythrion.bot import Context, Xythrion
 
 HEADERS = {"Content-Type": "application/json"}
 URL = "https://tinyy.io"
@@ -16,9 +15,6 @@ class Tinyy(Cog):
     @command(aliases=("shorten_url", "shortener", "tinyy"))
     async def url_shortener(self, ctx: Context, url: str) -> None:
         """Shortening a URL provided by the user."""
-        async with self.bot.http_session.post(URL, json={"url": url}, headers=HEADERS) as resp:
-            data = await resp.json()
+        data = await self.bot.post(URL, json={"url": url}, headers=HEADERS)
 
-        embed = DefaultEmbed(ctx, desc=f'```{URL}/{data["code"]}```')
-
-        await ctx.send(embed=embed)
+        await ctx.embed(desc=f'```{URL}/{data["code"]}```')
