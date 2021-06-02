@@ -16,4 +16,4 @@ for extension in EXTENSIONS:
     bot.load_extension(extension)
     log.trace(f'Loaded extension "{extension}"')
 
-bot.run(Config.TOKEN, bot=True, reconnect=True)
+bot.run(Config.TOKEN)
