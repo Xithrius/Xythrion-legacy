@@ -6,7 +6,7 @@ verify_ssl = true
 [packages]
 "discord.py" = "~=1.6.0"
 matplotlib = "~=3.4.1"
-humanize = "~=3.4.1"
+humanize = "~=3.7.0"
 coloredlogs = "~=15.0"
 tabulate = "~=0.8.9"
 fuzzywuzzy = "~=0.18.0"
