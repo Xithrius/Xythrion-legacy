@@ -1,10 +1,9 @@
-import asyncio
 import logging
 import re
-from typing import Union
+from typing import Tuple, Union
 
 import numpy as np
-from discord.ext.commands import Cog, group
+from discord.ext.commands import Cog, group, is_owner
 from sympy import Symbol
 from sympy.parsing.sympy_parser import parse_expr
 
@@ -20,13 +19,18 @@ TIMEOUT_FOR_GRAPHS = 10.0
 
 
 class Plotting(Cog):
-    """Parsing a user's input and making a graph out of it."""
+    """
+    Parsing a user's input and making a graph out of it.
+
+    Cog is currently still in experimental testing.
+    Others besides the bot owner will eventually be able to test it.
+    """
 
     def __init__(self, bot: Xythrion) -> None:
         self.bot = bot
 
     @staticmethod
-    def calculate(expression: str, bounds: Union[int, float] = 10) -> tuple[np.ndarray, np.ndarray]:
+    def calculate(expression: str, bounds: Union[int, float] = 10) -> Tuple[np.ndarray, np.ndarray]:
         """Calculate y-axis values from a set of x-axis values, given a math expression."""
         bounds = abs(bounds)
         x = np.arange(-bounds, bounds, bounds / 50)
@@ -38,35 +42,26 @@ class Plotting(Cog):
         return x, y
 
     @group(aliases=("graph",))
+    @is_owner()
     async def plot(self, ctx: Context) -> None:
         """Group function for graphing."""
         await ctx.check_for_subcommands()
 
     @plot.command(aliases=("ex",))
+    @is_owner()
     async def expression(self, ctx: Context, *, expression: remove_whitespace) -> None:
         """
         Takes a single variable math expression and plots it.
 
         Supports one variable per expression (ex. x or y, not x and y), e, and pi.
         """
-        if "^" in expression:
-            expression = expression.replace("^", "**")
+        expression = expression.replace("^", "**")
 
         if (illegal_char := re.search(ILLEGAL_EXPRESSION_CHARACTERS, expression)) is not None:
             return await ctx.embed(desc=f"Illegal character in expression: {illegal_char.group(0)}")
 
-        future = self.bot.loop.run_in_executor(None, self.create_graph, ctx, expression)
-
-        try:
-            with ctx.typing():
-                embed = await asyncio.wait_for(future, TIMEOUT_FOR_GRAPHS, loop=self.bot.loop)
-
-                await ctx.send(file=embed.file, embed=embed)
-
-        except asyncio.TimeoutError:
-            await ctx.embed(desc=f"Timed out after {TIMEOUT_FOR_GRAPHS} seconds.")
-
-    @plot.command(aliases=("point",), enabled=False)
+    @plot.command(aliases=("point",))
+    @is_owner()
     async def points(self, ctx: Context, *, points: remove_whitespace) -> None:
         """
         Plots points on a plot.
