@@ -3,7 +3,7 @@ max-line-length=110
 docstring-convention=all
 import-order-style=pycharm
 exclude=constants.py,__pycache__,.cache,.git,.png
-
+per-file-ignores=tests/*:D,ANN
 ignore=
     B311,W503,E226,S311,T000
     # Missing Docstrings
