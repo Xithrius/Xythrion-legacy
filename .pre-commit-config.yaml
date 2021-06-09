@@ -15,7 +15,12 @@ repos:
     hooks:
       - id: python-check-blanket-noqa
 
-  - repo: https://github.com/PyCQA/flake8
-    rev: 3.9.2
+  - repo: local
     hooks:
       - id: flake8
+        name: Flake8
+        description: This hook runs flake8 with the project's environment.
+        entry: poetry run flake8
+        language: system
+        types: [ python ]
+        require_serial: true
