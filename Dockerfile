@@ -1,26 +1,23 @@
-FROM python:3.9-slim
+FROM python:3.9.5-slim
 
 # Allow service to handle stops gracefully
 STOPSIGNAL SIGQUIT
 
 # Set pip to have cleaner logs and no saved cache
 ENV PIP_NO_CACHE_DIR=false \
-    PIPENV_HIDE_EMOJIS=1 \
-    PIPENV_IGNORE_VIRTUALENVS=1 \
-    PIPENV_NOSPIN=1
+    POETRY_HOME="/opt/poetry"
 
-# Install pipenv
-RUN pip install -U pipenv
+# Install poetry
+RUN pip install -U poetry
 
 # Create the working directory
 WORKDIR /xythrion
 
 # Install packages
-COPY Pipfile* ./
-RUN pipenv install --system --deploy
+COPY pyproject.toml poetry.lock ./
+RUN poetry install --no-dev --no-interaction --no-ansi
 
 # Copy working directory
 COPY . .
 
-ENTRYPOINT ["python"]
-CMD ["-m", "xythrion"]
+CMD ["poetry", "run", "python", "-m", "xythrion"]

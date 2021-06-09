@@ -10,6 +10,13 @@
 </p>
 
 # Setup:
+> Make sure you've copied and modified the contents of `.env-example` to `.env`.
 
-- Make sure you've copied and modified the contents of `.env-example` to `.env`.
-- run `docker-compose up`, and you're done!
+### Docker:
+- Run `docker-compose up`, and you're done!
+
+### Manual:
+
+- Requires: [poetry](https://github.com/python-poetry/poetry)
+- Install dependencies using `poetry install`
+- Run the bot using `poetry run task start`
