@@ -9,9 +9,7 @@ jobs:
     env:
       PIP_NO_CACHE_DIR: false
       PIP_USER: 1
-      PIPENV_HIDE_EMOJIS: 1
-      PIPENV_NOSPIN: 1
-      PIPENV_IGNORE_VIRTUALENVS: 1
+      POETRY_VIRTUALENVS_CREATE: false
       PYTHONUSERBASE: ${{ github.workspace }}/.cache/py-user-base
       PRE_COMMIT_HOME: ${{ github.workspace }}/.cache/pre-commit-cache
 
@@ -35,13 +33,13 @@ jobs:
           path: ${{ env.PYTHONUSERBASE }}
           key: "python-0-${{ runner.os }}-${{ env.PYTHONUSERBASE }}-\
           ${{ steps.python.outputs.python-version }}-\
-          ${{ hashFiles('./Pipfile', './Pipfile.lock') }}"
+          ${{ hashFiles('./pyproject.toml', './poetry.lock') }}"
 
-      - name: Install dependencies using pipenv
+      - name: Install dependencies using poetry
         if: steps.python_cache.outputs.cache-hit != 'true'
         run: |
-          pip install pipenv
-          pipenv install --dev --deploy --system
+          pip install poetry
+          poetry install --no-interaction --no-ansi
 
       - name: Pre-commit Environment Caching
         uses: actions/cache@v2
