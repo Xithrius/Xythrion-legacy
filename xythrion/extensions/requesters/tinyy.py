@@ -1,6 +1,7 @@
 from discord.ext.commands import Cog, command
 
-from xythrion.bot import Context, Xythrion
+from xythrion import Context, Xythrion
+from xythrion.utils import codeblock
 
 HEADERS = {"Content-Type": "application/json"}
 URL = "https://tinyy.io"
@@ -17,4 +18,4 @@ class Tinyy(Cog):
         """Shortening a URL provided by the user."""
         data = await self.bot.post(URL, json={"url": url}, headers=HEADERS)
 
-        await ctx.embed(desc=f'```{URL}/{data["code"]}```')
+        await ctx.embed(desc=codeblock(f"{URL}/{data['code']}"))
