@@ -1,8 +1,8 @@
 from datetime import datetime as dt
 from typing import Optional
-import pandas as pd
 
 from discord.ext.commands import Cog, group
+import pandas as pd
 
 from xythrion import Context, Xythrion
 from xythrion.utils import graph_2d
@@ -29,6 +29,9 @@ class Reddit(Cog):
         df["date"] = df["date"].transform(
             lambda epoch: dt.strftime(dt.fromtimestamp(epoch), TIME_FORMAT)
         )
+
+        if not df:
+            raise ValueError("Cannot generate graph with no data.")
 
         return df
 
