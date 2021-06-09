@@ -33,22 +33,21 @@ class Context(commands.Context):
             desc: Optional[str] = None,
             buffer: Optional[BytesIO] = None,
             image_url: Optional[str] = None
-    ) -> Optional[Embed]:
+    ) -> None:
         """Creating then sending embeds."""
         startup_delta = naturaldelta(datetime.now() - self.bot.startup_time)
 
-        description = f'`{desc}`' if '\n' not in desc else desc
+        embed = Embed()
 
-        embed = Embed(description=description)
+        if desc:
+            embed.description = f'`{desc}`' if '\n' not in desc else desc
 
         embed.set_footer(text=f"Bot uptime: {startup_delta}.")
 
         if buffer:
             embed.set_image(url="attachment://temporary_image_file.png")
 
-            buffer.seek(0)
-
-            file = File(fp=buffer.read(), filename="temporary_image_file.png")
+            file = File(fp=buffer, filename="temporary_image_file.png")
 
             return await self.send(embed=embed, file=file)
 
