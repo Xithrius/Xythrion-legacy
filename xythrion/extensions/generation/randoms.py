@@ -1,10 +1,11 @@
-from random import choice, sample
+from collections import Counter
+from random import randint
 
-import numpy as np
-from discord.ext.commands import Cog, Context, command
+import pandas as pd
+from discord.ext.commands import Cog, command
 
-from xythrion.bot import Xythrion
-from xythrion.utils import DefaultEmbed
+from xythrion import Context, Xythrion
+from xythrion.utils import graph_2d
 
 
 class Randoms(Cog):
@@ -15,19 +16,22 @@ class Randoms(Cog):
 
     @command(aliases=("roll",))
     async def dice(self, ctx: Context, rolls: int = 1) -> None:
-        """Rolls a die anywhere between 1 and 100."""
-        if 1 < rolls < 100:
-            s = round(np.sum(sample(range(1, 6), rolls)) / rolls, 3)
-            msg = f"Die was rolled {rolls} time(s). Average output: {s}"
-        else:
-            msg = "Integer gives for rolls is invalid."
+        """Rolls a die anywhere between 1 and 10 times."""
+        if rolls not in range(1, 11):
+            return await ctx.embed(desc="Amount of rolls must be between 1 and 10.")
 
-        embed = DefaultEmbed(ctx, description=msg)
+        counts = Counter(randint(1, 6) for _ in range(rolls))
 
-        await ctx.send(embed=embed)
+        df = pd.DataFrame([[i, counts[i]] for i in range(1, 7)], columns=("roll", "amount"))
 
-    @command(aliases=("pick",))
-    async def choose(self, ctx: Context, *choices) -> None:
-        """Returns only one of the items that the user gives."""
-        embed = DefaultEmbed(ctx, description=f"A choice was made. Fate landed on {choice(choices)}.")
-        await ctx.send(embed=embed)
+        buffer = await graph_2d(
+            df["roll"],
+            df["amount"],
+            graph_type="bar",
+            autorotate_xaxis=False
+        )
+
+        await ctx.embed(
+            desc=f"Graph of {rolls} dice roll{'s' if rolls > 1 else ''}.",
+            buffer=buffer
+        )

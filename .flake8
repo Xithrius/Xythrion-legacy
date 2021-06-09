@@ -2,12 +2,7 @@
 max-line-length=110
 docstring-convention=all
 import-order-style=pycharm
-exclude=constants.py,__pycache__,.cache,
-        .git,
-        .md,.svg,.png
-        tests,
-        venv,.venv,
-        .json
+exclude=constants.py,__pycache__,.cache,.git,.png
 
 ignore=
     B311,W503,E226,S311,T000
@@ -22,6 +17,6 @@ ignore=
     # Type Annotations
     ANN002,ANN003,ANN101,ANN102,ANN204,ANN206
     # Imports
-    I202, I201
-    # Weird conflicts with raw strings and regex.
+    I100, I101, I202
+    # Regex
     P103
