@@ -33,6 +33,8 @@ flake8-tidy-imports = "~=4.3.0"
 flake8-todo = "~=0.7"
 pep8-naming = "~=0.11.1"
 pre-commit = "~=2.13.0"
+pytest = "~=6.2.4"
+pytest-cov = "~=2.12.1"
 python-dotenv = "^0.15.0"
 taskipy = "^1.8.1"
 
@@ -40,6 +42,7 @@ taskipy = "^1.8.1"
 start = "python -m xythrion"
 lint = "pre-commit run --all-files"
 precommit = "pre-commit install"
+test = "pytest tests/"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
