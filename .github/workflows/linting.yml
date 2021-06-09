@@ -3,7 +3,7 @@ name: Linting
 on: [ push ]
 
 jobs:
-  lint:
+  lint-test:
     runs-on: ubuntu-latest
 
     env:
@@ -54,3 +54,6 @@ jobs:
 
       - name: Run flake8
         run: "flake8 --format='::error file=%(path)s,line=%(row)d,col=%(col)d::[flake8] %(code)s: %(text)s'"
+
+      - name: Test with pytest
+        run: pytest tests/ --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
