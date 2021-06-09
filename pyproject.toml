@@ -3,17 +3,25 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[packages]
+[tool.poetry]
+name = "Xythrion"
+version = "2.0"
+description = "Graphing manipulated data through discord.py"
+license = "MIT"
+authors = ["Xithrius <xithrius@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "3.9.5"
 "discord.py" = "~=1.7.2"
-humanize = "~=3.5.0"
+humanize = "~=3.7.1"
 loguru = "~=0.5.3"
 matplotlib = "~=3.4.2"
-numpy = "~=1.20.2"
+numpy = "~=1.20.3"
 pandas = "~=1.2.4"
 sympy = "~=1.8"
 tabulate = "~=0.8.9"
 
-[dev-packages]
+[tool.poetry.dev-dependencies]
 flake8 = "~=3.9.2"
 flake8-annotations = "~=2.6.2"
 flake8-bugbear = "~=21.4.3"
@@ -23,12 +31,8 @@ flake8-string-format = "~=0.3.0"
 flake8-tidy-imports = "~=4.3.0"
 flake8-todo = "~=0.7"
 pep8-naming = "~=0.11.1"
-pre-commit = "~=2.12.1"
+pre-commit = "~=2.13.0"
 
-[requires]
-python_version = "3.9.5"
-
-[scripts]
-start = "python -m xythrion"
-lint = "pre-commit run --all-files"
-precommit = "pre-commit install"
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
