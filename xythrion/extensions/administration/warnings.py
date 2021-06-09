@@ -1,8 +1,14 @@
+import textwrap
+import traceback
+
 from discord.ext import commands
 from discord.ext.commands import Cog
 from loguru import logger as log
 
 from xythrion import Context, Xythrion
+from xythrion.utils import codeblock, markdown_link
+
+BASE_URL = "https://api.duckduckgo.com/?q={}"
 
 
 class Warnings(Cog, command_attrs=dict(hidden=True)):
@@ -19,7 +25,8 @@ class Warnings(Cog, command_attrs=dict(hidden=True)):
 
         e = getattr(e, "original", e)
 
-        title = "**An error has occurred:**\n\n"
+        search = ""
+        title = "An error has occurred."
 
         if isinstance(e, commands.DisabledCommand):
             error_message = "Command not currently enabled."
@@ -43,8 +50,18 @@ class Warnings(Cog, command_attrs=dict(hidden=True)):
             error_message = "Unknown command."
 
         else:
+            title = "An unexpected error has occurred."
+
+            trace = traceback.format_exception(type(e), e, e.__traceback__)
+
+            log.error("".join(trace))
+
+            trace = "\n".join(textwrap.wrap("".join(trace[-2:]).lstrip()))
+
             error_message = f"{type(e).__name__}: {e}"
 
-            log.error("An error has occurred.", exc_info=(type(e), e, e.__traceback__))
+            search = markdown_link("Search this error.", BASE_URL.format(error_message.replace(" ", "+")))
 
-        await ctx.embed(desc=f"{title}\n\n{error_message}")
+            return await ctx.embed(desc=f"**{title}**\n{codeblock(trace)}\n{search}")
+
+        await ctx.embed(desc=f"**{title}**\n\n`{error_message}`")
