@@ -11,4 +11,3 @@ class Config(NamedTuple):
 
 class WeatherAPIs(NamedTuple):
     EARTH = environ.get("OPENWEATHERMAP_TOKEN")
-    MARS = environ.get("NASA_TOKEN")
