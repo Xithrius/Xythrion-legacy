@@ -1,10 +1,10 @@
-import asyncio
-import functools
 from io import BytesIO
-from typing import Any, Callable, Union
+from typing import Union
 
 import numpy as np
 from loguru import logger as log
+
+from xythrion.utils.wrappers import await_sync
 
 try:
     import matplotlib
@@ -18,31 +18,29 @@ except (ImportError, ImportWarning) as e:
     log.error("Error when importing Matplotlib.", exc_info=(type(e), e, e.__traceback__))
 
 
-def plot_and_save(func: Callable) -> Any:
-    """Executor wrapper for different synchronous functions."""
-
-    @functools.wraps(func)
-    async def wrapper(*args, **kwargs) -> Any:
-        sync_func = functools.partial(func, *args, **kwargs)
-
-        return await asyncio.get_event_loop().run_in_executor(None, sync_func)
-
-    return wrapper
-
-
-@plot_and_save
+@await_sync
 def graph_2d(
     x: Union[np.ndarray, list],
     y: Union[np.ndarray, list],
     *,
+    x_title: str = None,
+    y_title: str = None,
+    title: str = None,
     graph_type: str = "line",
+    grid: bool = True,
     autorotate_xaxis: bool = True
 ) -> BytesIO:
     """Graphing points and saving said graph to a file."""
     buffer = BytesIO()
     fig, axis = plt.subplots()
 
-    axis.grid(True, linestyle="-.", linewidth=0.5)
+    axis.grid(grid, linestyle="-.", linewidth=0.5)
+
+    if not any((x_title, y_title, title)):
+        raise ValueError("All titles are required to exist.")
+
+    axis.set_xlabel(x_title)
+    axis.set_ylabel(y_title)
 
     if graph_type == "line":
         axis.plot(x, y)
