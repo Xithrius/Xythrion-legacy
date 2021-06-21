@@ -33,7 +33,7 @@ flake8-tidy-imports = "~=4.3.0"
 flake8-todo = "~=0.7"
 pep8-naming = "~=0.11.1"
 pre-commit = "~=2.13.0"
-python-dotenv = "^0.17.1"
+python-dotenv = "^0.18.0"
 taskipy = "^1.8.1"
 
 [tool.taskipy.tasks]
