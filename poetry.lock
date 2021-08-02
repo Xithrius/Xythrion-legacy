@@ -221,7 +221,7 @@ pycodestyle = ">=2.0.0,<3.0.0"
 
 [[package]]
 name = "humanize"
-version = "3.10.0"
+version = "3.11.0"
 description = "Python humanize utilities"
 category = "main"
 optional = false
@@ -591,7 +591,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "3.9.5"
-content-hash = "1ddfbd2c3a361fae752f89494804df02d8534c6f3209fb568623c3056b2bff98"
+content-hash = "b894ea95520aecd386d5b7368019dd3e8583a8322c90c3101f53c787e688745e"
 
 [metadata.files]
 aiohttp = [
@@ -709,8 +709,8 @@ flake8-todo = [
     {file = "flake8-todo-0.7.tar.gz", hash = "sha256:6e4c5491ff838c06fe5a771b0e95ee15fc005ca57196011011280fc834a85915"},
 ]
 humanize = [
-    {file = "humanize-3.10.0-py3-none-any.whl", hash = "sha256:aab7625d62dd5e0a054c8413a47d1fa257f3bdd8e9a2442c2fe36061bdd1d9bf"},
-    {file = "humanize-3.10.0.tar.gz", hash = "sha256:b2413730ce6684f85e0439a5b80b8f402e09f03e16ab8023d1da758c6ff41148"},
+    {file = "humanize-3.11.0-py3-none-any.whl", hash = "sha256:06c79af7873473c47477840010ccb9b11b0d431f37f4a81b71edd653211936be"},
+    {file = "humanize-3.11.0.tar.gz", hash = "sha256:4160cdc63fcd0daac27d2e1e218a31bb396fc3fe5712d153675d89432a03778f"},
 ]
 identify = [
     {file = "identify-2.2.10-py2.py3-none-any.whl", hash = "sha256:18d0c531ee3dbc112fa6181f34faa179de3f57ea57ae2899754f16a7e0ff6421"},
