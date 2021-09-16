@@ -1,6 +1,6 @@
 # Project has been archived.
-I no longer have any motivation to continue this project.
-If I do come back to this project, it will be rewritten.
+Project is paused until I work out more of what I want to do here.
+If I do come back to this project, it will probably be rewritten.
 
 <p align="center">
     <img src="/images/icon.jpg" alt=""/>
