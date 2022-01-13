@@ -119,3 +119,6 @@ config/*.json
 
 # Postgresql
 postgres_data/
+
+# Modified version of default-config.toml
+config.toml
