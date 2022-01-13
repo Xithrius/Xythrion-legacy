@@ -9,6 +9,7 @@ on:
 jobs:
   flake8:
     name: Flake8 linting
+
     runs-on: ubuntu-latest
 
     env:
@@ -62,6 +63,9 @@ jobs:
 
   cargo-build-test:
     name: Cargo building & testing
+
+    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
 
