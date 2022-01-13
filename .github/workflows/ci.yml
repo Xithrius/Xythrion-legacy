@@ -1,9 +1,14 @@
-name: Linting
+name: CI
 
-on: [ push ]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
-  lint:
+  flake8:
+    name: Flake8 linting
     runs-on: ubuntu-latest
 
     env:
@@ -54,3 +59,37 @@ jobs:
 
       - name: Run flake8
         run: "flake8 --format='::error file=%(path)s,line=%(row)d,col=%(col)d::[flake8] %(code)s: %(text)s'"
+
+  cargo-build-test:
+    name: Cargo building & testing
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build
+        run: cargo build --verbose --manifest-path ./webserver/Cargo.toml
+
+      - name: Run tests
+        run: cargo test --verbose --manifest-path ./webserver/Cargo.toml
+
+  cargo-fmt:
+    name: Cargo format checking
+
+    needs: build-test
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Rust
+        run: |
+          rustup update stable
+          rustup default stable
+          rustup component add rustfmt
+          rustup component add clippy
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check --manifest-path ./webserver/Cargo.toml
+
+      - name: Check code for possible improvements
+        run: cargo clippy -- -D warnings --manifest-path ./webserver/Cargo.toml
