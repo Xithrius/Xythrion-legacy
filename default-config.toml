@@ -1,0 +1,7 @@
+[bot]
+# The token for the bot
+token = ""
+# Getting weather from NASA on Mars.
+nasa_mars_weather = ""
+
+[webserver]
