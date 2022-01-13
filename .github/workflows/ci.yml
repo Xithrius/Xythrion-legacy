@@ -78,7 +78,7 @@ jobs:
   cargo-fmt:
     name: Cargo format checking
 
-    needs: build-test
+    needs: cargo-build-test
 
     runs-on: ubuntu-latest
 
