@@ -3,17 +3,22 @@ version: "3.9"
 services:
 
   xythrion:
-    container_name: xythrion
-    init: true
     restart: always
 
-    env_file:
-      - .env
+    depends_on:
+      - webserver
 
     build:
-      context: .
+      context: xythrion
       dockerfile: Dockerfile
 
     volumes:
       - ./logs:/xythrion/logs:rw
       - .:/xythrion:ro
+
+  webserver:
+    restart: always
+
+    build:
+      context: webserver
+      dockerfile: Dockerfile
