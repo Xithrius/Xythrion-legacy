@@ -18,4 +18,3 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         issue-message: 'Thank you for the issue! This issue will be addressed in a reasonable amount of time.'
         pr-message: 'Thank you for the pull request! This contribution will be addressed in a reasonable amount of time.'
-
