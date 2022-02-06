@@ -6,7 +6,7 @@ import aiohttp
 from disnake.ext import commands
 from loguru import logger as log
 
-from context import Context
+from bot.context import Context
 
 
 class Xythrion(commands.Bot):

@@ -3,8 +3,8 @@ from disnake.ext.commands import Cog, command
 from disnake.utils import oauth_url
 
 from bot import Xythrion
-from context import Context
-from utils import markdown_link
+from bot.context import Context
+from bot.utils import markdown_link
 
 GITHUB_URL = "https://github.com/Xithrius/Xythrion"
 

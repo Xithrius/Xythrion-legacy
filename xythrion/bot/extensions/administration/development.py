@@ -1,8 +1,8 @@
-from discord.ext.commands import Cog, ExtensionNotLoaded, command, is_owner
+from disnake.ext.commands import Cog, ExtensionNotLoaded, command, is_owner
 from loguru import logger as log
 
-from xythrion.bot import Context, Xythrion
-from xythrion.extensions import EXTENSIONS
+from bot import Context, Xythrion
+from bot.extensions import EXTENSIONS
 
 
 class Development(Cog, command_attrs=dict(hidden=True)):

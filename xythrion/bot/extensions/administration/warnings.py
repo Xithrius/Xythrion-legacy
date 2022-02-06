@@ -1,12 +1,12 @@
 import textwrap
 import traceback
 
-from discord.ext import commands
-from discord.ext.commands import Cog
+from disnake.ext import commands
+from disnake.ext.commands import Cog
 from loguru import logger as log
 
-from xythrion import Context, Xythrion
-from xythrion.utils import codeblock, markdown_link
+from bot import Context, Xythrion
+from bot.utils import codeblock, markdown_link
 
 BASE_URL = "https://api.duckduckgo.com/?q={}"
 

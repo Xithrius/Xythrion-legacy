@@ -2,7 +2,7 @@ import re
 
 from disnake.ext.commands import Context, Converter
 
-from extensions import EXTENSIONS
+from bot.extensions import EXTENSIONS
 
 whitespace_pattern = re.compile(r"\s+")
 
