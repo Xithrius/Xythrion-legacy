@@ -1,12 +1,13 @@
 import asyncio
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Coroutine, Any
 
 import aiohttp
+from disnake import Message
 from disnake.ext import commands
 from loguru import logger as log
 
-from bot.context import Context
+from bot import Context
 
 
 class Xythrion(commands.Bot):
@@ -20,7 +21,7 @@ class Xythrion(commands.Bot):
 
         self.http_session: Optional[aiohttp.ClientSession] = None
 
-    async def get_context(self, message, *, cls=Context):
+    async def get_context(self, message: Message, *, cls: Any = Context) -> Coroutine:
         """Overriding the base Context for this class."""
         return await super().get_context(message, cls=cls)
 
