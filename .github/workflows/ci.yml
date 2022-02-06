@@ -21,7 +21,6 @@ jobs:
 
     steps:
       - name: Add custom PYTHONUSERBASE to PATH
-        working-directory: xythrion
         run: echo '${{ env.PYTHONUSERBASE }}/bin/' >> $GITHUB_PATH
 
       - name: Checkout repository
