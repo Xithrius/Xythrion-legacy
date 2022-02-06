@@ -1,6 +1,6 @@
-from xythrion.bot import Xythrion
-from xythrion.extensions.administration.development import Development
-from xythrion.extensions.administration.warnings import Warnings
+from bot import Xythrion
+from bot.extensions.administration.development import Development
+from bot.extensions.administration.warnings import Warnings
 
 
 def setup(bot: Xythrion) -> None:

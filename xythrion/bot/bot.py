@@ -7,7 +7,7 @@ from disnake import Message
 from disnake.ext import commands
 from loguru import logger as log
 
-from bot import Context
+from bot.context import Context
 
 
 class Xythrion(commands.Bot):
