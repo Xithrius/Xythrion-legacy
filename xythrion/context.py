@@ -2,13 +2,13 @@ from datetime import datetime
 from io import BytesIO
 from typing import Optional
 
-from discord import Embed, File
-from discord.ext import commands
+from disnake import Embed, File
+from disnake.ext import commands
 from humanize import naturaldelta
 
 
 class Context(commands.Context):
-    """Customization of methods for context."""
+    """Custom methods for Context that the base doesn't provide."""
 
     async def send(self, *args, **kwargs) -> None:
         """
@@ -21,11 +21,9 @@ class Context(commands.Context):
     async def check_for_subcommands(self) -> None:
         """If an invalid subcommand is passed, this is brought up."""
         if self.invoked_subcommand is None:
-            lst = ", ".join(x.name for x in self.command.commands if x.enabled)
+            command_list = ", ".join(x.name for x in self.bot.commands if x.enabled)
 
-            error_string = f"Unknown command. Available group command(s): {lst}"
-
-            await self.embed(desc=error_string)
+            await self.embed(desc=f"Unknown command. Available group command(s): {command_list}")
 
     async def embed(
             self,

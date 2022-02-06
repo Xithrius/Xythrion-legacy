@@ -1,9 +1,3 @@
-try:
-    from dotenv import load_dotenv
-    load_dotenv(override=True)
-except ModuleNotFoundError:
-    pass
-
-from xythrion.bot import Context, Xythrion
+from bot import Xythrion, Context
 
 __all__ = ("Context", "Xythrion")

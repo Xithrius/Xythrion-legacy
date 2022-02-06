@@ -1,14 +1,20 @@
-from discord import Permissions
-from discord.ext.commands import Cog, command
-from discord.utils import oauth_url
+from disnake import Permissions
+from disnake.ext.commands import Cog, command
+from disnake.utils import oauth_url
 
-from xythrion.bot import Context, Xythrion
-from xythrion.constants import Config
-from xythrion.utils import markdown_link
+from bot import Xythrion
+from context import Context
+from utils import markdown_link
+
+GITHUB_URL = "https://github.com/Xithrius/Xythrion"
+
+# Read/send messages in channels/threads, view channels, embed links, attach files, read message history,
+# add reactions, use slash commands.
+PERMISSIONS_INTEGER = 277025508416
 
 
 class Links(Cog):
-    """Links to many different things around the internet, including bot statistics."""
+    """Links to many things around the internet, including bot statistics."""
 
     def __init__(self, bot: Xythrion):
         self.bot = bot
@@ -16,9 +22,14 @@ class Links(Cog):
     @command(aliases=("desc", "description"))
     async def info(self, ctx: Context) -> None:
         """Information about bot origin."""
-        await ctx.embed(desc=markdown_link("Xythrion Github Repository", Config.GITHUB_URL))
+        await ctx.embed(desc=markdown_link("Xythrion Github Repository", GITHUB_URL))
 
     @command()
     async def invite(self, ctx: Context) -> None:
-        """Gives the invite link of this bot."""
-        await ctx.embed(desc=markdown_link("invite_link", oauth_url(self.bot.user.id, Permissions(3525696))))
+        """Provides an invitation link that refers to this bot."""
+        await ctx.embed(
+            desc=markdown_link(
+                "Invite this bot!",
+                oauth_url(self.bot.user.id, permissions=Permissions(PERMISSIONS_INTEGER))
+            )
+        )

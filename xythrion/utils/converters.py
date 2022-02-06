@@ -1,8 +1,8 @@
 import re
 
-from discord.ext.commands import Context, Converter, UserInputError
+from disnake.ext.commands import Context, Converter
 
-from xythrion.extensions import EXTENSIONS
+from extensions import EXTENSIONS
 
 whitespace_pattern = re.compile(r"\s+")
 
@@ -29,4 +29,4 @@ class Extension(Converter):
         if argument in EXTENSIONS:
             return argument
 
-        raise UserInputError(f"Invalid argument {argument}")
+        raise ValueError(f"Invalid argument {argument}")

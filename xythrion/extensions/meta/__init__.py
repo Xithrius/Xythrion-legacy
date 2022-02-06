@@ -1,5 +1,5 @@
-from xythrion.bot import Xythrion
-from xythrion.extensions.meta.links import Links
+from bot import Xythrion
+from extensions.meta.links import Links
 
 
 def setup(bot: Xythrion) -> None:
