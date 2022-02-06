@@ -20,11 +20,3 @@ repos:
     rev: 4.0.1
     hooks:
       - id: flake8
-
-  # - repo: local
-  #   hooks:
-  #     - id: cargo-fmt
-  #       name: cargo fmt
-  #       entry: cargo fmt --
-  #       language: rust
-  #       types: [ rust ]
