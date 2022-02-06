@@ -38,7 +38,10 @@ class Context(commands.Context):
         embed = Embed()
 
         if desc:
-            embed.description = f'`{desc}`' if '\n' not in desc else desc
+            if any(x in desc for x in ['\n', '`']):
+                embed.description = f'`{desc}`'
+            else:
+                embed.description = desc
 
         embed.set_footer(text=f"Bot uptime: {startup_delta}.")
 
