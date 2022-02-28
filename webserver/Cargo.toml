@@ -10,7 +10,7 @@ repository = "https://github.com/Xithrius/Xythrion/webserver"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-actix-web = {version = "4.0.0-beta.20", features = ["openssl"]}
+actix-web = {version = "4.0.1", features = ["openssl"]}
 toml = "0.5.8"
 serde = { version = "1.0.132", features = ["derive"] }
 anyhow = "1.0.52"
