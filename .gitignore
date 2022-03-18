@@ -112,7 +112,7 @@ config/*.json
 *.code-workspace
 
 # PyCharm
-*/.idea
+.idea
 
 # Logs
 /logs/
