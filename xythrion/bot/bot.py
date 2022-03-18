@@ -21,6 +21,10 @@ class Xythrion(commands.Bot):
 
         self.http_session: Optional[aiohttp.ClientSession] = None
 
+        self.config = kwargs["config"]
+
+        self.webserver_url = self.config["webserver"]["url"]
+
     async def get_context(self, message: Message, *, cls: Any = Context) -> Coroutine:
         """Overriding the base Context for this class."""
         return await super().get_context(message, cls=cls)

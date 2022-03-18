@@ -1,3 +1,7 @@
 [bot]
 # The token for the bot
 token = ""
+
+[webserver]
+# Base URL to the webserver, with port
+url = "http://localhost:8090"

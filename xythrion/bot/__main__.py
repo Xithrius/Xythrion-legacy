@@ -17,6 +17,7 @@ bot = Xythrion(
     case_insensitive=True,
     help_command=None,
     allowed_mentions=AllowedMentions(everyone=False),
+    config=config,
 )
 
 for extension in EXTENSIONS:
