@@ -32,13 +32,13 @@ class Development(Cog, command_attrs=dict(hidden=True)):
     @command(name="ping", aliases=("ping_bot", "p",))
     @is_owner()
     async def ping_bot(self, ctx: Context) -> None:
-        """Responds to a user with 'Pong!' to check the response time"""
+        """Responds to a user with 'Pong!' to check the response time."""
         await ctx.send(":ping_pong: Pong!")
 
     @command(aliases=("ping_web", "pw"))
     @is_owner()
     async def ping_webserver(self, ctx: Context) -> None:
-        """Pings the webserver to see if it's online and functioning"""
+        """Pings the webserver to see if it's online and functioning."""
         async with self.bot.http_session.get(f"{self.bot.webserver_url}/ping") as response:
             if response.status == 200:
                 await ctx.send(f":ping_pong: Pong! Status: {response.status}")
