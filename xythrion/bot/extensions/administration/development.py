@@ -44,3 +44,19 @@ class Development(Cog, command_attrs=dict(hidden=True)):
                 await ctx.send(f":ping_pong: Pong! Status: {response.status}")
             else:
                 await ctx.send(f"Ping failed with status code {response.status}")
+
+    @command(aliases=("wb_test",))
+    @is_owner()
+    async def webserver_test(self, ctx: Context) -> None:
+        headers = {
+            "username": "Xithrius",
+            "country": "US",
+        }
+
+        async with self.bot.http_session.get(
+                f"{self.bot.webserver_url}/register", headers=headers
+        ) as response:
+            if response.status == 200:
+                await ctx.send(f":ping_pong: {await response.text()}")
+            else:
+                await ctx.send(f"Ping failed with status code {response.status}")
