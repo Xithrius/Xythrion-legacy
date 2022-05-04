@@ -231,7 +231,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "humanize"
-version = "4.0.0"
+version = "4.1.0"
 description = "Python humanize utilities"
 category = "main"
 optional = false
@@ -496,7 +496,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "~=3.9.6"
-content-hash = "281f7f2bb85259212c096afa9246e0dd73df3ab6c58a52e7cd49a45977ed869a"
+content-hash = "a5fe544346d929f82de5eaac9ae3555a45209e59bb88cd06ad39bc6b2e8711ec"
 
 [metadata.files]
 aiohttp = [
@@ -706,8 +706,8 @@ frozenlist = [
     {file = "frozenlist-1.3.0.tar.gz", hash = "sha256:ce6f2ba0edb7b0c1d8976565298ad2deba6f8064d2bebb6ffce2ca896eb35b0b"},
 ]
 humanize = [
-    {file = "humanize-4.0.0-py3-none-any.whl", hash = "sha256:8d86333b8557dacffd4dce1dbe09c81c189e2caf7bb17a970b2212f0f58f10f2"},
-    {file = "humanize-4.0.0.tar.gz", hash = "sha256:ee1f872fdfc7d2ef4a28d4f80ddde9f96d36955b5d6b0dac4bdeb99502bddb00"},
+    {file = "humanize-4.1.0-py3-none-any.whl", hash = "sha256:953b393f5bd67e19d47a4c0fd20c3a3537853967b307e49729c4755d3551753c"},
+    {file = "humanize-4.1.0.tar.gz", hash = "sha256:3a119b242ec872c029d8b7bf8435a61a5798f124b244a08013aec5617302f80e"},
 ]
 identify = [
     {file = "identify-2.4.9-py2.py3-none-any.whl", hash = "sha256:bff7c4959d68510bc28b99d664b6a623e36c6eadc933f89a4e0a9ddff9b4fee4"},
