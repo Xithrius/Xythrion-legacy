@@ -48,6 +48,7 @@ class Development(Cog, command_attrs=dict(hidden=True)):
     @command(aliases=("wb_test",))
     @is_owner()
     async def webserver_test(self, ctx: Context) -> None:
+        """Testing the webserver connection."""
         headers = {
             "username": "Xithrius",
             "country": "US",
