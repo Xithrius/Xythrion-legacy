@@ -30,7 +30,7 @@ flake8-todo = "~=0.7"
 pep8-naming = "~=0.12.1"
 pre-commit = "~=2.19.0"
 python-dotenv = "~=0.20.0"
-taskipy = "~=1.10.1"
+taskipy = "~=1.10.2"
 
 [tool.taskipy.tasks]
 start = "python -m bot"
